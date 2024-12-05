@@ -142,8 +142,8 @@ def set_item_data(ob, element_flags):
 def set_device_data(ob, element_flags):
     device_flags = DeviceFlags(element_flags)
 
-    ob.tag_view.initially_open = DeviceFlags.initially_open_1_0 in device_flags
-    ob.tag_view.initially_off = DeviceFlags.initially_off_0_0 in device_flags
+    ob.tag_view.initially_open = DeviceFlags.initially_open in device_flags
+    ob.tag_view.initially_off = DeviceFlags.initially_off in device_flags
     ob.tag_view.can_change_only_once = DeviceFlags.can_change_only_once in device_flags
     ob.tag_view.position_reversed = DeviceFlags.position_reversed in device_flags
     ob.tag_view.not_usable_from_any_side = DeviceFlags.not_usable_from_any_side in device_flags
@@ -159,7 +159,7 @@ def set_machine_data(ob, element_flags):
 def set_control_data(ob, element_flags):
     control_flags = ControlFlags(element_flags)
 
-    ob.tag_view.usuable_from_both_sides = ControlFlags.usable_from_both_sides in control_flags
+    ob.tag_view.usable_from_both_sides = ControlFlags.usable_from_both_sides in control_flags
 
 def get_data_type(collection_name, root, tag_path, element, object_name_tag_block):
         if collection_name == "BSPs":
@@ -219,7 +219,7 @@ def get_data_type(collection_name, root, tag_path, element, object_name_tag_bloc
             root.tag_view.power_group = element.power_group_index
             root.tag_view.position_group = element.position_group_index
             set_device_data(root, element.flags)
-            root.tag_view.color = element.intensity
+            root.tag_view.color = element.color_RGBA[0:3]
             root.tag_view.intensity = element.intensity
             root.tag_view.falloff_angle = element.falloff_angle
             root.tag_view.cutoff_angle = element.cutoff_angle
@@ -230,6 +230,12 @@ def get_data_type(collection_name, root, tag_path, element, object_name_tag_bloc
 
         elif collection_name == "Player Starting Locations":
             root.tag_view.data_type_enum = str(DataTypesEnum.player_starting_locations.value)
+            root.tag_view.team_index = element.team_index
+            root.tag_view.bsp_index = element.bsp_index
+            root.tag_view.type_0 = str(element.type_0)
+            root.tag_view.type_1 = str(element.type_1)
+            root.tag_view.type_2 = str(element.type_2)
+            root.tag_view.type_3 = str(element.type_3)
 
         elif collection_name == "Netgame Flags":
             root.tag_view.data_type_enum = str(DataTypesEnum.netgame_flags.value)
@@ -308,12 +314,18 @@ def generate_object_elements(level_root, collection_name, object_name_tag_block,
         objects_list.append(ob)
 
     for element_idx, element in enumerate(tag_block):
-        pallete_item = palette[element.type_index]
-        tag_name = os.path.basename(pallete_item.name)
+        tag_path = ""
+        ob = None
+        if element.type_index >= 0:
+            pallete_item = palette[element.type_index]
+            ob = objects_list[element.type_index]
+            tag_path = pallete_item.name
+
+        tag_name = "NONE"
+        if not global_functions.string_empty_check(tag_path):
+            tag_name = os.path.basename(tag_path)
 
         name = "%s_%s" % (tag_name, element_idx)
-
-        ob = objects_list[element.type_index]
         if not ob == None:
             root = bpy.data.objects.new(name, ob.data)
             asset_collection.objects.link(root)
@@ -326,7 +338,7 @@ def generate_object_elements(level_root, collection_name, object_name_tag_block,
         root.parent = level_root
         root.location = element.position * 100
 
-        get_data_type(collection_name, root, pallete_item.name, element, object_name_tag_block)
+        get_data_type(collection_name, root, tag_path, element, object_name_tag_block)
 
         rotation = Euler((radians(0.0), radians(0.0), radians(0.0)), 'XYZ')
         roll = Euler((radians(element.rotation[2]), radians(0.0), radians(0.0)), 'XYZ')
@@ -375,7 +387,7 @@ def generate_netgame_equipment_elements(level_root, tag_block, context, game_ver
             ob.empty_display_type = 'ARROWS'
             asset_collection.objects.link(ob)
 
-        get_data_type("Netgame Equipment", ob, element.item_collection.name, element)
+        get_data_type("Netgame Equipment", ob, element.item_collection.name, element, None)
 
         ob.parent = level_root
         ob.location = element.position * 100
@@ -395,6 +407,8 @@ def generate_empties(context, level_root, collection_name, tag_block):
         ob.parent = level_root
         ob.location = element.position * 100
         ob.rotation_euler = (radians(0.0), radians(0.0), radians(element.facing))
+
+        get_data_type(collection_name, ob, "", element, None)
 
         asset_collection.objects.link(ob)
 

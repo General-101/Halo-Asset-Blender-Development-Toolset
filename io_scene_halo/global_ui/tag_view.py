@@ -338,8 +338,8 @@ class HALO_PropertiesGroup(PropertyGroup):
         default = False,
         )
 
-    usuable_from_both_sides: BoolProperty(
-        name ="Usuable From Both Sides",
+    usable_from_both_sides: BoolProperty(
+        name ="Usable From Both Sides",
         description = "Control ignores forward vector",
         default = False,
         )
@@ -366,12 +366,67 @@ class HALO_PropertiesGroup(PropertyGroup):
 
     falloff_angle: FloatProperty(
         name="Falloff Angle",
-        description="I have no idea what this is"
+        description="I have no idea what this is",
+        subtype="ANGLE"
         )
 
     cutoff_angle: FloatProperty(
         name="Cutoff Angle",
-        description="I have no idea what this is"
+        description="I have no idea what this is",
+        subtype="ANGLE"
+        )
+
+    team_index: IntProperty(
+        name = "Team Index",
+        description = "Team index",
+        min = 0
+        )
+    
+    bsp_index: IntProperty(
+        name = "BSP Index",
+        description = "BSP index",
+        min = -1
+        )
+
+    type_options = ( ('0', "None", "None"),
+                ('1', "CTF", "CTF"),
+                ('2', "Slayer", "Slayer"),
+                ('3', "Oddball", "Oddball"),
+                ('4', "King Of The Hill", "King Of The Hill"),
+                ('5', "Race", "Race"),
+                ('6', "Terminator", "Terminator"),
+                ('7', "Stub", "Stub"),
+                ('8', "Ignored1", "Ignored1"),
+                ('9', "Ignored2", "Ignored2"),
+                ('10', "Ignored3", "Ignored3"),
+                ('11', "Ignored4", "Ignored4"),
+                ('12', "All Games", "All Games"),
+                ('13', "All Except CTF", "All Except CTF"),
+                ('14', "All Except Race And CTF", "All Except Race And CTF")
+            )
+
+    type_0: EnumProperty(
+        name="Type 0",
+        description="Type 0",
+        items=type_options
+        )
+
+    type_1: EnumProperty(
+        name="Type 1",
+        description="Type 1",
+        items=type_options
+        )
+
+    type_2: EnumProperty(
+        name="Type 2",
+        description="Type 2",
+        items=type_options
+        )
+
+    type_3: EnumProperty(
+        name="Type 3",
+        description="Type 3",
+        items=type_options
         )
 
 def render_cluster(layout, tag_view):
@@ -578,7 +633,7 @@ def render_control(layout, tag_view):
     box_flags.label(text="Flags")
     col_flags = box_flags.column(align=True)
     row_flags = col_flags.row()
-    row_flags.prop(tag_view, "usuable_from_both_sides")
+    row_flags.prop(tag_view, "usable_from_both_sides")
 
     box = layout.split()
     col = box.column(align=True)
@@ -601,6 +656,29 @@ def render_light_fixture(layout, tag_view):
     row = col.row()
     row.label(text='Cutoff Angle')
     row.prop(tag_view, "cutoff_angle", text='')
+
+def render_player_starting_location(layout, tag_view):
+    box = layout.split()
+    col = box.column(align=True)
+
+    row = col.row()
+    row.label(text='Team Index')
+    row.prop(tag_view, "team_index", text='')
+    row = col.row()
+    row.label(text='BSP Index')
+    row.prop(tag_view, "bsp_index", text='')
+    row = col.row()
+    row.label(text='Type 0')
+    row.prop(tag_view, "type_0", text='')
+    row = col.row()
+    row.label(text='Type 1')
+    row.prop(tag_view, "type_1", text='')
+    row = col.row()
+    row.label(text='Type 2')
+    row.prop(tag_view, "type_2", text='')
+    row = col.row()
+    row.label(text='Type 3')
+    row.prop(tag_view, "type_3", text='')
 
 class Halo_TagView(Panel):
     bl_label = "Halo Tag View"
@@ -653,5 +731,7 @@ class Halo_TagView(Panel):
             render_object(layout, tag_view)
             render_device(layout, tag_view)
             render_light_fixture(layout, tag_view)
+        elif data_type_value == DataTypesEnum.player_starting_locations.value:
+            render_player_starting_location(layout, tag_view)
         elif data_type_value == DataTypesEnum.instances.value:
             render_instance(layout, tag_view)

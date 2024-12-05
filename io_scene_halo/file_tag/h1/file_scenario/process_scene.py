@@ -27,7 +27,7 @@
 import bpy
 
 from math import degrees
-from .format import ScenarioAsset, ObjectFlags, UnitFlags, VehicleFlags, ItemFlags
+from .format import ScenarioAsset, ObjectFlags, UnitFlags, VehicleFlags, ItemFlags, DeviceFlags, MachineFlags, ControlFlags
 from ....global_functions import global_functions, tag_format
 
 def get_palette_index(TAG, SCENARIO, tag_group, tag_path, palette_tag_block):
@@ -37,7 +37,7 @@ def get_palette_index(TAG, SCENARIO, tag_group, tag_path, palette_tag_block):
             palette_index = palette_element_idx
             break
 
-    if palette_index == -1 and not global_functions.string_empty_check(tag_group):
+    if palette_index == -1 and not global_functions.string_empty_check(tag_group) and not global_functions.string_empty_check(tag_path):
         palette_tag_block.append(TAG.TagRef(tag_group, tag_path, len(tag_path)))
         palette_index = len(palette_tag_block) - 1
 
@@ -128,6 +128,38 @@ def get_item_flags(ob):
         item_flags += ItemFlags.does_accelerate_moves_due_to_explosions.value
 
     return item_flags
+
+def get_device_flags(ob):
+    device_flags = 0
+    if ob.tag_view.initially_open:
+        device_flags += DeviceFlags.initially_open.value
+    if ob.tag_view.initially_off:
+        device_flags += DeviceFlags.initially_off.value
+    if ob.tag_view.can_change_only_once:
+        device_flags += DeviceFlags.can_change_only_once.value
+    if ob.tag_view.position_reversed:
+        device_flags += DeviceFlags.position_reversed.value
+    if ob.tag_view.not_usable_from_any_side:
+        device_flags += DeviceFlags.not_usable_from_any_side.value
+    return device_flags
+
+def get_machine_flags(ob):
+    machine_flags = 0
+    if ob.tag_view.does_not_operate_automatically:
+        machine_flags += MachineFlags.does_not_operate_automatically.value
+    if ob.tag_view.one_sided:
+        machine_flags += MachineFlags.one_sided.value
+    if ob.tag_view.never_appears_locked:
+        machine_flags += MachineFlags.never_appears_locked.value
+    if ob.tag_view.opened_by_melee_attack:
+        machine_flags += MachineFlags.opened_by_melee_attack.value
+    return machine_flags
+
+def get_control_flags(ob):
+    control_flags = 0
+    if ob.tag_view.usable_from_both_sides:
+        control_flags += ControlFlags.usable_from_both_sides.value
+    return control_flags
 
 def generate_comments(TAG, SCENARIO):
     comment_collection = bpy.data.collections.get("Comments")
@@ -262,10 +294,10 @@ def generate_machines(TAG, SCENARIO):
             rot = ob.rotation_euler
             machine.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
             machine.appearance_player_index = ob.tag_view.appearance_player_index
-            machine.power_group_index = 0
-            machine.position_group_index = 0
-            machine.flags_0 = 0
-            machine.flags_1 = 0
+            machine.power_group_index = ob.tag_view.power_group
+            machine.position_group_index = ob.tag_view.position_group
+            machine.flags_0 = get_device_flags(ob)
+            machine.flags_1 = get_machine_flags(ob)
 
             blender_machines.append(machine)
 
@@ -285,11 +317,11 @@ def generate_controls(TAG, SCENARIO):
             rot = ob.rotation_euler
             control.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
             control.appearance_player_index = ob.tag_view.appearance_player_index
-            control.power_group_index = 0
-            control.position_group_index = 0
-            control.flags_0 = 0
-            control.flags_1 = 0
-            control.unknown = 0
+            control.power_group_index = ob.tag_view.power_group
+            control.position_group_index = ob.tag_view.position_group
+            control.flags_0 = get_device_flags(ob)
+            control.flags_1 = get_control_flags(ob)
+            control.unknown = ob.tag_view.control_value
 
             blender_controls.append(control)
 
@@ -309,13 +341,13 @@ def generate_light_fixtures(TAG, SCENARIO):
             rot = ob.rotation_euler
             light_fixture.rotation = (get_half_angle(degrees(rot[2])), get_half_angle(degrees(-rot[0])), get_half_angle(degrees(-rot[1])))
             light_fixture.appearance_player_index = ob.tag_view.appearance_player_index
-            light_fixture.power_group_index = 0
-            light_fixture.position_group_index = 0
-            light_fixture.flags = 0
-            light_fixture.color_RGBA = (0.0, 0.0, 0.0, 1.0)
-            light_fixture.intensity = 0
-            light_fixture.falloff_angle = 0
-            light_fixture.cutoff_angle = 0
+            light_fixture.power_group_index = ob.tag_view.power_group
+            light_fixture.position_group_index = ob.tag_view.position_group
+            light_fixture.flags = get_device_flags(ob)
+            light_fixture.color_RGBA = (ob.tag_view.color[0], ob.tag_view.color[1], ob.tag_view.color[2], 1)
+            light_fixture.intensity = ob.tag_view.intensity
+            light_fixture.falloff_angle = ob.tag_view.falloff_angle
+            light_fixture.cutoff_angle = ob.tag_view.cutoff_angle
 
             blender_light_fixtures.append(light_fixture)
 
@@ -350,12 +382,12 @@ def generate_player_starting_locations(TAG, SCENARIO):
 
             player_starting_location.position = ob.location / 100
             player_starting_location.facing = get_half_angle(degrees(rot[2]))
-            player_starting_location.team_index = 0
-            player_starting_location.bsp_index = 0
-            player_starting_location.type_0 = 0
-            player_starting_location.type_1 = 0
-            player_starting_location.type_2 = 0
-            player_starting_location.type_3 = 0
+            player_starting_location.team_index = ob.tag_view.team_index
+            player_starting_location.bsp_index = ob.tag_view.bsp_index
+            player_starting_location.type_0 = int(ob.tag_view.type_0)
+            player_starting_location.type_1 = int(ob.tag_view.type_1)
+            player_starting_location.type_2 = int(ob.tag_view.type_2)
+            player_starting_location.type_3 = int(ob.tag_view.type_3)
 
             blender_player_starting_locations.append(player_starting_location)
 
@@ -538,6 +570,7 @@ def generate_scenario_scene(DONOR_ASSET):
     generate_trigger_volumes(TAG, DONOR_ASSET)
 
     DONOR_ASSET.comments_tag_block = TAG.TagBlock(len(DONOR_ASSET.comments))
+    DONOR_ASSET.object_names_tag_block = TAG.TagBlock(len(DONOR_ASSET.object_names))
     DONOR_ASSET.scenery_tag_block = TAG.TagBlock(len(DONOR_ASSET.scenery))
     DONOR_ASSET.scenery_palette_tag_block = TAG.TagBlock(len(DONOR_ASSET.scenery_palette))
     DONOR_ASSET.bipeds_tag_block = TAG.TagBlock(len(DONOR_ASSET.bipeds))

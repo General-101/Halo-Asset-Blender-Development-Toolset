@@ -131,8 +131,8 @@ class DeviceGroupFlags(Flag):
     can_change_only_once = auto()
 
 class DeviceFlags(Flag):
-    initially_open_1_0 = auto()
-    initially_off_0_0 = auto()
+    initially_open = auto()
+    initially_off = auto()
     can_change_only_once = auto()
     position_reversed = auto()
     not_usable_from_any_side = auto()
