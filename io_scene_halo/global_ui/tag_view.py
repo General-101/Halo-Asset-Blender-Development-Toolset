@@ -429,6 +429,38 @@ class HALO_PropertiesGroup(PropertyGroup):
         items=type_options
         )
 
+    netgame_type: EnumProperty(
+        name="Type",
+        description="Type",
+        items = ( ('0', "CTF - Flag", "CTF - Flag"),
+                    ('1', "Unused1", "Unused1"),
+                    ('2', "Oddball - Ball Spawn", "Oddball - Ball Spawn"),
+                    ('3', "Race - Track", "Race - Track"),
+                    ('4', "Race - Vehicle", "Race - Vehicle"),
+                    ('5', "Unused5", "Unused5"),
+                    ('6', "Teleport From", "Teleport From"),
+                    ('7', "Teleport To", "Teleport To"),
+                    ('8', "Hill - Flag", "Hill - Flag"),
+                )
+        )
+
+    usage_id: IntProperty(
+        name = "Usage ID",
+        description = "Usage ID",
+        min = 0
+        )
+
+    levitate: BoolProperty(
+        name ="Levitate",
+        description = "Levitate",
+        default = False,
+        )
+
+    spawn_time: IntProperty(
+        name="Spawn Time",
+        description="Spawn Time"
+        )
+
 def render_cluster(layout, tag_view):
     box = layout.split()
     col = box.column(align=True)
@@ -680,6 +712,54 @@ def render_player_starting_location(layout, tag_view):
     row.label(text='Type 3')
     row.prop(tag_view, "type_3", text='')
 
+def render_netgame_flags(layout, tag_view):
+    box = layout.split()
+    col = box.column(align=True)
+
+    row = col.row()
+    row.label(text='Type')
+    row.prop(tag_view, "netgame_type", text='')
+    row = col.row()
+    row.label(text='Usage ID')
+    row.prop(tag_view, "usage_id", text='')
+    row = col.row()
+    row.label(text='Weapon Group')
+    row.prop(tag_view, "tag_path", text='')
+
+def render_netgame_equipment(layout, tag_view):
+    box = layout.split()
+    col = box.column(align=True)
+
+    box_flags = layout.box()
+    box_flags.label(text="Flags")
+    col_flags = box_flags.column(align=True)
+    row_flags = col_flags.row()
+    row_flags.prop(tag_view, "levitate")
+
+    box = layout.split()
+    col = box.column(align=True)
+    row = col.row()
+    row.label(text='Type 0')
+    row.prop(tag_view, "type_0", text='')
+    row = col.row()
+    row.label(text='Type 1')
+    row.prop(tag_view, "type_1", text='')
+    row = col.row()
+    row.label(text='Type 2')
+    row.prop(tag_view, "type_2", text='')
+    row = col.row()
+    row.label(text='Type 3')
+    row.prop(tag_view, "type_3", text='')
+    row = col.row()
+    row.label(text='Team Index')
+    row.prop(tag_view, "team_index", text='')
+    row = col.row()
+    row.label(text='Spawn Time')
+    row.prop(tag_view, "spawn_time", text='')
+    row = col.row()
+    row.label(text='Item Collection')
+    row.prop(tag_view, "tag_path", text='')
+
 class Halo_TagView(Panel):
     bl_label = "Halo Tag View"
     bl_idname = "HALO_PT_TagView"
@@ -733,5 +813,10 @@ class Halo_TagView(Panel):
             render_light_fixture(layout, tag_view)
         elif data_type_value == DataTypesEnum.player_starting_locations.value:
             render_player_starting_location(layout, tag_view)
+        elif data_type_value == DataTypesEnum.netgame_flags.value:
+            render_netgame_flags(layout, tag_view)
+        elif data_type_value == DataTypesEnum.netgame_equipment.value:
+            render_netgame_equipment(layout, tag_view)
         elif data_type_value == DataTypesEnum.instances.value:
             render_instance(layout, tag_view)
+

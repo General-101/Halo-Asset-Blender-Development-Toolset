@@ -27,7 +27,7 @@
 import bpy
 
 from math import degrees
-from .format import ScenarioAsset, ObjectFlags, UnitFlags, VehicleFlags, ItemFlags, DeviceFlags, MachineFlags, ControlFlags
+from .format import ScenarioAsset, ObjectFlags, UnitFlags, VehicleFlags, ItemFlags, DeviceFlags, MachineFlags, ControlFlags, NetGameEquipment
 from ....global_functions import global_functions, tag_format
 
 def get_palette_index(TAG, SCENARIO, tag_group, tag_path, palette_tag_block):
@@ -160,6 +160,12 @@ def get_control_flags(ob):
     if ob.tag_view.usable_from_both_sides:
         control_flags += ControlFlags.usable_from_both_sides.value
     return control_flags
+
+def get_netgame_equipment_flags(ob):
+    netgame_equipment_flags = 0
+    if ob.tag_view.levitate:
+        netgame_equipment_flags += NetGameEquipment.levitate.value
+    return netgame_equipment_flags
 
 def generate_comments(TAG, SCENARIO):
     comment_collection = bpy.data.collections.get("Comments")
@@ -411,6 +417,47 @@ def generate_trigger_volumes(TAG, SCENARIO):
 
     SCENARIO.trigger_volumes = blender_trigger_volumes
 
+def generate_netgame_flags(TAG, SCENARIO):
+    netgame_flags_collection = bpy.data.collections.get("Netgame Flags")
+    blender_netgame_flags = []
+    if netgame_flags_collection:
+        for ob in netgame_flags_collection.objects:
+            netgame_flag = SCENARIO.NetGameFlag()
+            rot = ob.rotation_euler
+
+            netgame_flag.position = ob.location / 100
+            netgame_flag.facing = get_half_angle(degrees(rot[2]))
+            netgame_flag.type = int(ob.tag_view.netgame_type)
+            netgame_flag.usage_id = ob.tag_view.usage_id
+            netgame_flag.weapon_group = TAG.TagRef("weap", ob.tag_view.tag_path, len(ob.tag_view.tag_path))
+
+            blender_netgame_flags.append(netgame_flag)
+
+    SCENARIO.netgame_flags = blender_netgame_flags
+
+def generate_netgame_equipment(TAG, SCENARIO):
+    netgame_equipment_collection = bpy.data.collections.get("Netgame Equipment")
+    blender_netgame_equipment = []
+    if netgame_equipment_collection:
+        for ob in netgame_equipment_collection.objects:
+            netgame_equipment = SCENARIO.NetGameEquipment()
+            rot = ob.rotation_euler
+
+            netgame_equipment.flags = get_netgame_equipment_flags(ob)
+            netgame_equipment.type_0 = int(ob.tag_view.type_0)
+            netgame_equipment.type_1 = int(ob.tag_view.type_1)
+            netgame_equipment.type_2 = int(ob.tag_view.type_2)
+            netgame_equipment.type_3 = int(ob.tag_view.type_3)
+            netgame_equipment.team_index = ob.tag_view.team_index
+            netgame_equipment.spawn_time = ob.tag_view.spawn_time
+            netgame_equipment.position = ob.location / 100
+            netgame_equipment.facing = get_half_angle(degrees(rot[2]))
+            netgame_equipment.item_collection = TAG.TagRef("itmc", ob.tag_view.tag_path, len(ob.tag_view.tag_path))
+
+            blender_netgame_equipment.append(netgame_equipment)
+
+    SCENARIO.netgame_equipment = blender_netgame_equipment
+
 def create_tag(TAG):
     SCENARIO = ScenarioAsset()
     TAG.is_legacy = False
@@ -568,6 +615,8 @@ def generate_scenario_scene(DONOR_ASSET):
     generate_sound_scenery(TAG, DONOR_ASSET)
     generate_player_starting_locations(TAG, DONOR_ASSET)
     generate_trigger_volumes(TAG, DONOR_ASSET)
+    generate_netgame_flags(TAG, DONOR_ASSET)
+    generate_netgame_equipment(TAG, DONOR_ASSET)
 
     DONOR_ASSET.comments_tag_block = TAG.TagBlock(len(DONOR_ASSET.comments))
     DONOR_ASSET.object_names_tag_block = TAG.TagBlock(len(DONOR_ASSET.object_names))
@@ -591,5 +640,7 @@ def generate_scenario_scene(DONOR_ASSET):
     DONOR_ASSET.sound_scenery_palette_tag_block = TAG.TagBlock(len(DONOR_ASSET.sound_scenery_palette))
     DONOR_ASSET.player_starting_locations_tag_block = TAG.TagBlock(len(DONOR_ASSET.player_starting_locations))
     DONOR_ASSET.trigger_volumes_tag_block = TAG.TagBlock(len(DONOR_ASSET.trigger_volumes))
+    DONOR_ASSET.netgame_flags_tag_block = TAG.TagBlock(len(DONOR_ASSET.netgame_flags))
+    DONOR_ASSET.netgame_equipment_tag_block = TAG.TagBlock(len(DONOR_ASSET.netgame_equipment))
 
     return DONOR_ASSET

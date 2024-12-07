@@ -36,7 +36,7 @@ from . import build_bsp as build_scene_level
 from ...global_functions import global_functions
 from ...global_functions.parse_tags import parse_tag
 from ..h1.file_scenario.mesh_helper.build_mesh import get_object
-from ..h1.file_scenario.format import DataTypesEnum, ObjectFlags, UnitFlags, VehicleFlags, ItemFlags, DeviceFlags, MachineFlags, ControlFlags
+from ..h1.file_scenario.format import DataTypesEnum, ObjectFlags, UnitFlags, VehicleFlags, ItemFlags, DeviceFlags, MachineFlags, ControlFlags, NetGameEquipment
 
 def generate_skies(context, level_root, tag_block, report):
     asset_collection = bpy.data.collections.get("Skies")
@@ -239,9 +239,22 @@ def get_data_type(collection_name, root, tag_path, element, object_name_tag_bloc
 
         elif collection_name == "Netgame Flags":
             root.tag_view.data_type_enum = str(DataTypesEnum.netgame_flags.value)
+            root.tag_view.netgame_type = str(element.type)
+            root.tag_view.usage_id = element.usage_id
+            root.tag_view.tag_path = element.weapon_group.name
 
         elif collection_name == "Netgame Equipment":
+            element_flags = NetGameEquipment(element.flags)
+
             root.tag_view.data_type_enum = str(DataTypesEnum.netgame_equipment.value)
+            root.tag_view.levitate = NetGameEquipment.levitate in element_flags
+            root.tag_view.type_0 = str(element.type_0)
+            root.tag_view.type_1 = str(element.type_1)
+            root.tag_view.type_2 = str(element.type_2)
+            root.tag_view.type_3 = str(element.type_3)
+            root.tag_view.team_index = element.team_index
+            root.tag_view.spawn_time = element.spawn_time
+            root.tag_view.tag_path = element.item_collection.name
 
 def generate_object_elements(level_root, collection_name, object_name_tag_block, palette, tag_block, context, game_version, file_version, fix_rotations, report, random_color_gen):
     objects_list = []
