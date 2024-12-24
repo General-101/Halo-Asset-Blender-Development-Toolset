@@ -377,7 +377,7 @@ def generate_encounters(TAG, SCENARIO, block, attachment_points, mission_body, v
             encounter_name = "encounter_%s_%s" % (block.name, team_id.name)
             mission_body.append("(ai_place %s)" % encounter_name)
 
-            encounter_flags = EncounterFlags.not_intially_created.value
+            encounter_flags = EncounterFlags.not_initially_created.value
             if team_id == TeamEnum.sentinel:
                 encounter_flags += EncounterFlags._3d_firing_positions.value
 

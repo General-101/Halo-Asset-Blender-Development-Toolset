@@ -27,25 +27,6 @@
 from enum import Flag, Enum, auto
 from mathutils import Vector, Euler
 
-class DataTypesEnum(Enum):
-    none = 0
-    clusters = auto()
-    scenery = auto()
-    bipeds = auto()
-    vehicles = auto()
-    equipment = auto()
-    weapons = auto()
-    machines = auto()
-    controls = auto()
-    light_fixtures = auto()
-    sound_scenery = auto()
-    player_starting_locations = auto()
-    netgame_flags = auto()
-    netgame_equipment = auto()
-    decals = auto()
-    encounters = auto()
-    instances = auto()
-
 class ScenarioTypeEnum(Enum):
     solo = 0
     multiplayer = auto()
@@ -184,7 +165,7 @@ class StartingEquipment(Flag):
     type3_grenades_only = auto()
 
 class EncounterFlags(Flag):
-    not_intially_created = auto()
+    not_initially_created = auto()
     respawn_enabled = auto()
     initially_blind = auto()
     initially_deaf = auto()
@@ -273,6 +254,9 @@ class MajorUpgradeEnum(Enum):
     none = auto()
     all = auto()
 
+class StartingLocationFlags(Flag):
+    required = auto()
+
 class PlatoonFlags(Flag):
     flee_when_maneuvering = auto()
     say_advancing_when_maneuver = auto()
@@ -288,7 +272,7 @@ class PlatoonStrengthEnum(Enum):
     _50_percent_dead = auto()
     _75_percent_dead = auto()
     all_but_one_dead = auto()
-    al_dead = auto()
+    all_dead = auto()
 
 class GroupEnum(Enum):
     a = 0

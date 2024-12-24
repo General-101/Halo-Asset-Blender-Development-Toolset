@@ -51,6 +51,7 @@ from .format import (
         TeamEnum,
         SearchBehaviorEnum,
         GroupEnum,
+        StartingLocationFlags,
         PlatoonFlags,
         PlatoonStrengthEnum,
         StateEnum,
@@ -492,7 +493,7 @@ def get_starting_locations(input_stream, SCENARIO, TAG, node_element):
     starting_location.facing = TAG.read_degree(input_stream, TAG, tag_format.XMLData(node_element, "facing"))
     input_stream.read(2) # Padding
     starting_location.sequence_id = TAG.read_signed_byte(input_stream, TAG, tag_format.XMLData(node_element, "sequence id"))
-    starting_location.flags = TAG.read_flag_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "flags", GroupFlags))
+    starting_location.flags = TAG.read_flag_unsigned_byte(input_stream, TAG, tag_format.XMLData(node_element, "flags", StartingLocationFlags))
     starting_location.return_state = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(node_element, "return state", LeaderEnum))
     starting_location.initial_state = TAG.read_enum_unsigned_short(input_stream, TAG, tag_format.XMLData(node_element, "initial state", LeaderEnum))
     starting_location.actor_type = TAG.read_block_index_signed_short(input_stream, TAG, tag_format.XMLData(node_element, "actor type", None, SCENARIO.actor_palette_tag_block.count, "scenario_ai_palette_block"))

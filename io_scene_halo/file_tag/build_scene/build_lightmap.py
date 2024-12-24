@@ -184,8 +184,7 @@ def build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collec
                     object_mesh.parent = level_root
                     instance_collection.objects.link(object_mesh)
 
-                    object_mesh.tag_view.data_type_enum = '16'
-                    object_mesh.tag_view.instance_lightmap_policy_enum = str(instanced_geometry_instance.lightmapping_policy)
+                    object_mesh.tag_mesh.instance_lightmap_policy_enum = str(instanced_geometry_instance.lightmapping_policy)
 
                     matrix_scale = Matrix.Scale(instanced_geometry_instance.scale, 4)
                     matrix_rotation = Matrix()

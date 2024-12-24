@@ -29,16 +29,46 @@ import bpy
 import bmesh
 import numpy as np
 
-from math import radians
 from mathutils import Euler, Matrix
+from math import radians, degrees, cos, sin, asin, atan2
 from . import build_bsp as build_scene_level
 from ...global_functions import global_functions
 from ...global_functions.parse_tags import parse_tag
-from ..h2.file_scenario.format import DataTypesEnum, ObjectFlags, ClassificationEnum, LightFlags, LightmapTypeEnum, LightmappingPolicyEnum as SCNRLightmappingPolicyEnum
+from ..h2.file_scenario.format import ObjectFlags, ClassificationEnum, LightFlags, LightmapTypeEnum, LightmappingPolicyEnum as SCNRLightmappingPolicyEnum
 from . import build_lightmap as build_scene_lightmap
 from ..h2.file_scenario.mesh_helper.build_mesh import get_object
 from ...file_tag.h2.file_light.format import ShapeTypeEnum, DefaultLightmapSettingEnum
 from ...file_tag.h2.file_scenery.format import LightmappingPolicyEnum
+
+def get_rotation_euler(yaw=0, pitch=0, roll=0):
+    yaw = -radians(yaw)
+    pitch = radians(pitch)
+    roll = -radians(roll)
+
+    z = Matrix([[cos(yaw), -sin(yaw), 0],
+                [sin(yaw), cos(yaw), 0],
+                [0, 0, 1]])
+
+    y = Matrix([[cos(pitch), 0, sin(pitch)],
+                [0, 1, 0],
+                [-sin(pitch), 0, cos(pitch)]])
+
+    x = Matrix([[1, 0, 0],
+                [0, cos(roll), -sin(roll)],
+                [0, sin(roll), cos(roll)]])
+
+    rot_matrix = z @ y @ x
+    return rot_matrix.inverted().to_euler()
+
+def get_decal_rotation_euler(yaw=0, pitch=0):
+    max_value = 127
+    forward = [0, 0, (yaw / max_value)]
+    up = [0, (pitch / max_value), 0]
+
+    right = np.cross(up, forward)
+    rot_matrix = Matrix((forward, right, up))
+    print(rot_matrix)
+    return Matrix(rot_matrix).inverted_safe(rot_matrix).to_euler()
 
 def generate_skies(context, level_root, tag_block, report):
     asset_collection = bpy.data.collections.get("Skies")
@@ -67,13 +97,7 @@ def generate_skies(context, level_root, tag_block, report):
                 ob.data.energy = radiosity_power * 10
                 ob.parent = level_root
 
-                rotation = Euler((radians(0.0), radians(90.0), radians(0.0)), 'XYZ')
-                pitch = Euler((radians(0.0), -radians(light.direction[1]), radians(0.0)), 'XYZ')
-                yaw = Euler((radians(0.0), radians(0.0), radians(light.direction[0])), 'XYZ')
-                rotation.rotate(pitch)
-                rotation.rotate(yaw)
-
-                ob.rotation_euler = rotation
+                ob.rotation_euler = get_rotation_euler(*light.direction)
 
                 asset_collection.objects.link(ob)
 
@@ -99,59 +123,46 @@ def generate_comments(context, level_root, comment_tag_block):
 
 def get_data_type(collection_name, root, tag_path, element):
         if collection_name == "BSPs":
-            root.tag_view.data_type_enum = str(DataTypesEnum.clusters.value)
-            root.tag_view.lightmap_index = -1
+            root.tag_mesh.lightmap_index = -1
 
-        elif collection_name == "Scenery":
-            root.tag_view.data_type_enum = str(DataTypesEnum.scenery.value)
+        #elif collection_name == "Scenery":
             #set_object_data(root, tag_path, element)
 
         elif collection_name == "Biped":
             root.lock_rotation[0] = True
             root.lock_rotation[1] = True
 
-            root.tag_view.data_type_enum = str(DataTypesEnum.bipeds.value)
             #set_object_data(root, tag_path, element)
             #set_unit_data(root, element)
 
-        elif collection_name == "Vehicle":
-            root.tag_view.data_type_enum = str(DataTypesEnum.vehicles.value)
+        #elif collection_name == "Vehicle":
             #set_object_data(root, tag_path, element)
             #set_unit_data(root, element)
             #set_vehicle_data(root, element)
 
-        elif collection_name == "Equipment":
-            root.tag_view.data_type_enum = str(DataTypesEnum.equipment.value)
+        #elif collection_name == "Equipment":
             #set_object_data(root, tag_path, element)
 
-        elif collection_name == "Weapons":
-            root.tag_view.data_type_enum = str(DataTypesEnum.weapons.value)
+        #elif collection_name == "Weapons":
             #set_object_data(root, tag_path, element)
 
-        elif collection_name == "Machines":
-            root.tag_view.data_type_enum = str(DataTypesEnum.machines.value)
+        #elif collection_name == "Machines":
             #set_object_data(root, tag_path, element)
 
-        elif collection_name == "Controls":
-            root.tag_view.data_type_enum = str(DataTypesEnum.controls.value)
+        #elif collection_name == "Controls":
             #set_object_data(root, tag_path, element)
 
-        elif collection_name == "Light Fixtures":
-            root.tag_view.data_type_enum = str(DataTypesEnum.light_fixtures.value)
+        #elif collection_name == "Light Fixtures":
             #set_object_data(root, tag_path, element)
 
-        elif collection_name == "Sound Scenery":
-            root.tag_view.data_type_enum = str(DataTypesEnum.sound_scenery.value)
+        #elif collection_name == "Sound Scenery":
             #set_object_data(root, tag_path, element)
 
-        elif collection_name == "Player Starting Locations":
-            root.tag_view.data_type_enum = str(DataTypesEnum.player_starting_locations.value)
+        #elif collection_name == "Player Starting Locations":
 
-        elif collection_name == "Netgame Flags":
-            root.tag_view.data_type_enum = str(DataTypesEnum.netgame_flags.value)
+        #elif collection_name == "Netgame Flags":
 
-        elif collection_name == "Netgame Equipment":
-            root.tag_view.data_type_enum = str(DataTypesEnum.netgame_equipment.value)
+        #elif collection_name == "Netgame Equipment":
 
 def generate_object_elements(level_root, collection_name, palette, tag_block, context, game_version, file_version, fix_rotations, report, random_color_gen):
     objects_list = []
@@ -258,15 +269,7 @@ def generate_object_elements(level_root, collection_name, palette, tag_block, co
 
         get_data_type(collection_name, root, pallete_item.name, element)
 
-        rotation = Euler((radians(0.0), radians(0.0), radians(0.0)), 'XYZ')
-        roll = Euler((radians(element.rotation[2]), radians(0.0), radians(0.0)), 'XYZ')
-        pitch = Euler((radians(0.0), -radians(element.rotation[1]), radians(0.0)), 'XYZ')
-        yaw = Euler((radians(0.0), radians(0.0), radians(element.rotation[0])), 'XYZ')
-        rotation.rotate(yaw)
-        rotation.rotate(pitch)
-        rotation.rotate(roll)
-
-        root.rotation_euler = rotation
+        root.rotation_euler = get_rotation_euler(*element.rotation)
 
         if collection_name == "Scenery":
             pallete_tag = object_tags[element.palette_index]
@@ -365,15 +368,7 @@ def generate_light_volumes_elements(level_root, collection_name, palette, tag_bl
                 if ob_scale > 0.0:
                     root.scale = (ob_scale, ob_scale, ob_scale)
 
-                rotation = Euler((radians(0.0), radians(0.0), radians(0.0)), 'XYZ')
-                roll = Euler((radians(element.rotation[2]), radians(0.0), radians(0.0)), 'XYZ')
-                pitch = Euler((radians(0.0), -radians(element.rotation[1]), radians(0.0)), 'XYZ')
-                yaw = Euler((radians(0.0), radians(0.0), radians(element.rotation[0])), 'XYZ')
-                rotation.rotate(yaw)
-                rotation.rotate(pitch)
-                rotation.rotate(roll)
-
-                root.rotation_euler = rotation
+                root.rotation_euler = get_rotation_euler(*element.rotation)
 
 def generate_netgame_equipment_elements(level_root, tag_block, context, game_version, file_version, fix_rotations, report, random_color_gen):
     asset_collection = bpy.data.collections.get("Netgame Equipment")
@@ -429,15 +424,7 @@ def generate_netgame_equipment_elements(level_root, tag_block, context, game_ver
         ob.parent = level_root
         ob.location = element.position * 100
 
-        rotation = Euler((radians(0.0), radians(0.0), radians(0.0)), 'XYZ')
-        roll = Euler((radians(element.orientation[2]), radians(0.0), radians(0.0)), 'XYZ')
-        pitch = Euler((radians(0.0), -radians(element.orientation[1]), radians(0.0)), 'XYZ')
-        yaw = Euler((radians(0.0), radians(0.0), radians(element.orientation[0])), 'XYZ')
-        rotation.rotate(yaw)
-        rotation.rotate(pitch)
-        rotation.rotate(roll)
-
-        ob.rotation_euler = rotation
+        ob.rotation_euler = get_rotation_euler(*element.orientation)
 
 def generate_empties(context, level_root, collection_name, tag_block):
     asset_collection = bpy.data.collections.get(collection_name)
@@ -469,14 +456,7 @@ def generate_camera_flags(context, level_root, collection_name, tag_block):
         ob.empty_display_type = 'ARROWS'
         ob.parent = level_root
         ob.location = element.position * 100
-
-        rotation = Euler((radians(0.0), radians(0.0), radians(0.0)), 'XYZ')
-        pitch = Euler((radians(0.0), -radians(element.facing[1]), radians(0.0)), 'XYZ')
-        yaw = Euler((radians(0.0), radians(0.0), radians(element.facing[0])), 'XYZ')
-        rotation.rotate(yaw)
-        rotation.rotate(pitch)
-
-        ob.rotation_euler = rotation
+        ob.rotation_euler = get_rotation_euler(*element.facing)
 
         asset_collection.objects.link(ob)
 
@@ -494,15 +474,7 @@ def generate_camera_points(context, level_root, tag_block):
         ob.parent = level_root
         ob.location = element.position * 100
 
-        rotation = Euler((radians(0.0), radians(0.0), radians(0.0)), 'XYZ')
-        roll = Euler((radians(element.orientation[2]), radians(0.0), radians(0.0)), 'XYZ')
-        pitch = Euler((radians(0.0), -radians(element.orientation[1]), radians(0.0)), 'XYZ')
-        yaw = Euler((radians(0.0), radians(0.0), radians(element.orientation[0])), 'XYZ')
-        rotation.rotate(yaw)
-        rotation.rotate(pitch)
-        rotation.rotate(roll)
-
-        ob.rotation_euler = rotation
+        ob.rotation_euler = get_rotation_euler(*element.orientation)
         ob.rotation_euler.rotate_axis("X", radians(90.0))
         ob.rotation_euler.rotate_axis("Y", radians(-90.0))
 
@@ -566,14 +538,8 @@ def generate_decals(level_root, collection_name, palette, tag_block, context, ga
         bm.to_mesh(mesh)
         bm.free()
 
-        rotation = Euler((radians(0.0), radians(0.0), radians(0.0)), 'XYZ')
-        pitch = Euler((radians(0.0), -radians(element.pitch), radians(0.0)), 'XYZ')
-        yaw = Euler((radians(0.0), radians(0.0), radians(element.yaw)), 'XYZ')
-        rotation.rotate(yaw)
-        rotation.rotate(pitch)
-
         ob.location = element.position * 100
-        ob.rotation_euler = rotation
+        ob.rotation_euler = get_decal_rotation_euler(element.yaw, element.pitch)
 
 def scenario_get_resources(H2_ASSET, report):
     ai_resource = None

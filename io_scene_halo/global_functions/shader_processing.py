@@ -1116,20 +1116,25 @@ def find_h1_shader_tag(import_filepath, material_name):
             local_path = result[1]
 
         if local_path:
-            import_shader_directory = os.path.join(tag_path, local_path, "shaders")
-            if os.path.exists(import_shader_directory):
-                for file in os.listdir(import_shader_directory):
-                    file_name = os.path.basename(file).lower()
-                    result = file_name.rsplit(".", 1)
-                    if len(result) == 2:
-                        file_name = result[0]
-                        extension = result[1]
+            import_directory = os.path.join(tag_path, local_path)
+            for name in os.listdir(import_directory):
+                import_shader_directory = os.path.join(import_directory, name, "shaders")
+                if os.path.exists(import_shader_directory):
+                    for file in os.listdir(import_shader_directory):
+                        file_name = os.path.basename(file).lower()
+                        result = file_name.rsplit(".", 1)
+                        if len(result) == 2:
+                            file_name = result[0]
+                            extension = result[1]
 
-                    if material_name == file_name and extension in shader_extensions:
-                        shader_path = os.path.join(import_shader_directory, file)
-                        shader_extension = extension
-                        break
-                        
+                        if material_name == file_name and extension in shader_extensions:
+                            shader_path = os.path.join(import_shader_directory, file)
+                            shader_extension = extension
+                            break
+
+                if not shader_extension == None:
+                    break
+
         if shader_path == None:
             for root, dirs, filenames in os.walk(tag_path):
                 for filename in filenames:

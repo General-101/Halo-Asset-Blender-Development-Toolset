@@ -31,24 +31,6 @@ from ....file_tag.h2.file_functions.format import Function as ShaderFunction
 
 SALT_SIZE = 32
 
-class DataTypesEnum(Enum):
-    none = 0
-    clusters = auto()
-    scenery = auto()
-    bipeds = auto()
-    vehicles = auto()
-    equipment = auto()
-    weapons = auto()
-    machines = auto()
-    controls = auto()
-    light_fixtures = auto()
-    sound_scenery = auto()
-    player_starting_locations = auto()
-    netgame_flags = auto()
-    netgame_equipment = auto()
-    decals = auto()
-    encounters = auto()
-
 class ScenarioTypeEnum(Enum):
     solo = 0
     multiplayer = auto()

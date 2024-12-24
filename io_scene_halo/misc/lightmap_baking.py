@@ -94,7 +94,7 @@ def light_halo_2_dynamic(context, lightmap_ob, uv_index=1):
 def light_halo_2_mesh(context, lightmap_ob, BITMAP_ASSET, BITMAP, TAG, image_multiplier, lightmap_idx, pixel_offset):
     lightmap_data = None
     bitmap_class = None
-    if lightmap_ob.tag_view.instance_lightmap_policy_enum == '0':
+    if lightmap_ob.tag_mesh.instance_lightmap_policy_enum == '0':
         bitmap_element = BITMAP_ASSET.bitmaps[lightmap_idx]
         width = int(bitmap_element.width * image_multiplier)
         height = int(bitmap_element.height * image_multiplier)
@@ -242,7 +242,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                 for cluster_collection in bsp_collection.children:
                     cluster_collection.hide_render = False
                     for cluster_idx, cluster_ob in enumerate(cluster_collection.objects):
-                        if not cluster_ob.tag_view.lightmap_index == -1:
+                        if not cluster_ob.tag_mesh.lightmap_index == -1:
                             bitmap_element = BITMAP_ASSET.bitmaps[cluster_idx]
                             width = int(bitmap_element.width * image_multiplier)
                             height = int(bitmap_element.height * image_multiplier)
@@ -398,7 +398,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                 lightmap_instances_collection.hide_render = False
                 for lightmap_ob in lightmap_collection.objects:
                     cluster_lightmap_data, cluster_bitmap_class = light_halo_2_mesh(context, lightmap_ob, BITMAP_ASSET, BITMAP, TAG, image_multiplier, lightmap_idx, pixel_offset)
-                    if lightmap_ob.tag_view.instance_lightmap_policy_enum == '0':
+                    if lightmap_ob.tag_mesh.instance_lightmap_policy_enum == '0':
                         BITMAP.bitmaps.append(cluster_bitmap_class)
                         lightmap_idx += 1
                         pixel_data += cluster_lightmap_data
@@ -406,7 +406,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
 
                 for lightmap_instance_ob in lightmap_instances_collection.objects:
                     instance_lightmap_data, instance_bitmap_class = light_halo_2_mesh(context, lightmap_instance_ob, BITMAP_ASSET, BITMAP, TAG, image_multiplier, lightmap_idx, pixel_offset)
-                    if lightmap_instance_ob.tag_view.instance_lightmap_policy_enum == '0':
+                    if lightmap_instance_ob.tag_mesh.instance_lightmap_policy_enum == '0':
                         BITMAP.bitmaps.append(instance_bitmap_class)
                         lightmap_idx += 1
                         pixel_data += instance_lightmap_data
@@ -457,7 +457,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                 build_h2_lightmap(output_stream, LTMP_ASSET, report)
                 output_stream.close()
 
-    context.scene.halo_tag.image_multiplier = 1
+    context.scene.tag_scenario.image_multiplier = 1
     return {'FINISHED'}
 
 if __name__ == '__main__':

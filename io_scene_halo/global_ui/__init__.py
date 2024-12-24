@@ -119,9 +119,56 @@ from .object_ui import (
 )
 
 from .tag_view import (
-    Halo_TagView,
-    HALO_PropertiesGroup
+    Halo_ObjectTagView,
+    Halo_CollectionTagView,
+    HaloSkyPropertiesGroup,
+    HaloObjectPropertiesGroup,
+    HaloUnitPropertiesGroup,
+    HaloItemPropertiesGroup,
+    HaloWeaponPropertiesGroup,
+    HaloDevicePropertiesGroup,
+    HaloMachinePropertiesGroup,
+    HaloControlPropertiesGroup,
+    HaloLightFixturePropertiesGroup,
+    HaloPlayerStartingLocationPropertiesGroup,
+    HaloNetgameFlagsPropertiesGroup,
+    HaloNetgameEquipmentPropertiesGroup,
+    HaloCollectionPropertiesGroup,
+    HaloEncounterPropertiesGroup,
+    HaloSquadPropertiesGroup,
+    HaloMovePositionPropertiesGroup,
+    HaloStartingLocationPropertiesGroup,
+    HaloPlatoonPropertiesGroup,
+    HaloFiringPositionPropertiesGroup,
+    HaloDecalPropertiesGroup,
+    HaloCommandListPropertiesGroup,
+    HaloCommandPropertiesGroup,
+    HaloCutsceneFlagGroup,
+    HaloCutsceneCameraGroup,
+    Scenario_SceneProps,
+    HaloScenarioPropertiesGroup,
+    HaloGeometryPropertiesGroup,
 )
+
+from ..global_ui.tag_fields.object_names import (
+    object_name_add,
+    ObjectNameItem,
+    OBJECTNAME_UL_List,
+    Halo_OT_ObjectNameAdd,
+    Halo_OT_ObjectNameRemove,
+    Halo_OT_ObjectNameMove,
+    Halo_ObjectNamePanel
+    )
+
+from .tag_fields.tag_palette import (
+    tag_add,
+    TagItem,
+    TAG_UL_List,
+    Halo_OT_TagAdd,
+    Halo_OT_TagRemove,
+    Halo_OT_TagMove,
+    Halo_TagPanel
+    )
 
 class Halo_SceneProps(Panel):
     bl_label = "Halo Scene Properties"
@@ -215,8 +262,47 @@ classeshalo = (
     Halo_OT_RegionDeselect,
     Halo_OT_RegionRemoveUnused,
     REGION_MT_context_menu,
-    Halo_TagView,
-    HALO_PropertiesGroup
+    Halo_ObjectTagView,
+    Halo_CollectionTagView,
+    HaloSkyPropertiesGroup,
+    HaloObjectPropertiesGroup,
+    HaloUnitPropertiesGroup,
+    HaloItemPropertiesGroup,
+    HaloWeaponPropertiesGroup,
+    HaloDevicePropertiesGroup,
+    HaloMachinePropertiesGroup,
+    HaloControlPropertiesGroup,
+    HaloLightFixturePropertiesGroup,
+    HaloPlayerStartingLocationPropertiesGroup,
+    HaloNetgameFlagsPropertiesGroup,
+    HaloNetgameEquipmentPropertiesGroup,
+    HaloCollectionPropertiesGroup,
+    HaloEncounterPropertiesGroup,
+    HaloSquadPropertiesGroup,
+    HaloMovePositionPropertiesGroup,
+    HaloStartingLocationPropertiesGroup,
+    HaloPlatoonPropertiesGroup,
+    HaloFiringPositionPropertiesGroup,
+    HaloDecalPropertiesGroup,
+    HaloCommandListPropertiesGroup,
+    HaloCommandPropertiesGroup,
+    HaloCutsceneFlagGroup,
+    HaloCutsceneCameraGroup,
+    Scenario_SceneProps,
+    HaloScenarioPropertiesGroup,
+    HaloGeometryPropertiesGroup,
+    ObjectNameItem,
+    OBJECTNAME_UL_List,
+    Halo_OT_ObjectNameAdd,
+    Halo_OT_ObjectNameRemove,
+    Halo_OT_ObjectNameMove,
+    Halo_ObjectNamePanel, 
+    TagItem,
+    TAG_UL_List,
+    Halo_OT_TagAdd,
+    Halo_OT_TagRemove,
+    Halo_OT_TagMove,
+    Halo_TagPanel
     )
 
 def register():
@@ -224,7 +310,80 @@ def register():
         bpy.utils.register_class(clshalo)
 
     bpy.types.Light.halo_light = PointerProperty(type=ASS_LightPropertiesGroup, name="ASS Properties", description="Set properties for your light")
-    bpy.types.Object.tag_view = PointerProperty(type=HALO_PropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Scene.tag_scenario = PointerProperty(type=HaloScenarioPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_mesh = PointerProperty(type=HaloGeometryPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_sky = PointerProperty(type=HaloSkyPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_object = PointerProperty(type=HaloObjectPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_unit = PointerProperty(type=HaloUnitPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_item = PointerProperty(type=HaloItemPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_weapon = PointerProperty(type=HaloWeaponPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_device = PointerProperty(type=HaloDevicePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_machine = PointerProperty(type=HaloMachinePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_control = PointerProperty(type=HaloControlPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_light_fixture = PointerProperty(type=HaloLightFixturePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_player_starting_location = PointerProperty(type=HaloPlayerStartingLocationPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_netgame_flag = PointerProperty(type=HaloNetgameFlagsPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_netgame_equipment = PointerProperty(type=HaloNetgameEquipmentPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_encounter = PointerProperty(type=HaloEncounterPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_squad = PointerProperty(type=HaloSquadPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_move_position = PointerProperty(type=HaloMovePositionPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_starting_location = PointerProperty(type=HaloStartingLocationPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_platoon = PointerProperty(type=HaloPlatoonPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_firing_position = PointerProperty(type=HaloFiringPositionPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_decal = PointerProperty(type=HaloDecalPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_command_list = PointerProperty(type=HaloCommandListPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_command = PointerProperty(type=HaloCommandPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_cutscene_flag = PointerProperty(type=HaloCutsceneFlagGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_cutscene_camera = PointerProperty(type=HaloCutsceneCameraGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_mesh = PointerProperty(type=HaloGeometryPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_sky = PointerProperty(type=HaloSkyPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_object = PointerProperty(type=HaloObjectPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_unit = PointerProperty(type=HaloUnitPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_item = PointerProperty(type=HaloItemPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_weapon = PointerProperty(type=HaloWeaponPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_device = PointerProperty(type=HaloDevicePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_machine = PointerProperty(type=HaloMachinePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_control = PointerProperty(type=HaloControlPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_light_fixture = PointerProperty(type=HaloLightFixturePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_player_starting_location = PointerProperty(type=HaloPlayerStartingLocationPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_netgame_flag = PointerProperty(type=HaloNetgameFlagsPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_netgame_equipment = PointerProperty(type=HaloNetgameEquipmentPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_encounter = PointerProperty(type=HaloEncounterPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_squad = PointerProperty(type=HaloSquadPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_move_position = PointerProperty(type=HaloMovePositionPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_starting_location = PointerProperty(type=HaloStartingLocationPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_platoon = PointerProperty(type=HaloPlatoonPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_firing_position = PointerProperty(type=HaloFiringPositionPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_decal = PointerProperty(type=HaloDecalPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_command_list = PointerProperty(type=HaloCommandListPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_command = PointerProperty(type=HaloCommandPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_cutscene_flag = PointerProperty(type=HaloCutsceneFlagGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_cutscene_camera = PointerProperty(type=HaloCutsceneCameraGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_collection = PointerProperty(type=HaloCollectionPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_mesh = PointerProperty(type=HaloGeometryPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_sky = PointerProperty(type=HaloSkyPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_object = PointerProperty(type=HaloObjectPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_unit = PointerProperty(type=HaloUnitPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_item = PointerProperty(type=HaloItemPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_weapon = PointerProperty(type=HaloWeaponPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_device = PointerProperty(type=HaloDevicePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_machine = PointerProperty(type=HaloMachinePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_control = PointerProperty(type=HaloControlPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_light_fixture = PointerProperty(type=HaloLightFixturePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_player_starting_location = PointerProperty(type=HaloPlayerStartingLocationPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_netgame_flag = PointerProperty(type=HaloNetgameFlagsPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_netgame_equipment = PointerProperty(type=HaloNetgameEquipmentPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_encounter = PointerProperty(type=HaloEncounterPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_squad = PointerProperty(type=HaloSquadPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_move_position = PointerProperty(type=HaloMovePositionPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_starting_location = PointerProperty(type=HaloStartingLocationPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_platoon = PointerProperty(type=HaloPlatoonPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_firing_position = PointerProperty(type=HaloFiringPositionPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_decal = PointerProperty(type=HaloDecalPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_command_list = PointerProperty(type=HaloCommandListPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_command = PointerProperty(type=HaloCommandPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_cutscene_flag = PointerProperty(type=HaloCutsceneFlagGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_cutscene_camera = PointerProperty(type=HaloCutsceneCameraGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Object.ass_jms = PointerProperty(type=ASS_JMS_ObjectPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your object")
     bpy.types.Armature.ass_jms = PointerProperty(type=ASS_JMS_ObjectPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your object")
     bpy.types.Bone.ass_jms = PointerProperty(type=ASS_JMS_ObjectPropertiesGroup, name="ASS/JMS Properties", description="Set properties for your Bone")
@@ -254,10 +413,73 @@ def register():
     bpy.types.Speaker.qua = PointerProperty(type=QUA_SpeakerPropertiesGroup, name="Halo Camera Audio Properties", description="Set sound properties for your speaker")
     bpy.types.Text.qua = PointerProperty(type=QUA_ScriptPropertiesGroup, name="Halo Script Properties", description="Set script properties for your scene")
     bpy.types.Object.qua = PointerProperty(type=QUA_EffectPropertiesGroup, name="Halo Camera Effect Properties", description="Set properties for your effect")
+    bpy.types.Scene.object_names = CollectionProperty(type = ObjectNameItem)
+    bpy.types.Scene.active_object_name = IntProperty(name = "Active object name index", description="Active index in the object name array", default = -1)
+    bpy.types.Scene.object_name_add = object_name_add
+    bpy.types.Scene.tag_palatte = CollectionProperty(type = TagItem)
+    bpy.types.Scene.active_tag = IntProperty(name = "Active tag index", description="Active index in the tag array", default = -1)
+    bpy.types.Scene.tag_add = tag_add
 
 def unregister():
     del bpy.types.Light.halo_light
-    del bpy.types.Object.tag_view
+    del bpy.types.Scene.tag_scenario
+    del bpy.types.Object.tag_mesh
+    del bpy.types.Object.tag_sky
+    del bpy.types.Object.tag_object
+    del bpy.types.Object.tag_unit
+    del bpy.types.Object.tag_item
+    del bpy.types.Object.tag_weapon
+    del bpy.types.Object.tag_device
+    del bpy.types.Object.tag_machine
+    del bpy.types.Object.tag_control
+    del bpy.types.Object.tag_light_fixture
+    del bpy.types.Object.tag_player_starting_location
+    del bpy.types.Object.tag_netgame_flag
+    del bpy.types.Object.tag_netgame_equipment
+    del bpy.types.Object.tag_encounter
+    del bpy.types.Object.tag_squad
+    del bpy.types.Object.tag_move_position
+    del bpy.types.Object.tag_starting_location
+    del bpy.types.Object.tag_platoon
+    del bpy.types.Object.tag_firing_position
+    del bpy.types.Light.tag_mesh
+    del bpy.types.Light.tag_sky
+    del bpy.types.Light.tag_object
+    del bpy.types.Light.tag_unit
+    del bpy.types.Light.tag_item
+    del bpy.types.Light.tag_weapon
+    del bpy.types.Light.tag_device
+    del bpy.types.Light.tag_machine
+    del bpy.types.Light.tag_control
+    del bpy.types.Light.tag_light_fixture
+    del bpy.types.Light.tag_player_starting_location
+    del bpy.types.Light.tag_netgame_flag
+    del bpy.types.Light.tag_netgame_equipment
+    del bpy.types.Light.tag_encounter
+    del bpy.types.Light.tag_squad
+    del bpy.types.Light.tag_move_position
+    del bpy.types.Light.tag_starting_location
+    del bpy.types.Light.tag_platoon
+    del bpy.types.Light.tag_firing_position
+    del bpy.types.Collection.tag_mesh
+    del bpy.types.Collection.tag_sky
+    del bpy.types.Collection.tag_object
+    del bpy.types.Collection.tag_unit
+    del bpy.types.Collection.tag_item
+    del bpy.types.Collection.tag_weapon
+    del bpy.types.Collection.tag_device
+    del bpy.types.Collection.tag_machine
+    del bpy.types.Collection.tag_control
+    del bpy.types.Collection.tag_light_fixture
+    del bpy.types.Collection.tag_player_starting_location
+    del bpy.types.Collection.tag_netgame_flag
+    del bpy.types.Collection.tag_netgame_equipment
+    del bpy.types.Collection.tag_encounter
+    del bpy.types.Collection.tag_squad
+    del bpy.types.Collection.tag_move_position
+    del bpy.types.Collection.tag_starting_location
+    del bpy.types.Collection.tag_platoon
+    del bpy.types.Collection.tag_firing_position
     del bpy.types.Object.ass_jms
     del bpy.types.Armature.ass_jms
     del bpy.types.Bone.ass_jms
@@ -287,6 +509,12 @@ def unregister():
     del bpy.types.Speaker.qua
     del bpy.types.Text.qua
     del bpy.types.Object.qua
+    del bpy.types.Scene.object_names
+    del bpy.types.Scene.active_object_name
+    del bpy.types.Scene.object_name_add
+    del bpy.types.Scene.tag_palatte
+    del bpy.types.Scene.active_tag
+    del bpy.types.Scene.tag_add
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
 

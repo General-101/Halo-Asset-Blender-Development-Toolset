@@ -259,8 +259,7 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                     cluster_name = "cluster_%s" % lightmap_idx
                     full_mesh = bpy.data.meshes.new(cluster_name)
                     object_mesh = bpy.data.objects.new(cluster_name, full_mesh)
-                    object_mesh.tag_view.data_type_enum = '1'
-                    object_mesh.tag_view.lightmap_index = lightmap.bitmap_index
+                    object_mesh.tag_mesh.lightmap_index = lightmap.bitmap_index
 
                     object_mesh.parent = level_root
                     cluster_collection_override.objects.link(object_mesh)
@@ -560,7 +559,6 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                 cluster_name = "cluster_%s" % cluster_idx
                 mesh = bpy.data.meshes.new(cluster_name)
                 object_mesh = bpy.data.objects.new(cluster_name, mesh)
-                object_mesh.tag_view.data_type_enum = '1'
 
                 object_mesh.parent = level_root
                 mesh_processing.get_mesh_data(LEVEL, cluster.cluster_data, mesh, material_count, materials, random_color_gen, PartFlags)
@@ -593,8 +591,7 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                 ob_name = instanced_geometry_instance.name
 
                 object_mesh = bpy.data.objects.new(ob_name, mesh)
-                object_mesh.tag_view.data_type_enum = '16'
-                object_mesh.tag_view.instance_lightmap_policy_enum = str(instanced_geometry_instance.lightmapping_policy)
+                object_mesh.tag_mesh.instance_lightmap_policy_enum = str(instanced_geometry_instance.lightmapping_policy)
 
                 object_mesh.parent = level_root
                 instance_collection.objects.link(object_mesh)

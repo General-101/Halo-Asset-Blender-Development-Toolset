@@ -56,7 +56,7 @@ def write_file(context, file_path, report):
     filename_no_ext = file_path.rsplit('.scenario', 1)[0]
     filepath = "%s%s" % (filename_no_ext, "_blender.scenario")
     output_stream = open(filepath, 'wb')
-    BLENDER_ASSET = generate_scenario_scene(DONOR_ASSET)
+    BLENDER_ASSET = generate_scenario_scene(context, DONOR_ASSET)
     build_h1_scenario(output_stream, BLENDER_ASSET, report)
 
     return {'FINISHED'}

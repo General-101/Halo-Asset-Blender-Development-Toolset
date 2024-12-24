@@ -1725,46 +1725,6 @@ class Halo_ConvertFacemaps(Operator):
         from ..misc import convert_facemaps
         return global_functions.run_code("convert_facemaps.convert_facemaps(context)")
 
-class Scenario_SceneProps(Panel):
-    bl_label = "Tag Scene Properties"
-    bl_idname = "HALO_PT_ScenarioTag"
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
-    bl_context = "scene"
-    bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "HALO_PT_ScenePropertiesPanel"
-
-    def draw(self, context):
-        layout = self.layout
-        scene_halo_tag = context.scene.halo_tag
-
-        col = layout.column(align=True)
-        row = col.row()
-        row.label(text='Scenario Path:')
-        row.prop(scene_halo_tag, "scenario_path", text='')
-
-class ScenarioTagGroup(PropertyGroup):
-    scenario_path: StringProperty(
-            name = "Scenario Path",
-            description="Where to place the generated scenario file for this level",
-            default="",
-            maxlen=1024,
-            subtype='FILE_PATH'
-    )
-
-    image_multiplier: IntProperty(
-        name="Image Multiplier",
-        description="Takes image resolution and multiplies it by set value",
-        default=1,
-        min=1
-    )
-
-    is_h2v: BoolProperty(
-        name ="Is H2V",
-        description = "Generates a bitmap for H2V if set. If not set then it's for MCC",
-        default = False,
-    )
-
 class Halo_LightmapBakingPanel(Panel):
     bl_label = "Halo Lightmap Baking"
     bl_idname = "HALO_PT_LightmapBaking"
@@ -1775,7 +1735,7 @@ class Halo_LightmapBakingPanel(Panel):
 
     def draw(self, context):
         layout = self.layout
-        scene_halo_tag = context.scene.halo_tag
+        scene_halo_tag = context.scene.tag_scenario
 
         if global_functions.string_empty_check(scene_halo_tag.scenario_path):
             layout.enabled = False
@@ -1799,7 +1759,7 @@ class LightmapBaking(Operator):
     def execute(self, context):
         from ..misc import lightmap_baking
         scene_halo = context.scene.halo
-        scene_halo_tag = context.scene.halo_tag
+        scene_halo_tag = context.scene.tag_scenario
 
         return global_functions.run_code("lightmap_baking.bake_clusters(context, scene_halo.game_title, scene_halo_tag.scenario_path, scene_halo_tag.image_multiplier, self.report, scene_halo_tag.is_h2v)")
 
@@ -1867,10 +1827,8 @@ classeshalo = (
     Halo_JoinObjectPanel,
     Halo_ConvertFacemapsPanel,
     Halo_ConvertFacemaps,
-    ScenarioTagGroup,
     Halo_LightmapBakingPanel,
     LightmapBaking,
-    Scenario_SceneProps
 )
 
 def menu_func_export(self, context):
@@ -1892,7 +1850,6 @@ def register():
     bpy.types.Scene.halo_h3ek_data_path = PointerProperty(type=Halo_H3EKPropertiesGroup, name="H3EK Path", description="The H3EK Data Path")
     bpy.types.Scene.halo_mattype = PointerProperty(type=Halo_MaterialPropertiesGroup, name ="Material Properties", description="Set the material properties of the active object")
     bpy.types.Scene.halo_maze = PointerProperty(type=LevelProprtiesGroup, name="Halo Level Properties", description="Create a Halo level using a maze layout")
-    bpy.types.Scene.halo_tag = PointerProperty(type=ScenarioTagGroup, name="Scenario Tag", description="Store properties for a scenario tag")
 
 def unregister():
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)

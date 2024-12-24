@@ -35,7 +35,14 @@ from bpy.types import (
         Menu
         )
 
-from bpy.props import StringProperty
+from bpy.props import (
+        IntProperty,
+        BoolProperty,
+        EnumProperty,
+        StringProperty,
+        PointerProperty,
+        CollectionProperty
+        )
 
 def get_custom_attribute(self, attribute_name="Region Assignment"):
     region_attribute = self.attributes.get(attribute_name)
