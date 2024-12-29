@@ -183,7 +183,7 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
 
     elif tag_group == "scnr":
         context.scene.halo.game_title = game_title
-        context.scene.halo_tag.scenario_path = file_path
+        context.scene.tag_scenario.scenario_path = file_path
         build_scene = build_scenario
         if game_title == "halo1":
             ASSET = process_h1_scenario(input_stream, report)
