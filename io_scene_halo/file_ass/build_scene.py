@@ -112,15 +112,40 @@ def set_primitive_material(object_material_index, ASS, mesh):
         if mesh.materials:
             mesh.materials[0] = bpy.data.materials[mat.name]
 
+def find_root_instances(instances):
+    root_instances_indices = []
+    for instance_idx, instance in enumerate(instances):
+        if instance.parent_id == -1:
+            root_instances_indices.append(instance_idx)
+
+    return root_instances_indices
+
 def sort_by_parent(ASS):
     parent_index_list = []
     ordered_instances = []
     unordered_map = []
-    for instance in ASS.instances:
-        if not instance.parent_id in parent_index_list:
-            parent_index_list.append(instance.parent_id)
 
-    parent_index_list.sort()
+    instance_count = len(ASS.instances)
+    loop_index = 0
+
+    parent_nest = find_root_instances(ASS.instances)
+    while len(parent_nest) > 0 and not loop_index >= instance_count:
+        current_parent_nest = []
+        current_parent_indices = set()
+        for instance_index in parent_nest:
+            instance_parent_id = ASS.instances[instance_index].parent_id
+            if not instance_parent_id in parent_index_list:
+                parent_index_list.append(instance_parent_id)
+
+            current_parent_indices.add(instance_index)
+
+        for instance_idx, instance in enumerate(ASS.instances):
+            if instance.parent_id in current_parent_indices:
+                current_parent_nest.append(instance_idx)
+
+        loop_index += 1
+        parent_nest = current_parent_nest
+
     for parent_idx, parent_index in enumerate(parent_index_list):
         for instance_idx, instance in enumerate(ASS.instances):
             if instance.parent_id == parent_index:
