@@ -26,7 +26,7 @@
 
 import struct
 
-from math import radians
+from math import radians, ceil
 from ....global_functions import tag_format
 
 def write_body(output_stream, SCENARIO, TAG):
@@ -680,8 +680,14 @@ def write_cutscene_titles(output_stream, SCENARIO, TAG):
             output_stream.write(struct.pack('<4h', cutscene_title.text_bounds[1], cutscene_title.text_bounds[0], cutscene_title.text_bounds[3], cutscene_title.text_bounds[2]))
             output_stream.write(struct.pack('<h', cutscene_title.justification))
             output_stream.write(struct.pack('<h', cutscene_title.font))
-            output_stream.write(struct.pack('<3Bx', cutscene_title.text_color[0], cutscene_title.text_color[1], cutscene_title.text_color[2]))
-            output_stream.write(struct.pack('<3Bx', cutscene_title.shadow_color[0], cutscene_title.shadow_color[1], cutscene_title.shadow_color[2]))
+            TC_R = ceil(255 * cutscene_title.text_color[0])
+            TC_G = ceil(255 * cutscene_title.text_color[1])
+            TC_B = ceil(255 * cutscene_title.text_color[2])
+            output_stream.write(struct.pack('>3Bx', TC_R, TC_G, TC_B))
+            SC_R = ceil(255 * cutscene_title.shadow_color[0])
+            SC_G = ceil(255 * cutscene_title.shadow_color[1])
+            SC_B = ceil(255 * cutscene_title.shadow_color[2])
+            output_stream.write(struct.pack('>3Bx', SC_R, SC_G, SC_B))
             output_stream.write(struct.pack('<f', cutscene_title.fade_in_time))
             output_stream.write(struct.pack('<f', cutscene_title.up_time))
             output_stream.write(struct.pack('<f', cutscene_title.fade_out_time))
