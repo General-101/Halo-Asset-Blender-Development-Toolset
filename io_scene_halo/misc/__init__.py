@@ -1743,7 +1743,7 @@ class Halo_LightmapBakingPanel(Panel):
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Image Multiplier:')
-        row.prop(scene_halo_tag, "image_multiplier", text='')
+        row.prop(scene_halo_tag, "global_lightmap_multiplier", text='')
         row = col.row()
         row.label(text='Is H2V:')
         row.prop(scene_halo_tag, "is_h2v", text='')
@@ -1761,7 +1761,7 @@ class LightmapBaking(Operator):
         scene_halo = context.scene.halo
         scene_halo_tag = context.scene.tag_scenario
 
-        return global_functions.run_code("lightmap_baking.bake_clusters(context, scene_halo.game_title, scene_halo_tag.scenario_path, scene_halo_tag.image_multiplier, self.report, scene_halo_tag.is_h2v)")
+        return global_functions.run_code("lightmap_baking.bake_clusters(context, scene_halo.game_title, scene_halo_tag.scenario_path, scene_halo_tag.global_lightmap_multiplier, self.report, scene_halo_tag.is_h2v)")
 
 classeshalo = (
     Halo_MaterialPropertiesGroup,
