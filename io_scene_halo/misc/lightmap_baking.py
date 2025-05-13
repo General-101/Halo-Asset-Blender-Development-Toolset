@@ -228,7 +228,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                 BITMAP.header.plugin_handle = -1
                 BITMAP.header.engine_tag = "blam"
 
-                BITMAP.format = BITMAP_ASSET.bitmap_format
+                BITMAP.bitmap_format = BITMAP_ASSET.bitmap_format
                 BITMAP.usage = H1UsageEnum.light_map.value
                 BITMAP.color_plate_width = 0
                 BITMAP.color_plate_height = 0
@@ -281,7 +281,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                             buf = bytearray([int(p * 255) for p in image.pixels])
                             image = Image.frombytes("RGBA", (width, height), buf, 'raw', "RGBA")
 
-                            bitmap_format = BITMAP.format
+                            bitmap_format = BITMAP.bitmap_format
                             lightmap_flags = H1BitmapFlags.power_of_two_dimensions.value
                             if bitmap_format == H1FormatEnum._16bit_color.value:
                                 lightmap_data = image.convert('BGR;16').tobytes()

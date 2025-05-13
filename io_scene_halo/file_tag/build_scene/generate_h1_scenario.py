@@ -481,11 +481,9 @@ def generate_skies(context, level_root, H1_ASSET, report):
     for element_idx, element in enumerate(H1_ASSET.skies):
         ASSET = parse_tag(element, report, "halo1", "retail")
         tag_name = os.path.basename(element.name)
-        sky_collection = get_referenced_collection("%s_%s" % (tag_name, element_idx), asset_collection, False)
+        sky_collection = get_referenced_collection("sky_%s_%s" % (tag_name, element_idx), asset_collection, False)
         if not ASSET == None:
             for light_idx, light in enumerate(ASSET.lights):
-
-
                 name = "%s_light_%s" % (tag_name, light_idx)
                 light_data = bpy.data.lights.new(name, "SUN")
                 ob = bpy.data.objects.new(name, light_data)

@@ -28,8 +28,8 @@ import struct
 from ....global_functions import tag_format
 
 def write_body(output_stream, BITMAP):
-    output_stream.write(struct.pack('>H', BITMAP.type))
-    output_stream.write(struct.pack('>H', BITMAP.format))
+    output_stream.write(struct.pack('>H', BITMAP.bitmap_type))
+    output_stream.write(struct.pack('>H', BITMAP.bitmap_format))
     output_stream.write(struct.pack('>H', BITMAP.usage))
     output_stream.write(struct.pack('>H', BITMAP.flags))
     output_stream.write(struct.pack('>f', BITMAP.detail_fade_factor))
