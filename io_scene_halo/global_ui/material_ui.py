@@ -684,9 +684,9 @@ class ASS_JMS_MaterialPropertiesGroup(PropertyGroup):
 
     emissive_focus: FloatProperty(
         name = "Emissive Focus",
-        description = "I have no idea what this is",
+        description = "Controls the angle/FOV of emitted light. At 0.0, light radiates 180° from the surface normal, but may leak to surrounding geometry; at 1.0, it's focused forward within a 120° arc from the surface normal. Each value increase of 0.5 is a decrease of 30°. Caps at 1.5 (90°)",
         default = 0.0,
-        max = 1.0,
+        max = 1.5,
         min = 0.0,
         )
 
