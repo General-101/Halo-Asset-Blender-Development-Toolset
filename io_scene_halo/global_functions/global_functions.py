@@ -36,6 +36,7 @@ from decimal import *
 from math import radians
 from enum import Enum, auto
 from io import TextIOWrapper
+from collections import defaultdict
 from ..global_functions.parse_tags import parse_tag
 from mathutils import Vector, Euler, Quaternion, Matrix
 
@@ -480,78 +481,6 @@ def get_true_extension(filepath, extension, is_import):
             true_extension = extension
 
     return true_extension
-
-def generate_fcurve_matrix(bone, action, frame_idx):
-    dpath_loc = bone.path_from_id("location")
-    dpath_rot_quat = bone.path_from_id("rotation_quaternion")
-    dpath_rot_euler = bone.path_from_id("rotation_euler")
-    dpath_sca = bone.path_from_id("scale")
-
-    translation = Vector((0.0, 0.0, 0.0))
-    rotation = Quaternion((1.0, 0.0, 0.0, 0.0))
-    scale = Vector((1.0, 1.0, 1.0))
-    if not action == None:
-        x_pos = action.fcurves.find(dpath_loc, index=0)
-        y_pos = action.fcurves.find(dpath_loc, index=1)
-        z_pos = action.fcurves.find(dpath_loc, index=2)
-        if x_pos:
-            translation[0] = x_pos.evaluate(frame_idx)
-        if y_pos:
-            translation[1] = y_pos.evaluate(frame_idx)
-        if z_pos:
-            translation[2] = z_pos.evaluate(frame_idx)
-
-        if bone.rotation_mode == 'QUATERNION':
-            w_rot = action.fcurves.find(dpath_rot_quat, index=0)
-            i_rot = action.fcurves.find(dpath_rot_quat, index=1)
-            j_rot = action.fcurves.find(dpath_rot_quat, index=2)
-            k_rot = action.fcurves.find(dpath_rot_quat, index=3)
-            if w_rot:
-                rotation[0] = w_rot.evaluate(frame_idx)
-            if i_rot:
-                rotation[1] = i_rot.evaluate(frame_idx)
-            if j_rot:
-                rotation[2] = j_rot.evaluate(frame_idx)
-            if k_rot:
-                rotation[3] = k_rot.evaluate(frame_idx)
-
-        else:
-            rotation = Euler((0.0, 0.0, 0.0))
-            x_rot = action.fcurves.find(dpath_rot_euler, index=0)
-            y_rot = action.fcurves.find(dpath_rot_euler, index=1)
-            z_rot = action.fcurves.find(dpath_rot_euler, index=2)
-            if x_rot:
-                rotation[0] = x_rot.evaluate(frame_idx)
-            if y_rot:
-                rotation[1] = y_rot.evaluate(frame_idx)
-            if z_rot:
-                rotation[2] = z_rot.evaluate(frame_idx)
-
-            rotation = rotation.to_quaternion()
-
-        x_sca = action.fcurves.find(dpath_sca, index=0)
-        y_sca = action.fcurves.find(dpath_sca, index=1)
-        z_sca = action.fcurves.find(dpath_sca, index=2)
-        if x_sca:
-            scale[0] = x_sca.evaluate(frame_idx)
-        if y_sca:
-            scale[1] = y_sca.evaluate(frame_idx)
-        if z_sca:
-            scale[2] = z_sca.evaluate(frame_idx)
-
-    matrix_translation = Matrix.Translation(translation)
-    matrix_rotation = rotation.to_matrix().to_4x4()
-    matrix_scale = Matrix.Scale(scale[0], 4)
-
-    return matrix_translation @ matrix_rotation @ matrix_scale
-
-def get_fcurve_matrix(node, node_idx, fcurve_matrices, jma_version):
-    object_matrix = fcurve_matrices[node_idx]
-    if not node.parent == -1 and not jma_version >= get_version_matrix_check("JMA", None):
-        #Files at or above 8205 use absolute transform instead of local transform for nodes
-        object_matrix = fcurve_matrices[node.parent].inverted() @ object_matrix
-
-    return object_matrix
 
 def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, file_type, constraint, custom_scale, fix_rotation, default_parent=-1):
     object_matrix = Matrix.Translation((0, 0, 0))
@@ -1390,6 +1319,222 @@ def get_origin_bsp(bsp_bounds_list, object_element):
                 bsp_index = bsp_idx
 
     return bsp_index
+
+def remove_node_prefix(string):
+    node_prefix_tuple = ('b ', 'b_', 'bone ', 'bone_', 'frame ', 'frame_', 'bip01 ', 'bip01_')
+    name = string
+
+    for node_prefix in node_prefix_tuple:
+        if name.lower().startswith(node_prefix):
+            name = re.split(node_prefix, name, maxsplit=1, flags=re.IGNORECASE)[1]
+            break
+
+    return name
+
+def get_data_bone(arm, node_name):
+    # Check for exact matches first
+    for bone in arm.data.bones:
+        if bone.name.lower() == node_name.lower():
+            return bone
+
+    # If a bone hasn't been found yet, test whether the node name matches a bone name stripped of prefixes
+    for bone in arm.data.bones:
+        if remove_node_prefix(bone.name).lower() == node_name.lower():
+            return bone
+
+def get_pose_bone(arm: bpy.types.Object, node_name: str) -> bpy.types.PoseBone | None:
+    # Check for exact matches first
+    for bone in arm.pose.bones:
+        if bone.name.lower() == node_name.lower():
+            return bone
+
+    # If a bone hasn't been found yet, test whether the node name matches a bone name stripped of prefixes
+    for bone in arm.pose.bones:
+        if remove_node_prefix(bone.name).lower() == node_name.lower():
+            return bone
+
+def get_fcurve(fcurves, data_path, index):
+    for fc in fcurves:
+        if fc.data_path == data_path and fc.array_index == index:
+            return fc
+    return None
+
+def export_fcurve_data(action, fcurve_dict, armature, node, node_idx, frame, local_matrices):
+    if not armature:
+        action = None
+        fcurves = []
+        if node and node.animation_data:
+            action = node.animation_data.action 
+        if action:
+            fcurves = action.fcurves
+
+        fcurve_dict = {}
+        for fc in fcurves:
+            if not fc.data_path.startswith('pose.bones["'):
+                key = ('object', action.name)
+                fcurve_dict.setdefault(key, []).append(fc)
+
+    is_bone = armature and isinstance(node, bpy.types.Bone)
+    if is_bone:
+        key = ('bone', node.name)
+    else:
+        key = ('object', action.name)
+
+    if key in fcurve_dict:
+        pose_bone = node
+        if is_bone:
+            pose_bone = armature.pose.bones[node.name]
+
+        rot_mode = pose_bone.rotation_mode
+
+        loc = [0.0, 0.0, 0.0]
+        scale = [1.0, 1.0, 1.0]
+        rot = [0.0, 0.0, 0.0]
+        if rot_mode == 'QUATERNION':
+            rot = [1.0, 0.0, 0.0, 0.0] 
+
+        for fc in fcurve_dict[key]:
+            val = fc.evaluate(frame)
+            idx = fc.array_index
+
+            if fc.data_path.endswith("location"):
+                loc[idx] = val
+            elif fc.data_path.endswith("scale"):
+                scale[idx] = val
+            elif fc.data_path.endswith("rotation_quaternion") and rot_mode == 'QUATERNION':
+                
+                rot[idx] = val
+            elif fc.data_path.endswith("rotation_euler") and not rot_mode == 'QUATERNION':
+                rot[idx] = val
+
+        matrix_translation = Matrix.Translation(Vector(loc))
+        matrix_scale = Matrix.Scale(scale[0], 4)
+        if rot_mode == 'QUATERNION':
+            rot_quat = Quaternion(rot)
+            matrix_rotation = rot_quat.to_matrix().to_4x4()
+        else:
+            rot_euler = Euler(rot, rot_mode)
+            matrix_rotation = rot_euler.to_matrix().to_4x4()
+
+        transform_matrix = matrix_translation @ matrix_rotation @ matrix_scale
+
+        transform_matrix = local_matrices[node_idx] @ transform_matrix
+
+    else:
+        if is_bone:
+            transform_matrix = local_matrices[node_idx]
+        else:
+            transform_matrix = local_matrices[node_idx]
+
+    return transform_matrix
+
+def import_fcurve_data(action, armature, nodes, frames, JMA, JMAAsset, fix_rotations, is_inverted=False):
+    local_matrices = []
+    for node in nodes:
+        data_bone = get_data_bone(armature, node.name)
+        if data_bone is None:
+            continue
+
+        local_matrix = data_bone.matrix_local
+        if data_bone.parent:
+            local_matrix = data_bone.parent.matrix_local.inverted() @ data_bone.matrix_local
+
+        local_matrices.append(local_matrix)
+
+    fcurve_map = defaultdict(lambda: defaultdict(dict))
+    data_paths = {
+        "location": 3,
+        "rotation_euler": 3,
+        "rotation_quaternion": 4,
+        "scale": 3
+    }
+
+    for bone in armature.pose.bones:
+        bone_name = bone.name
+        for path, count in data_paths.items():
+            for index in range(count):
+                fcurve_data_path = f'pose.bones["{bone_name}"].{path}'
+                fcurve = get_fcurve(action.fcurves, fcurve_data_path, index)
+                if not fcurve:
+                    fcurve = action.fcurves.new(data_path=fcurve_data_path, index=index, action_group=bone_name)
+
+                fcurve_map[bone_name][path][index] = fcurve
+
+    for frame_idx, frame in enumerate(frames):
+        frame_number = frame_idx + 1
+
+        if JMA.biped_controller_frame_type != JMAAsset.BipedControllerFrameType.DISABLE:
+            controller_transform = JMA.biped_controller_transforms[frame_idx]
+
+            if JMA.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DX:
+                armature.location.x = controller_transform.translation[0]
+
+            if JMA.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DY:
+                armature.location.y = controller_transform.translation[1]
+
+            if JMA.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DZ:
+                armature.location.z = controller_transform.translation[2]
+                
+            if JMA.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DYAW:
+                armature.rotation_euler.z = controller_transform.rotation.to_euler().z
+
+            for i in range(3):
+                action.fcurves.new(data_path="location", index=i).keyframe_points.insert(frame_number, armature.location[i], options={'FAST'})
+                action.fcurves.new(data_path="rotation_euler", index=i).keyframe_points.insert(frame_number, armature.rotation_euler[i], options={'FAST'})
+
+        for idx, node in enumerate(nodes):
+            pose_bone = get_pose_bone(armature, node.name)
+            if pose_bone is None:
+                continue
+
+            rotation = frame[idx].rotation
+            if is_inverted:
+                rotation = frame[idx].rotation.inverted()
+
+            matrix_scale = Matrix.Scale(frame[idx].scale, 4)
+            matrix_rotation = rotation.to_matrix().to_4x4()
+            matrix_translation = Matrix.Translation(frame[idx].translation)
+
+            if JMA.version < 16394 and fix_rotations:
+                matrix_rotation = matrix_rotation @ Matrix.Rotation(radians(-90.0), 4, 'Z')
+
+            transform_matrix = matrix_translation @ matrix_rotation @ matrix_scale
+
+            if JMA.version >= 16394 and pose_bone.parent:
+                parent_idx = node.parent
+
+                parent_rotation = frame[parent_idx].rotation
+                if is_inverted:
+                    parent_rotation = frame[parent_idx].rotation.inverted()
+
+                parent_matrix_scale = Matrix.Scale(frame[parent_idx].scale, 4)
+                parent_matrix_rotation = parent_rotation.to_matrix().to_4x4()
+                parent_matrix_translation = Matrix.Translation(frame[parent_idx].translation)
+
+                if fix_rotations:
+                    parent_matrix_rotation = parent_matrix_rotation @ Matrix.Rotation(radians(90.0), 4, 'Z')
+
+                parent_transform_matrix = parent_matrix_translation @ parent_matrix_rotation @ parent_matrix_scale
+
+                transform_matrix = parent_transform_matrix.inverted() @ transform_matrix
+
+            transform_matrix = local_matrices[idx].inverted() @ transform_matrix
+
+            if JMA.version >= 16394 and fix_rotations:
+                transform_matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
+
+            loc, rot_quat, scl = transform_matrix.decompose()
+            rot_euler = rot_quat.to_euler('XYZ')
+            for i in range(3):
+                fcurve_map[pose_bone.name]['location'][i].keyframe_points.insert(frame_number, loc[i], options={'FAST'})
+                fcurve_map[pose_bone.name]['scale'][i].keyframe_points.insert(frame_number, scl[i], options={'FAST'})
+                if pose_bone.rotation_mode == 'QUATERNION':
+                    fcurve_map[pose_bone.name]['rotation_quaternion'][i].keyframe_points.insert(frame_number, rot_quat[i], options={'FAST'})
+                else:
+                    fcurve_map[pose_bone.name]['rotation_euler'][i].keyframe_points.insert(frame_number, rot_euler[i], options={'FAST'})
+
+            if pose_bone.rotation_mode == 'QUATERNION':
+                fcurve_map[pose_bone.name]['rotation_quaternion'][3].keyframe_points.insert(frame_number, rot_quat[3], options={'FAST'})
 
 def run_code(code_string):
     def toolset_exec(code):

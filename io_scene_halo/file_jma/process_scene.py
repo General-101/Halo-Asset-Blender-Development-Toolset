@@ -28,6 +28,46 @@ import bpy
 
 from .format import JMAAsset
 from ..global_functions import mesh_processing, global_functions, resource_management
+from mathutils import Vector, Euler, Quaternion, Matrix
+
+def find_root_node(node_list):
+    root_node_indices = []
+    for node_idx, node in enumerate(node_list):
+        if node.parent == -1:
+            root_node_indices.append(node_idx)
+
+    return root_node_indices
+
+def sort_by_parent(node_list):
+    parent_index_list = []
+    unordered_map = []
+
+    node_count = len(node_list)
+    loop_index = 0
+
+    parent_nest = find_root_node(node_list)
+    while len(parent_nest) > 0 and not loop_index >= node_count:
+        current_parent_nest = []
+        current_parent_indices = set()
+        for node_index in parent_nest:
+            node_parent_index = node_list[node_index].parent
+            if not node_parent_index in parent_index_list:
+                parent_index_list.append(node_parent_index)
+
+            current_parent_indices.add(node_parent_index + 1)
+
+        for node_idx, node in enumerate(node_list):
+            if node.parent in current_parent_indices:
+                current_parent_nest.append(node_idx)
+
+        loop_index += 1
+        parent_nest = current_parent_nest
+    for parent_idx, parent_index in enumerate(parent_index_list):
+        for node_idx, node in enumerate(node_list):
+            if node.parent == parent_index:
+                unordered_map.append(node_idx)
+
+    return unordered_map
 
 def find_valid_armature(context, obj):
     valid_armature = None
@@ -116,6 +156,32 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
     joined_list = sorted_list[0]
     reversed_joined_list = sorted_list[1]
 
+    local_matrices = []
+    absolute_matrices = []
+    armature_matrix = [armature.matrix_world]
+    for node in joined_list:
+        is_bone = armature and isinstance(node, bpy.types.Bone)
+        if is_bone:
+            data_bone = global_functions.get_data_bone(armature, node.name)
+            if data_bone is None:
+                continue
+
+            absolute_matrix = data_bone.matrix_local
+            local_matrix = absolute_matrix
+            if data_bone.parent:
+                local_matrix = data_bone.parent.matrix_local.inverted() @ absolute_matrix
+
+            local_matrices.append(local_matrix)
+            absolute_matrices.append(absolute_matrix)
+        else:
+            absolute_matrix = node.matrix_world
+            local_matrix = absolute_matrix
+            if node.parent:
+                local_matrix = node.parent.matrix_world.inverted() @ absolute_matrix
+            
+            local_matrices.append(local_matrix)
+            absolute_matrices.append(absolute_matrix)
+
     for node in joined_list:
         is_bone = False
         if armature:
@@ -165,34 +231,80 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
     if generate_checksum and len(JMA.nodes) > 0:
         JMA.node_checksum = global_functions.node_hierarchy_checksum(JMA.nodes, JMA.nodes[0], JMA.node_checksum)
 
+    if armature:
+        action = None
+        fcurves = []
+        if armature and armature.animation_data:
+            action = armature.animation_data.action 
+        if action:
+            fcurves = action.fcurves
+
+        fcurve_dict = {}
+        for fc in fcurves:
+            if fc.data_path.startswith('pose.bones["'):
+                bone_name = fc.data_path.split('"')[1]
+                key = ('bone', bone_name)
+                fcurve_dict.setdefault(key, []).append(fc)
+
     for frame in range(first_frame, last_frame):
         transforms_for_frame = []
-        for node in joined_list:
-            context.scene.frame_set(frame)
-            is_bone = False
-            if armature:
-                is_bone = True
-                
-            bone_matrix = global_functions.get_matrix(node, node, True, armature, joined_list, True, jma_version, 'JMA', False, scale_value, fix_rotations)
-            full_matrix = bone_matrix
-            if armature:
-                armature_matrix = global_functions.get_matrix(armature, armature, True, None, joined_list, False, jma_version, 'JMA', False, scale_value, fix_rotations)
-                full_matrix = armature_matrix @ bone_matrix
-
-            mesh_dimensions = global_functions.get_dimensions(full_matrix, node, jma_version, is_bone, 'JMA', scale_value)
-            rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
-            translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
-            scale = (mesh_dimensions.scale[0])
+        for node_idx, node in enumerate(joined_list):
+            transform_matrix = global_functions.export_fcurve_data(action, fcurve_dict, armature, node, node_idx, frame, local_matrices)
+            mesh_dimensions = global_functions.get_dimensions(transform_matrix, node, jma_version, is_bone, 'JMA', scale_value)
+            rotation = mesh_dimensions.quaternion
+            translation = mesh_dimensions.position
+            scale = mesh_dimensions.scale[0]
 
             transforms_for_frame.append(JMA.Transform(translation, rotation, scale))
 
         JMA.transforms.append(transforms_for_frame)
 
+    if jma_version >= 16394:
+        unordered_map = sort_by_parent(JMA.nodes)
+
+        absolute_matrices = []
+        frame_index = 0
+        for frame in range(first_frame, last_frame):
+            for node_idx, node in enumerate(JMA.nodes):
+                bone = joined_list[unordered_map[node_idx]]
+                is_bone = armature and isinstance(bone, bpy.types.Bone)
+                transform = JMA.transforms[frame_index][node_idx]
+
+                matrix_translation = Matrix.Translation(transform.translation)
+                matrix_scale = Matrix.Scale(transform.scale, 4)
+                q0, q1, q2, q3 = transform.rotation
+                matrix_rotation = Quaternion((q3, q0, q1, q2)).to_matrix().to_4x4()
+
+                transform_matrix = matrix_translation @ matrix_rotation @ matrix_scale
+                
+                if not node.parent == None and node.parent != -1:
+                    parent_transform = JMA.transforms[frame_index][node.parent]
+
+                    parent_matrix_translation = Matrix.Translation(parent_transform.translation)
+                    parent_matrix_scale = Matrix.Scale(parent_transform.scale, 4)
+                    q0, q1, q2, q3 = parent_transform.rotation
+                    parent_matrix_rotation = Quaternion((q3, q0, q1, q2)).to_matrix().to_4x4()
+
+                    parent_transform_matrix = parent_matrix_translation @ parent_matrix_rotation @ parent_matrix_scale
+
+                    transform_matrix = parent_transform_matrix @ transform_matrix
+
+                mesh_dimensions = global_functions.get_dimensions(transform_matrix, bone, jma_version, is_bone, 'JMA', scale_value)
+                rotation = mesh_dimensions.quaternion
+                translation = mesh_dimensions.position
+                scale = mesh_dimensions.scale[0]
+
+                jma_transform = JMA.transforms[frame_index][node_idx]
+                jma_transform.rotation = mesh_dimensions.quaternion
+                jma_transform.translation = mesh_dimensions.position
+                jma_transform.scale = mesh_dimensions.scale[0]
+
+            frame_index += 1 
+
     armature_transform = False
     if jma_version > 16394 and armature_transform:
         for frame in range(JMA.frame_count):
-            context.scene.frame_set(frame)
-            armature_matrix = global_functions.get_matrix(armature, armature, True, None, joined_list, False, jma_version, 'JMA', False, scale_value, fix_rotations)
+            transform_matrix = global_functions.export_fcurve_data(action, fcurve_dict, armature, armature, 0, frame, armature_matrix)
             mesh_dimensions = global_functions.get_dimensions(armature_matrix, armature, jma_version, False, 'JMA', scale_value)
 
             rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])

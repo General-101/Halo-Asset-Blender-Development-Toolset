@@ -161,14 +161,14 @@ def write_root_transforms_16395(file, JMA, binary):
                 DECIMAL_1 % (biped_transform.scale)
                 )
 
-def update_decimal():
+def update_decimal(value):
     global DECIMAL_POINT
     global DECIMAL_1
     global DECIMAL_2
     global DECIMAL_3
     global DECIMAL_4
 
-    DECIMAL_POINT = "10"
+    DECIMAL_POINT = str(value)
     DECIMAL_1 = '\n%0.{decimal_point}f'.format(decimal_point=DECIMAL_POINT)
     DECIMAL_2 = '\n%0.{decimal_point}f\t%0.{decimal_point}f'.format(decimal_point=DECIMAL_POINT)
     DECIMAL_3 = '\n%0.{decimal_point}f\t%0.{decimal_point}f\t%0.{decimal_point}f'.format(decimal_point=DECIMAL_POINT)
@@ -181,9 +181,9 @@ def build_asset(context, filepath, report, extension, jma_version, game_title, g
         JMA.frame_rate = frame_rate_value
 
     binary = False
-
+    update_decimal(6)
     if jma_version >= 16395:
-        update_decimal()
+        update_decimal(10)
 
     filename = os.path.basename(filepath)
 

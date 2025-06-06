@@ -26,107 +26,13 @@
 
 import bpy
 
-from math import radians
-from mathutils import Matrix
-from ...global_functions import mesh_processing, global_functions
-
-def find_base_animation(ANIMATION, current_animation):
-    animation_index = -1
-    animation_set = current_animation.name.split(' ')
-    base_animation_name = animation_set[0]
-    if len(animation_set) == 2:
-        base_animation_name = "%s %s" % (animation_set[0], "exit")
-
-    elif len(animation_set) == 3:
-        animation_class = animation_set[2]
-        base_animation_name = "%s %s %s" % (animation_set[0], animation_set[1], "idle")
-        if "gut" in animation_class:
-            base_animation_name = "%s %s %s" % ("s-kill", animation_set[1], "gut")
-
-        if animation_class == "aim_move":
-            base_animation_name = "%s %s %s" % (animation_set[0], animation_set[1], "move-front")
-
-    for animation_idx, animation in enumerate(ANIMATION.animations):
-        if animation.name.startswith(base_animation_name):
-            animation_index = animation_idx
-
-    return animation_index
-
-def create_animation(scene, armature, animation, nodes, fix_rotations, view_layer, is_inverted):
-    node_name = []
-    for frame_idx, frame in enumerate(animation.frame_data):
-        scene.frame_set(frame_idx + 1)
-        #for node_idx in range(animation.node_count):
-        #    pose_bone = armature.pose.bones[node_name[node_idx]]
-        for node_idx, node in enumerate(nodes):
-            pose_bone = armature.pose.bones[node.name]
-
-            rotation = frame[node_idx].rotation
-            if is_inverted:
-                rotation = frame[node_idx].rotation.inverted()
-
-            matrix_scale = Matrix.Scale(frame[node_idx].scale, 4)
-            matrix_rotation = rotation.to_matrix().to_4x4()
-            matrix_translation = Matrix.Translation(frame[node_idx].translation)
-            transform_matrix = matrix_translation @ matrix_rotation @ matrix_scale
-
-            if fix_rotations:
-                if pose_bone.parent:
-                    transform_matrix = (pose_bone.parent.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
-
-                transform_matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
-
-            else:
-                if pose_bone.parent:
-                    transform_matrix = pose_bone.parent.matrix @ transform_matrix
-
-            pose_bone.matrix = transform_matrix
-
-            view_layer.update()
-
-            pose_bone.keyframe_insert(data_path='location', group=pose_bone.name)
-            pose_bone.keyframe_insert(data_path='rotation_euler', group=pose_bone.name)
-            pose_bone.keyframe_insert(data_path='rotation_quaternion', group=pose_bone.name)
-            pose_bone.keyframe_insert(data_path='scale', group=pose_bone.name)
-
-def create_overlay_animation(scene, armature, animation, nodes, fix_rotations, view_layer, is_inverted):
-    node_name = []
-    for frame_idx, frame in enumerate(animation.frame_data):
-        scene.frame_set(frame_idx + 1)
-        #for node_idx in range(animation.node_count):
-        #    pose_bone = armature.pose.bones[node_name[node_idx]]
-        for node_idx, node in enumerate(nodes):
-            pose_bone = armature.pose.bones[node.name]
-
-            rotation = frame[node_idx].rotation
-            if is_inverted:
-                rotation = frame[node_idx].rotation.inverted()
-
-            matrix_scale = Matrix.Scale(frame[node_idx].scale, 4)
-            matrix_rotation = rotation.to_matrix().to_4x4()
-            matrix_translation = Matrix.Translation(frame[node_idx].translation)
-            transform_matrix = matrix_translation @ matrix_rotation @ matrix_scale
-
-            if fix_rotations:
-                if pose_bone.parent:
-                    transform_matrix = (pose_bone.parent.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
-
-                transform_matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
-
-            else:
-                if pose_bone.parent:
-                    transform_matrix = pose_bone.parent.matrix @ transform_matrix
-
-            pose_bone.matrix = transform_matrix
-
-            view_layer.update()
-
-            pose_bone.keyframe_insert(data_path='location', group=pose_bone.name)
-            pose_bone.keyframe_insert(data_path='rotation_euler', group=pose_bone.name)
-            pose_bone.keyframe_insert(data_path='rotation_quaternion', group=pose_bone.name)
-            pose_bone.keyframe_insert(data_path='scale', group=pose_bone.name)
+from ...file_jma.format import JMAAsset
+from ...global_functions import global_functions
 
 def build_scene(context, ANIMATION, game_version, game_title, file_version, fix_rotations, empty_markers, report):
+    JMA = JMAAsset()
+    JMA.version == 16392
+
     scene = context.scene
     view_layer = context.view_layer
 
@@ -170,25 +76,10 @@ def build_scene(context, ANIMATION, game_version, game_title, file_version, fix_
             action.frame_start = 1
             action.frame_end = animation.frame_count + 1
 
-            mesh_processing.select_object(context, armature)
             armature.animation_data_create()
             armature.animation_data.action = action
 
-            bpy.ops.object.mode_set(mode = 'POSE')
-
-            if animation.type == 1:
-                base_transforms = None
-                animation_index = find_base_animation(ANIMATION, animation)
-                if not animation_index == -1:
-                    base_transforms = ANIMATION.animations[animation_index].frame_data[0]
-
-                create_overlay_animation(scene, armature, animation, nodes, fix_rotations, view_layer, is_inverted)
-
-            else:
-                create_animation(scene, armature, animation, nodes, fix_rotations, view_layer, is_inverted)
-
-            scene.frame_set(1)
-            bpy.ops.object.mode_set(mode = 'OBJECT')
+            global_functions.import_fcurve_data(action, armature, nodes, animation.frame_data, JMA, JMAAsset, fix_rotations, is_inverted)
 
         report({'INFO'}, "Import completed successfully")
 

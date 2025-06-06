@@ -32,17 +32,6 @@ from .format import JMAAsset
 from mathutils import Matrix
 from ..global_functions import mesh_processing, global_functions, resource_management
 
-def remove_node_prefix(string):
-    node_prefix_tuple = ('b ', 'b_', 'bone ', 'bone_', 'frame ', 'frame_', 'bip01 ', 'bip01_')
-    name = string
-
-    for node_prefix in node_prefix_tuple:
-        if name.lower().startswith(node_prefix):
-            name = re.split(node_prefix, name, maxsplit=1, flags=re.IGNORECASE)[1]
-            break
-
-    return name
-
 def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature, fix_rotations, game_version):
     created_bone_list = []
     file_version = JMA.version
@@ -54,7 +43,7 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
     for idx, jma_node in enumerate(JMA.nodes):
         created_bone_list.append(jma_node.name)
         current_bone = armature.data.edit_bones.new(jma_node.name)
-        if "r_hand" == remove_node_prefix(jma_node.name).lower() or "r hand" == remove_node_prefix(jma_node.name).lower():
+        if "r_hand" == global_functions.remove_node_prefix(jma_node.name).lower() or "r hand" == global_functions.remove_node_prefix(jma_node.name).lower():
             r_hand_idx = idx
 
         parent = None
@@ -63,8 +52,8 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
         bone_distance = 5
 
         for a_idx, jms_a_node in enumerate(JMS_A_nodes):
-            if remove_node_prefix(jma_node.name).lower() == remove_node_prefix(jms_a_node).lower():
-                if remove_node_prefix(JMA.nodes[0].name).lower() == remove_node_prefix(JMS_A_nodes[0]).lower():
+            if global_functions.remove_node_prefix(jma_node.name).lower() == global_functions.remove_node_prefix(jms_a_node).lower():
+                if global_functions.remove_node_prefix(JMA.nodes[0].name).lower() == global_functions.remove_node_prefix(JMS_A_nodes[0]).lower():
                     is_fp_root_file_a = True
 
                 file_version = JMS_A.version
@@ -76,7 +65,7 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
                 break
 
         for b_idx, jms_b_node in enumerate(JMS_B_nodes):
-            if remove_node_prefix(jma_node.name).lower() == remove_node_prefix(jms_b_node).lower():
+            if global_functions.remove_node_prefix(jma_node.name).lower() == global_functions.remove_node_prefix(jms_b_node).lower():
                 file_version = JMS_B.version
                 parent_idx = JMS_B.nodes[b_idx].parent
                 parent_name = JMS_B.nodes[parent_idx].name
@@ -98,7 +87,7 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
 
         for bone_idx, bone in enumerate(created_bone_list):
             if not parent_name == None:
-                if remove_node_prefix(bone).lower == remove_node_prefix(parent_name).lower:
+                if global_functions.remove_node_prefix(bone).lower == global_functions.remove_node_prefix(parent_name).lower:
                     parent = armature.data.edit_bones[bone_idx]
 
             else:
@@ -110,16 +99,16 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
         if not parent == None:
             current_bone.parent = parent
 
-        elif "gun" in remove_node_prefix(jma_node.name).lower():
+        elif "gun" in global_functions.remove_node_prefix(jma_node.name).lower():
             current_bone.parent = armature.data.edit_bones[r_hand_idx]
 
         is_root = False
         if JMS_A:
-            if remove_node_prefix(jma_node.name).lower() == remove_node_prefix(JMS_A.nodes[0].name).lower():
+            if global_functions.remove_node_prefix(jma_node.name).lower() == global_functions.remove_node_prefix(JMS_A.nodes[0].name).lower():
                 is_root = True
 
         if JMS_B:
-            if remove_node_prefix(jma_node.name).lower() == remove_node_prefix(JMS_B.nodes[0].name).lower():
+            if global_functions.remove_node_prefix(jma_node.name).lower() == global_functions.remove_node_prefix(JMS_B.nodes[0].name).lower():
                 is_root = True
 
         transform_matrix = matrix_translate @ matrix_rotation
@@ -165,7 +154,7 @@ def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B,
 
         if JMS_A and not JMS_A_invalid and not JMS_B_invalid:
             for a_idx, jms_a_node in enumerate(JMS_A_nodes):
-                if remove_node_prefix(jma_node.name).lower() == remove_node_prefix(jms_a_node).lower():
+                if global_functions.remove_node_prefix(jma_node.name).lower() == global_functions.remove_node_prefix(jms_a_node).lower():
                     file_version = JMS_A.version
                     rest_position = JMS_A.transforms[0]
                     jms_node = rest_position[a_idx]
@@ -173,7 +162,7 @@ def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B,
                     break
 
             for b_idx, jms_b_node in enumerate(JMS_B_nodes):
-                if remove_node_prefix(jma_node.name).lower() == remove_node_prefix(jms_b_node).lower():
+                if global_functions.remove_node_prefix(jma_node.name).lower() == global_functions.remove_node_prefix(jms_b_node).lower():
                     file_version = JMS_B.version
                     rest_position = JMS_B.transforms[0]
                     jms_node = rest_position[b_idx]
@@ -187,11 +176,11 @@ def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B,
 
         is_root = False
         if JMS_A and not JMS_A_invalid:
-            if remove_node_prefix(jma_node.name).lower() == remove_node_prefix(JMS_A.nodes[0].name).lower():
+            if global_functions.remove_node_prefix(jma_node.name).lower() == global_functions.remove_node_prefix(JMS_A.nodes[0].name).lower():
                 is_root = True
 
         if JMS_B and not JMS_B_invalid:
-            if remove_node_prefix(jma_node.name).lower() == remove_node_prefix(JMS_B.nodes[0].name).lower():
+            if global_functions.remove_node_prefix(jma_node.name).lower() == global_functions.remove_node_prefix(JMS_B.nodes[0].name).lower():
                 is_root = True
 
         transform_matrix = matrix_translate @ matrix_rotation
@@ -238,7 +227,7 @@ def jms_file_check(JMS_A, JMS_B, JMA_nodes, report):
     JMS_B_invalid = False
     if JMS_A and not JMS_B:
         for jms_node in JMS_A.nodes:
-            JMS_A_nodes.append(remove_node_prefix(jms_node.name).lower())
+            JMS_A_nodes.append(global_functions.remove_node_prefix(jms_node.name).lower())
 
         for jms_node_name in JMS_A_nodes:
             if not jms_node_name in JMA_nodes:
@@ -249,10 +238,10 @@ def jms_file_check(JMS_A, JMS_B, JMA_nodes, report):
 
     elif JMS_A and JMS_B:
         for jms_node in JMS_A.nodes:
-            JMS_A_nodes.append(remove_node_prefix(jms_node.name).lower())
+            JMS_A_nodes.append(global_functions.remove_node_prefix(jms_node.name).lower())
 
         for jms_node in JMS_B.nodes:
-            JMS_B_nodes.append(remove_node_prefix(jms_node.name).lower())
+            JMS_B_nodes.append(global_functions.remove_node_prefix(jms_node.name).lower())
 
         jms_nodes = JMS_A_nodes + JMS_B_nodes
 
@@ -278,7 +267,7 @@ def find_valid_armature(context, JMA, obj):
         for node in armature_bone_list:
             for jma_node in JMA.nodes:
                 if node.name == jma_node.name:
-                    scene_nodes.append(remove_node_prefix(node.name).lower())
+                    scene_nodes.append(global_functions.remove_node_prefix(node.name).lower())
 
         if len(scene_nodes) == len(JMA.nodes):
             is_armature_good = True
@@ -288,17 +277,6 @@ def find_valid_armature(context, JMA, obj):
         mesh_processing.select_object(context, valid_armature)
 
     return scene_nodes, valid_armature
-
-def get_pose_bone(arm: bpy.types.Object, node_name: str) -> bpy.types.PoseBone | None:
-    # Check for exact matches first
-    for bone in arm.pose.bones:
-        if bone.name.lower() == node_name.lower():
-            return bone
-
-    # If a bone hasn't been found yet, test whether the node name matches a bone name stripped of prefixes
-    for bone in arm.pose.bones:
-        if remove_node_prefix(bone.name).lower() == node_name.lower():
-            return bone
 
 def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents, fix_rotations, report):
     collection = context.collection
@@ -316,68 +294,50 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
     resource_management.gather_scene_resources(context, layer_collection_list, object_list, hidden_geo, nonrender_geo)
 
     scene_nodes = []
-    jma_nodes = []
+    jma_nodes = [global_functions.remove_node_prefix(n.name).lower() for n in JMA.nodes]
 
-
-    scene_nodes = []
-    if not active_object == None and active_object.type == 'ARMATURE':
+    if active_object and active_object.type == 'ARMATURE':
         armature = active_object
-
-    if armature is None:
+    else:
         for obj in object_list:
             if obj.type == 'ARMATURE':
                 scene_nodes, armature = find_valid_armature(context, JMA, obj)
-                if not armature == None:
+                if armature:
                     break
 
-    for jma_node in JMA.nodes:
-        jma_nodes.append(remove_node_prefix(jma_node.name).lower())
-
-    if len(scene_nodes) > 0:
+    if armature:
         for jma_node in jma_nodes:
-            if not jma_node in scene_nodes:
-                report({'WARNING'}, "Node '%s' not found in an existing armature" % jma_node)
-
-    if armature == None:
+            if jma_node not in scene_nodes:
+                report({'WARNING'}, f"Node '{jma_node}' not found in an existing armature")
+    else:
         parent_id_class = global_functions.ParentIDFix()
         JMS_A_nodes, JMS_B_nodes, JMS_A_invalid, JMS_B_invalid = jms_file_check(JMS_A, JMS_B, jma_nodes, report)
+
         if not JMA.broken_skeleton and JMA.version >= 16392:
-            if JMA.version >= 16392:
-                armdata = bpy.data.armatures.new('Armature')
-                armature = bpy.data.objects.new('Armature', armdata)
-                collection.objects.link(armature)
-                mesh_processing.select_object(context, armature)
-                if fix_parents:
-                    if game_version == "halo2" or game_version == "halo3":
-                        set_parent_id_class(JMA, parent_id_class)
+            armdata = bpy.data.armatures.new('Armature')
+            armature = bpy.data.objects.new('Armature', armdata)
+            collection.objects.link(armature)
+            mesh_processing.select_object(context, armature)
 
-                generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B, JMS_B_invalid, JMA, armature, parent_id_class, fix_rotations, game_version)
+            if fix_parents and game_version in {"halo2", "halo3"}:
+                set_parent_id_class(JMA, parent_id_class)
 
-            else:
-                report({'ERROR'}, "No valid armature detected and not enough information to build valid skeleton due to version. Import will now be aborted")
+            generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B, JMS_B_invalid, JMA, armature, parent_id_class, fix_rotations, game_version)
 
-                return {'CANCELLED'}
+        elif JMS_A:
+            armdata = bpy.data.armatures.new('Armature')
+            armature = bpy.data.objects.new('Armature', armdata)
+            collection.objects.link(armature)
+            mesh_processing.select_object(context, armature)
+            generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature, fix_rotations, game_version)
 
         else:
-            if JMS_A:
-                armdata = bpy.data.armatures.new('Armature')
-                armature = bpy.data.objects.new('Armature', armdata)
-                collection.objects.link(armature)
-                mesh_processing.select_object(context, armature)
-
-                generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature, fix_rotations, game_version)
-
-            else:
-                report({'ERROR'}, "No valid armature detected and animation graph is invalid. Import will now be aborted")
-
-                return {'CANCELLED'}
+            report({'ERROR'}, "No valid armature detected and animation graph is invalid. Import will now be aborted")
+            return {'CANCELLED'}
 
     scene.render.fps = JMA.frame_rate
-
     animation_filename = bpy.path.basename(filepath).rsplit('.', 1)[0]
-    action = bpy.data.actions.get(animation_filename)
-    if action is None:
-        action = bpy.data.actions.new(name=animation_filename)
+    action = bpy.data.actions.get(animation_filename) or bpy.data.actions.new(name=animation_filename)
 
     action.use_frame_range = True
     action.frame_start = 1
@@ -386,69 +346,11 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
     armature.animation_data_create()
     armature.animation_data.action = action
 
-    bpy.ops.object.mode_set(mode = 'POSE')
-
     nodes = JMA.nodes
     if JMA.version == 16390:
         nodes = global_functions.sort_by_layer(list(armature.data.bones), armature)[0]
 
-    for frame_idx, frame in enumerate(JMA.transforms):
-        scene.frame_set(frame_idx + 1)
-
-        if JMA.biped_controller_frame_type != JMAAsset.BipedControllerFrameType.DISABLE:
-            controller_transform = JMA.biped_controller_transforms[frame_idx]
-
-            if JMA.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DX:
-                armature.location.x = controller_transform.translation[0]
-
-            if JMA.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DY:
-                armature.location.y = controller_transform.translation[1]
-
-            if JMA.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DZ:
-                armature.location.z = controller_transform.translation[2]
-
-            if JMA.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DYAW:
-                armature.rotation_euler.z = controller_transform.rotation.to_euler().z
-
-            view_layer.update()
-            armature.keyframe_insert('location')
-            armature.keyframe_insert('rotation_euler')
-
-        for idx, node in enumerate(nodes):
-            pose_bone = get_pose_bone(armature, node.name)
-            if not pose_bone == None:
-                matrix_scale = Matrix.Scale(frame[idx].scale, 4)
-                matrix_rotation = frame[idx].rotation.to_matrix().to_4x4()
-                matrix_translation = Matrix.Translation(frame[idx].translation)
-
-                if JMA.version < 16394 and fix_rotations:
-                    matrix_rotation = matrix_rotation @ Matrix.Rotation(radians(-90.0), 4, 'Z')
-
-                transform_matrix = matrix_translation @ matrix_rotation @ matrix_scale
-
-                if JMA.version < 16394 and pose_bone.parent:
-                    parent_matrix = pose_bone.parent.matrix
-                    if fix_rotations:
-                        parent_matrix = parent_matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')
-
-                    transform_matrix = parent_matrix @ transform_matrix
-
-                if JMA.version >= 16394 and fix_rotations:
-                    transform_matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
-
-                pose_bone.matrix = transform_matrix
-                pose_bone.rotation_euler = transform_matrix.to_euler()
-
-                view_layer.update()
-
-                pose_bone.keyframe_insert(data_path='location', group=pose_bone.name)
-                pose_bone.keyframe_insert(data_path='rotation_euler', group=pose_bone.name)
-                pose_bone.keyframe_insert(data_path='rotation_quaternion', group=pose_bone.name)
-                pose_bone.keyframe_insert(data_path='scale', group=pose_bone.name)
-
-    scene.frame_set(1)
-    bpy.ops.object.mode_set(mode = 'OBJECT')
+    global_functions.import_fcurve_data(action, armature, nodes, JMA.transforms, JMA, JMAAsset, fix_rotations)
 
     report({'INFO'}, "Import completed successfully")
-
     return {'FINISHED'}
