@@ -42,6 +42,19 @@ except ModuleNotFoundError:
 HALO_1_SHADER_RESOURCES = os.path.join(os.path.dirname(os.path.realpath(__file__)), "halo_1_shader_resources.blend")
 HALO_2_SHADER_RESOURCES = os.path.join(os.path.dirname(os.path.realpath(__file__)), "halo_2_shader_resources.blend")
 
+from ...file_tag.h2.file_shader.format import AnimationTypeEnum
+from ...file_tag.h2.file_shader_template.format import TypeEnum
+
+class ParameterSettings():
+    def __init__(self, name="", bitmap=None, translation=Vector(), scale=Vector(), rotation=Vector(), color=(0.0, 0.0, 0.0, 1.0), value=0.0):
+        self.name = name
+        self.bitmap = bitmap
+        self.translation = translation
+        self.scale = scale
+        self.rotation = rotation
+        self.color = color
+        self.value = value
+
 def get_bitmap(tag_ref, texture_root):
     texture_extensions = ("tif", "tiff")
     texture_path = None
@@ -783,3 +796,76 @@ def generate_detail_logic_node(tree, shader):
     detail_logic_node.node_tree = detail_logic_group
 
     return detail_logic_node
+
+def get_shader_node(tree, shader_name):
+    if not bpy.data.node_groups.get(shader_name):
+        with bpy.data.libraries.load(HALO_2_SHADER_RESOURCES) as (data_from, data_to):
+            data_to.node_groups.append(data_from.node_groups[data_from.node_groups.index(shader_name)])
+
+    tex_bump_node = tree.nodes.new('ShaderNodeGroup')
+    tex_bump_node.node_tree = bpy.data.node_groups.get(shader_name)
+
+    return tex_bump_node
+
+def set_image_scale(mat, image_node, image_scale):
+    vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
+    vect_math_node.operation = 'MULTIPLY'
+    vect_math_node.location = Vector((-200, -125)) + image_node.location
+
+    connect_inputs(mat.node_tree, vect_math_node, "Vector", image_node, "Vector")
+
+    uv_map_node = mat.node_tree.nodes.new("ShaderNodeUVMap")
+    combine_xyz_node = mat.node_tree.nodes.new("ShaderNodeCombineXYZ")
+    uv_map_node.location = Vector((-400, -100)) + image_node.location
+    combine_xyz_node.location = Vector((-400, -225)) + image_node.location
+    connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
+    connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
+
+    combine_xyz_node.inputs[0].default_value = image_scale[0]
+    combine_xyz_node.inputs[1].default_value = image_scale[1]
+    combine_xyz_node.inputs[2].default_value = image_scale[2]
+
+def generate_parameters(shader, shader_template, parameter_keys):
+    parameters = []
+    for category in shader_template.categories:
+        for parameter in category.parameters:
+            if parameter.name in parameter_keys:
+                parameter_settings = ParameterSettings()
+                parameter_settings.name = parameter.name
+                parameter_settings.bitmap = parameter.default_bitmap
+                parameter_settings.value = parameter.default_const_value
+                parameter_settings.color = global_functions.convert_color_space(parameter.default_const_color , False)
+                image_scale = 1.0
+                if not parameter.bitmap_scale == 0.0:
+                    image_scale = parameter.bitmap_scale
+
+                parameter_settings.scale = Vector((image_scale, image_scale, image_scale))
+
+                parameters.append(parameter_settings)
+
+    for parameter in shader.parameters:
+        for default_parameter in parameters:
+            if default_parameter.name == parameter.name:
+                default_parameter.bitmap = parameter.bitmap
+                default_parameter.value = parameter.const_value
+                default_parameter.color = global_functions.convert_color_space(parameter.const_color , False)
+                for animation_property in parameter.animation_properties:
+                    property_type = AnimationTypeEnum(animation_property.type)
+                    if property_type == AnimationTypeEnum.bitmap_scale_uniform and not animation_property.lower_bound == 0.0:
+                        default_parameter.scale = Vector((animation_property.lower_bound, animation_property.lower_bound, animation_property.lower_bound))
+
+                    elif property_type == AnimationTypeEnum.bitmap_scale_x and not animation_property.lower_bound == 0.0:
+                        default_parameter.scale[0] = animation_property.lower_bound
+
+                    elif property_type == AnimationTypeEnum.bitmap_scale_y and not animation_property.lower_bound == 0.0:
+                        default_parameter.scale[1] = animation_property.lower_bound
+
+                    elif property_type == AnimationTypeEnum.bitmap_scale_z and not animation_property.lower_bound == 0.0:
+                        default_parameter.scale[2] = animation_property.lower_bound
+
+                    elif property_type == AnimationTypeEnum.color:
+                        default_parameter.color = global_functions.convert_color_space(animation_property.color_a , False)
+
+                break
+
+    return parameters

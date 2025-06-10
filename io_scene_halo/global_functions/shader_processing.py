@@ -66,7 +66,7 @@ from .shader_generation.shader_helper import (
 
 from .shader_generation.shader_environment import generate_shader_environment
 from .shader_generation.shader_model import generate_shader_model
-from .shader_generation import shader_opaque
+from .shader_generation import shader_opaque, shader_transparent
 
 try:
     from PIL import Image
@@ -660,6 +660,430 @@ def generate_shader_simple(mat, shader, report):
 
     connect_inputs(mat.node_tree, base_node, "Color", bdsf_principled, "Base Color")
 
+def get_shader_opaque(shader_name, mat, shader, shader_template, report):
+    if shader_name == "active_camo_opaque":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "bloom":
+        shader_opaque.generate_shader_bloom(mat, shader, shader_template, report)
+    elif shader_name == "decal_simple":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "emblem_flag":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "emblem_opaque":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "emblem_overlay":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "emblem_overlay_simple":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "illum":
+        shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
+    elif shader_name == "illum_3_channel":
+        shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
+    elif shader_name == "illum_3_channel_opaque":
+        shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
+    elif shader_name == "illum_3_channel_plasma":
+        shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
+    elif shader_name == "illum_bloom":
+        shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
+    elif shader_name == "illum_bloom_3_channel":
+        shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
+    elif shader_name == "illum_bloom_3_channel_opaque":
+        shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
+    elif shader_name == "illum_bloom_masked":
+        shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
+    elif shader_name == "illum_bloom_opaque":
+        shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
+    elif shader_name == "illum_clamped":
+        shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
+    elif shader_name == "illum_detail":
+        shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
+    elif shader_name == "illum_opaque":
+        shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
+    elif shader_name == "illum_opaque_index":
+        shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
+    elif shader_name == "illum_wrap":
+        shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
+    elif shader_name == "overlay":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "prt_lightmap":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "prt_scarab":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "prt_simple":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "prt_simple_lm_emissive":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "render_layer_disabled":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_alpha_test":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_alpha_test_clamped":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_active_camo":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_alpha_test":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_alpha_test_clamped":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_alpha_test_clamped_single_pass":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_alpha_test_detail":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_alpha_test_single_pass":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_bloom":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_clamped_multiply_map":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_detail_blend":
+        shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_detail_blend_detail":
+        shader_opaque.generate_shader_tex_bump_detail_blend_detail(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_detail_blend_specular":
+        shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_detail_blend_specular_combined":
+        shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_detail_blend_specular_dblmult":
+        shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_detail_keep":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_detail_keep_blend":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_detail_mask":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_detail_overlay":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_dprs_env":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_dprs_env_illum":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_dprs_env_illum_emissive":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_alpha_test":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_alpha_test_combined":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_alpha_test_indexed":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_clamped":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_clamped_combined":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_combined":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_dbl_spec":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_detail_blend":
+        shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_detail_blend_specular":
+        shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_detail_mask":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_detail_mask_combined":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_detail_overlay":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_detail_overlay_combined":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_fast_masked":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_four_change_color":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_four_change_color_combined":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_illum":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_illum_3_channel":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_illum_3_channel_combined":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_illum_3_channel_combined_unfucked":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_illum_3_channel_occlusion":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_illum_3_channel_occlusion_combined":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_illum_combined":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_illum_combined_emmisive_map":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_illum_detail_honor_guard":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_illum_detail_honor_guard_base":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_illum_emmisive_map":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_illum_four_change_color":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_illum_four_change_color_no_lod":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_illum_tiling_specular":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_illum_trace":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_illum_two_change_color":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_illum_two_change_color_combined":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_no_detail":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_tiling_specular":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_two_change_color":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_two_change_color_combined":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_two_change_color_indexed":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_two_change_color_multiply_map_self_illum":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_two_detail":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_env_two_detail_combined":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_foliage":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_four_change_color":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_illum":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_illum_3_channel":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_illum_alpha_test":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_illum_alpha_test_illum":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_illum_alpha_test_single_pass":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_illum_bloom":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_illum_bloom_3_channel":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_illum_detail":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_illum_detail_honor_guard":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_illum_no_specular":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_illum_trace":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_illum_two_detail":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_meter_illum":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_multiply_map":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_no_alpha":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_no_specular":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_one_change_color":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_plasma":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_plasma_one_channel_illum":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_shiny":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_terrain":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_three_detail_blend":
+        shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_tiling_specular":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_two_change_color":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_two_change_color_multiply_map":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_two_change_color_multiply_map_self_illum":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_two_detail":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_bump_two_detail_tint":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_detail_blend":
+        shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
+    elif shader_name == "tex_env":
+        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+    elif shader_name == "tex_env_3_channel_illum":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_illum":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+    elif shader_name == "tex_illum_bloom":
+        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+
+def get_shader_transparent(shader_name, mat, shader, shader_template, report):
+    if shader_name == "active_camo_transparent":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "add_illum_detail":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "bumped_environment_additive":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "bumped_environment_blended":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "bumped_environment_darkened":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "bumped_environment_masked":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "bumped_environment_mask_colored":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "cortana":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "cortana_holographic_active_camo":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "lit":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "meter":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "meter_active_camo":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "one_add_changecolor_screenspace_xform2":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "one_add_env_illum":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "one_add_env_illum_clamped":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "one_add_env_illum_trace":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "one_add_illum":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "one_add_illum_detail":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "one_add_illum_no_fog":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "one_add_illum_screenspace_xform2":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "one_add_two_plus_two":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "one_alpha_env":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "one_alpha_env_active_camo":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "one_alpha_env_clamped":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "one_alpha_env_fixed":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "one_alpha_env_illum":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "one_alpha_env_illum_specular_mask":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "one_alpha_env_plasma":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "one_alpha_env_trace":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "overshield":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "overshield_tartarus":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "particle_additive":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "particle_additive_tint":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "particle_alpha_blend":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "particle_alpha_blend_tint":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "particle_alpha_multiply_add":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "particle_alpha_multiply_add_tint":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "particle_alpha_test":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "particle_alpha_test_no_lighting":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "particle_alpha_test_no_lighting_fixed_for_glass":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "particle_alpha_test_tint":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "particle_alpha_test_tint_no_lighting":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "particle_plasma":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "plasma_1_channel":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "plasma_alpha":
+        shader_transparent.generate_shader_plasma_alpha(mat, shader, shader_template, report)
+    elif shader_name == "plasma_alpha_active_camo":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "plasma_mask_offset":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "plasma_mask_offset_active_camo":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "plasma_shield":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "plasma_shield_change_color":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "plasma_time":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "roadsign_glass_newmombasa":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "sky_one_add_illum_detail":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "sky_one_add_two_plus_two":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "sky_one_alpha_env":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "sky_one_alpha_env_clamped":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "sky_one_alpha_env_illum":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "sky_two_add_clouds":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "sky_two_add_clouds_clamped":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "sky_two_add_detail_masked":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "sky_two_alpha_clouds":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "tartarus_shield":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "trace":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "transparent_glass":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "two_add_clouds":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "two_add_detail_masked":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "two_add_detail_masked_prepass":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "two_add_detail_masked_trace":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "two_add_env_illum":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "two_add_env_illum_3_channel":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "two_add_env_illum_active_camo":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "two_add_tint":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "two_alpha_clouds":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "two_alpha_detail_masked":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "two_alpha_env_detail":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "two_alpha_env_illum":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "two_alpha_env_illum_bumped_environment_masked":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "two_alpha_env_multichannel":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "two_alpha_env_two_change_color":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "two_alpha_two_change_color":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "waterfall":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "waves":
+        generate_shader_simple(mat, shader, report)
+    elif shader_name == "z_only_active_camo":
+        generate_shader_simple(mat, shader, report)
+
 def generate_h2_shader(mat, tag_ref, report):
     # 0 = Shader generation is disabled
     # 1 = Simple shader generation. Only the base map is generated
@@ -674,260 +1098,11 @@ def generate_h2_shader(mat, tag_ref, report):
                     if not shader.template == None:
                         shader_template = parse_tag(shader.template, report, "halo2", "retail")
                         shader_name = os.path.basename(shader.template.name)
-                        if shader_name == "active_camo_opaque":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "bloom":
-                            shader_opaque.generate_shader_bloom(mat, shader, shader_template, report)
-                        elif shader_name == "decal_simple":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "emblem_flag":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "emblem_opaque":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "emblem_overlay":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "emblem_overlay_simple":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "illum":
-                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
-                        elif shader_name == "illum_3_channel":
-                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
-                        elif shader_name == "illum_3_channel_opaque":
-                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
-                        elif shader_name == "illum_3_channel_plasma":
-                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
-                        elif shader_name == "illum_bloom":
-                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
-                        elif shader_name == "illum_bloom_3_channel":
-                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
-                        elif shader_name == "illum_bloom_3_channel_opaque":
-                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
-                        elif shader_name == "illum_bloom_masked":
-                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
-                        elif shader_name == "illum_bloom_opaque":
-                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
-                        elif shader_name == "illum_clamped":
-                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
-                        elif shader_name == "illum_detail":
-                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
-                        elif shader_name == "illum_opaque":
-                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
-                        elif shader_name == "illum_opaque_index":
-                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
-                        elif shader_name == "illum_wrap":
-                            shader_opaque.generate_shader_illum(mat, shader, shader_template, report)
-                        elif shader_name == "overlay":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "prt_lightmap":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "prt_scarab":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "prt_simple":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "prt_simple_lm_emissive":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "render_layer_disabled":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_alpha_test":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_alpha_test_clamped":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_active_camo":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_alpha_test":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_alpha_test_clamped":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_alpha_test_clamped_single_pass":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_alpha_test_detail":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_alpha_test_single_pass":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_bloom":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_clamped_multiply_map":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_detail_blend":
-                            shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_detail_blend_detail":
-                            shader_opaque.generate_shader_tex_bump_detail_blend_detail(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_detail_blend_specular":
-                            shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_detail_blend_specular_combined":
-                            shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_detail_blend_specular_dblmult":
-                            shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_detail_keep":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_detail_keep_blend":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_detail_mask":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_detail_overlay":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_dprs_env":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_dprs_env_illum":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_dprs_env_illum_emissive":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_alpha_test":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_alpha_test_combined":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_alpha_test_indexed":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_clamped":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_clamped_combined":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_combined":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_dbl_spec":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_detail_blend":
-                            shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_detail_blend_specular":
-                            shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_detail_mask":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_detail_mask_combined":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_detail_overlay":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_detail_overlay_combined":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_fast_masked":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_four_change_color":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_four_change_color_combined":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_illum":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_illum_3_channel":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_illum_3_channel_combined":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_illum_3_channel_combined_unfucked":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_illum_3_channel_occlusion":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_illum_3_channel_occlusion_combined":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_illum_combined":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_illum_combined_emmisive_map":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_illum_detail_honor_guard":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_illum_detail_honor_guard_base":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_illum_emmisive_map":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_illum_four_change_color":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_illum_four_change_color_no_lod":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_illum_tiling_specular":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_illum_trace":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_illum_two_change_color":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_illum_two_change_color_combined":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_no_detail":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_tiling_specular":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_two_change_color":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_two_change_color_combined":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_two_change_color_indexed":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_two_change_color_multiply_map_self_illum":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_two_detail":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_env_two_detail_combined":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_foliage":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_four_change_color":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_illum":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_illum_3_channel":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_illum_alpha_test":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_illum_alpha_test_illum":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_illum_alpha_test_single_pass":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_illum_bloom":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_illum_bloom_3_channel":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_illum_detail":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_illum_detail_honor_guard":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_illum_no_specular":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_illum_trace":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_illum_two_detail":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_meter_illum":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_multiply_map":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_no_alpha":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_no_specular":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_one_change_color":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_plasma":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_plasma_one_channel_illum":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_shiny":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_terrain":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_three_detail_blend":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_tiling_specular":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_two_change_color":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_two_change_color_multiply_map":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_two_change_color_multiply_map_self_illum":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_two_detail":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_bump_two_detail_tint":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_detail_blend":
-                            shader_opaque.generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report)
-                        elif shader_name == "tex_env":
-                            shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
-                        elif shader_name == "tex_env_3_channel_illum":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_illum":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
-                        elif shader_name == "tex_illum_bloom":
-                            shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+                        shader_type = os.path.basename(os.path.dirname(shader.template.name))
+                        if shader_type == "opaque":
+                            get_shader_opaque(shader_name, mat, shader, shader_template, report)
+                        elif shader_type == "transparent":
+                            get_shader_transparent(shader_name, mat, shader, shader_template, report)
 
         else:
             print("Halo 2 parsed shader tag returned as none. Something went horribly wrong")

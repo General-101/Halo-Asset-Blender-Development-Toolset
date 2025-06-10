@@ -1536,6 +1536,37 @@ def import_fcurve_data(action, armature, nodes, frames, JMA, JMAAsset, fix_rotat
             if pose_bone.rotation_mode == 'QUATERNION':
                 fcurve_map[pose_bone.name]['rotation_quaternion'][3].keyframe_points.insert(frame_number, rot_quat[3], options={'FAST'})
 
+#https://www.cyril-richon.com/blog/2019/1/23/python-srgb-to-linear-linear-to-srgb
+def srgb2lin(s):
+    if s <= 0.0404482362771082:
+        lin = s / 12.92
+    else:
+        lin = pow(((s + 0.055) / 1.055), 2.4)
+    return lin
+
+
+def lin2srgb(lin):
+    if lin > 0.0031308:
+        s = 1.055 * (pow(lin, (1.0 / 2.4))) - 0.055
+    else:
+        s = 12.92 * lin
+    return s
+
+def convert_color_space(color, convert_to_halo):
+    r,g,b,a = color
+    if convert_to_halo:
+        r = lin2srgb(r)
+        g = lin2srgb(g)
+        b = lin2srgb(b)
+        a = lin2srgb(a)
+    else:
+        r = srgb2lin(r)
+        g = srgb2lin(g)
+        b = srgb2lin(b)
+        a = srgb2lin(a)
+
+    return (r, g, b, a)
+    
 def run_code(code_string):
     def toolset_exec(code):
         if bpy.context.preferences.addons["io_scene_halo"].preferences.enable_profiling:

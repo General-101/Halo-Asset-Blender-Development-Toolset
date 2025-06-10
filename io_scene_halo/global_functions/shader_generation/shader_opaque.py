@@ -32,94 +32,23 @@ from .shader_helper import (
     get_output_material_node, 
     connect_inputs, 
     generate_image_node,
-    HALO_2_SHADER_RESOURCES
+    get_shader_node,
+    set_image_scale,
+    generate_parameters
     )
 
-from ...file_tag.h2.file_shader.format import AnimationTypeEnum
-from ...file_tag.h2.file_shader_template.format import TypeEnum
+def get_lightmap_factor(lightmap_type):
+    lightmap_factor = 0
+    if lightmap_type == 1:
+        lightmap_factor = 0.5
 
-class ParameterSettings():
-    def __init__(self, name="", bitmap=None, translation=Vector(), scale=Vector(), rotation=Vector(), color=(0.0, 0.0, 0.0, 1.0), value=0.0):
-        self.name = name
-        self.bitmap = bitmap
-        self.translation = translation
-        self.scale = scale
-        self.rotation = rotation
-        self.color = color
-        self.value = value
+    elif lightmap_type == 2:
+        lightmap_factor = 0.25
 
-def get_shader_node(tree, shader_name):
-    if not bpy.data.node_groups.get(shader_name):
-        with bpy.data.libraries.load(HALO_2_SHADER_RESOURCES) as (data_from, data_to):
-            data_to.node_groups.append(data_from.node_groups[data_from.node_groups.index(shader_name)])
+    elif lightmap_type == 3:
+        lightmap_factor = 1.0
 
-    tex_bump_node = tree.nodes.new('ShaderNodeGroup')
-    tex_bump_node.node_tree = bpy.data.node_groups.get(shader_name)
-
-    return tex_bump_node
-
-def set_image_scale(mat, image_node, image_scale):
-    vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
-    vect_math_node.operation = 'MULTIPLY'
-    vect_math_node.location = Vector((-200, -125)) + image_node.location
-
-    connect_inputs(mat.node_tree, vect_math_node, "Vector", image_node, "Vector")
-
-    uv_map_node = mat.node_tree.nodes.new("ShaderNodeUVMap")
-    combine_xyz_node = mat.node_tree.nodes.new("ShaderNodeCombineXYZ")
-    uv_map_node.location = Vector((-400, -100)) + image_node.location
-    combine_xyz_node.location = Vector((-400, -225)) + image_node.location
-    connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
-    connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
-
-    combine_xyz_node.inputs[0].default_value = image_scale[0]
-    combine_xyz_node.inputs[1].default_value = image_scale[1]
-    combine_xyz_node.inputs[2].default_value = image_scale[2]
-
-def generate_parameters(shader, shader_template, parameter_keys):
-    parameters = []
-    for category in shader_template.categories:
-        for parameter in category.parameters:
-            if parameter.name in parameter_keys:
-                parameter_settings = ParameterSettings()
-                parameter_settings.name = parameter.name
-                parameter_settings.bitmap = parameter.default_bitmap
-                parameter_settings.value = parameter.default_const_value
-                parameter_settings.color = parameter.default_const_color
-                image_scale = 1.0
-                if not parameter.bitmap_scale == 0.0:
-                    image_scale = parameter.bitmap_scale
-
-                parameter_settings.scale = Vector((image_scale, image_scale, image_scale))
-
-                parameters.append(parameter_settings)
-
-    for parameter in shader.parameters:
-        for default_parameter in parameters:
-            if default_parameter.name == parameter.name:
-                default_parameter.bitmap = parameter.bitmap
-                default_parameter.value = parameter.const_value
-                default_parameter.color = parameter.const_color
-                for animation_property in parameter.animation_properties:
-                    property_type = AnimationTypeEnum(animation_property.type)
-                    if property_type == AnimationTypeEnum.bitmap_scale_uniform and not animation_property.lower_bound == 0.0:
-                        default_parameter.scale = Vector((animation_property.lower_bound, animation_property.lower_bound, animation_property.lower_bound))
-
-                    elif property_type == AnimationTypeEnum.bitmap_scale_x and not animation_property.lower_bound == 0.0:
-                        default_parameter.scale[0] = animation_property.lower_bound
-
-                    elif property_type == AnimationTypeEnum.bitmap_scale_y and not animation_property.lower_bound == 0.0:
-                        default_parameter.scale[1] = animation_property.lower_bound
-
-                    elif property_type == AnimationTypeEnum.bitmap_scale_z and not animation_property.lower_bound == 0.0:
-                        default_parameter.scale[2] = animation_property.lower_bound
-
-                    elif property_type == AnimationTypeEnum.color:
-                        default_parameter.color = animation_property.color_a
-
-                break
-
-    return parameters
+    return lightmap_factor
 
 def generate_shader_bloom(mat, shader, shader_template, report):
     mat.use_nodes = True
@@ -137,6 +66,7 @@ def generate_shader_bloom(mat, shader, shader_template, report):
             lightmap_emissive_color_parameter = parameter
         elif parameter.name == "lightmap_emissive_power":
             lightmap_emissive_power_parameter = parameter
+
     texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_data_path
     for node in mat.node_tree.nodes:
         mat.node_tree.nodes.remove(node)
@@ -225,7 +155,6 @@ def generate_shader_illum(mat, shader, shader_template, report):
         if not self_illum_color_parameter == None:
             shader_node.inputs["Self Illum Color"].default_value = self_illum_color_parameter.color
 
-
 def generate_shader_tex_bump(mat, shader, shader_template, report):
     mat.use_nodes = True
 
@@ -267,6 +196,8 @@ def generate_shader_tex_bump(mat, shader, shader_template, report):
 
     connect_inputs(mat.node_tree, tex_bump_node, "Shader", output_material_node, "Surface")
 
+    tex_bump_node.inputs["Lightmap Type"].default_value = get_lightmap_factor(shader.lightmap_type)
+
     if not bump_parameter == None:
         bump_map, bump_map_name, bump_bitmap = get_h2_bitmap(bump_parameter.bitmap, texture_root, report)
         bump_node = generate_image_node(mat, bump_map, bump_bitmap, bump_map_name)
@@ -282,7 +213,7 @@ def generate_shader_tex_bump(mat, shader, shader_template, report):
         if bump_bitmap:
             height_value = 0.0
             if not bump_bitmap.bump_height == 0.0:
-                height_value = bump_bitmap.bump_height / 10
+                height_value = bump_bitmap.bump_height
 
             tex_bump_node.inputs["Bump Map Repeat"].default_value = height_value
 
@@ -375,6 +306,8 @@ def generate_shader_tex_bump_illum(mat, shader, shader_template, report):
 
     connect_inputs(mat.node_tree, tex_bump_illum_node, "Shader", output_material_node, "Surface")
 
+    tex_bump_illum_node.inputs["Lightmap Type"].default_value = get_lightmap_factor(shader.lightmap_type)
+
     if not bump_parameter == None:
         bump_map, bump_map_name, bump_bitmap = get_h2_bitmap(bump_parameter.bitmap, texture_root, report)
         bump_node = generate_image_node(mat, bump_map, bump_bitmap, bump_map_name)
@@ -390,7 +323,7 @@ def generate_shader_tex_bump_illum(mat, shader, shader_template, report):
         if bump_bitmap:
             height_value = 0.0
             if not bump_bitmap.bump_height == 0.0:
-                height_value = bump_bitmap.bump_height / 10
+                height_value = bump_bitmap.bump_height
 
             tex_bump_illum_node.inputs["Bump Map Repeat"].default_value = height_value
 
@@ -484,6 +417,8 @@ def generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report):
 
     connect_inputs(mat.node_tree, tex_bump_node, "Shader", output_material_node, "Surface")
 
+    tex_bump_node.inputs["Lightmap Type"].default_value = get_lightmap_factor(shader.lightmap_type)
+
     if not bump_parameter == None:
         bump_map, bump_map_name, bump_bitmap = get_h2_bitmap(bump_parameter.bitmap, texture_root, report)
         bump_node = generate_image_node(mat, bump_map, bump_bitmap, bump_map_name)
@@ -499,7 +434,7 @@ def generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report):
         if bump_bitmap:
             height_value = 0.0
             if not bump_bitmap.bump_height == 0.0:
-                height_value = bump_bitmap.bump_height / 10
+                height_value = bump_bitmap.bump_height
 
             tex_bump_node.inputs["Bump Map Repeat"].default_value = height_value
 
@@ -588,6 +523,8 @@ def generate_shader_tex_bump_detail_blend_detail(mat, shader, shader_template, r
 
     connect_inputs(mat.node_tree, tex_bump_node, "Shader", output_material_node, "Surface")
 
+    tex_bump_node.inputs["Lightmap Type"].default_value = get_lightmap_factor(shader.lightmap_type)
+
     if not bump_parameter == None:
         bump_map, bump_map_name, bump_bitmap = get_h2_bitmap(bump_parameter.bitmap, texture_root, report)
         bump_node = generate_image_node(mat, bump_map, bump_bitmap, bump_map_name)
@@ -603,7 +540,7 @@ def generate_shader_tex_bump_detail_blend_detail(mat, shader, shader_template, r
         if bump_bitmap:
             height_value = 0.0
             if not bump_bitmap.bump_height == 0.0:
-                height_value = bump_bitmap.bump_height / 10
+                height_value = bump_bitmap.bump_height
 
             tex_bump_node.inputs["Bump Map Repeat"].default_value = height_value
 

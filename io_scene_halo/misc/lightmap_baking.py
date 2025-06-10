@@ -50,6 +50,7 @@ from ..file_tag.h1.file_scenario.process_file import process_file as process_h1_
 from ..file_tag.h2.file_scenario.process_file import process_file as process_h2_scenario
 from ..file_tag.h2.file_scenario_structure_lightmap.build_asset import build_asset as build_h2_lightmap
 from ..file_tag.h2.file_scenario_structure_lightmap.format import GeometryBucketFlags
+from ..global_functions import global_functions
 
 try:
     from PIL import Image
@@ -182,7 +183,7 @@ def light_halo_2_mesh(context, lightmap_ob, BITMAP_ASSET, BITMAP, TAG, image_mul
 
 def set_vertex_colors(lightmap_ob, geometry_bucket, section_offset, vertex_count):
         for vertex_index in range(vertex_count):
-            R, G, B, A = lightmap_ob.data.attributes.active_color.data[vertex_index].color
+            R, G, B, A = global_functions.convert_color_space(lightmap_ob.data.attributes.active_color.data[vertex_index].color , True)
             geometry_bucket.raw_vertices[section_offset + vertex_index].primary_lightmap_color_RGBA = (R, G, B, A)
 
 def bake_clusters(context, game_title, scenario_path, image_multiplier, report, H2V=False):
