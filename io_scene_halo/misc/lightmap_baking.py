@@ -153,7 +153,19 @@ def light_halo_2_mesh(context, lightmap_ob, BITMAP_ASSET, BITMAP, TAG, image_mul
         lightmap_ob.select_set(False)
         context.view_layer.objects.active = None
 
-        buf = bytearray([int(p * 255) for p in image.pixels])
+        #buf = bytearray([int(p * 255) for p in image.pixels])
+        pixels = list(image.pixels)
+        buf = bytearray()
+        for i in range(0, len(pixels), 4):
+            r, g, b, a = pixels[i:i+4]
+            r, g, b, a = global_functions.convert_color_space((r, g, b, a), False)
+            buf.extend([
+                int(max(0, min(1, r)) * 255),
+                int(max(0, min(1, g)) * 255),
+                int(max(0, min(1, b)) * 255),
+                int(max(0, min(1, a)) * 255),
+            ])
+
         image = Image.frombytes("RGBA", (width, height), buf, 'raw', "RGBA")
 
         lightmap_flags = H2BitmapFlags.power_of_two_dimensions.value
@@ -183,7 +195,7 @@ def light_halo_2_mesh(context, lightmap_ob, BITMAP_ASSET, BITMAP, TAG, image_mul
 
 def set_vertex_colors(lightmap_ob, geometry_bucket, section_offset, vertex_count):
         for vertex_index in range(vertex_count):
-            R, G, B, A = global_functions.convert_color_space(lightmap_ob.data.attributes.active_color.data[vertex_index].color , True)
+            R, G, B, A = lightmap_ob.data.attributes.active_color.data[vertex_index].color
             geometry_bucket.raw_vertices[section_offset + vertex_index].primary_lightmap_color_RGBA = (R, G, B, A)
 
 def bake_clusters(context, game_title, scenario_path, image_multiplier, report, H2V=False):
@@ -279,7 +291,19 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                             cluster_ob.select_set(False)
                             context.view_layer.objects.active = None
 
-                            buf = bytearray([int(p * 255) for p in image.pixels])
+                            #buf = bytearray([int(p * 255) for p in image.pixels])
+                            pixels = list(image.pixels)
+                            buf = bytearray()
+                            for i in range(0, len(pixels), 4):
+                                r, g, b, a = pixels[i:i+4]
+                                r, g, b, a = global_functions.convert_color_space((r, g, b, a), False)
+                                buf.extend([
+                                    int(max(0, min(1, r)) * 255),
+                                    int(max(0, min(1, g)) * 255),
+                                    int(max(0, min(1, b)) * 255),
+                                    int(max(0, min(1, a)) * 255),
+                                ])
+
                             image = Image.frombytes("RGBA", (width, height), buf, 'raw', "RGBA")
 
                             bitmap_format = BITMAP.bitmap_format
@@ -458,7 +482,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                 build_h2_lightmap(output_stream, LTMP_ASSET, report)
                 output_stream.close()
 
-    context.scene.tag_scenario.image_multiplier = 1
+    context.scene.tag_scenario.global_lightmap_multiplier = 1
     return {'FINISHED'}
 
 if __name__ == '__main__':

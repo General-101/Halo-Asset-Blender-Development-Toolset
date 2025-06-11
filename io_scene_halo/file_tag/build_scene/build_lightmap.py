@@ -158,7 +158,7 @@ def build_clusters(lightmap_group, SBSP_ASSET, level_root, random_color_gen, col
 def build_poops(lightmap_group, SBSP_ASSET, level_root, random_color_gen, collection, shader_collection_dic):
     lightmap_instance_count = len(lightmap_group.poop_definitions)
     if lightmap_instance_count > 0:
-        bsp_name = collection.name.split("_", 1)[0]
+        bsp_name = collection.name.rsplit("_", 1)[0]
         intances_name = "%s_lightmap_instances" % bsp_name
         instance_collection = bpy.data.collections.get(intances_name)
         if instance_collection == None:

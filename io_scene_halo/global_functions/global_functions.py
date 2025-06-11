@@ -498,11 +498,11 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
 
     if is_node:
         if armature:
-            pose_bone = armature.pose.bones['%s' % (obj_a.name)]
-            object_matrix = (pose_bone.matrix @ rotation_matrix) @ scale_matrix
-            if pose_bone.parent and not version >= get_version_matrix_check(file_type, None):
+            bone = armature.data.bones.get(obj_a.name)
+            object_matrix = (bone.matrix_local @ rotation_matrix) @ scale_matrix
+            if bone.parent and not version >= get_version_matrix_check(file_type, None):
                 #Files at or above 8205 use absolute transform instead of local transform for nodes
-                object_matrix = ((pose_bone.parent.matrix @ rotation_matrix).inverted() @ (pose_bone.matrix @ rotation_matrix)) @ scale_matrix
+                object_matrix = ((bone.parent.matrix_local @ rotation_matrix).inverted() @ (object_matrix.matrix @ rotation_matrix)) @ scale_matrix
 
         else:
             object_matrix = obj_a.matrix_world @ scale_matrix
@@ -533,9 +533,10 @@ def get_dimensions(mesh_matrix, original_geo, version, is_bone, file_type, custo
     pill_height = 0.0
     if original_geo:
         pos, rot, scale = mesh_matrix.decompose()
-        quat = rot.inverted()
         if not invert_rotations(file_type, version):
             quat = rot
+        else:
+            quat = rot.inverted()
 
         quaternion = (quat[1], quat[2], quat[3], quat[0])
         position = mesh_matrix.to_translation()
@@ -1552,9 +1553,9 @@ def lin2srgb(lin):
         s = 12.92 * lin
     return s
 
-def convert_color_space(color, convert_to_halo):
+def convert_color_space(color, convert_to_srgb):
     r,g,b,a = color
-    if convert_to_halo:
+    if convert_to_srgb:
         r = lin2srgb(r)
         g = lin2srgb(g)
         b = lin2srgb(b)

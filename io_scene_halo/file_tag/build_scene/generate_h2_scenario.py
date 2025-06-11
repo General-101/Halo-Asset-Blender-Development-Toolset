@@ -67,7 +67,7 @@ def get_decal_rotation_euler(yaw=0, pitch=0):
 
     right = np.cross(up, forward)
     rot_matrix = Matrix((forward, right, up))
-    print(rot_matrix)
+    
     return Matrix(rot_matrix).inverted_safe(rot_matrix).to_euler()
 
 def generate_skies(context, level_root, tag_block, report):
