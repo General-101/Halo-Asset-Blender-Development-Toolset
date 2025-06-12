@@ -637,7 +637,6 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
 
                         elif game_title == "halo3":
                             shader_path = shader_processing.find_h3_shader_tag(asset.filepath, material_name)
-                            print(shader_path)
                             if not shader_path == None:
                                 shader_processing.generate_h3_shader(mat, shader_path, print)
                             else:

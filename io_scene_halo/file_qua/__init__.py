@@ -105,8 +105,6 @@ class QUA_SceneProps(Panel):
 
 def version_settings_callback(self, context):
     items=[('1', "1", "Non-functional")]
-
-    print(self.game_title)
     if self.game_title == "halo3":
         items.append(('2', "2", "Non-functional"))
         items.append(('3', "3", "Non-functional"))

@@ -36,6 +36,7 @@ from decimal import *
 from math import radians
 from enum import Enum, auto
 from io import TextIOWrapper
+from datetime import datetime
 from collections import defaultdict
 from ..global_functions.parse_tags import parse_tag
 from mathutils import Vector, Euler, Quaternion, Matrix
@@ -1567,7 +1568,42 @@ def convert_color_space(color, convert_to_srgb):
         a = srgb2lin(a)
 
     return (r, g, b, a)
-    
+
+def pack_datetime(year, month, day, hour, minute):
+    if not (0 <= year <= 4095):
+        raise ValueError("Year out of range (0-4095)")
+    if not (1 <= month <= 12):
+        raise ValueError("Month out of range (1-12)")
+    if not (1 <= day <= 31):
+        raise ValueError("Day out of range (1-31)")
+    if not (0 <= hour <= 23):
+        raise ValueError("Hour out of range (0-23)")
+    if not (0 <= minute <= 59):
+        raise ValueError("Minute out of range (0-59)")
+
+    packed = (
+        (year  << 20) |
+        (month << 16) |
+        (day   << 11) |
+        (hour  << 6)  |
+        minute
+    )
+    return packed
+
+def unpack_datetime(packed):
+    year = (packed >> 20) & 0xFFF
+    month = (packed >> 16) & 0xF
+    day = (packed >> 11) & 0x1F
+    hour = (packed >> 6) & 0x1F
+    minute = packed & 0x3F
+    return year, month, day, hour, minute
+
+def get_data_checksum():
+    now = datetime.now()
+
+    return pack_datetime(now.year, now.month, now.day, now.hour, now.minute)
+
+
 def run_code(code_string):
     def toolset_exec(code):
         if bpy.context.preferences.addons["io_scene_halo"].preferences.enable_profiling:

@@ -93,11 +93,24 @@ def generate_skies(context, level_root, tag_block, report):
                 light_data = bpy.data.lights.new(name, "SUN")
                 ob = bpy.data.objects.new(name, light_data)
 
-                ob.data.color = (radiosity_color[0], radiosity_color[1], radiosity_color[2])
+                r, g, b, a = radiosity_color
+                r, g, b, a = global_functions.convert_color_space((r, g, b, a), False)
+                ob.data.color = (r, g, b)
                 ob.data.energy = radiosity_power * 10
                 ob.parent = level_root
 
-                ob.rotation_euler = get_rotation_euler(*light.direction)
+                yaw, pitch = light.direction
+
+                euler = Euler((0, radians(90), 0), 'XYZ')
+                rot_matrix = euler.to_matrix()
+
+                rot_z = Matrix.Rotation(radians(yaw), 3, 'Z')
+                rot_y = Matrix.Rotation(radians(-pitch), 3, 'Y')
+
+                rot_matrix = rot_z @ rot_matrix
+                rot_matrix = rot_matrix @ rot_y 
+
+                ob.rotation_euler = rot_matrix.to_euler('XYZ')
 
                 asset_collection.objects.link(ob)
 
@@ -738,7 +751,7 @@ def scenario_get_resources(H2_ASSET, report):
             H2_ASSET.editor_folders = RESOURCE_ASSET.editor_folders
 
     if scenery_resource:
-        RESOURCE_ASSET = parse_tag(lights_resource, report, "halo2", "retail")
+        RESOURCE_ASSET = parse_tag(scenery_resource, report, "halo2", "retail")
         if not RESOURCE_ASSET == None:
             H2_ASSET.object_names = RESOURCE_ASSET.object_names
             H2_ASSET.structure_bsps = RESOURCE_ASSET.structure_bsps
