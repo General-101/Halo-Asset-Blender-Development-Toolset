@@ -1570,17 +1570,6 @@ def convert_color_space(color, convert_to_srgb):
     return (r, g, b, a)
 
 def pack_datetime(year, month, day, hour, minute):
-    if not (0 <= year <= 4095):
-        raise ValueError("Year out of range (0-4095)")
-    if not (1 <= month <= 12):
-        raise ValueError("Month out of range (1-12)")
-    if not (1 <= day <= 31):
-        raise ValueError("Day out of range (1-31)")
-    if not (0 <= hour <= 23):
-        raise ValueError("Hour out of range (0-23)")
-    if not (0 <= minute <= 59):
-        raise ValueError("Minute out of range (0-59)")
-
     packed = (
         (year  << 20) |
         (month << 16) |
@@ -1588,6 +1577,7 @@ def pack_datetime(year, month, day, hour, minute):
         (hour  << 6)  |
         minute
     )
+
     return packed
 
 def unpack_datetime(packed):
