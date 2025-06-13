@@ -1586,6 +1586,7 @@ def unpack_datetime(packed):
     day = (packed >> 11) & 0x1F
     hour = (packed >> 6) & 0x1F
     minute = packed & 0x3F
+
     return year, month, day, hour, minute
 
 def get_data_checksum():

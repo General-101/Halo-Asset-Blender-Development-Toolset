@@ -27,6 +27,8 @@
 import os
 import bpy
 import zlib
+import math
+import bmesh
 
 from mathutils import Vector
 from ..global_functions import tag_format
@@ -58,6 +60,74 @@ try:
 except ModuleNotFoundError:
     print("PIL not found. Unable to create image node.")
     Image = None
+
+def next_power_of_two(x):
+    return 2 ** math.ceil(math.log2(x))
+
+def calculate_uv_bounds_object_mode(obj):
+    bm = bmesh.new()
+    bm.from_mesh(obj.data)
+    uv_layer = bm.loops.layers.uv.active
+
+    if uv_layer is None:
+        bm.free()
+        raise RuntimeError(f"No active UV layer found on {obj.name}")
+
+    min_u = min_v = float('inf')
+    max_u = max_v = float('-inf')
+
+    for face in bm.faces:
+        for loop in face.loops:
+            uv = loop[uv_layer].uv
+            min_u = min(min_u, uv.x)
+            min_v = min(min_v, uv.y)
+            max_u = max(max_u, uv.x)
+            max_v = max(max_v, uv.y)
+
+    bm.free()
+
+    uv_width = max_u - min_u
+    uv_height = max_v - min_v
+    return uv_width, uv_height
+
+def estimate_object_size_diagonal(obj):
+    verts = obj.data.vertices
+    if not verts:
+        return 0.0
+
+    bbox = [obj.matrix_world @ v.co for v in verts]
+    min_corner = bbox[0].copy()
+    max_corner = bbox[0].copy()
+
+    for v in bbox[1:]:
+        min_corner.x = min(min_corner.x, v.x)
+        min_corner.y = min(min_corner.y, v.y)
+        min_corner.z = min(min_corner.z, v.z)
+        max_corner.x = max(max_corner.x, v.x)
+        max_corner.y = max(max_corner.y, v.y)
+        max_corner.z = max(max_corner.z, v.z)
+
+    size = max_corner - min_corner
+    return size.length 
+
+def estimate_image_size(obj, power_of_two=True, texel_density=None, target_resolution=1024):
+    uv_width, uv_height = calculate_uv_bounds_object_mode(obj)
+
+    if texel_density is None:
+        diagonal = estimate_object_size_diagonal(obj)
+        if diagonal < 1e-6:
+            texel_density = 512
+        else:
+            texel_density = target_resolution / diagonal
+
+    img_w = uv_width * texel_density
+    img_h = uv_height * texel_density
+
+    if power_of_two:
+        img_w = next_power_of_two(img_w)
+        img_h = next_power_of_two(img_h)
+
+    return int(img_w), int(img_h)
 
 def light_halo_2_dynamic(context, lightmap_ob, uv_index=1):
     color_attribute = lightmap_ob.data.attributes.active_color
@@ -97,9 +167,13 @@ def light_halo_2_mesh(context, lightmap_ob, BITMAP_ASSET, BITMAP, TAG, image_mul
     lightmap_data = None
     bitmap_class = None
     if lightmap_ob.tag_mesh.instance_lightmap_policy_enum == '0':
-        bitmap_element = BITMAP_ASSET.bitmaps[lightmap_idx]
-        width = int(bitmap_element.width * image_multiplier)
-        height = int(bitmap_element.height * image_multiplier)
+        if BITMAP_ASSET:
+            bitmap_element = BITMAP_ASSET.bitmaps[lightmap_idx]
+            width = int(bitmap_element.width * image_multiplier)
+            height = int(bitmap_element.height * image_multiplier)
+        else:
+            width, height = estimate_image_size(lightmap_ob, True, 128)
+
         image = bpy.data.images.get("Lightmap_%s" % lightmap_idx)
         if not image:
             image = bpy.data.images.new("Lightmap_%s" % lightmap_idx, width, height)
@@ -190,144 +264,155 @@ def set_vertex_colors(lightmap_ob, geometry_bucket, section_offset, vertex_count
 def bake_clusters(context, game_title, scenario_path, image_multiplier, report, H2V=False):
     bpy.ops.object.select_all(action='DESELECT')
     if game_title == "halo1" and Image:
-        input_stream = open(scenario_path, "rb")
-        SCNR_ASSET = process_h1_scenario(input_stream, report)
-        input_stream.close()
+        SCNR_ASSET = None
+        try:
+            with open(scenario_path, 'rb') as input_stream:
+                SCNR_ASSET = process_h1_scenario(input_stream, report)
 
-        TAG = tag_format.TagAsset()
+        except Exception as e:
+            report({'WARNING'}, f"Failed to process {scenario_path}: {e}")
 
-        levels_collection = bpy.data.collections.get("BSPs")
-        if not levels_collection == None:
-            for bsp_idx, bsp_collection in enumerate(levels_collection.children):
-                for cluster_collection in bsp_collection.children:
-                    cluster_collection.hide_render = True
+        if SCNR_ASSET:
+            TAG = tag_format.TagAsset()
+            levels_collection = bpy.data.collections.get("BSPs")
+            if not levels_collection == None:
+                for bsp_idx, bsp_collection in enumerate(levels_collection.children):
+                    for cluster_collection in bsp_collection.children:
+                        cluster_collection.hide_render = True
 
-            for bsp_idx, bsp_collection in enumerate(levels_collection.children):
-                bsp_element = SCNR_ASSET.structure_bsps[bsp_idx]
-                BSP_ASSET = parse_tag(bsp_element, report, game_title, "retail")
-                BITMAP_ASSET = parse_tag(BSP_ASSET.lightmap_bitmaps_tag_ref, report, game_title, "retail")
+                for bsp_idx, bsp_collection in enumerate(levels_collection.children):
+                    bsp_element = SCNR_ASSET.structure_bsps[bsp_idx]
+                    BSP_ASSET = parse_tag(bsp_element, report, game_title, "retail")
+                    if BSP_ASSET:
+                        BITMAP_ASSET = parse_tag(BSP_ASSET.lightmap_bitmaps_tag_ref, report, game_title, "retail")
+                        bitmap_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.bitmap" %  BSP_ASSET.lightmap_bitmaps_tag_ref.name)
 
-                bitmap_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.bitmap" %  BSP_ASSET.lightmap_bitmaps_tag_ref.name)
+                        pixel_data = bytes()
+                        pixel_offset = 0
 
-                pixel_data = bytes()
-                pixel_offset = 0
+                        BITMAP = H1BitmapAsset()
+                        TAG.is_legacy = False
 
-                BITMAP = H1BitmapAsset()
-                TAG.is_legacy = False
+                        BITMAP.header = TAG.Header()
+                        BITMAP.header.unk1 = 0
+                        BITMAP.header.flags = 0
+                        BITMAP.header.type = 0
+                        BITMAP.header.name = ""
+                        BITMAP.header.tag_group = "bitm"
+                        BITMAP.header.checksum = global_functions.get_data_checksum()
+                        BITMAP.header.data_offset = 64
+                        BITMAP.header.data_length = 0
+                        BITMAP.header.unk2 = 0
+                        BITMAP.header.version = 7
+                        BITMAP.header.destination = 0
+                        BITMAP.header.plugin_handle = -1
+                        BITMAP.header.engine_tag = "blam"
 
-                BITMAP.header = TAG.Header()
-                BITMAP.header.unk1 = 0
-                BITMAP.header.flags = 0
-                BITMAP.header.type = 0
-                BITMAP.header.name = ""
-                BITMAP.header.tag_group = "bitm"
-                BITMAP.header.checksum = global_functions.get_data_checksum()
-                BITMAP.header.data_offset = 64
-                BITMAP.header.data_length = 0
-                BITMAP.header.unk2 = 0
-                BITMAP.header.version = 7
-                BITMAP.header.destination = 0
-                BITMAP.header.plugin_handle = -1
-                BITMAP.header.engine_tag = "blam"
+                        bitmap_format = H1FormatEnum._32bit_color.value
+                        if BITMAP_ASSET:
+                            bitmap_format = BITMAP_ASSET.bitmap_format
 
-                BITMAP.bitmap_format = BITMAP_ASSET.bitmap_format
-                BITMAP.usage = H1UsageEnum.light_map.value
-                BITMAP.color_plate_width = 0
-                BITMAP.color_plate_height = 0
-                BITMAP.compressed_color_plate_data = TAG.RawData()
-                BITMAP.compressed_color_plate = bytes()
-                BITMAP.processed_pixel_data = TAG.RawData()
-                BITMAP.processed_pixels = bytes()
-                BITMAP.sequences = []
-                BITMAP.bitmaps = []
+                        BITMAP.bitmap_format = bitmap_format
+                        BITMAP.usage = H1UsageEnum.light_map.value
+                        BITMAP.color_plate_width = 0
+                        BITMAP.color_plate_height = 0
+                        BITMAP.compressed_color_plate_data = TAG.RawData()
+                        BITMAP.compressed_color_plate = bytes()
+                        BITMAP.processed_pixel_data = TAG.RawData()
+                        BITMAP.processed_pixels = bytes()
+                        BITMAP.sequences = []
+                        BITMAP.bitmaps = []
 
-                for cluster_collection in bsp_collection.children:
-                    cluster_collection.hide_render = False
-                    for cluster_idx, cluster_ob in enumerate(cluster_collection.objects):
-                        if not cluster_ob.tag_mesh.lightmap_index == -1:
-                            bitmap_element = BITMAP_ASSET.bitmaps[cluster_idx]
-                            width = int(bitmap_element.width * image_multiplier)
-                            height = int(bitmap_element.height * image_multiplier)
-                            image = bpy.data.images.get("Lightmap_%s" % cluster_idx)
-                            if not image:
-                                image = bpy.data.images.new("Lightmap_%s" % cluster_idx, width, height)
-                            else:
-                                image.scale(width, height)
-                                image.update()
+                        for cluster_collection in bsp_collection.children:
+                            cluster_collection.hide_render = False
+                            for cluster_idx, cluster_ob in enumerate(cluster_collection.objects):
+                                if not cluster_ob.tag_mesh.lightmap_index == -1:
+                                    if BITMAP_ASSET:
+                                        bitmap_element = BITMAP_ASSET.bitmaps[cluster_idx]
+                                        width = int(bitmap_element.width * image_multiplier)
+                                        height = int(bitmap_element.height * image_multiplier)
+                                    else:
+                                        width, height = estimate_image_size(cluster_ob, True, 128)
+                                    
+                                    image = bpy.data.images.get("Lightmap_%s" % cluster_idx)
+                                    if not image:
+                                        image = bpy.data.images.new("Lightmap_%s" % cluster_idx, width, height)
+                                    else:
+                                        image.scale(width, height)
+                                        image.update()
 
-                            for material_slot in cluster_ob.material_slots:
-                                material_slot.material.use_nodes = True
-                                material_nodes = material_slot.material.node_tree.nodes
-                                image_node = material_nodes.get("Lightmap Texture")
-                                if image_node == None:
-                                    image_node = material_nodes.new("ShaderNodeTexImage")
-                                    image_node.name = "Lightmap Texture"
-                                    image_node.location = Vector((-260.0, 280.0))
+                                    for material_slot in cluster_ob.material_slots:
+                                        material_slot.material.use_nodes = True
+                                        material_nodes = material_slot.material.node_tree.nodes
+                                        image_node = material_nodes.get("Lightmap Texture")
+                                        if image_node == None:
+                                            image_node = material_nodes.new("ShaderNodeTexImage")
+                                            image_node.name = "Lightmap Texture"
+                                            image_node.location = Vector((-260.0, 280.0))
 
-                                image_node.image = image
+                                        image_node.image = image
 
-                                for node in material_nodes:
-                                    node.select = False
+                                        for node in material_nodes:
+                                            node.select = False
 
-                                image_node.select = True
-                                material_nodes.active = image_node
+                                        image_node.select = True
+                                        material_nodes.active = image_node
 
-                            cluster_ob.select_set(True)
-                            context.view_layer.objects.active = cluster_ob
+                                    cluster_ob.select_set(True)
+                                    context.view_layer.objects.active = cluster_ob
 
-                            context.scene.render.engine = 'CYCLES'
-                            bpy.ops.object.bake(type='DIFFUSE', pass_filter={'DIRECT','INDIRECT'}, uv_layer=cluster_ob.data.uv_layers[1].name)
-                            cluster_ob.select_set(False)
-                            context.view_layer.objects.active = None
+                                    context.scene.render.engine = 'CYCLES'
+                                    bpy.ops.object.bake(type='DIFFUSE', pass_filter={'DIRECT','INDIRECT'}, uv_layer=cluster_ob.data.uv_layers[1].name)
+                                    cluster_ob.select_set(False)
+                                    context.view_layer.objects.active = None
 
-                            buf = bytearray([int(p * 255) for p in image.pixels])
-                            image = Image.frombytes("RGBA", (width, height), buf, 'raw', "RGBA")
+                                    buf = bytearray([int(p * 255) for p in image.pixels])
+                                    image = Image.frombytes("RGBA", (width, height), buf, 'raw', "RGBA")
 
-                            bitmap_format = BITMAP.bitmap_format
-                            lightmap_flags = H1BitmapFlags.power_of_two_dimensions.value
-                            if bitmap_format == H1FormatEnum._16bit_color.value:
-                                lightmap_data = image.convert('BGR;16').tobytes()
-                                lightmap_format = H1BitmapFormatEnum.r5g6b5.value
-                            elif bitmap_format == H1FormatEnum._32bit_color.value:
-                                lightmap_image = image.convert('RGBA')
-                                r,g,b,a = lightmap_image.split()
-                                lightmap_data = Image.merge("RGBA", (b, g, r, a)).tobytes()
-                                lightmap_format = H1BitmapFormatEnum.x8r8g8b8.value
+                                    bitmap_format = BITMAP.bitmap_format
+                                    lightmap_flags = H1BitmapFlags.power_of_two_dimensions.value
+                                    if bitmap_format == H1FormatEnum._16bit_color.value:
+                                        lightmap_data = image.convert('BGR;16').tobytes()
+                                        lightmap_format = H1BitmapFormatEnum.r5g6b5.value
+                                    elif bitmap_format == H1FormatEnum._32bit_color.value:
+                                        lightmap_image = image.convert('RGBA')
+                                        r,g,b,a = lightmap_image.split()
+                                        lightmap_data = Image.merge("RGBA", (b, g, r, a)).tobytes()
+                                        lightmap_format = H1BitmapFormatEnum.x8r8g8b8.value
 
-                            pixel_data = pixel_data + lightmap_data
+                                    pixel_data = pixel_data + lightmap_data
 
-                            sequence = BITMAP.Sequence()
-                            sequence.first_bitmap_index = cluster_idx
-                            sequence.bitmap_count = 1
-                            sequence.sprites_tag_block = TAG.TagBlock()
-                            sequence.sprites = []
+                                    sequence = BITMAP.Sequence()
+                                    sequence.first_bitmap_index = cluster_idx
+                                    sequence.bitmap_count = 1
+                                    sequence.sprites_tag_block = TAG.TagBlock()
+                                    sequence.sprites = []
 
-                            BITMAP.sequences.append(sequence)
+                                    BITMAP.sequences.append(sequence)
 
-                            bitmap_class = BITMAP.Bitmap()
-                            bitmap_class.signature = "bitm"
-                            bitmap_class.width = width
-                            bitmap_class.height = height
-                            bitmap_class.depth = 1
-                            bitmap_class.bitmap_format = lightmap_format
-                            bitmap_class.flags = lightmap_flags
-                            bitmap_class.registration_point = (int(width / 2), int(height / 2))
-                            bitmap_class.pixels_offset = pixel_offset
+                                    bitmap_class = BITMAP.Bitmap()
+                                    bitmap_class.signature = "bitm"
+                                    bitmap_class.width = width
+                                    bitmap_class.height = height
+                                    bitmap_class.depth = 1
+                                    bitmap_class.bitmap_format = lightmap_format
+                                    bitmap_class.flags = lightmap_flags
+                                    bitmap_class.registration_point = (int(width / 2), int(height / 2))
+                                    bitmap_class.pixels_offset = pixel_offset
 
-                            BITMAP.bitmaps.append(bitmap_class)
+                                    BITMAP.bitmaps.append(bitmap_class)
 
-                            pixel_offset += len(lightmap_data)
+                                    pixel_offset += len(lightmap_data)
 
-                    cluster_collection.hide_render = True
-                    BITMAP.processed_pixel_data = TAG.RawData(len(pixel_data))
-                    BITMAP.processed_pixels = pixel_data
+                            cluster_collection.hide_render = True
+                            BITMAP.processed_pixel_data = TAG.RawData(len(pixel_data))
+                            BITMAP.processed_pixels = pixel_data
 
-                    BITMAP.sequences_tag_block = TAG.TagBlock(len(BITMAP.sequences))
-                    BITMAP.bitmaps_tag_block = TAG.TagBlock(len(BITMAP.bitmaps))
+                            BITMAP.sequences_tag_block = TAG.TagBlock(len(BITMAP.sequences))
+                            BITMAP.bitmaps_tag_block = TAG.TagBlock(len(BITMAP.bitmaps))
 
-                    output_stream = open(bitmap_path, 'wb')
-                    build_h1_bitmap(output_stream, BITMAP, report)
-                    output_stream.close()
+                            with open(bitmap_path, 'wb') as output_stream:
+                                build_h1_bitmap(output_stream, BITMAP, report)
 
     elif game_title == "halo2" and Image:
         levels_collection = bpy.data.collections.get("BSPs")
@@ -336,128 +421,141 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                 for cluster_collection in bsp_collection.children:
                     cluster_collection.hide_render = True
 
-        input_stream = open(scenario_path, "rb")
-        SCNR_ASSET = process_h2_scenario(input_stream, report)
-        input_stream.close()
+        SCNR_ASSET = None
+        try:
+            with open(scenario_path, 'rb') as input_stream:
+                SCNR_ASSET = process_h2_scenario(input_stream, report)
 
-        TAG = tag_format.TagAsset()
-        for bsp_element in SCNR_ASSET.structure_bsps:
-            bsp_name = os.path.basename(bsp_element.structure_bsp.name)
-            lightmap_name = "%s_lightmaps" % bsp_name
-            lightmap_instances_name = "%s_lightmap_instances" % bsp_name
-            lightmap_collection = bpy.data.collections.get(lightmap_name)
-            lightmap_instances_collection = bpy.data.collections.get(lightmap_instances_name)
+        except Exception as e:
+            report({'WARNING'}, f"Failed to process {scenario_path}: {e}")
+
+        if SCNR_ASSET:
+            TAG = tag_format.TagAsset()
+
+            unique_id_list = []
+            for scenery in SCNR_ASSET.scenery:
+                unique_id_list.append(scenery.unique_id)
+                
             scenery_collection = bpy.data.collections.get("Scenery")
-            if not lightmap_collection == None:
-                BSP_ASSET = parse_tag(bsp_element.structure_bsp, report, game_title, "retail")
-                LTMP_ASSET = parse_tag(bsp_element.structure_lightmap, report, game_title, "retail")
+            for bsp_element in SCNR_ASSET.structure_bsps:
+                bsp_name = os.path.basename(bsp_element.structure_bsp.name)
+                lightmap_name = "%s_lightmaps" % bsp_name
+                lightmap_instances_name = "%s_lightmap_instances" % bsp_name
+                lightmap_collection = bpy.data.collections.get(lightmap_name)
+                lightmap_instances_collection = bpy.data.collections.get(lightmap_instances_name)
 
-                first_lightmap_group_entry = None
-                for lightmap_group in LTMP_ASSET.lightmap_groups:
-                    first_lightmap_group_entry = lightmap_group
-                    break
+                if not lightmap_collection == None:
+                    LTMP_ASSET = parse_tag(bsp_element.structure_lightmap, report, game_title, "retail")
+                    if LTMP_ASSET:
+                        first_lightmap_group_entry = None
+                        for lightmap_group in LTMP_ASSET.lightmap_groups:
+                            first_lightmap_group_entry = lightmap_group
+                            break
 
-                BITMAP_ASSET = parse_tag(first_lightmap_group_entry.bitmap_group_tag_ref, report, game_title, "retail")
+                        BITMAP_ASSET = parse_tag(first_lightmap_group_entry.bitmap_group_tag_ref, report, game_title, "retail")
+                        halo2_tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path
+                        bitmap_path = os.path.join(halo2_tag_path, "%s.bitmap" %  first_lightmap_group_entry.bitmap_group_tag_ref.name)
 
-                bitmap_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.bitmap" %  first_lightmap_group_entry.bitmap_group_tag_ref.name)
+                        pixel_data = bytes()
+                        pixel_offset = 0
 
-                pixel_data = bytes()
-                pixel_offset = 0
+                        BITMAP = H2BitmapAsset()
+                        TAG.is_legacy = False
+                        TAG.big_endian = False
 
-                BITMAP = H2BitmapAsset()
-                TAG.is_legacy = False
-                TAG.big_endian = False
+                        BITMAP.header = TAG.Header()
+                        BITMAP.header.unk1 = 0
+                        BITMAP.header.flags = 0
+                        BITMAP.header.type = 0
+                        BITMAP.header.name = ""
+                        BITMAP.header.tag_group = "bitm"
+                        BITMAP.header.checksum = global_functions.get_data_checksum()
+                        BITMAP.header.data_offset = 64
+                        BITMAP.header.data_length = 0
+                        BITMAP.header.unk2 = 0
+                        BITMAP.header.version = 7
+                        BITMAP.header.destination = 0
+                        BITMAP.header.plugin_handle = -1
+                        BITMAP.header.engine_tag = "BLM!"
 
-                BITMAP.header = TAG.Header()
-                BITMAP.header.unk1 = 0
-                BITMAP.header.flags = 0
-                BITMAP.header.type = 0
-                BITMAP.header.name = ""
-                BITMAP.header.tag_group = "bitm"
-                BITMAP.header.checksum = global_functions.get_data_checksum()
-                BITMAP.header.data_offset = 64
-                BITMAP.header.data_length = 0
-                BITMAP.header.unk2 = 0
-                BITMAP.header.version = 7
-                BITMAP.header.destination = 0
-                BITMAP.header.plugin_handle = -1
-                BITMAP.header.engine_tag = "BLM!"
+                        BITMAP.body_header = TAG.TagBlockHeader("tbfd", 0, 1, 112)
+                        BITMAP.bitmap_format = H2FormatEnum.compressed_with_color_key_transparency.value
+                        BITMAP.usage = H2UsageEnum.alpha_blend.value
+                        BITMAP.color_plate_width = 0
+                        BITMAP.color_plate_height = 0
+                        BITMAP.compressed_color_plate_data = TAG.RawData()
+                        BITMAP.compressed_color_plate = bytes()
+                        BITMAP.processed_pixel_data = TAG.RawData()
+                        BITMAP.processed_pixels = bytes()
+                        BITMAP.sequences = []
+                        BITMAP.bitmaps = []
 
-                BITMAP.body_header = TAG.TagBlockHeader("tbfd", 0, 1, 112)
-                BITMAP.bitmap_format = H2FormatEnum.compressed_with_color_key_transparency.value
-                BITMAP.usage = H2UsageEnum.alpha_blend.value
-                BITMAP.color_plate_width = 0
-                BITMAP.color_plate_height = 0
-                BITMAP.compressed_color_plate_data = TAG.RawData()
-                BITMAP.compressed_color_plate = bytes()
-                BITMAP.processed_pixel_data = TAG.RawData()
-                BITMAP.processed_pixels = bytes()
-                BITMAP.sequences = []
-                BITMAP.bitmaps = []
+                        lightmap_idx = 0
+                        lightmap_collection.hide_render = False
+                        lightmap_instances_collection.hide_render = False
+                        for lightmap_ob in lightmap_collection.objects:
+                            cluster_lightmap_data, cluster_bitmap_class = light_halo_2_mesh(context, lightmap_ob, BITMAP_ASSET, BITMAP, TAG, image_multiplier, lightmap_idx, pixel_offset)
+                            if lightmap_ob.tag_mesh.instance_lightmap_policy_enum == '0':
+                                BITMAP.bitmaps.append(cluster_bitmap_class)
+                                lightmap_idx += 1
+                                pixel_data += cluster_lightmap_data
+                                pixel_offset += len(cluster_lightmap_data)
 
-                lightmap_idx = 0
-                lightmap_collection.hide_render = False
-                lightmap_instances_collection.hide_render = False
-                for lightmap_ob in lightmap_collection.objects:
-                    cluster_lightmap_data, cluster_bitmap_class = light_halo_2_mesh(context, lightmap_ob, BITMAP_ASSET, BITMAP, TAG, image_multiplier, lightmap_idx, pixel_offset)
-                    if lightmap_ob.tag_mesh.instance_lightmap_policy_enum == '0':
-                        BITMAP.bitmaps.append(cluster_bitmap_class)
-                        lightmap_idx += 1
-                        pixel_data += cluster_lightmap_data
-                        pixel_offset += len(cluster_lightmap_data)
+                        for lightmap_instance_ob in lightmap_instances_collection.objects:
+                            instance_lightmap_data, instance_bitmap_class = light_halo_2_mesh(context, lightmap_instance_ob, BITMAP_ASSET, BITMAP, TAG, image_multiplier, lightmap_idx, pixel_offset)
+                            if lightmap_instance_ob.tag_mesh.instance_lightmap_policy_enum == '0':
+                                BITMAP.bitmaps.append(instance_bitmap_class)
+                                lightmap_idx += 1
+                                pixel_data += instance_lightmap_data
+                                pixel_offset += len(instance_lightmap_data)
 
-                for lightmap_instance_ob in lightmap_instances_collection.objects:
-                    instance_lightmap_data, instance_bitmap_class = light_halo_2_mesh(context, lightmap_instance_ob, BITMAP_ASSET, BITMAP, TAG, image_multiplier, lightmap_idx, pixel_offset)
-                    if lightmap_instance_ob.tag_mesh.instance_lightmap_policy_enum == '0':
-                        BITMAP.bitmaps.append(instance_bitmap_class)
-                        lightmap_idx += 1
-                        pixel_data += instance_lightmap_data
-                        pixel_offset += len(instance_lightmap_data)
+                        lightmap_collection.hide_render = True
+                        lightmap_instances_collection.hide_render = True
+                        BITMAP.processed_pixel_data = TAG.RawData(len(pixel_data))
+                        BITMAP.processed_pixels = pixel_data
 
-                for scenery_ob in scenery_collection.objects:
-                    light_halo_2_dynamic(context, scenery_ob, 0)
+                        bitmap_count = len(BITMAP.bitmaps)
+                        BITMAP.sequence_header = TAG.TagBlockHeader("tbfd", 0, 0, 64)
+                        if H2V:
+                            BITMAP.bitmap_header = TAG.TagBlockHeader("tbfd", 1, bitmap_count, 116)
+                        else:
+                            BITMAP.bitmap_header = TAG.TagBlockHeader("tbfd", 2, bitmap_count, 140)
 
-                lightmap_collection.hide_render = True
-                lightmap_instances_collection.hide_render = True
-                BITMAP.processed_pixel_data = TAG.RawData(len(pixel_data))
-                BITMAP.processed_pixels = pixel_data
+                        BITMAP.sequences_tag_block = TAG.TagBlock()
+                        BITMAP.bitmaps_tag_block = TAG.TagBlock(bitmap_count)
 
-                bitmap_count = len(BITMAP.bitmaps)
-                BITMAP.sequence_header = TAG.TagBlockHeader("tbfd", 0, 0, 64)
-                if H2V:
-                    BITMAP.bitmap_header = TAG.TagBlockHeader("tbfd", 1, bitmap_count, 116)
-                else:
-                    BITMAP.bitmap_header = TAG.TagBlockHeader("tbfd", 2, bitmap_count, 140)
+                        with open(bitmap_path, 'wb') as output_stream:
+                            build_h2_bitmap(output_stream, BITMAP, report, H2V)
 
-                BITMAP.sequences_tag_block = TAG.TagBlock()
-                BITMAP.bitmaps_tag_block = TAG.TagBlock(bitmap_count)
+                        for instance_idx, instance_bucket_ref in enumerate(first_lightmap_group_entry.instance_bucket_refs):
+                            lightmap_instance_ob = lightmap_instances_collection.objects[instance_idx]
+                            vertex_count = len(lightmap_instance_ob.data.vertices)
+                            bucket_index = instance_bucket_ref.bucket_index
+                            geometry_bucket = first_lightmap_group_entry.geometry_buckets[bucket_index]
+                            if GeometryBucketFlags.color in GeometryBucketFlags(geometry_bucket.flags):
+                                for section_offset in instance_bucket_ref.section_offsets:
+                                    set_vertex_colors(lightmap_instance_ob, geometry_bucket, section_offset, vertex_count)
 
-                output_stream = open(bitmap_path, 'wb')
-                build_h2_bitmap(output_stream, BITMAP, report, H2V)
-                output_stream.close()
+                        if not scenery_collection == None:
+                            scenery_id_list = []
+                            for scenery_idx, scenery_object_info in enumerate(first_lightmap_group_entry.scenery_object_info):
+                                scenery_id_list.append(scenery_object_info.unique_id)
 
-                for instance_idx, instance_bucket_ref in enumerate(first_lightmap_group_entry.instance_bucket_refs):
-                    lightmap_instance_ob = lightmap_instances_collection.objects[instance_idx]
-                    vertex_count = len(lightmap_instance_ob.data.vertices)
-                    bucket_index = instance_bucket_ref.bucket_index
-                    geometry_bucket = first_lightmap_group_entry.geometry_buckets[bucket_index]
-                    if GeometryBucketFlags.color in GeometryBucketFlags(geometry_bucket.flags):
-                        for section_offset in instance_bucket_ref.section_offsets:
-                            set_vertex_colors(lightmap_instance_ob, geometry_bucket, section_offset, vertex_count)
+                            for scenery_idx, scenery_object_bucket_ref in enumerate(first_lightmap_group_entry.scenery_object_bucket_refs):
+                                scenery_id = scenery_id_list[scenery_idx]
+                                scenery_ob = scenery_collection.objects[unique_id_list.index(scenery_id)]
+                                vertex_count = len(scenery_ob.data.vertices)
+                                bucket_index = scenery_object_bucket_ref.bucket_index
+                                geometry_bucket = first_lightmap_group_entry.geometry_buckets[bucket_index]
+                                light_halo_2_dynamic(context, scenery_ob, 0)
+                                if GeometryBucketFlags.color in GeometryBucketFlags(geometry_bucket.flags):
+                                    for section_offset in scenery_object_bucket_ref.section_offsets:
+                                        set_vertex_colors(scenery_ob, geometry_bucket, section_offset, vertex_count)
 
-                for scenery_idx, scenery_object_bucket_ref in enumerate(first_lightmap_group_entry.scenery_object_bucket_refs):
-                    scenery_ob = scenery_collection.objects[scenery_idx]
-                    vertex_count = len(scenery_ob.data.vertices)
-                    bucket_index = scenery_object_bucket_ref.bucket_index
-                    geometry_bucket = first_lightmap_group_entry.geometry_buckets[bucket_index]
-                    if GeometryBucketFlags.color in GeometryBucketFlags(geometry_bucket.flags):
-                        for section_offset in scenery_object_bucket_ref.section_offsets:
-                            set_vertex_colors(scenery_ob, geometry_bucket, section_offset, vertex_count)
-
-                lightmap_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_structure_lightmap" % bsp_element.structure_lightmap.name)
-                output_stream = open(lightmap_path, 'wb')
-                build_h2_lightmap(output_stream, LTMP_ASSET, report)
-                output_stream.close()
+                        halo2_tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path
+                        lightmap_path = os.path.join(halo2_tag_path, "%s.scenario_structure_lightmap" % bsp_element.structure_lightmap.name)
+                        with open(lightmap_path, 'wb') as output_stream:
+                            build_h2_lightmap(output_stream, LTMP_ASSET, report)
 
     context.scene.tag_scenario.global_lightmap_multiplier = 1
     return {'FINISHED'}

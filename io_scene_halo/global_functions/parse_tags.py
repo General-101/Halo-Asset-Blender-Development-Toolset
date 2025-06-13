@@ -100,442 +100,568 @@ def parse_tag(tagref, report, game_title, game_version):
         if tagref.tag_group == "actv":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.actor_variant" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_actor_variant(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_actor_variant(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "sky ":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.sky" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_sky(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_sky(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "bitm":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.bitmap" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_bitmap(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_bitmap(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "scen":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.scenery" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h1_scenery(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h1_scenery(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "bipd":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.biped" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_biped(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_biped(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "vehi":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.vehicle" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_vehicle(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_vehicle(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "mach":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.device_machine" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_machine(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_machine(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "ctrl":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.device_control" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_control(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_control(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "lifi":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.device_light_fixture" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_light_fixture(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_light_fixture(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "ssce":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.sound_scenery" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_sound_scenery(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_sound_scenery(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "eqip":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.equipment" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_equipment(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_equipment(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "weap":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.weapon" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_weapon(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_weapon(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "itmc":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.item_collection" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_item_collection(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_item_collection(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "mod2" or tagref.tag_group == "mode":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.gbxmodel" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_mod2(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_mod2(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
             else:
                 input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.model" % tagref.name)
                 if os.path.exists(input_file):
-                    input_stream = open(input_file, 'rb')
-                    ASSET = process_mode(input_stream, report)
-                    input_stream.close()
+                    try:
+                        with open(input_file, 'rb') as input_stream:
+                            ASSET = process_mode(input_stream, report)
+                    except Exception as e:
+                        report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "sbsp":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.scenario_structure_bsp" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h1_structure_bsp(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h1_structure_bsp(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "senv":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.shader_environment" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_shader_environment(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_shader_environment(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "soso":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.shader_model" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_shader_model(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_shader_model(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "schi":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.shader_transparent_chicago" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_shader_transparent_chicago(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_shader_transparent_chicago(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "scex":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.shader_transparent_chicago_extended" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_shader_transparent_chicago_extended(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_shader_transparent_chicago_extended(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "sotr":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.shader_transparent_generic" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_shader_transparent_generic(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_shader_transparent_generic(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "sgla":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.shader_transparent_glass" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_shader_transparent_glass(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_shader_transparent_glass(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "smet":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.shader_transparent_meter" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_shader_transparent_meter(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_shader_transparent_meter(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "spla":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.shader_transparent_plasma" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_shader_transparent_plasma(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_shader_transparent_plasma(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "swat":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.shader_transparent_water" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_shader_transparent_water(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_shader_transparent_water(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "scnr":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path, "%s.scenario" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h1_scenario(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h1_scenario(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
     elif game_title == "halo2":
         if tagref.tag_group == "sky ":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.sky" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_sky(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_sky(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "sbsp":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_structure_bsp" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_structure_bsp(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_structure_bsp(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "ltmp":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_structure_lightmap" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_structure_lightmap(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_structure_lightmap(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "bitm":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.bitmap" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_bitmap(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_bitmap(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "shad":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.shader" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_shader(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_shader(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "stem":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.shader_template" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_shader_template(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_shader_template(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "hlmt":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.model" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_model(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_model(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "mode":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.render_model" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_render(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_render(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "scen":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenery" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenery(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenery(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "bloc":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.crate" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_crate(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_crate(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "bipd":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.biped" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_biped(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_biped(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "vehi":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.vehicle" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_vehicle(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_vehicle(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "eqip":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.equipment" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_equipment(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_equipment(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "weap":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.weapon" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_weapon(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_weapon(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "mach":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.device_machine" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_machine(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_machine(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "ctrl":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.device_control" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_control(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_control(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "ssce":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.sound_scenery" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_sound_scenery(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_sound_scenery(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "itmc":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.item_collection" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_item_collection(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_item_collection(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "vehc":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.vehicle_collection" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_vehicle_collection(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_vehicle_collection(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "ligh":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.light" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_light(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_light(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "ai**":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_ai_resource" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenario_ai_resource(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenario_ai_resource(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "*ipd":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_bipeds_resource" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenario_bipeds_resource(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenario_bipeds_resource(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "cin*":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_cinematics_resource" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenario_cinematics_resource(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenario_cinematics_resource(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "clu*":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_cluster_data_resource" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenario_cluster_data_resource(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenario_cluster_data_resource(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "/**/":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_comments_resource" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenario_comments_resource(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenario_comments_resource(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "*rea":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_creature_resource" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenario_creature_resource(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenario_creature_resource(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "dec*":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_decals_resource" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenario_decals_resource(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenario_decals_resource(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "dc*s":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_decorators_resource" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenario_decorators_resource(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenario_decorators_resource(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "dgr*":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_devices_resource" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenario_devices_resource(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenario_devices_resource(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "*qip":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_equipment_resource" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenario_equipment_resource(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenario_equipment_resource(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "*igh":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_lights_resource" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenario_lights_resource(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenario_lights_resource(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "*cen":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_scenery_resource" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenario_scenery_resource(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenario_scenery_resource(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "*sce":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_sound_scenery_resource" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenario_sound_scenery_resource(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenario_sound_scenery_resource(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "sslt":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_structure_lighting_resource" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenario_structure_lighting_resource(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenario_structure_lighting_resource(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "trg*":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_trigger_volumes_resource" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenario_trigger_volumes_resource(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenario_trigger_volumes_resource(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "*ehi":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_vehicles_resource" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenario_vehicles_resource(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenario_vehicles_resource(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
         elif tagref.tag_group == "*eap":
             input_file = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, "%s.scenario_weapons_resource" % tagref.name)
             if os.path.exists(input_file):
-                input_stream = open(input_file, 'rb')
-                ASSET = process_h2_scenario_weapons_resource(input_stream, report)
-                input_stream.close()
+                try:
+                    with open(input_file, 'rb') as input_stream:
+                        ASSET = process_h2_scenario_weapons_resource(input_stream, report)
+                except Exception as e:
+                    report({'WARNING'}, f"Failed to process {tagref.name}: {e}")
 
     return ASSET
