@@ -960,21 +960,21 @@ def get_shader_transparent(shader_name, mat, shader, shader_template, report):
     elif shader_name == "one_add_two_plus_two":
         generate_shader_simple(mat, shader, report)
     elif shader_name == "one_alpha_env":
-        generate_shader_simple(mat, shader, report)
+        shader_transparent.generate_shader_one_alpha_env(mat, shader, shader_template, report)
     elif shader_name == "one_alpha_env_active_camo":
-        generate_shader_simple(mat, shader, report)
+        shader_transparent.generate_shader_one_alpha_env(mat, shader, shader_template, report)
     elif shader_name == "one_alpha_env_clamped":
-        generate_shader_simple(mat, shader, report)
+        shader_transparent.generate_shader_one_alpha_env(mat, shader, shader_template, report)
     elif shader_name == "one_alpha_env_fixed":
-        generate_shader_simple(mat, shader, report)
+        shader_transparent.generate_shader_one_alpha_env(mat, shader, shader_template, report)
     elif shader_name == "one_alpha_env_illum":
-        generate_shader_simple(mat, shader, report)
+        shader_transparent.generate_shader_one_alpha_env(mat, shader, shader_template, report)
     elif shader_name == "one_alpha_env_illum_specular_mask":
-        generate_shader_simple(mat, shader, report)
+        shader_transparent.generate_shader_one_alpha_env(mat, shader, shader_template, report)
     elif shader_name == "one_alpha_env_plasma":
-        generate_shader_simple(mat, shader, report)
+        shader_transparent.generate_shader_one_alpha_env(mat, shader, shader_template, report)
     elif shader_name == "one_alpha_env_trace":
-        generate_shader_simple(mat, shader, report)
+        shader_transparent.generate_shader_one_alpha_env(mat, shader, shader_template, report)
     elif shader_name == "overshield":
         generate_shader_simple(mat, shader, report)
     elif shader_name == "overshield_tartarus":
@@ -1026,11 +1026,11 @@ def get_shader_transparent(shader_name, mat, shader, shader_template, report):
     elif shader_name == "sky_one_add_two_plus_two":
         generate_shader_simple(mat, shader, report)
     elif shader_name == "sky_one_alpha_env":
-        generate_shader_simple(mat, shader, report)
+        shader_transparent.generate_shader_one_alpha_env(mat, shader, shader_template, report)
     elif shader_name == "sky_one_alpha_env_clamped":
-        generate_shader_simple(mat, shader, report)
+        shader_transparent.generate_shader_one_alpha_env(mat, shader, shader_template, report)
     elif shader_name == "sky_one_alpha_env_illum":
-        generate_shader_simple(mat, shader, report)
+        shader_transparent.generate_shader_one_alpha_env(mat, shader, shader_template, report)
     elif shader_name == "sky_two_add_clouds":
         generate_shader_simple(mat, shader, report)
     elif shader_name == "sky_two_add_clouds_clamped":

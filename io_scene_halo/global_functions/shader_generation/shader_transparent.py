@@ -144,3 +144,146 @@ def generate_shader_plasma_alpha(mat, shader, shader_template, report):
     if not emissive_power_parameter == None:
         shader_node.inputs["Emissive Power"].default_value = emissive_power_parameter.value * 100
 
+def generate_shader_one_alpha_env(mat, shader, shader_template, report):
+    mat.use_nodes = True
+
+    parameter_keys = ["environment_map", 
+                      "environment_color", 
+                      "specular_map", 
+                      "alpha_blend_map", 
+                      "alpha_blend_color", 
+                      "alpha_blend_opacity", 
+                      "tint_color", 
+                      "glancing_tint_color", 
+                      "brightness", 
+                      "glancing_brightness",
+                      "lightmap_translucent_map",
+                      "lightmap_translucent_color",
+                      "lightmap_translucent_alpha"]
+    parameters = generate_parameters(shader, shader_template, parameter_keys)
+
+    environment_map_parameter = None
+    environment_color_parameter = None
+    specular_map_parameter = None
+    alpha_blend_map_parameter = None
+    alpha_blend_color_parameter = None
+    alpha_blend_opacity_parameter = None
+    tint_color_parameter = None
+    glancing_tint_color_parameter = None
+    brightness_parameter = None
+    glancing_brightness_parameter = None
+    lightmap_translucent_map_parameter = None
+    lightmap_translucent_color_parameter = None
+    lightmap_translucent_alpha_parameter = None
+    for parameter in parameters:
+        if parameter.name == "environment_map":
+            environment_map_parameter = parameter
+        elif parameter.name == "environment_color":
+            environment_color_parameter = parameter
+        elif parameter.name == "specular_map":
+            specular_map_parameter = parameter
+        elif parameter.name == "alpha_blend_map":
+            alpha_blend_map_parameter = parameter
+        elif parameter.name == "alpha_blend_color":
+            alpha_blend_color_parameter = parameter
+        elif parameter.name == "alpha_blend_opacity":
+            alpha_blend_opacity_parameter = parameter
+        elif parameter.name == "tint_color":
+            tint_color_parameter = parameter
+        elif parameter.name == "glancing_tint_color":
+            glancing_tint_color_parameter = parameter
+        elif parameter.name == "brightness":
+            brightness_parameter = parameter
+        elif parameter.name == "glancing_brightness":
+            glancing_brightness_parameter = parameter
+        elif parameter.name == "lightmap_translucent_map":
+            lightmap_translucent_map_parameter = parameter
+        elif parameter.name == "lightmap_translucent_color":
+            lightmap_translucent_color_parameter = parameter
+        elif parameter.name == "lightmap_translucent_alpha":
+            lightmap_translucent_alpha_parameter = parameter
+
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_data_path
+    for node in mat.node_tree.nodes:
+        mat.node_tree.nodes.remove(node)
+
+    output_material_node = get_output_material_node(mat)
+    output_material_node.location = Vector((0.0, 0.0))
+
+    shader_node = get_shader_node(mat.node_tree, "one_alpha_env")
+    shader_node.location = Vector((-450.0, -20.0))
+    shader_node.name = "Plasma Alpha"
+    shader_node.width = 400.0
+    shader_node.height = 100.0
+
+    connect_inputs(mat.node_tree, shader_node, "Shader", output_material_node, "Surface")
+
+    if not environment_map_parameter == None:
+        environment_map, environment_map_name, environment_map_bitmap = get_h2_bitmap(environment_map_parameter.bitmap, texture_root, report)
+        environment_node = generate_image_node(mat, environment_map, environment_map_bitmap, environment_map_name)
+        environment_node.name = "Environment Map"
+        environment_node.location = Vector((-900, 525))
+        if not environment_node.image == None:
+            environment_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+        connect_inputs(mat.node_tree, environment_node, "Color", shader_node, "Environment Map")
+
+    if not environment_color_parameter == None:
+        shader_node.inputs["Environment Color"].default_value = environment_color_parameter.color
+
+    if not specular_map_parameter == None:
+        specular_map, specular_map_name, specular_map_bitmap = get_h2_bitmap(specular_map_parameter.bitmap, texture_root, report)
+        specular_node = generate_image_node(mat, specular_map, specular_map_bitmap, specular_map_name)
+        specular_node.name = "Specular Map"
+        specular_node.location = Vector((-900, 525))
+        if not specular_node.image == None:
+            specular_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+        connect_inputs(mat.node_tree, specular_node, "Color", shader_node, "Specular Map")
+        set_image_scale(mat, specular_node, specular_map_parameter.scale)
+
+    if not alpha_blend_map_parameter == None:
+        alpha_blend_map, alpha_blend_map_name, alpha_blend_map_bitmap = get_h2_bitmap(alpha_blend_map_parameter.bitmap, texture_root, report)
+        alpha_blend_node = generate_image_node(mat, alpha_blend_map, alpha_blend_map_bitmap, alpha_blend_map_name)
+        alpha_blend_node.name = "Alpha Blend Map"
+        alpha_blend_node.location = Vector((-900, 525))
+        if not alpha_blend_node.image == None:
+            alpha_blend_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+        connect_inputs(mat.node_tree, alpha_blend_node, "Color", shader_node, "Alpha Blend Map")
+        connect_inputs(mat.node_tree, alpha_blend_node, "Alpha", shader_node, "Alpha Blend Map Alpha")
+        set_image_scale(mat, alpha_blend_node, alpha_blend_map_parameter.scale)
+
+    if not alpha_blend_color_parameter == None:
+        shader_node.inputs["Alpha Blend Color"].default_value = alpha_blend_color_parameter.color
+
+    if not alpha_blend_opacity_parameter == None:
+        shader_node.inputs["Alpha Blend Opacity"].default_value = alpha_blend_opacity_parameter.value
+
+    if not tint_color_parameter == None:
+        shader_node.inputs["Tint Color"].default_value = tint_color_parameter.color
+
+    if not glancing_tint_color_parameter == None:
+        shader_node.inputs["Glancing Tint Color"].default_value = glancing_tint_color_parameter.color
+        
+    if not brightness_parameter == None:
+        shader_node.inputs["Brightness"].default_value = brightness_parameter.value
+
+    if not glancing_brightness_parameter == None:
+        shader_node.inputs["Glancing Brightness"].default_value = glancing_brightness_parameter.value
+
+    if not lightmap_translucent_map_parameter == None:
+        lightmap_translucent_map, lightmap_translucent_map_name, lightmap_translucent_map_bitmap = get_h2_bitmap(lightmap_translucent_map_parameter.bitmap, texture_root, report)
+        lightmap_translucent_node = generate_image_node(mat, lightmap_translucent_map, lightmap_translucent_map_bitmap, lightmap_translucent_map_name)
+        lightmap_translucent_node.name = "Lightmap Translucent Map"
+        lightmap_translucent_node.location = Vector((-900, 525))
+        if not lightmap_translucent_node.image == None:
+            lightmap_translucent_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+        connect_inputs(mat.node_tree, lightmap_translucent_node, "Color", shader_node, "Lightmap Translucent Map")
+        
+    if not lightmap_translucent_color_parameter == None:
+        shader_node.inputs["Lightmap Translucent Color"].default_value = lightmap_translucent_color_parameter.color
+
+    if not lightmap_translucent_alpha_parameter == None:
+        shader_node.inputs["Lightmap Translucent Alpha"].default_value = lightmap_translucent_alpha_parameter.value
