@@ -196,7 +196,7 @@ def generate_shader_tex_bump(mat, shader, shader_template, report):
 
     connect_inputs(mat.node_tree, tex_bump_node, "Shader", output_material_node, "Surface")
 
-    tex_bump_node.inputs["Lightmap Type"].default_value = get_lightmap_factor(shader.lightmap_type)
+    tex_bump_node.inputs["Lightmap Factor"].default_value = get_lightmap_factor(shader.lightmap_type)
 
     if not bump_parameter == None:
         bump_map, bump_map_name, bump_bitmap = get_h2_bitmap(bump_parameter.bitmap, texture_root, report)
@@ -306,7 +306,7 @@ def generate_shader_tex_bump_illum(mat, shader, shader_template, report):
 
     connect_inputs(mat.node_tree, tex_bump_illum_node, "Shader", output_material_node, "Surface")
 
-    tex_bump_illum_node.inputs["Lightmap Type"].default_value = get_lightmap_factor(shader.lightmap_type)
+    tex_bump_illum_node.inputs["Lightmap Factor"].default_value = get_lightmap_factor(shader.lightmap_type)
 
     if not bump_parameter == None:
         bump_map, bump_map_name, bump_bitmap = get_h2_bitmap(bump_parameter.bitmap, texture_root, report)
@@ -417,7 +417,7 @@ def generate_shader_tex_bump_detail_blend(mat, shader, shader_template, report):
 
     connect_inputs(mat.node_tree, tex_bump_node, "Shader", output_material_node, "Surface")
 
-    tex_bump_node.inputs["Lightmap Type"].default_value = get_lightmap_factor(shader.lightmap_type)
+    tex_bump_node.inputs["Lightmap Factor"].default_value = get_lightmap_factor(shader.lightmap_type)
 
     if not bump_parameter == None:
         bump_map, bump_map_name, bump_bitmap = get_h2_bitmap(bump_parameter.bitmap, texture_root, report)
@@ -523,7 +523,7 @@ def generate_shader_tex_bump_detail_blend_detail(mat, shader, shader_template, r
 
     connect_inputs(mat.node_tree, tex_bump_node, "Shader", output_material_node, "Surface")
 
-    tex_bump_node.inputs["Lightmap Type"].default_value = get_lightmap_factor(shader.lightmap_type)
+    tex_bump_node.inputs["Lightmap Factor"].default_value = get_lightmap_factor(shader.lightmap_type)
 
     if not bump_parameter == None:
         bump_map, bump_map_name, bump_bitmap = get_h2_bitmap(bump_parameter.bitmap, texture_root, report)
@@ -596,3 +596,127 @@ def generate_shader_tex_bump_detail_blend_detail(mat, shader, shader_template, r
         tex_bump_node.inputs["Specular Color"].default_value = specular_parameter.color
     if not specular_glancing_parameter == None:
         tex_bump_node.inputs["Specular Glancing Color"].default_value = specular_glancing_parameter.color
+
+def generate_shader_tex_bump_alpha_test(mat, shader, shader_template, report):
+    mat.use_nodes = True
+
+    parameter_keys = ["bump_map", "alpha_test_map", "lightmap_alphatest_map", "lightmap_foliage_scale", "base_map", "detail_map", "specular_color", "specular_glancing_color"]
+    parameters = generate_parameters(shader, shader_template, parameter_keys)
+
+    bump_parameter = None
+    alpha_test_parameter = None
+    lightmap_alphatest_parameter = None
+    lightmap_foliage_scale_parameter = None
+    base_parameter = None
+    detail_parameter = None
+    specular_parameter = None
+    specular_glancing_parameter = None
+    for parameter in parameters:
+        if parameter.name == "bump_map":
+            bump_parameter = parameter
+        elif parameter.name == "alpha_test_map":
+            alpha_test_parameter = parameter
+        elif parameter.name == "lightmap_alphatest_map":
+            lightmap_alphatest_parameter = parameter
+        elif parameter.name == "lightmap_foliage_scale":
+            lightmap_foliage_scale_parameter = parameter
+        elif parameter.name == "base_map":
+            base_parameter = parameter
+        elif parameter.name == "detail_map":
+            detail_parameter = parameter
+        elif parameter.name == "specular_color":
+            specular_parameter = parameter
+        elif parameter.name == "specular_glancing_color":
+            specular_glancing_parameter = parameter
+
+    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_data_path
+    for node in mat.node_tree.nodes:
+        mat.node_tree.nodes.remove(node)
+
+    output_material_node = get_output_material_node(mat)
+    output_material_node.location = Vector((0.0, 0.0))
+
+    shader_node = get_shader_node(mat.node_tree, "tex_bump_alpha_test")
+    shader_node.location = Vector((-450.0, -20.0))
+    shader_node.name = "Tex Bump Alpha Test"
+    shader_node.width = 400.0
+    shader_node.height = 100.0
+
+    connect_inputs(mat.node_tree, shader_node, "Shader", output_material_node, "Surface")
+
+    shader_node.inputs["Lightmap Factor"].default_value = get_lightmap_factor(shader.lightmap_type)
+
+    if not bump_parameter == None:
+        bump_map, bump_map_name, bump_bitmap = get_h2_bitmap(bump_parameter.bitmap, texture_root, report)
+        bump_node = generate_image_node(mat, bump_map, bump_bitmap, bump_map_name)
+        bump_node.name = "Bump Map"
+        bump_node.location = Vector((-900, 525))
+        bump_node.interpolation = 'Cubic'
+        if not bump_node.image == None:
+            bump_node.image.colorspace_settings.name = 'Non-Color'
+            bump_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+        connect_inputs(mat.node_tree, bump_node, "Color", shader_node, "Bump Map")
+        connect_inputs(mat.node_tree, bump_node, "Alpha", shader_node, "Bump Map Alpha")
+        set_image_scale(mat, bump_node, bump_parameter.scale)
+        if bump_bitmap:
+            height_value = 0.0
+            if not bump_bitmap.bump_height == 0.0:
+                height_value = bump_bitmap.bump_height
+
+            shader_node.inputs["Bump Map Repeat"].default_value = height_value
+
+    if not alpha_test_parameter == None:
+        alpha_test_map, alpha_test_map_name, alpha_test_bitmap = get_h2_bitmap(alpha_test_parameter.bitmap, texture_root, report)
+        alpha_test_node = generate_image_node(mat, alpha_test_map, alpha_test_bitmap, alpha_test_map_name)
+        alpha_test_node.name = "Alpha Test Map"
+        alpha_test_node.location = Vector((-900, 525))
+        if not alpha_test_node.image == None:
+            alpha_test_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+        connect_inputs(mat.node_tree, alpha_test_node, "Color", shader_node, "Alpha Test Map")
+        connect_inputs(mat.node_tree, alpha_test_node, "Alpha", shader_node, "Alpha Test Map Alpha")
+        set_image_scale(mat, alpha_test_node, alpha_test_parameter.scale)
+
+    if not lightmap_alphatest_parameter == None:
+        lightmap_alpha_test_map, lightmap_alpha_test_map_name, lightmap_alpha_test_bitmap = get_h2_bitmap(lightmap_alphatest_parameter.bitmap, texture_root, report)
+        lightmap_alpha_test_node = generate_image_node(mat, lightmap_alpha_test_map, lightmap_alpha_test_bitmap, lightmap_alpha_test_map_name)
+        lightmap_alpha_test_node.name = "Lightmap Alpha Test Map"
+        lightmap_alpha_test_node.location = Vector((-900, 525))
+        if not lightmap_alpha_test_node.image == None:
+            lightmap_alpha_test_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+        connect_inputs(mat.node_tree, lightmap_alpha_test_node, "Color", shader_node, "Lightmap Alpha Test Map")
+        connect_inputs(mat.node_tree, lightmap_alpha_test_node, "Alpha", shader_node, "Lightmap Alpha Test Map Alpha")
+
+    if not lightmap_foliage_scale_parameter == None:
+        shader_node.inputs["Lightmap Foliage Scale"].default_value = lightmap_foliage_scale_parameter.value
+
+    if not base_parameter == None:
+        base_map, base_map_name, base_bitmap = get_h2_bitmap(base_parameter.bitmap, texture_root, report)
+        base_node = generate_image_node(mat, base_map, base_bitmap, base_map_name)
+        base_node.name = "Base Map"
+        base_node.location = Vector((-900, -75))
+        if not base_node.image == None:
+            base_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+        connect_inputs(mat.node_tree, base_node, "Color", shader_node, "Base Map")
+        connect_inputs(mat.node_tree, base_node, "Alpha", shader_node, "Base Map Alpha")
+        set_image_scale(mat, base_node, base_parameter.scale)
+
+    if not detail_parameter == None:
+        detail_map, detail_map_name, detail_bitmap = get_h2_bitmap(detail_parameter.bitmap, texture_root, report)
+        detail_node = generate_image_node(mat, detail_map, detail_bitmap, detail_map_name)
+        detail_node.name = "Detail Map"
+        detail_node.location = Vector((-900, -375))
+        if not detail_node.image == None:
+            detail_node.image.colorspace_settings.name = 'Non-Color'
+            detail_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+        connect_inputs(mat.node_tree, detail_node, "Color", shader_node, "Detail Map")
+        set_image_scale(mat, detail_node, detail_parameter.scale)
+
+    if not specular_parameter == None:
+        shader_node.inputs["Specular Color"].default_value = specular_parameter.color
+    if not specular_glancing_parameter == None:
+        shader_node.inputs["Specular Glancing Color"].default_value = specular_glancing_parameter.color

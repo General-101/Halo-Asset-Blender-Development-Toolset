@@ -716,23 +716,23 @@ def get_shader_opaque(shader_name, mat, shader, shader_template, report):
     elif shader_name == "render_layer_disabled":
         shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
     elif shader_name == "tex_alpha_test":
-        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+        shader_opaque.generate_shader_tex_bump_alpha_test(mat, shader, shader_template, report)
     elif shader_name == "tex_alpha_test_clamped":
-        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+        shader_opaque.generate_shader_tex_bump_alpha_test(mat, shader, shader_template, report)
     elif shader_name == "tex_bump":
         shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_active_camo":
         shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_alpha_test":
-        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+        shader_opaque.generate_shader_tex_bump_alpha_test(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_alpha_test_clamped":
-        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+        shader_opaque.generate_shader_tex_bump_alpha_test(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_alpha_test_clamped_single_pass":
-        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+        shader_opaque.generate_shader_tex_bump_alpha_test(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_alpha_test_detail":
-        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+        shader_opaque.generate_shader_tex_bump_alpha_test(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_alpha_test_single_pass":
-        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+        shader_opaque.generate_shader_tex_bump_alpha_test(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_bloom":
         shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_clamped_multiply_map":
@@ -764,11 +764,11 @@ def get_shader_opaque(shader_name, mat, shader, shader_template, report):
     elif shader_name == "tex_bump_env":
         shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_env_alpha_test":
-        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+        shader_opaque.generate_shader_tex_bump_alpha_test(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_env_alpha_test_combined":
-        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+        shader_opaque.generate_shader_tex_bump_alpha_test(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_env_alpha_test_indexed":
-        shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
+        shader_opaque.generate_shader_tex_bump_alpha_test(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_env_clamped":
         shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_env_clamped_combined":
@@ -854,11 +854,11 @@ def get_shader_opaque(shader_name, mat, shader, shader_template, report):
     elif shader_name == "tex_bump_illum_3_channel":
         shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_illum_alpha_test":
-        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+        shader_opaque.generate_shader_tex_bump_alpha_test(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_illum_alpha_test_illum":
-        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+        shader_opaque.generate_shader_tex_bump_alpha_test(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_illum_alpha_test_single_pass":
-        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+        shader_opaque.generate_shader_tex_bump_alpha_test(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_illum_bloom":
         shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_illum_bloom_3_channel":
