@@ -886,7 +886,7 @@ def get_shader_opaque(shader_name, mat, shader, shader_template, report):
     elif shader_name == "tex_bump_plasma":
         shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_plasma_one_channel_illum":
-        shader_opaque.generate_shader_tex_bump_illum(mat, shader, shader_template, report)
+        shader_opaque.generate_shader_tex_bump_plasma_one_channel_illum(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_shiny":
         shader_opaque.generate_shader_tex_bump(mat, shader, shader_template, report)
     elif shader_name == "tex_bump_terrain":
