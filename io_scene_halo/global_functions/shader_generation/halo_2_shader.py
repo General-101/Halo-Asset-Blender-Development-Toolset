@@ -197,15 +197,25 @@ def generate_shader(mat, shader, shader_template, report):
                     place_node(bitmap_node, 2, row)
 
                     is_bump = False
+                    is_detail = False
+                    is_noise = False
                     if input_socket_name == "Bump Map":
                         is_bump = True
+
+                    if "Detail" in input_socket_name:
+                        is_detail = True
+
+                    if "Noise" in input_socket_name:
+                        is_noise = True
 
                     if is_bump:    
                         bitmap_node.interpolation = 'Cubic'
 
                     if not bitmap_node.image == None:
-                        if is_bump:
+                        if is_bump or is_detail:
                             bitmap_node.image.colorspace_settings.name = 'Non-Color'
+                        elif is_noise:
+                            bitmap_node.image.colorspace_settings.name = 'Linear Rec.709'
 
                         bitmap_node.image.alpha_mode = 'CHANNEL_PACKED'
 
