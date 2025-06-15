@@ -828,10 +828,16 @@ def get_fallback_shader_node(tree, shader_name):
     best_score = (-1, float('inf'))
     node_group = None
 
+    blacklist = ("Lightmapper Postprocessing", "Halo Time")
+
     with bpy.data.libraries.load(HALO_2_SHADER_RESOURCES) as (data_from, data_to):
         shader_features = set(shader_name.lower().split("_"))
+        valid_groups = []
+        for node_group in data_from.node_groups:
+            if not node_group in blacklist:
+                valid_groups.append(node_group)
 
-        for node_group_name in data_from.node_groups:
+        for node_group_name in valid_groups:
             group_features = set(node_group_name.lower().split("_"))
 
             matches = len(shader_features & group_features)

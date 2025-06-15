@@ -54,6 +54,8 @@ from ..file_tag.h2.file_scenario.process_file import process_file as process_h2_
 from ..file_tag.h2.file_scenario_structure_lightmap.build_asset import build_asset as build_h2_lightmap
 from ..file_tag.h2.file_scenario_structure_lightmap.format import GeometryBucketFlags
 from ..global_functions import global_functions
+from ..global_functions.shader_generation.shader_helper import HALO_2_SHADER_RESOURCES
+from ..global_functions.shader_generation.shader_helper import connect_inputs
 
 try:
     from PIL import Image
@@ -128,6 +130,68 @@ def estimate_image_size(obj, power_of_two=True, texel_density=None, target_resol
         img_h = next_power_of_two(img_h)
 
     return int(img_w), int(img_h)
+
+def ensure_dummy_camera(scene):
+    if not scene.camera:
+        cam_data = bpy.data.cameras.new("DummyCamera")
+        cam_obj = bpy.data.objects.new("DummyCamera", cam_data)
+        scene.collection.objects.link(cam_obj)
+        scene.camera = cam_obj
+
+def run_lightmap_postprocessing(image_texture):
+    GROUP_NAME = "Lightmapper Postprocessing"
+    NODE_IMAGE = "Lightmap Image"
+    NODE_GROUP = "Postprocessing Group"
+    NODE_VIEWER = "Lightmap Viewer"
+
+    if GROUP_NAME not in bpy.data.node_groups:
+        with bpy.data.libraries.load(HALO_2_SHADER_RESOURCES, link=False) as (data_from, data_to):
+            if GROUP_NAME in data_from.node_groups:
+                data_to.node_groups.append(GROUP_NAME)
+
+    scene = bpy.context.scene
+    scene.use_nodes = True
+    tree = scene.node_tree
+
+    img_node = tree.nodes.get(NODE_IMAGE)
+    if not img_node:
+        img_node = tree.nodes.new("CompositorNodeImage")
+        img_node.name = NODE_IMAGE
+        img_node.location = (-600, 0)
+
+    img_node.image = image_texture
+
+    group_node = tree.nodes.get(NODE_GROUP)
+    if not group_node:
+        group_node = tree.nodes.new("CompositorNodeGroup")
+        group_node.name = NODE_GROUP
+        group_node.location = (-300, 0)
+        group_node.node_tree = bpy.data.node_groups[GROUP_NAME]
+
+    viewer = tree.nodes.get(NODE_VIEWER)
+    if not viewer:
+        viewer = tree.nodes.new("CompositorNodeViewer")
+        viewer.name = NODE_VIEWER
+        viewer.location = (100, -200)
+
+    connect_inputs(tree, img_node, "Image", group_node, "Image")
+    connect_inputs(tree, group_node, "Image", viewer, "Image")
+
+    ensure_dummy_camera(bpy.context.scene)
+    scene = bpy.context.scene
+
+    original_res_x = scene.render.resolution_x
+    original_res_y = scene.render.resolution_y
+
+    scene.render.resolution_x = 1
+    scene.render.resolution_y = 1
+
+    bpy.ops.render.render(use_viewport=False)
+
+    scene.render.resolution_x = original_res_x
+    scene.render.resolution_y = original_res_y
+
+    return bpy.data.images.get("Viewer Node")
 
 def light_halo_2_dynamic(context, lightmap_ob, uv_index=1):
     color_attribute = lightmap_ob.data.attributes.active_color
@@ -227,7 +291,9 @@ def light_halo_2_mesh(context, lightmap_ob, BITMAP_ASSET, BITMAP, TAG, image_mul
     lightmap_ob.select_set(False)
     context.view_layer.objects.active = None
 
-    buf = bytearray([int(p * 255) for p in image.pixels])
+    image = run_lightmap_postprocessing(image)
+
+    buf = bytearray([min(max(int(p * 255), 0), 255) for p in image.pixels])
     image = Image.frombytes("RGBA", (width, height), buf, 'raw', "RGBA")
 
     lightmap_flags = H2BitmapFlags.power_of_two_dimensions.value
