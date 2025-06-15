@@ -235,6 +235,9 @@ def generate_shader(mat, shader, shader_template, report):
 
                 elif parameter_type == TypeEnum._value:
                     input_socket.default_value = parameter.value
+                    if "emissive_power" in parameter.name:
+                        input_socket.default_value *= 50
+
                 elif parameter_type == TypeEnum.color:
                     input_socket.default_value = parameter.color
                 elif parameter_type == TypeEnum.switch:
