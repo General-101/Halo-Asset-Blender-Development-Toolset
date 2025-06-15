@@ -825,32 +825,31 @@ def get_shader_node(tree, shader_name):
 
 def get_fallback_shader_node(tree, shader_name):
     shader_node = None
+    best_score = (-1, float('inf'))
     node_group = None
-    node_group_hits_list = []
 
     with bpy.data.libraries.load(HALO_2_SHADER_RESOURCES) as (data_from, data_to):
-        features = shader_name.split("_")
-        for lib_node_group in data_from.node_groups:
-            hits = 0
-            for feature in features:
-                if feature in lib_node_group:
-                    hits += 1
+        shader_features = set(shader_name.lower().split("_"))
 
-            node_group_hits_list.append(hits)
+        for node_group_name in data_from.node_groups:
+            group_features = set(node_group_name.lower().split("_"))
 
-        node_group_index = node_group_hits_list.index(max(node_group_hits_list))
-        node_group_match = data_from.node_groups[node_group_index]
+            matches = len(shader_features & group_features)
+            extras = len(group_features - shader_features)
+            score = (matches, -extras)
 
-        node_group = node_group_match
-        if not node_group_match in bpy.data.node_groups:
-            data_to.node_groups.append(node_group_match)
+            if score > best_score:
+                best_score = score
+                node_group = node_group_name
+
+        if node_group and not node_group in bpy.data.node_groups:
+            data_to.node_groups.append(node_group)
 
     if node_group:
         shader_node = tree.nodes.new("ShaderNodeGroup")
         shader_node.node_tree = bpy.data.node_groups[node_group]
 
     return shader_node
-
 
 def set_image_scale(mat, image_node, image_scale):
     vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
