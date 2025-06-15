@@ -97,5 +97,8 @@ See the following links for information on exporting or importing assets from th
  * Discord user meowsandstuff
    * For contributing to the Halo 2 shader nodes used in this project.
 
+ * Discord user JackOfChaos
+   * For contributing to the Halo 1 and Halo 2 shader nodes used in this project.
+
  * Discord user general_101
    * Getting the ball rolling I guess?
