@@ -226,6 +226,15 @@ def run_lightmap_postprocessing(image_texture):
 
     return bpy.data.images.get("Viewer Node")
 
+def find_layer_collection(layer_collection, target_collection):
+    if layer_collection.collection == target_collection:
+        return layer_collection
+    for child in layer_collection.children:
+        result = find_layer_collection(child, target_collection)
+        if result:
+            return result
+    return None
+
 def light_halo_2_dynamic(context, lightmap_ob, uv_index=1):
     color_attribute = lightmap_ob.data.attributes.active_color
     if lightmap_ob.data.attributes.active_color == None:
@@ -541,7 +550,14 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                 lightmap_instances_name = "%s_lightmap_instances" % bsp_name
                 lightmap_collection = bpy.data.collections.get(lightmap_name)
                 lightmap_instances_collection = bpy.data.collections.get(lightmap_instances_name)
-                if lightmap_collection and lightmap_instances_collection and lightmap_collection.hide_viewport == False:
+
+                bake_collection = False
+                if lightmap_collection:
+                    bake_collection = find_layer_collection(bpy.context.view_layer.layer_collection, lightmap_collection).is_visible
+                    if lightmap_instances_collection:
+                        bake_collection = find_layer_collection(bpy.context.view_layer.layer_collection, lightmap_instances_collection).is_visible
+
+                if bake_collection:
                     SBSP_ASSET = parse_tag(bsp_element.structure_bsp, report, game_title, "retail")
                     LTMP_ASSET = parse_tag(bsp_element.structure_lightmap, report, game_title, "retail")
                     if LTMP_ASSET:
