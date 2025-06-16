@@ -56,6 +56,7 @@ from ..file_tag.h2.file_scenario_structure_lightmap.format import GeometryBucket
 from ..global_functions import global_functions
 from ..global_functions.shader_generation.shader_helper import HALO_2_SHADER_RESOURCES
 from ..global_functions.shader_generation.shader_helper import connect_inputs
+from ..global_functions.mesh_processing import gather_parameters
 
 try:
     from PIL import Image
@@ -137,6 +138,38 @@ def ensure_dummy_camera(scene):
         cam_obj = bpy.data.objects.new("DummyCamera", cam_data)
         scene.collection.objects.link(cam_obj)
         scene.camera = cam_obj
+
+def set_lightmap_power_modifier():
+    original_emission_values = []
+    for mat in bpy.data.materials:
+        power_modifier = 1.0
+        processed_lightmap_properties = gather_parameters(mat.name)
+        processed_parameters = processed_lightmap_properties[1]
+
+        for parameter in processed_parameters:
+            if parameter.startswith(" lp"):
+                power_modifier = float(parameter.split(":", 1)[1])
+                break
+
+        if not power_modifier == 1 and mat.use_nodes:
+            tree = mat.node_tree
+            output_node = None
+
+            for node in tree.nodes:
+                if node.type == 'OUTPUT_MATERIAL':
+                    output_node = node
+                    break
+
+            if output_node:
+                surface_input = output_node.inputs.get("Surface")
+                if not surface_input is None and surface_input.is_linked:
+                    linked_node = surface_input.links[0].from_node
+                    for input in linked_node.inputs:
+                        if "Emissive Power" in input.name:
+                            original_emission_values.append((input, input.default_value))
+                            input.default_value *= power_modifier
+
+    return original_emission_values
 
 def run_lightmap_postprocessing(image_texture):
     GROUP_NAME = "Lightmapper Postprocessing"
@@ -224,6 +257,7 @@ def light_halo_2_dynamic(context, lightmap_ob, uv_index=1):
                         use_split_materials=False, 
                         use_automatic_name=False, 
                         uv_layer=lightmap_ob.data.uv_layers[uv_index].name)
+
     lightmap_ob.select_set(False)
     context.view_layer.objects.active = None
 
@@ -492,6 +526,8 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
             report({'WARNING'}, f"Failed to process {scenario_path}: {e}")
 
         if SCNR_ASSET:
+            original_emission_values = set_lightmap_power_modifier()
+
             TAG = tag_format.TagAsset()
 
             unique_id_list = []
@@ -506,7 +542,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                 lightmap_collection = bpy.data.collections.get(lightmap_name)
                 lightmap_instances_collection = bpy.data.collections.get(lightmap_instances_name)
 
-                if not lightmap_collection == None:
+                if lightmap_collection and lightmap_instances_collection and not lightmap_collection.hide_render and not lightmap_instances_collection.hide_render:
                     SBSP_ASSET = parse_tag(bsp_element.structure_bsp, report, game_title, "retail")
                     LTMP_ASSET = parse_tag(bsp_element.structure_lightmap, report, game_title, "retail")
                     if LTMP_ASSET:
@@ -625,6 +661,10 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                         lightmap_path = os.path.join(halo2_tag_path, "%s.scenario_structure_lightmap" % bsp_element.structure_lightmap.name)
                         with open(lightmap_path, 'wb') as output_stream:
                             build_h2_lightmap(output_stream, LTMP_ASSET, report)
+
+            for original_emission_value in original_emission_values:
+                node_input, value = original_emission_value
+                node_input.default_value = value
 
     context.scene.tag_scenario.global_lightmap_multiplier = 1
     return {'FINISHED'}
