@@ -541,8 +541,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                 lightmap_instances_name = "%s_lightmap_instances" % bsp_name
                 lightmap_collection = bpy.data.collections.get(lightmap_name)
                 lightmap_instances_collection = bpy.data.collections.get(lightmap_instances_name)
-
-                if lightmap_collection and lightmap_instances_collection and not lightmap_collection.hide_render and not lightmap_instances_collection.hide_render:
+                if lightmap_collection and lightmap_instances_collection and lightmap_collection.hide_viewport == False:
                     SBSP_ASSET = parse_tag(bsp_element.structure_bsp, report, game_title, "retail")
                     LTMP_ASSET = parse_tag(bsp_element.structure_lightmap, report, game_title, "retail")
                     if LTMP_ASSET:
