@@ -1594,7 +1594,6 @@ def get_data_checksum():
 
     return pack_datetime(now.year, now.month, now.day, now.hour, now.minute)
 
-
 def run_code(code_string):
     def toolset_exec(code):
         if bpy.context.preferences.addons["io_scene_halo"].preferences.enable_profiling:

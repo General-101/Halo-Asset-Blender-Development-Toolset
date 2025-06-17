@@ -1075,7 +1075,7 @@ def get_mesh_data(ASSET, section_data, mesh, material_count, materials, random_c
             vertex_list = [section_data.raw_vertices[triangle[0]], section_data.raw_vertices[triangle[1]], section_data.raw_vertices[triangle[2]]]
             for vertex_idx, vertex in enumerate(vertex_list):
                 loop_index = (3 * triangle_idx) + vertex_idx
-                uv_name = 'UVMap_%s' % 0
+                uv_name = "UVMap_Render"
                 layer_uv = mesh.uv_layers.get(uv_name)
                 if layer_uv is None:
                     layer_uv = mesh.uv_layers.new(name=uv_name)

@@ -29,7 +29,9 @@ import bpy
 import zlib
 import math
 import bmesh
+import shutil
 
+from pathlib import Path
 from mathutils import Vector
 from ..global_functions import tag_format
 from ..global_functions.parse_tags import parse_tag
@@ -63,6 +65,8 @@ try:
 except ModuleNotFoundError:
     print("PIL not found. Unable to create image node.")
     Image = None
+
+LIGHTMAP_TEMP = os.path.join(os.path.expanduser("~"), "Blender Halo Toolset", "Lightmap Temp")
 
 def next_power_of_two(x):
     return 2 ** math.ceil(math.log2(x))
@@ -139,9 +143,10 @@ def ensure_dummy_camera(scene):
         scene.collection.objects.link(cam_obj)
         scene.camera = cam_obj
 
-def set_lightmap_power_modifier():
-    original_emission_values = []
+def set_input_modifiers():
+    original_input_values = []
     for mat in bpy.data.materials:
+        mat_inputs = []
         power_modifier = 1.0
         processed_lightmap_properties = gather_parameters(mat.name)
         processed_parameters = processed_lightmap_properties[1]
@@ -151,7 +156,7 @@ def set_lightmap_power_modifier():
                 power_modifier = float(parameter.split(":", 1)[1])
                 break
 
-        if not power_modifier == 1 and mat.use_nodes:
+        if mat.use_nodes:
             tree = mat.node_tree
             output_node = None
 
@@ -165,11 +170,19 @@ def set_lightmap_power_modifier():
                 if not surface_input is None and surface_input.is_linked:
                     linked_node = surface_input.links[0].from_node
                     for input in linked_node.inputs:
-                        if "Emissive Power" in input.name:
-                            original_emission_values.append((input, input.default_value))
+                        if "Emissive Power" in input.name and not power_modifier == 1:
+                            mat_inputs.append((input, input.default_value))
                             input.default_value *= power_modifier
+                        if "Lightmap Factor" == input.name:
+                            mat_inputs.append((input, input.default_value))
+                            input.default_value = 0.0
+                        if "Bump Map Repeat" == input.name:
+                            mat_inputs.append((input, input.default_value))
+                            input.default_value = 0.0
 
-    return original_emission_values
+        original_input_values.append(mat_inputs)
+
+    return original_input_values
 
 def run_lightmap_postprocessing(image_texture):
     GROUP_NAME = "Lightmapper Postprocessing"
@@ -235,38 +248,39 @@ def find_layer_collection(layer_collection, target_collection):
             return result
     return None
 
-def light_halo_2_dynamic(context, lightmap_ob, uv_index=1):
-    color_attribute = lightmap_ob.data.attributes.active_color
-    if lightmap_ob.data.attributes.active_color == None:
-        color_attribute = lightmap_ob.data.attributes.new(name="Color", type="BYTE_COLOR", domain="POINT")
+def run_bake(context, lightmap_ob, generate_vertex_colors=False, render_name="UVMap_Render", lightmap_name="UVMap_Lightmap", uv_index=0):
+    uv_layers = lightmap_ob.data.uv_layers
+    if generate_vertex_colors:
+        color_attribute = lightmap_ob.data.attributes.active_color
+        if lightmap_ob.data.attributes.active_color == None:
+            color_attribute = lightmap_ob.data.attributes.new(name="Color", type="BYTE_COLOR", domain="POINT")
+
+        uv_name = "UVMap_%s" % uv_index
+        uv_layers[uv_name].active_render = True
+        uv_layers[uv_name].active = True 
+        target_name = 'VERTEX_COLORS'
+        bake_layer = uv_name
+    else:
+        uv_layers[lightmap_name].active_render = True
+        uv_layers[render_name].active = True 
+        target_name = 'IMAGE_TEXTURES'
+        bake_layer = lightmap_name
 
     lightmap_ob.select_set(True)
     context.view_layer.objects.active = lightmap_ob
 
     context.scene.render.engine = 'CYCLES'
-    bpy.ops.object.bake(type='DIFFUSE', 
-                        pass_filter={'DIRECT','INDIRECT'}, 
-                        filepath='', 
-                        width=512, 
-                        height=512, 
-                        margin=16, 
-                        margin_type='EXTEND', 
-                        use_selected_to_active=False, 
-                        max_ray_distance=0.0, 
-                        cage_extrusion=0.0, 
-                        cage_object='', 
-                        normal_space='TANGENT', 
-                        normal_r='POS_X', 
-                        normal_g='POS_Y', 
-                        normal_b='POS_Z', 
-                        target='VERTEX_COLORS', 
-                        save_mode='INTERNAL', 
-                        use_clear=False, 
-                        use_cage=False, 
-                        use_split_materials=False, 
-                        use_automatic_name=False, 
-                        uv_layer=lightmap_ob.data.uv_layers[uv_index].name)
-
+    bpy.ops.object.bake(
+        type='DIFFUSE',
+        pass_filter={'DIRECT','INDIRECT'}, 
+        margin=16,
+        margin_type='EXTEND', 
+        use_clear=False,
+        use_selected_to_active=False,
+        target=target_name,
+        uv_layer=bake_layer
+    )
+    
     lightmap_ob.select_set(False)
     context.view_layer.objects.active = None
 
@@ -304,46 +318,23 @@ def light_halo_2_mesh(context, lightmap_ob, BITMAP_ASSET, BITMAP, TAG, image_mul
         image_node.select = True
         material_nodes.active = image_node
 
-    lightmap_ob.select_set(True)
-    context.view_layer.objects.active = lightmap_ob
-
-    context.scene.render.engine = 'CYCLES'
-    bpy.ops.object.bake(type='DIFFUSE', 
-                        pass_filter={'DIRECT','INDIRECT'}, 
-                        filepath='', 
-                        width=width, 
-                        height=height, 
-                        margin=16, 
-                        margin_type='EXTEND', 
-                        use_selected_to_active=False, 
-                        max_ray_distance=0.0, 
-                        cage_extrusion=0.0, 
-                        cage_object='', 
-                        normal_space='TANGENT', 
-                        normal_r='POS_X', 
-                        normal_g='POS_Y', 
-                        normal_b='POS_Z', 
-                        target='IMAGE_TEXTURES', 
-                        save_mode='INTERNAL', 
-                        use_clear=False, 
-                        use_cage=False, 
-                        use_split_materials=False, 
-                        use_automatic_name=False, 
-                        uv_layer=lightmap_ob.data.uv_layers[1].name)
-    
-    lightmap_ob.select_set(False)
-    context.view_layer.objects.active = None
+    run_bake(context, lightmap_ob)
 
     image = run_lightmap_postprocessing(image)
 
-    buf = bytearray([min(max(int(p * 255), 0), 255) for p in image.pixels])
-    image = Image.frombytes("RGBA", (width, height), buf, 'raw', "RGBA")
+    output_path = os.path.join(LIGHTMAP_TEMP, "Lightmap_%s.png" % lightmap_idx)
+    image.filepath_raw = str(output_path)
+    image.file_format = 'PNG'
+    image.save_render(filepath=image.filepath_raw)
+
+    with open(output_path, 'rb') as f:
+        pil_image = Image.open(f).convert("RGBA")
+
+    pil_image = pil_image.transpose(Image.FLIP_TOP_BOTTOM)
+    r, g, b, a = pil_image.split()
+    lightmap_data = Image.merge("RGBA", (b, g, r, a)).tobytes()
 
     lightmap_flags = H2BitmapFlags.power_of_two_dimensions.value
-
-    lightmap_image = image.convert('RGBA')
-    r,g,b,a = lightmap_image.split()
-    lightmap_data = Image.merge("RGBA", (b, g, r, a)).tobytes()
     lightmap_format = H2BitmapFormatEnum.a8r8g8b8.value
 
     bitmap_class = BITMAP.Bitmap()
@@ -367,6 +358,19 @@ def set_vertex_colors(lightmap_ob, geometry_bucket, section_offset, vertex_count
             geometry_bucket.raw_vertices[section_offset + vertex_index].primary_lightmap_color_RGBA = (R, G, B, A)
 
 def bake_clusters(context, game_title, scenario_path, image_multiplier, report, H2V=False):
+    os.makedirs(LIGHTMAP_TEMP, exist_ok=True)
+
+    for filename in os.listdir(LIGHTMAP_TEMP):
+        file_path = os.path.join(LIGHTMAP_TEMP, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print("Failed to delete %s: %s" % (LIGHTMAP_TEMP, e))
+
+
     bpy.ops.object.select_all(action='DESELECT')
     if game_title == "halo1" and Image:
         SCNR_ASSET = None
@@ -463,13 +467,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                                         image_node.select = True
                                         material_nodes.active = image_node
 
-                                    cluster_ob.select_set(True)
-                                    context.view_layer.objects.active = cluster_ob
-
-                                    context.scene.render.engine = 'CYCLES'
-                                    bpy.ops.object.bake(type='DIFFUSE', pass_filter={'DIRECT','INDIRECT'}, uv_layer=cluster_ob.data.uv_layers[1].name)
-                                    cluster_ob.select_set(False)
-                                    context.view_layer.objects.active = None
+                                    run_bake(context, cluster_ob)
 
                                     buf = bytearray([int(p * 255) for p in image.pixels])
                                     image = Image.frombytes("RGBA", (width, height), buf, 'raw', "RGBA")
@@ -535,7 +533,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
             report({'WARNING'}, f"Failed to process {scenario_path}: {e}")
 
         if SCNR_ASSET:
-            original_emission_values = set_lightmap_power_modifier()
+            original_input_values = set_input_modifiers()
 
             TAG = tag_format.TagAsset()
 
@@ -606,7 +604,9 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
 
                         lightmap_idx = 0
                         lightmap_collection.hide_render = False
-                        lightmap_instances_collection.hide_render = False
+                        if lightmap_instances_collection:
+                            lightmap_instances_collection.hide_render = False
+
                         for lightmap_ob_idx, lightmap_ob in enumerate(lightmap_collection.objects):
                             if lightmap_ob.tag_mesh.instance_lightmap_policy_enum == '0':
                                 cluster_lightmap_data, cluster_bitmap_class = light_halo_2_mesh(context, lightmap_ob, BITMAP_ASSET, BITMAP, TAG, image_multiplier, lightmap_idx, pixel_offset)
@@ -615,22 +615,25 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                                 pixel_data += cluster_lightmap_data
                                 pixel_offset += len(cluster_lightmap_data)
                             else:
-                                light_halo_2_dynamic(context, lightmap_ob)
+                                run_bake(context, lightmap_ob, True)
 
-                        for lightmap_instance_ob_idx, lightmap_instance_ob in enumerate(lightmap_instances_collection.objects):
-                            instance_geo = SBSP_ASSET.instanced_geometry_instances[lightmap_instance_ob_idx]
-                            instance_definition = SBSP_ASSET.instanced_geometry_definition[instance_geo.instance_definition]
-                            if lightmap_instance_ob.tag_mesh.instance_lightmap_policy_enum == '0' and instance_definition.shadow_casting_triangle_count > 0:
-                                instance_lightmap_data, instance_bitmap_class = light_halo_2_mesh(context, lightmap_instance_ob, BITMAP_ASSET, BITMAP, TAG, image_multiplier, lightmap_idx, pixel_offset)
-                                BITMAP.bitmaps.append(instance_bitmap_class)
-                                lightmap_idx += 1
-                                pixel_data += instance_lightmap_data
-                                pixel_offset += len(instance_lightmap_data)
-                            else:
-                                light_halo_2_dynamic(context, lightmap_instance_ob)
+                        if lightmap_instances_collection:
+                            for lightmap_instance_ob_idx, lightmap_instance_ob in enumerate(lightmap_instances_collection.objects):
+                                instance_geo = SBSP_ASSET.instanced_geometry_instances[lightmap_instance_ob_idx]
+                                instance_definition = SBSP_ASSET.instanced_geometry_definition[instance_geo.instance_definition]
+                                if lightmap_instance_ob.tag_mesh.instance_lightmap_policy_enum == '0' and instance_definition.shadow_casting_triangle_count > 0:
+                                    instance_lightmap_data, instance_bitmap_class = light_halo_2_mesh(context, lightmap_instance_ob, BITMAP_ASSET, BITMAP, TAG, image_multiplier, lightmap_idx, pixel_offset)
+                                    BITMAP.bitmaps.append(instance_bitmap_class)
+                                    lightmap_idx += 1
+                                    pixel_data += instance_lightmap_data
+                                    pixel_offset += len(instance_lightmap_data)
+                                else:
+                                    run_bake(context, lightmap_instance_ob, True)
 
                         lightmap_collection.hide_render = True
-                        lightmap_instances_collection.hide_render = True
+                        if lightmap_instances_collection:
+                            lightmap_instances_collection.hide_render = True
+                            
                         BITMAP.processed_pixel_data = TAG.RawData(len(pixel_data))
                         BITMAP.processed_pixels = pixel_data
 
@@ -647,14 +650,15 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                         with open(bitmap_path, 'wb') as output_stream:
                             build_h2_bitmap(output_stream, BITMAP, report, H2V)
 
-                        for instance_idx, instance_bucket_ref in enumerate(first_lightmap_group_entry.instance_bucket_refs):
-                            lightmap_instance_ob = lightmap_instances_collection.objects[instance_idx]
-                            vertex_count = len(lightmap_instance_ob.data.vertices)
-                            bucket_index = instance_bucket_ref.bucket_index
-                            geometry_bucket = first_lightmap_group_entry.geometry_buckets[bucket_index]
-                            if GeometryBucketFlags.color in GeometryBucketFlags(geometry_bucket.flags):
-                                for section_offset in instance_bucket_ref.section_offsets:
-                                    set_vertex_colors(lightmap_instance_ob, geometry_bucket, section_offset, vertex_count)
+                        if lightmap_instances_collection:
+                            for instance_idx, instance_bucket_ref in enumerate(first_lightmap_group_entry.instance_bucket_refs):
+                                lightmap_instance_ob = lightmap_instances_collection.objects[instance_idx]
+                                vertex_count = len(lightmap_instance_ob.data.vertices)
+                                bucket_index = instance_bucket_ref.bucket_index
+                                geometry_bucket = first_lightmap_group_entry.geometry_buckets[bucket_index]
+                                if GeometryBucketFlags.color in GeometryBucketFlags(geometry_bucket.flags):
+                                    for section_offset in instance_bucket_ref.section_offsets:
+                                        set_vertex_colors(lightmap_instance_ob, geometry_bucket, section_offset, vertex_count)
 
                         if not scenery_collection == None:
                             scenery_id_list = []
@@ -667,7 +671,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                                 vertex_count = len(scenery_ob.data.vertices)
                                 bucket_index = scenery_object_bucket_ref.bucket_index
                                 geometry_bucket = first_lightmap_group_entry.geometry_buckets[bucket_index]
-                                light_halo_2_dynamic(context, scenery_ob, 0)
+                                run_bake(context, scenery_ob, True)
                                 if GeometryBucketFlags.color in GeometryBucketFlags(geometry_bucket.flags):
                                     for section_offset in scenery_object_bucket_ref.section_offsets:
                                         set_vertex_colors(scenery_ob, geometry_bucket, section_offset, vertex_count)
@@ -677,9 +681,10 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                         with open(lightmap_path, 'wb') as output_stream:
                             build_h2_lightmap(output_stream, LTMP_ASSET, report)
 
-            for original_emission_value in original_emission_values:
-                node_input, value = original_emission_value
-                node_input.default_value = value
+            for material_inputs in original_input_values:
+                for original_input in material_inputs:
+                    node_input, value = original_input
+                    node_input.default_value = value
 
     context.scene.tag_scenario.global_lightmap_multiplier = 1
     return {'FINISHED'}

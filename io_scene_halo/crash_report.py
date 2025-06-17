@@ -49,12 +49,12 @@ Please create an issue at {URL} or email {EMAIL}""")
     def dump(self):
         """Returns the path the file was dumped to"""
         self.zfile.close()
-        crash_dir = os.path.expanduser("~\\blender_halo_crashes")
+        crash_dir = os.path.join(os.path.expanduser("~"), "Blender Halo Toolset", "Crash Reports")
         try:
             os.makedirs(crash_dir)
         except OSError:
             pass
-        file_name = f"{crash_dir}\\{int(time.time())}_crash.zip"
+        file_name = os.path.join(crash_dir, "%s_crash.zip" % int(time.time()))
         with open(file_name, 'wb') as f:
             f.write(self.zip_buffer.getvalue())
         return file_name

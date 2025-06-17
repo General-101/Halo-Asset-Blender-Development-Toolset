@@ -874,3 +874,5 @@ def set_image_scale(mat, image_node, image_scale):
     combine_xyz_node.inputs[0].default_value = image_scale[0]
     combine_xyz_node.inputs[1].default_value = image_scale[1]
     combine_xyz_node.inputs[2].default_value = image_scale[2]
+
+    uv_map_node.uv_map = "UVMap_Render"

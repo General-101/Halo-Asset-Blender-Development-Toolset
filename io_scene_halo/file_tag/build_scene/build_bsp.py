@@ -318,13 +318,20 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                             material_index = object_mesh.data.materials.keys().index(material_name)
                             mesh.polygons[triangle_idx].material_index = material_index
 
+                            uv_lightmap_name = 'UVMap_Lightmap'
+                            uv_name = 'UVMap_Render'
+
+                            layer_uv_lightmap = mesh.uv_layers.get(uv_lightmap_name)
+                            if layer_uv_lightmap is None:
+                                layer_uv_lightmap = mesh.uv_layers.new(name=uv_lightmap_name)
+
+                            layer_uv = mesh.uv_layers.get(uv_name)
+                            if layer_uv is None:
+                                layer_uv = mesh.uv_layers.new(name=uv_name)
+
                             render_vertex_list = [material.uncompressed_render_vertices[triangle[0]], material.uncompressed_render_vertices[triangle[1]], material.uncompressed_render_vertices[triangle[2]]]
                             for vertex_idx, vertex in enumerate(render_vertex_list):
                                 loop_index = (3 * triangle_idx) + vertex_idx
-                                uv_name = 'UVMap_%s' % 0
-                                layer_uv = mesh.uv_layers.get(uv_name)
-                                if layer_uv is None:
-                                    layer_uv = mesh.uv_layers.new(name=uv_name)
 
                                 U = vertex.UV[0]
                                 V = vertex.UV[1]
@@ -335,11 +342,6 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                                 lightmap_vertex_list = [material.uncompressed_lightmap_vertices[triangle[0]], material.uncompressed_lightmap_vertices[triangle[1]], material.uncompressed_lightmap_vertices[triangle[2]]]
                                 for vertex_idx, vertex in enumerate(lightmap_vertex_list):
                                     loop_index = (3 * triangle_idx) + vertex_idx
-                                    uv_lightmap_name = 'UVMap_Lightmap_%s' % 0
-
-                                    layer_uv_lightmap = mesh.uv_layers.get(uv_lightmap_name)
-                                    if layer_uv_lightmap is None:
-                                        layer_uv_lightmap = mesh.uv_layers.new(name=uv_lightmap_name)
 
                                     U_L = vertex.UV[0]
                                     V_L = vertex.UV[1]
