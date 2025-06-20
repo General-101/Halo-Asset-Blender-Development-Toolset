@@ -659,7 +659,10 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
                 for vertex_idx, vertex in enumerate(vertex_list):
                     loop_index = (3 * triangle_idx) + vertex_idx
                     for uv_idx, uv in enumerate(vertex.uv_set):
-                        uv_name = 'UVMap_%s' % uv_idx
+                        uv_name = 'UVMap_Render'
+                        if uv_idx > 0:
+                            uv_name = 'UVMap_Render_%s' % uv_idx
+
                         layer_uv = mesh.uv_layers.get(uv_name)
                         if layer_uv is None:
                             layer_uv = mesh.uv_layers.new(name=uv_name)
@@ -779,7 +782,10 @@ def generate_mesh_retail(context, asset, object_vertices, object_triangles, obje
         for vertex_idx, vertex in enumerate(vertex_list):
             loop_index = (3 * triangle_idx) + vertex_idx
             for uv_idx, uv in enumerate(vertex.uv_set):
-                uv_name = 'UVMap_%s' % uv_idx
+                uv_name = 'UVMap_Render'
+                if uv_idx > 0:
+                    uv_name = 'UVMap_Render_%s' % uv_idx
+
                 layer_uv = object_data.uv_layers.get(uv_name)
                 if layer_uv is None:
                     layer_uv = object_data.uv_layers.new(name=uv_name)

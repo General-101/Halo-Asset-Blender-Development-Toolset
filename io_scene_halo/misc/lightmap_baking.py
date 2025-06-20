@@ -255,11 +255,10 @@ def run_bake(context, lightmap_ob, generate_vertex_colors=False, render_name="UV
         if lightmap_ob.data.attributes.active_color == None:
             color_attribute = lightmap_ob.data.attributes.new(name="Color", type="BYTE_COLOR", domain="POINT")
 
-        uv_name = "UVMap_%s" % uv_index
-        uv_layers[uv_name].active_render = True
-        uv_layers[uv_name].active = True 
+        uv_layers[render_name].active_render = True
+        uv_layers[render_name].active = True 
         target_name = 'VERTEX_COLORS'
-        bake_layer = uv_name
+        bake_layer = render_name
     else:
         uv_layers[lightmap_name].active_render = True
         uv_layers[render_name].active = True 
