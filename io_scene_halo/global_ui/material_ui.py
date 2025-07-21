@@ -857,15 +857,12 @@ class ASS_LightProps(Panel):
     bl_region_type = 'WINDOW'
     bl_context = "data"
     bl_options = {'DEFAULT_CLOSED'}
-    bl_parent_id = "DATA_PT_EEVEE_light"
-    COMPAT_ENGINES = {'BLENDER_EEVEE'}
 
     @classmethod
     def poll(cls, context):
         light = context.light
-        engine = context.engine
 
-        return (light and (light.type == 'SPOT' or light.type == 'AREA')) and (engine in cls.COMPAT_ENGINES)
+        return (light and (light.type == 'SPOT' or light.type == 'AREA'))
 
     def draw(self, context):
         light = context.light
