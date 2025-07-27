@@ -234,9 +234,14 @@ def get_object_mesh(array_item, game_version):
     elif path.exists(path_resources_zip):
         print(f"Loading {path_relative} from {path_resources_zip}")
         zip: zipfile.ZipFile = zipfile.ZipFile(path_resources_zip, mode = 'r')
-        jms_file_data = zip.read(path_relative)
-        stream: TextIOWrapper = TextIOWrapper(BytesIO(jms_file_data), encoding="utf-8")
-        return generate_mesh(stream, array_item, game_version), False
+        zip_paths = zip.namelist()
+        path_map = {p.lower(): p for p in zip_paths}
+        real_path = path_map.get(path_relative.lower())
+        if real_path:
+            jms_file_data = zip.read(real_path)
+            stream: TextIOWrapper = TextIOWrapper(BytesIO(jms_file_data), encoding="utf-8")
+            return generate_mesh(stream, array_item, game_version), False
+        
 
     print(f"Couldn't find {array_item[0]}!")
     # if all else fails we return a BOX

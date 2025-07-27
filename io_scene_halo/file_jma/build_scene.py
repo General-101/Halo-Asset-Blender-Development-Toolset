@@ -351,6 +351,8 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
         nodes = global_functions.sort_by_layer(list(armature.data.bones), armature)[0]
 
     global_functions.import_fcurve_data(action, armature, nodes, JMA.transforms, JMA, JMAAsset, fix_rotations)
+    if (4, 4, 0) <= bpy.app.version:
+        armature.animation_data.action_slot = action.slots[0]
 
     report({'INFO'}, "Import completed successfully")
     return {'FINISHED'}

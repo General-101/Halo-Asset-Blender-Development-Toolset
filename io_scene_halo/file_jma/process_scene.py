@@ -30,44 +30,23 @@ from .format import JMAAsset
 from ..global_functions import mesh_processing, global_functions, resource_management
 from mathutils import Vector, Euler, Quaternion, Matrix
 
-def find_root_node(node_list):
-    root_node_indices = []
-    for node_idx, node in enumerate(node_list):
-        if node.parent == -1:
-            root_node_indices.append(node_idx)
-
-    return root_node_indices
-
 def sort_by_parent(node_list):
-    parent_index_list = []
-    unordered_map = []
+    sorted_nodes = []
+    visited = set()
 
-    node_count = len(node_list)
-    loop_index = 0
+    def visit(node_idx):
+        if node_idx in visited:
+            return
+        parent_idx = node_list[node_idx].parent
+        if parent_idx != -1:
+            visit(parent_idx)
+        visited.add(node_idx)
+        sorted_nodes.append(node_idx)
 
-    parent_nest = find_root_node(node_list)
-    while len(parent_nest) > 0 and not loop_index >= node_count:
-        current_parent_nest = []
-        current_parent_indices = set()
-        for node_index in parent_nest:
-            node_parent_index = node_list[node_index].parent
-            if not node_parent_index in parent_index_list:
-                parent_index_list.append(node_parent_index)
+    for idx in range(len(node_list)):
+        visit(idx)
 
-            current_parent_indices.add(node_parent_index + 1)
-
-        for node_idx, node in enumerate(node_list):
-            if node.parent in current_parent_indices:
-                current_parent_nest.append(node_idx)
-
-        loop_index += 1
-        parent_nest = current_parent_nest
-    for parent_idx, parent_index in enumerate(parent_index_list):
-        for node_idx, node in enumerate(node_list):
-            if node.parent == parent_index:
-                unordered_map.append(node_idx)
-
-    return unordered_map
+    return sorted_nodes
 
 def find_valid_armature(context, obj):
     valid_armature = None
