@@ -381,8 +381,8 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                 if global_functions.string_empty_check(xref_name):
                     xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
-                if not original_geo.active_region == -1:
-                    region_set = original_geo.region_list[original_geo.active_region].name.split()
+                if not original_geo.data.active_region == -1:
+                    region_set = original_geo.data.region_list[original_geo.data.active_region].name.split()
                     lod, permutation, region = global_functions.material_definition_parser(False, region_set, default_region, default_permutation)
 
                     if not permutation in permutation_list:
@@ -404,8 +404,8 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                 if global_functions.string_empty_check(xref_name):
                     xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
-                if not original_geo.active_region == -1:
-                    region_set = original_geo.region_list[original_geo.active_region].name.split()
+                if not original_geo.data.active_region == -1:
+                    region_set = original_geo.data.region_list[original_geo.data.active_region].name.split()
                     lod, permutation, region = global_functions.material_definition_parser(False, region_set, default_region, default_permutation)
 
                     if not permutation in permutation_list:
@@ -427,8 +427,8 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                 if global_functions.string_empty_check(xref_name):
                     xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
-                if not original_geo.active_region == -1:
-                    region_set = original_geo.region_list[original_geo.active_region].name.split()
+                if not original_geo.data.active_region == -1:
+                    region_set = original_geo.data.region_list[original_geo.data.active_region].name.split()
                     lod, permutation, region = global_functions.material_definition_parser(False, region_set, default_region, default_permutation)
 
                     if not permutation in permutation_list:
@@ -456,9 +456,9 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                     evaluted_mesh.calc_normals_split()
 
                 region_attribute = evaluted_mesh.get_custom_attribute()
-                region_count = len(original_geo.region_list)
+                region_count = len(original_geo.data.region_list)
                 for idx, face in enumerate(evaluted_mesh.polygons):
-                    if not original_geo.active_region == -1 and region_count > 0:
+                    if not original_geo.data.active_region == -1 and region_count > 0:
                         region_idx = region_attribute.data[idx].value - 1
                         if not region_idx == -1 and not region_idx >= region_count:
                             face_set = mesh_processing.process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, region_idx)

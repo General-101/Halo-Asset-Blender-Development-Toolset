@@ -31,11 +31,11 @@ def join_objects(context):
     selected_objects = context.selected_objects
 
     if active_object.type == "MESH" and context.mode == "OBJECT" and not len(selected_objects) == 0:
-        active_object_regions = [region.name for region in active_object.region_list]
+        active_object_regions = [region.name for region in active_object.data.region_list]
         for ob in selected_objects:
             if ob.type == "MESH" and not ob == active_object:
                 region_attribute = ob.data.get_custom_attribute()
-                for region_idx, region in enumerate(ob.region_list):
+                for region_idx, region in enumerate(ob.data.region_list):
                     if not region.name in active_object_regions:
                         active_object.region_add(region.name)
                         active_object_regions.append(region.name)

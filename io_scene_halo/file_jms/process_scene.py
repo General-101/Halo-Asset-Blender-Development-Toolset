@@ -137,8 +137,8 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
                 region_idx = region_list.index(marker.ass_jms.marker_region)
 
         elif marker.type == 'MESH':
-            if not marker.active_region == -1:
-                region_name = marker.region_list[marker.active_region].name
+            if not marker.data.active_region == -1:
+                region_name = marker.data.region_list[marker.data.active_region].name
                 if not region_name in region_list:
                     region_list.append(region_name)
 
@@ -212,7 +212,7 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
 
             vertex_groups = original_geo.vertex_groups.keys()
             original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, blend_scene.armature, joined_list, False, version, "JMS", False, custom_scale, fix_rotations)
-            region_count = len(original_geo.region_list)
+            region_count = len(original_geo.data.region_list)
             for idx, face in enumerate(evaluted_mesh.polygons):
                 face_set = (None, default_permutation, default_region)
                 region_index = -1
@@ -222,7 +222,7 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
                 lod = face_set[0]
                 permutation = face_set[1]
                 region = face_set[2]
-                if not original_geo.active_region == -1 and region_count > 0:
+                if not original_geo.data.active_region == -1 and region_count > 0:
                     region_idx = evaluted_mesh.get_custom_attribute().data[idx].value - 1
                     if not region_idx == -1 and not region_idx >= region_count:
                         face_set = mesh_processing.process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, region_idx)
@@ -284,8 +284,8 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
             lod = None
             region = default_region
             permutation = default_permutation
-            if not spheres.active_region == -1:
-                face_set = spheres.region_list[spheres.active_region].name.split()
+            if not spheres.data.active_region == -1:
+                face_set = spheres.data.region_list[spheres.data.active_region].name.split()
                 lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
 
                 if not permutation in permutation_list:
@@ -319,8 +319,8 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
             lod = None
             region = default_region
             permutation = default_permutation
-            if not boxes.active_region == -1:
-                face_set = boxes.region_list[boxes.active_region].name.split()
+            if not boxes.data.active_region == -1:
+                face_set = boxes.data.region_list[boxes.data.active_region].name.split()
                 lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
 
                 if not permutation in permutation_list:
@@ -356,8 +356,8 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
             lod = None
             region = default_region
             permutation = default_permutation
-            if not capsule.active_region == -1:
-                face_set = capsule.region_list[capsule.active_region].name.split()
+            if not capsule.data.active_region == -1:
+                face_set = capsule.data.region_list[capsule.data.active_region].name.split()
                 lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
 
                 if not permutation in permutation_list:
@@ -395,8 +395,8 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
             lod = None
             region = default_region
             permutation = default_permutation
-            if not original_geo.active_region == -1:
-                face_set = original_geo.region_list[original_geo.active_region].name.split()
+            if not original_geo.data.active_region == -1:
+                face_set = original_geo.data.region_list[original_geo.data.active_region].name.split()
                 lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
 
                 if not permutation in permutation_list:

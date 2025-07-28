@@ -26,6 +26,7 @@
 
 import bpy
 
+from bpy.app.handlers import persistent
 from bpy.types import (
         PropertyGroup,
         Panel
@@ -305,6 +306,16 @@ classeshalo = (
     Halo_TagPanel
     )
 
+@persistent
+def transfer_object_region_data(dummy):
+    for ob in bpy.data.objects:
+        if ob.type == "MESH" and hasattr(ob, "region_list"):
+            if hasattr(ob.data, "region_list") and len(ob.data.region_list) == 0:
+                for region in ob.region_list:
+                    new_region = ob.data.region_list.add()
+                    new_region.name = region.name
+                ob.data.active_region = ob.active_region
+
 def register():
     for clshalo in classeshalo:
         bpy.utils.register_class(clshalo)
@@ -407,8 +418,10 @@ def register():
     bpy.types.Mesh.halo_slug_man = BoolProperty(name="Slug Man", get=get_slug_man_usage, set=set_slug_man_usage)
     bpy.types.Object.region_list = CollectionProperty(type = RegionItem)
     bpy.types.Object.active_region = IntProperty(name = "Active region index", description="Active index in the region array", default = -1)
+    bpy.types.Mesh.region_list = CollectionProperty(type = RegionItem)
+    bpy.types.Mesh.active_region = IntProperty(name = "Active region index", description="Active index in the region array", default = -1)
     bpy.types.Scene.active_region_list = []
-    bpy.types.Object.region_add = region_add
+    bpy.types.Mesh.region_add = region_add
     bpy.types.Mesh.get_custom_attribute = get_custom_attribute
     bpy.types.Speaker.qua = PointerProperty(type=QUA_SpeakerPropertiesGroup, name="Halo Camera Audio Properties", description="Set sound properties for your speaker")
     bpy.types.Text.qua = PointerProperty(type=QUA_ScriptPropertiesGroup, name="Halo Script Properties", description="Set script properties for your scene")
@@ -419,6 +432,7 @@ def register():
     bpy.types.Scene.tag_palatte = CollectionProperty(type = TagItem)
     bpy.types.Scene.active_tag = IntProperty(name = "Active tag index", description="Active index in the tag array", default = -1)
     bpy.types.Scene.tag_add = tag_add
+    bpy.app.handlers.load_post.append(transfer_object_region_data)
 
 def unregister():
     del bpy.types.Light.halo_light
@@ -503,8 +517,10 @@ def unregister():
     del bpy.types.Mesh.halo_slug_man
     del bpy.types.Object.region_list
     del bpy.types.Object.active_region
+    del bpy.types.Mesh.region_list
+    del bpy.types.Mesh.active_region
     del bpy.types.Scene.active_region_list
-    del bpy.types.Object.region_add
+    del bpy.types.Mesh.region_add
     del bpy.types.Mesh.get_custom_attribute
     del bpy.types.Speaker.qua
     del bpy.types.Text.qua
@@ -517,6 +533,8 @@ def unregister():
     del bpy.types.Scene.tag_add
     for clshalo in classeshalo:
         bpy.utils.unregister_class(clshalo)
+
+    bpy.app.handlers.load_post.remove(transfer_object_region_data)
 
 if __name__ == '__main__':
     register()

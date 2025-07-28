@@ -31,7 +31,7 @@ def convert_facemaps(context):
 
     for ob in selected_objects:
         if ob.type == "MESH":
-            object_regions = [region.name for region in ob.region_list]
+            object_regions = [region.name for region in ob.data.region_list]
             region_attribute = ob.data.get_custom_attribute()
             for facemap_idx, facemap in enumerate(ob.face_maps):
                 if not facemap.name in object_regions:

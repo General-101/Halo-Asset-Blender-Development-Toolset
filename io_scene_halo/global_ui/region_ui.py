@@ -71,17 +71,17 @@ def update_region_prop(self, context):
     if len(scene.active_region_list) > 1:
         self["name"] = get_unique_name(scene.active_region_list, self.name)
 
-def region_add(self, name="unnamed"):
+def region_add(mesh, name="unnamed"):
     scene = bpy.context.scene
     scene.active_region_list.clear()
-    for region in self.region_list:
+    for region in mesh.region_list:
         scene.active_region_list.append(region.name)
 
     scene.active_region_list.append(name)
 
-    region = self.region_list.add()
+    region = mesh.region_list.add()
     region.name = name
-    self.active_region = 0
+    mesh.active_region = 0
 
 class RegionItem(PropertyGroup):
     name: StringProperty(
@@ -117,9 +117,9 @@ class Halo_OT_RegionAdd(Operator):
     def execute(self, context):
         ob = bpy.context.object
 
-        ob.region_add()
+        region_add(ob.data)
         ob.data.get_custom_attribute()
-        ob.active_region = len(ob.region_list) - 1
+        ob.data.active_region = len(ob.data.region_list) - 1
 
         return{'FINISHED'}
 
@@ -132,7 +132,7 @@ class Halo_OT_RegionRemove(Operator):
     def poll(cls, context):
         valid = False
         active_object = context.active_object
-        if active_object and active_object.type == "MESH" and len(active_object.region_list) > 0:
+        if active_object and active_object.type == "MESH" and len(active_object.data.region_list) > 0:
             valid = True
 
         return valid
@@ -141,11 +141,11 @@ class Halo_OT_RegionRemove(Operator):
         ob = context.object
         data = ob.data
 
-        region_list = ob.region_list
-        active_region = ob.active_region
+        region_list = ob.data.region_list
+        active_region = ob.data.active_region
         data_region_value = active_region + 1
 
-        modified_indices = list(range(active_region, len(ob.region_list)))
+        modified_indices = list(range(active_region, len(ob.data.region_list)))
         for idx, index in enumerate(modified_indices):
             modified_indices[idx] += 1
 
@@ -174,7 +174,7 @@ class Halo_OT_RegionRemove(Operator):
                     region_attribute.data[face.index].value += -1
 
         region_list.remove(active_region)
-        ob.active_region = min(max(0, active_region), len(region_list) - 1)
+        ob.data.active_region = min(max(0, active_region), len(region_list) - 1)
 
         return{'FINISHED'}
 
@@ -189,7 +189,7 @@ class Halo_OT_RegionMove(Operator):
     def poll(cls, context):
         valid = False
         active_object = context.active_object
-        if active_object and active_object.type == "MESH" and len(context.active_object.region_list) > 0:
+        if active_object and active_object.type == "MESH" and len(context.active_object.data.region_list) > 0:
             valid = True
 
         return valid
@@ -222,17 +222,17 @@ class Halo_OT_RegionMove(Operator):
                     region_attribute.data[face.index].value = neighbor
 
     def move_index(self, ob):
-        active_region = ob.active_region
-        list_length = len(ob.region_list) - 1
+        active_region = ob.data.active_region
+        list_length = len(ob.data.region_list) - 1
         new_index = active_region + (-1 if self.direction == 'UP' else 1)
 
-        ob.active_region = max(0, min(new_index, list_length))
+        ob.data.active_region = max(0, min(new_index, list_length))
 
     def execute(self, context):
         ob = context.object
 
-        region_list = ob.region_list
-        active_region = ob.active_region
+        region_list = ob.data.region_list
+        active_region = ob.data.active_region
 
         neighbor = active_region + (-1 if self.direction == 'UP' else 1)
         self.move_attribute_index(context, neighbor, active_region)
@@ -258,7 +258,7 @@ class Halo_OT_RegionAssign(Operator):
     def execute(self, context):
         ob = bpy.context.object
         data = ob.data
-        active_region = ob.active_region + 1
+        active_region = ob.data.active_region + 1
 
         ob.data.get_custom_attribute()
 
@@ -290,7 +290,7 @@ class Halo_OT_RegionRemoveFrom(Operator):
     def execute(self, context):
         ob = bpy.context.object
         data = ob.data
-        active_region = ob.active_region + 1
+        active_region = ob.data.active_region + 1
 
         ob.data.get_custom_attribute()
 
@@ -322,7 +322,7 @@ class Halo_OT_RegionSelect(Operator):
     def execute(self, context):
         ob = bpy.context.object
         data = ob.data
-        active_region = ob.active_region + 1
+        active_region = ob.data.active_region + 1
 
         ob.data.get_custom_attribute()
 
@@ -354,7 +354,7 @@ class Halo_OT_RegionDeselect(Operator):
     def execute(self, context):
         ob = bpy.context.object
         data = ob.data
-        active_region = ob.active_region + 1
+        active_region = ob.data.active_region + 1
 
         ob.data.get_custom_attribute()
 
@@ -378,7 +378,7 @@ class Halo_OT_RegionRemoveUnused(Operator):
     def poll(cls, context):
         valid = False
         active_object = context.active_object
-        if active_object and active_object.type == "MESH" and len(active_object.region_list) > 0:
+        if active_object and active_object.type == "MESH" and len(active_object.data.region_list) > 0:
             valid = True
 
         return valid
@@ -387,8 +387,8 @@ class Halo_OT_RegionRemoveUnused(Operator):
         ob = context.object
         data = ob.data
 
-        region_list = ob.region_list
-        active_region = ob.active_region
+        region_list = ob.data.region_list
+        active_region = ob.data.active_region
         data_region_value = active_region + 1
         region_attribute = ob.data.get_custom_attribute()
         index_set = set()
@@ -413,7 +413,7 @@ class Halo_OT_RegionRemoveUnused(Operator):
                 unused_indices.add(region_idx)
 
         for region_index in reversed(sorted(unused_indices)):
-            modified_indices = list(range(region_index, len(ob.region_list)))
+            modified_indices = list(range(region_index, len(ob.data.region_list)))
             for idx, index in enumerate(modified_indices):
                 modified_indices[idx] += 1
 
@@ -437,7 +437,7 @@ class Halo_OT_RegionRemoveUnused(Operator):
                         region_attribute.data[face.index].value += -1
 
             region_list.remove(region_index)
-            ob.active_region = min(max(0, active_region), len(region_list) - 1)
+            ob.data.active_region = min(max(0, active_region), len(region_list) - 1)
 
         return{'FINISHED'}
 
@@ -470,16 +470,16 @@ class Halo_RegionsPanel(Panel):
         layout = self.layout
         ob = context.object
         data = ob.data
-        region_count = len(ob.region_list)
+        region_count = len(ob.data.region_list)
 
         scene = context.scene
         if ob and ob.type == "MESH":
             scene.active_region_list.clear()
-            for region in ob.region_list:
+            for region in ob.data.region_list:
                 scene.active_region_list.append(region.name)
 
         row = layout.row()
-        row.template_list("REGION_UL_List", "Region_List", ob, "region_list", ob, "active_region")
+        row.template_list("REGION_UL_List", "Region_List", ob.data, "region_list", ob.data, "active_region")
 
         col = row.column(align=True)
         col.operator("region_list.region_add", icon='ADD', text="")

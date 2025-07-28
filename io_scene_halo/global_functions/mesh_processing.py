@@ -919,12 +919,12 @@ def process_mesh_export_vert(vertex_data, file_type, original_geo_matrix, custom
 def process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, region_idx):
     if game_version == "halo1":
         if not region_idx == -1:
-            region = original_geo.region_list[region_idx].name
+            region = original_geo.data.region_list[region_idx].name
             face_set = (None, None, region)
 
     else:
         if not region_idx == -1:
-            face_set = original_geo.region_list[region_idx].name.split()
+            face_set = original_geo.data.region_list[region_idx].name.split()
 
         lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
         face_set = (lod, permutation, region)
