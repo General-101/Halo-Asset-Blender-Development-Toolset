@@ -352,6 +352,10 @@ def build_scene(context, filepath, report):
                 vertex_weights_sets, regions = mesh_processing.generate_mesh_retail(context, ASS, ass_object.vertices, ass_object.triangles, object_data, "halo3", random_color_gen)
                 object_settings = (vertex_weights_sets, regions)
 
+                for region in regions:
+                    if not global_functions.string_empty_check(region):
+                        object_data.region_add(region)
+
         object_settings_list.append(object_settings)
         object_list.append(object_data)
 
@@ -419,10 +423,6 @@ def build_scene(context, filepath, report):
                         group_index = node_set[0]
                         node_weight = node_set[1]
                         instance.vertex_groups[group_index].add([vertex_weights_set_idx], node_weight, 'ADD')
-
-                for region in regions:
-                    if not global_functions.string_empty_check(region):
-                        instance.data.region_add(region)
 
             if xref and instance.type == 'MESH' and not visited_objects[object_index]:
                 visited_objects[object_index] = True

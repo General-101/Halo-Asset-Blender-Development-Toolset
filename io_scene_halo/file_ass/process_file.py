@@ -64,10 +64,12 @@ def process_file(filepath):
             for string in range(material_string_count):
                 material_strings.append(ASS.next().strip('\"'))
 
-        material_definition_items = material_effect.split()
-        lod, permutation, region = global_functions.material_definition_parser(True, material_definition_items, 'Default', 'Default')
+        #material_definition_items = material_effect.split()
+        #print(material_definition_items)
+        region = material_effect
+        #lod, permutation, region = global_functions.material_definition_parser(True, material_definition_items, 'Default', 'Default')
 
-        ASS.materials.append(ASSAsset.Material(scene_name, file_name, None, material, lod, permutation, region, material_strings))
+        ASS.materials.append(ASSAsset.Material(scene_name, file_name, None, material, "", "", region, material_strings))
 
     object_count = int(ASS.next())
     for object in range(object_count):
