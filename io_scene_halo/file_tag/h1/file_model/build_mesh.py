@@ -154,7 +154,7 @@ def build_mesh_layout(asset, geometry, region_name, object_name, game_version, i
             current_region_permutation = region_name
             if not current_region_permutation in active_region_permutations:
                 active_region_permutations.append(current_region_permutation)
-                object_mesh.region_add(current_region_permutation)
+                object_mesh.data.region_add(current_region_permutation)
 
             if not triangle_material_index == -1:
                 if triangle_material_index < shader_count:

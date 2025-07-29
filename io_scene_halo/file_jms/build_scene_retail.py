@@ -262,7 +262,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         if not material_index == -1:
             mat = JMS.materials[material_index]
             current_region_permutation = global_functions.material_definition_helper(material_index, mat)
-            object_mesh.region_add(current_region_permutation)
+            object_mesh.data.region_add(current_region_permutation)
             material_name = mat.name
             mat = bpy.data.materials.get(material_name)
             if mat is None:
@@ -329,7 +329,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         if not material_index == -1:
             mat = JMS.materials[material_index]
             current_region_permutation = global_functions.material_definition_helper(material_index, mat)
-            object_mesh.region_add(current_region_permutation)
+            object_mesh.data.region_add(current_region_permutation)
 
             material_name = mat.name
             mat = bpy.data.materials.get(material_name)
@@ -396,7 +396,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         if not material_index == -1:
             mat = JMS.materials[material_index]
             current_region_permutation = global_functions.material_definition_helper(material_index, mat)
-            object_mesh.region_add(current_region_permutation)
+            object_mesh.data.region_add(current_region_permutation)
 
             material_name = mat.name
             mat = bpy.data.materials.get(material_name)
@@ -465,7 +465,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         if not material_index == -1:
             mat = JMS.materials[material_index]
             current_region_permutation = global_functions.material_definition_helper(material_index, mat)
-            object_mesh.region_add(current_region_permutation)
+            object_mesh.data.region_add(current_region_permutation)
 
             material_name = mat.name
             mat = bpy.data.materials.get(material_name)

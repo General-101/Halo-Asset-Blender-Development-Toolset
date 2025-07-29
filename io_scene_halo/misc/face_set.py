@@ -52,7 +52,7 @@ def create_facemap(context, level_of_detail, permutation_string, region_string, 
             region_name += region_string.replace(' ', '_').replace('\t', '_')
 
         if not global_functions.string_empty_check(region_name):
-            active_object.region_add(region_name)
+            active_object.data.region_add(region_name)
 
         if set_facemap:
             region_list = []

@@ -452,7 +452,7 @@ def generate_marker(context, collection, game_version, game_title, file_version,
                 object_mesh.ass_jms.marker_region = region_name
 
             else:
-                object_mesh.region_add(region_name)
+                object_mesh.data.region_add(region_name)
 
     if not parent_idx == -1:
         bone_name = ASSET.nodes[parent_idx].name
@@ -614,7 +614,7 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
 
                 if not current_region_permutation in active_region_permutations:
                     active_region_permutations.append(current_region_permutation)
-                    object_mesh.region_add(current_region_permutation)
+                    object_mesh.data.region_add(current_region_permutation)
 
                 if not triangle_material_index == -1:
                     material_name = mat.name

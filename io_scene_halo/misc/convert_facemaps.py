@@ -35,7 +35,7 @@ def convert_facemaps(context):
             region_attribute = ob.data.get_custom_attribute()
             for facemap_idx, facemap in enumerate(ob.face_maps):
                 if not facemap.name in object_regions:
-                    ob.region_add(facemap.name)
+                    ob.data.region_add(facemap.name)
                     object_regions.append(facemap.name)
 
                 if ob.data.face_maps.active and len(ob.face_maps) > 0:

@@ -422,7 +422,7 @@ def build_scene(context, filepath, report):
 
                 for region in regions:
                     if not global_functions.string_empty_check(region):
-                        instance.region_add(region)
+                        instance.data.region_add(region)
 
             if xref and instance.type == 'MESH' and not visited_objects[object_index]:
                 visited_objects[object_index] = True

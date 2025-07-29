@@ -89,7 +89,7 @@ def build_collision(context, armature, COLLISION, game_version):
 
                     if not current_region_permutation in active_region_permutations:
                         active_region_permutations.append(current_region_permutation)
-                        object_mesh.region_add(current_region_permutation)
+                        object_mesh.data.region_add(current_region_permutation)
 
                     if not ngon_material_index == -1:
                         material_list = []
@@ -168,7 +168,7 @@ def build_collision(context, armature, COLLISION, game_version):
 
                 if not current_region_permutation in active_region_permutations:
                     active_region_permutations.append(current_region_permutation)
-                    object_mesh.region_add(current_region_permutation)
+                    object_mesh.data.region_add(current_region_permutation)
 
                 if not ngon_material_index == -1:
                     material_list = []

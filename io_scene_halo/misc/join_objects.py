@@ -37,7 +37,7 @@ def join_objects(context):
                 region_attribute = ob.data.get_custom_attribute()
                 for region_idx, region in enumerate(ob.data.region_list):
                     if not region.name in active_object_regions:
-                        active_object.region_add(region.name)
+                        active_object.data.region_add(region.name)
                         active_object_regions.append(region.name)
 
                     for data in region_attribute.data:
