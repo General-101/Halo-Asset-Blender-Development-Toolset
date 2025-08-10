@@ -26,9 +26,10 @@
 
 import bpy
 
+from math import radians
 from .format import JMAAsset
-from ..global_functions import mesh_processing, global_functions, resource_management
 from mathutils import Vector, Euler, Quaternion, Matrix
+from ..global_functions import mesh_processing, global_functions, resource_management
 
 def sort_by_parent(node_list):
     sorted_nodes = []
@@ -225,60 +226,68 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
                 key = ('bone', bone_name)
                 fcurve_dict.setdefault(key, []).append(fc)
 
+    temp_local_matrices = []
     for frame in range(first_frame, last_frame):
-        transforms_for_frame = []
+        frame_matrices = []
         for node_idx, node in enumerate(joined_list):
-            transform_matrix = global_functions.export_fcurve_data(action, fcurve_dict, armature, node, node_idx, frame, local_matrices)
-            mesh_dimensions = global_functions.get_dimensions(transform_matrix, node, jma_version, is_bone, 'JMA', scale_value)
-            rotation = mesh_dimensions.quaternion
-            translation = mesh_dimensions.position
-            scale = mesh_dimensions.scale[0]
+            local_matrix = global_functions.export_fcurve_data(action, fcurve_dict, armature, node, node_idx, frame, local_matrices)
+            frame_matrices.append(local_matrix)
+        temp_local_matrices.append(frame_matrices)
 
-            transforms_for_frame.append(JMA.Transform(translation, rotation, scale))
+    unordered_map = sort_by_parent(JMA.nodes)
+    absolute_matrices = []
+    for frame_matrices in temp_local_matrices:
+        abs_frame = []
+        for node_idx, node in enumerate(JMA.nodes):
+            local_matrix = frame_matrices[unordered_map[node_idx]]
+            if node.parent is not None and node.parent != -1:
+                parent_abs = abs_frame[node.parent]
+                abs_matrix = parent_abs @ local_matrix
+            else:
+                abs_matrix = local_matrix
+            abs_frame.append(abs_matrix)
+        absolute_matrices.append(abs_frame)
 
-        JMA.transforms.append(transforms_for_frame)
+    if fix_rotations:
+        correction_rot_mat = Matrix.Rotation(radians(90.0), 4, 'Z')
+        for frame_abs in absolute_matrices:
+            for idx, abs_matrix in enumerate(frame_abs):
+                loc, rot, scale = abs_matrix.decompose()
+                rot_mat = rot.to_matrix().to_4x4()
+                corrected_rot_mat = rot_mat @ correction_rot_mat
+                corrected_matrix = Matrix.LocRotScale(loc, corrected_rot_mat.to_quaternion(), scale)
+                frame_abs[idx] = corrected_matrix
 
-    if jma_version >= 16394:
-        unordered_map = sort_by_parent(JMA.nodes)
-
-        absolute_matrices = []
-        frame_index = 0
-        for frame in range(first_frame, last_frame):
+    final_transforms = []
+    if jma_version < 16394:
+        for frame_abs in absolute_matrices:
+            local_frame = []
             for node_idx, node in enumerate(JMA.nodes):
+                if node.parent is not None and node.parent != -1:
+                    parent_matrix = frame_abs[node.parent]
+                    child_matrix = frame_abs[node_idx]
+                    local_matrix = parent_matrix.inverted() @ child_matrix
+                else:
+                    local_matrix = frame_abs[node_idx]  # root node
+
                 bone = joined_list[unordered_map[node_idx]]
                 is_bone = armature and isinstance(bone, bpy.types.Bone)
-                transform = JMA.transforms[frame_index][node_idx]
+                mesh_dimensions = global_functions.get_dimensions(local_matrix, bone, jma_version, is_bone, 'JMA', scale_value)
+                local_frame.append(JMA.Transform(mesh_dimensions.position, mesh_dimensions.quaternion, mesh_dimensions.scale[0]))
+            final_transforms.append(local_frame)
 
-                matrix_translation = Matrix.Translation(transform.translation)
-                matrix_scale = Matrix.Scale(transform.scale, 4)
-                q0, q1, q2, q3 = transform.rotation
-                matrix_rotation = Quaternion((q3, q0, q1, q2)).to_matrix().to_4x4()
+    else:
+        for frame_abs in absolute_matrices:
+            local_frame = []
+            for node_idx, node in enumerate(JMA.nodes):
+                local_matrix = frame_abs[node_idx]
+                bone = joined_list[unordered_map[node_idx]]
+                is_bone = armature and isinstance(bone, bpy.types.Bone)
+                mesh_dimensions = global_functions.get_dimensions(local_matrix, bone, jma_version, is_bone, 'JMA', scale_value)
+                local_frame.append(JMA.Transform(mesh_dimensions.position, mesh_dimensions.quaternion, mesh_dimensions.scale[0]))
+            final_transforms.append(local_frame)
 
-                transform_matrix = matrix_translation @ matrix_rotation @ matrix_scale
-                
-                if not node.parent == None and node.parent != -1:
-                    parent_transform = JMA.transforms[frame_index][node.parent]
-
-                    parent_matrix_translation = Matrix.Translation(parent_transform.translation)
-                    parent_matrix_scale = Matrix.Scale(parent_transform.scale, 4)
-                    q0, q1, q2, q3 = parent_transform.rotation
-                    parent_matrix_rotation = Quaternion((q3, q0, q1, q2)).to_matrix().to_4x4()
-
-                    parent_transform_matrix = parent_matrix_translation @ parent_matrix_rotation @ parent_matrix_scale
-
-                    transform_matrix = parent_transform_matrix @ transform_matrix
-
-                mesh_dimensions = global_functions.get_dimensions(transform_matrix, bone, jma_version, is_bone, 'JMA', scale_value)
-                rotation = mesh_dimensions.quaternion
-                translation = mesh_dimensions.position
-                scale = mesh_dimensions.scale[0]
-
-                jma_transform = JMA.transforms[frame_index][node_idx]
-                jma_transform.rotation = mesh_dimensions.quaternion
-                jma_transform.translation = mesh_dimensions.position
-                jma_transform.scale = mesh_dimensions.scale[0]
-
-            frame_index += 1 
+    JMA.transforms = final_transforms
 
     armature_transform = False
     if jma_version > 16394 and armature_transform:

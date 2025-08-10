@@ -267,7 +267,7 @@ def find_valid_armature(context, JMA, obj):
         for node in armature_bone_list:
             for jma_node in JMA.nodes:
                 if node.name == jma_node.name:
-                    scene_nodes.append(global_functions.remove_node_prefix(node.name).lower())
+                    scene_nodes.append(global_functions.remove_node_prefix(node.name))
 
         if len(scene_nodes) == len(JMA.nodes):
             is_armature_good = True
@@ -294,10 +294,16 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
     resource_management.gather_scene_resources(context, layer_collection_list, object_list, hidden_geo, nonrender_geo)
 
     scene_nodes = []
-    jma_nodes = [global_functions.remove_node_prefix(n.name).lower() for n in JMA.nodes]
+    jma_nodes = [global_functions.remove_node_prefix(n.name) for n in JMA.nodes]
 
     if active_object and active_object.type == 'ARMATURE':
         armature = active_object
+        armature_bone_list = list(armature.data.bones)
+        for node in armature_bone_list:
+            for jma_node in JMA.nodes:
+                if node.name == jma_node.name:
+                    scene_nodes.append(global_functions.remove_node_prefix(node.name))
+
     else:
         for obj in object_list:
             if obj.type == 'ARMATURE':

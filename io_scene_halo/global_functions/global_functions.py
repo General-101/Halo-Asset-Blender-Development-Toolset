@@ -1514,16 +1514,16 @@ def import_fcurve_data(action, armature, nodes, frames, JMA, JMAAsset, fix_rotat
                 parent_matrix_translation = Matrix.Translation(frame[parent_idx].translation)
 
                 if fix_rotations:
-                    parent_matrix_rotation = parent_matrix_rotation @ Matrix.Rotation(radians(90.0), 4, 'Z')
+                    parent_matrix_rotation = parent_matrix_rotation @ Matrix.Rotation(radians(-90.0), 4, 'Z')
 
                 parent_transform_matrix = parent_matrix_translation @ parent_matrix_rotation @ parent_matrix_scale
 
                 transform_matrix = parent_transform_matrix.inverted() @ transform_matrix
 
-            transform_matrix = local_matrices[idx].inverted() @ transform_matrix
-
             if JMA.version >= 16394 and fix_rotations:
                 transform_matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
+
+            transform_matrix = local_matrices[idx].inverted() @ transform_matrix
 
             loc, rot_quat, scl = transform_matrix.decompose()
             rot_euler = rot_quat.to_euler('XYZ')

@@ -469,7 +469,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                                     run_bake(context, cluster_ob)
 
                                     buf = bytearray([int(p * 255) for p in image.pixels])
-                                    image = Image.frombytes("RGBA", (width, height), buf, 'raw', "RGBA")
+                                    image = Image.frombuffer("RGBA", (width, height), buf, 'raw', "RGBA")
 
                                     bitmap_format = BITMAP.bitmap_format
                                     lightmap_flags = H1BitmapFlags.power_of_two_dimensions.value

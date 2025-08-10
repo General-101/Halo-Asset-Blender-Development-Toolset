@@ -141,7 +141,7 @@ def generate_image_node(mat, texture, BITMAP=None, bitmap_name="White", is_env=F
 
             image = bpy.data.images.new(bitmap_name, x, y, alpha = True)
             decompressed_data = zlib.decompress(BITMAP.compressed_color_plate)
-            pil_image = Image.frombytes("RGBA", (x, y), decompressed_data, 'raw', "BGRA").transpose(method=Image.Transpose.FLIP_TOP_BOTTOM)
+            pil_image = Image.frombuffer("RGBA", (x, y), decompressed_data, 'raw', "BGRA").transpose(method=Image.Transpose.FLIP_TOP_BOTTOM)
             pixels = list(pil_image.getdata())
             background_color = pixels[0][:3]
             divider_color = pixels[1][:3]
