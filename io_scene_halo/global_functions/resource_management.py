@@ -24,42 +24,69 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+def build_layer_collection_parent_map(layer_collection, parent=None, parent_map=None):
+    if parent_map is None:
+        parent_map = {}
+
+    parent_map[layer_collection] = parent
+    for child in layer_collection.children:
+        build_layer_collection_parent_map(child, layer_collection, parent_map)
+
+    return parent_map
+
+def is_collection_hidden_from_render(layer_collection, parent_map):
+    current = layer_collection
+    while current:
+        if current.collection.hide_render:
+            return True
+
+        current = parent_map.get(current)
+
+    return False
+
+def build_collection_lookup(layer_collection, lookup=None):
+    if lookup is None:
+        lookup = {}
+
+    lookup[layer_collection.collection] = layer_collection
+    for child in layer_collection.children:
+        build_collection_lookup(child, lookup)
+
+    return lookup
+
+
 def gather_scene_resources(context, layer_collection_list, object_list, hidden_geo, nonrender_geo):
-    object_scene_list = list(context.scene.objects)
-    for obj in object_scene_list:
-        if hidden_geo:
-            layer_hidden_from_render = False
-            for collection in obj.users_collection:
-                layer_collection = context.view_layer.layer_collection.children.get(collection.name)
-                if not layer_collection == None:
-                    if layer_collection.collection.hide_render:
-                        layer_hidden_from_render = True
-                    if not layer_collection in layer_collection_list:
-                        layer_collection_list.append(layer_collection)
+    view_layer = context.view_layer
+    scene_objects = list(context.scene.objects)
 
-            if nonrender_geo:
-                object_list.append(obj)
+    parent_map = build_layer_collection_parent_map(view_layer.layer_collection)
+    collection_lookup = build_collection_lookup(view_layer.layer_collection)
+    layer_collection_seen = set()
+
+    for obj in scene_objects:
+        include_object = True
+
+        layer_collections_for_obj = [collection_lookup[collection] for collection in obj.users_collection if collection in collection_lookup]
+
+        if not hidden_geo and not obj.visible_get():
+            include_object = False
+
+        if include_object and not nonrender_geo:
+            if obj.hide_render:
+                include_object = False
             else:
-                if not obj.hide_render and not layer_hidden_from_render:
-                    object_list.append(obj)
+                for layer_collection in layer_collections_for_obj:
+                    if is_collection_hidden_from_render(layer_collection, parent_map):
+                        include_object = False
+                        break
 
-        else:
-            if obj.visible_get():
-                layer_hidden_from_render = False
-                for collection in obj.users_collection:
-                    layer_collection = context.view_layer.layer_collection.children.get(collection.name)
-                    if not layer_collection == None:
-                        if layer_collection.collection.hide_render:
-                            layer_hidden_from_render = True
-                        if not layer_collection in layer_collection_list:
-                            if layer_collection.is_visible:
-                                layer_collection_list.append(layer_collection)
+        for layer_collection in layer_collections_for_obj:
+            if layer_collection not in layer_collection_seen:
+                layer_collection_list.append(layer_collection)
+                layer_collection_seen.add(layer_collection)
 
-                if nonrender_geo:
-                    object_list.append(obj)
-                else:
-                    if not obj.hide_render and not layer_hidden_from_render:
-                        object_list.append(obj)
+        if include_object:
+            object_list.append(obj)
 
 def filter_root_nodes(node_list, is_jmi = False):
     ''' Takes a set of objects and returns all that are root nodes '''
