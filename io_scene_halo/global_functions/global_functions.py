@@ -499,11 +499,11 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
 
     if is_node:
         if armature:
-            bone = armature.data.bones.get(obj_a.name)
-            object_matrix = (bone.matrix_local @ rotation_matrix) @ scale_matrix
-            if bone.parent and not version >= get_version_matrix_check(file_type, None):
+            pose_bone = armature.pose.bones['%s' % (obj_a.name)]
+            object_matrix = (pose_bone.matrix @ rotation_matrix) @ scale_matrix
+            if pose_bone.parent and not version >= get_version_matrix_check(file_type, None):
                 #Files at or above 8205 use absolute transform instead of local transform for nodes
-                object_matrix = ((bone.parent.matrix_local @ rotation_matrix).inverted() @ (object_matrix @ rotation_matrix)) @ scale_matrix
+                object_matrix = ((pose_bone.parent.matrix @ rotation_matrix).inverted() @ (pose_bone.matrix @ rotation_matrix)) @ scale_matrix
 
         else:
             object_matrix = obj_a.matrix_world @ scale_matrix
