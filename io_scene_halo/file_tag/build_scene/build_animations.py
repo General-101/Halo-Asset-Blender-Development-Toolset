@@ -43,12 +43,65 @@ def build_scene(context, ANIMATION, game_version, game_title, file_version, fix_
 
     if armature:
         bone_count = len(armature.data.bones)
-        nodes = list(armature.data.bones)
-        if game_title == "halo1":
-            nodes = global_functions.sort_by_layer(list(armature.data.bones), armature)[0]
-        else:
+        nodes = None
+        if len(ANIMATION.nodes) > 0:
+            # Captain animation had the parent node on the root node set to something instead of None. Not sure what that is about. - Gen
+            ANIMATION.nodes[0].parent = -1
+
             nodes = ANIMATION.nodes
 
+        if nodes is None:
+            nodes = []
+            sorted_list = global_functions.sort_list(list(armature.data.bones), armature, game_title, JMA.version, True)
+            joined_list = sorted_list[0]
+            reversed_joined_list = sorted_list[1]
+
+            for node in joined_list:
+                is_bone = False
+                if armature:
+                    is_bone = True
+
+                find_child_node = global_functions.get_child(node, reversed_joined_list, game_title, False)
+                find_sibling_node = global_functions.get_sibling(armature, node, reversed_joined_list, game_title, False)
+
+                first_child_node = -1
+                first_sibling_node = -1
+                parent_node = -1
+
+                if not find_child_node == None:
+                    first_child_node = joined_list.index(find_child_node)
+                if not find_sibling_node == None:
+                    first_sibling_node = joined_list.index(find_sibling_node)
+                if not node.parent == None and not node.parent.name.startswith('!'):
+                    if armature:
+                        if node.parent.use_deform:
+                            parent_node = joined_list.index(node.parent)
+                    else:
+                        parent_node = joined_list.index(node.parent)
+
+                name = node.name
+                child = first_child_node
+                sibling = first_sibling_node
+                parent = parent_node
+
+                current_node_children = []
+                children = []
+                for child_node in node.children:
+                    if child_node in joined_list:
+                        current_node_children.append(child_node.name)
+
+                current_node_children.sort()
+
+                if is_bone:
+                    for child_node in current_node_children:
+                        children.append(joined_list.index(armature.data.bones[child_node]))
+
+                else:
+                    for child_node in current_node_children:
+                        children.append(joined_list.index(bpy.data.objects[child_node]))
+
+                nodes.append(JMA.Node(name, parent, child, sibling))
+        JMA.nodes = nodes
         node_names = []
         default_node_transforms = []
         for node_idx, node in enumerate(nodes):
@@ -80,6 +133,9 @@ def build_scene(context, ANIMATION, game_version, game_title, file_version, fix_
             armature.animation_data.action = action
 
             global_functions.import_fcurve_data(action, armature, nodes, animation.frame_data, JMA, JMAAsset, fix_rotations, is_inverted)
+
+        if (4, 4, 0) <= bpy.app.version:
+            armature.animation_data.action_slot = action.slots[0]
 
         report({'INFO'}, "Import completed successfully")
 
