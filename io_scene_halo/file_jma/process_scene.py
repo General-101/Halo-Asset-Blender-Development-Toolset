@@ -31,24 +31,6 @@ from .format import JMAAsset
 from mathutils import Vector, Euler, Quaternion, Matrix
 from ..global_functions import mesh_processing, global_functions, resource_management
 
-def sort_by_parent(node_list):
-    sorted_nodes = []
-    visited = set()
-
-    def visit(node_idx):
-        if node_idx in visited:
-            return
-        parent_idx = node_list[node_idx].parent
-        if parent_idx != -1:
-            visit(parent_idx)
-        visited.add(node_idx)
-        sorted_nodes.append(node_idx)
-
-    for idx in range(len(node_list)):
-        visit(idx)
-
-    return sorted_nodes
-
 def find_valid_armature(context, obj):
     valid_armature = None
     node_list = []
@@ -234,7 +216,7 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
             frame_matrices.append(local_matrix)
         temp_local_matrices.append(frame_matrices)
 
-    unordered_map = sort_by_parent(JMA.nodes)
+    unordered_map = global_functions.sort_by_parent(JMA.nodes)
     absolute_matrices = []
     for frame_matrices in temp_local_matrices:
         abs_frame = []
@@ -284,7 +266,7 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
                 bone = joined_list[unordered_map[node_idx]]
                 is_bone = armature and isinstance(bone, bpy.types.Bone)
                 mesh_dimensions = global_functions.get_dimensions(local_matrix, bone, jma_version, is_bone, 'JMA', scale_value)
-                local_frame.append(JMA.Transform(mesh_dimensions.position, mesh_dimensions.quaternion, mesh_dimensions.scale[0]))
+                local_frame.append(JMA.Transform(mesh_dimensions.position, mesh_dimensions.quaternion, round(mesh_dimensions.scale[0], 2)))
             final_transforms.append(local_frame)
 
     JMA.transforms = final_transforms

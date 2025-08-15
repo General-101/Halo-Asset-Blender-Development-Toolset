@@ -1333,6 +1333,24 @@ def remove_node_prefix(string):
 
     return name
 
+def sort_by_parent(node_list):
+    sorted_nodes = []
+    visited = set()
+
+    def visit(node_idx):
+        if node_idx in visited:
+            return
+        parent_idx = node_list[node_idx].parent
+        if parent_idx != -1:
+            visit(parent_idx)
+        visited.add(node_idx)
+        sorted_nodes.append(node_idx)
+
+    for idx in range(len(node_list)):
+        visit(idx)
+
+    return sorted_nodes
+
 def get_data_bone(arm, node_name):
     # Check for exact matches first
     for bone in arm.data.bones:
@@ -1402,9 +1420,9 @@ def export_fcurve_data(action, fcurve_dict, armature, node, node_idx, frame, loc
             if fc.data_path.endswith("location"):
                 loc[idx] = val
             elif fc.data_path.endswith("scale"):
-                scale[idx] = val
+                if len(fc.keyframe_points) > 0:
+                    scale[idx] = round(val, 2)
             elif fc.data_path.endswith("rotation_quaternion") and rot_mode == 'QUATERNION':
-                
                 rot[idx] = val
             elif fc.data_path.endswith("rotation_euler") and not rot_mode == 'QUATERNION':
                 rot[idx] = val
@@ -1431,8 +1449,8 @@ def export_fcurve_data(action, fcurve_dict, armature, node, node_idx, frame, loc
     return transform_matrix
 
 def import_fcurve_data(action, armature, nodes, frames, JMA, JMAAsset, fix_rotations, is_inverted=False):
-    local_matrices = []
-    for node in nodes:
+    local_matrices = [None for node in nodes]
+    for node_idx, node in enumerate(nodes):
         data_bone = get_data_bone(armature, node.name)
         if data_bone is None:
             continue
@@ -1441,7 +1459,39 @@ def import_fcurve_data(action, armature, nodes, frames, JMA, JMAAsset, fix_rotat
         if data_bone.parent:
             local_matrix = data_bone.parent.matrix_local.inverted() @ data_bone.matrix_local
 
-        local_matrices.append(local_matrix)
+        local_matrices[node_idx] = local_matrix
+
+    unordered_map = sort_by_parent(nodes)
+    absolute_frames = []
+    for frame_idx, frame in enumerate(frames):
+        absolute_frame = [None for node in JMA.nodes]
+        for node_idx, node in enumerate(JMA.nodes):
+            unordered_index = unordered_map[node_idx]
+            rotation = frame[unordered_index].rotation
+            if is_inverted:
+                rotation = frame[unordered_index].rotation.inverted()
+
+            matrix_scale = Matrix.Scale(frame[unordered_index].scale, 4)
+            matrix_rotation = rotation.to_matrix().to_4x4()
+            matrix_translation = Matrix.Translation(frame[unordered_index].translation)
+
+            transform_matrix = matrix_translation @ matrix_rotation @ matrix_scale
+            if JMA.version < 16394 and node.parent is not None and node.parent is not -1:
+                absolute_matrix = absolute_frame[node.parent] @ transform_matrix
+            else:
+                absolute_matrix = transform_matrix
+            absolute_frame[node_idx] = absolute_matrix
+        absolute_frames.append(absolute_frame)
+
+    if fix_rotations:
+        correction_rot_mat = Matrix.Rotation(radians(-90.0), 4, 'Z')
+        for frame_abs in absolute_frames:
+            for idx, abs_matrix in enumerate(frame_abs):
+                loc, rot, scale = abs_matrix.decompose()
+                rot_mat = rot.to_matrix().to_4x4()
+                corrected_rot_mat = rot_mat @ correction_rot_mat
+                corrected_matrix = Matrix.LocRotScale(loc, corrected_rot_mat.to_quaternion(), scale)
+                frame_abs[idx] = corrected_matrix
 
     fcurve_map = defaultdict(lambda: defaultdict(dict))
     data_paths = {
@@ -1462,7 +1512,13 @@ def import_fcurve_data(action, armature, nodes, frames, JMA, JMAAsset, fix_rotat
 
                 fcurve_map[bone_name][path][index] = fcurve
 
+    controller_fcurves = {
+        'location': [get_fcurve(action.fcurves, "location", i) or action.fcurves.new(data_path="location", index=i) for i in range(3)],
+        'rotation_euler': [get_fcurve(action.fcurves, "rotation_euler", i) or action.fcurves.new(data_path="rotation_euler", index=i) for i in range(3)],
+    }
+
     for frame_idx, frame in enumerate(frames):
+        absolute_frame = absolute_frames[frame_idx]
         frame_number = frame_idx + 1
 
         if JMA.biped_controller_frame_type != JMAAsset.BipedControllerFrameType.DISABLE:
@@ -1481,62 +1537,39 @@ def import_fcurve_data(action, armature, nodes, frames, JMA, JMAAsset, fix_rotat
                 armature.rotation_euler.z = controller_transform.rotation.to_euler().z
 
             for i in range(3):
-                action.fcurves.new(data_path="location", index=i).keyframe_points.insert(frame_number, armature.location[i], options={'FAST'})
-                action.fcurves.new(data_path="rotation_euler", index=i).keyframe_points.insert(frame_number, armature.rotation_euler[i], options={'FAST'})
+                controller_fcurves['location'][i].keyframe_points.insert(frame_number, armature.location[i], options={'FAST'})
+                controller_fcurves['rotation_euler'][i].keyframe_points.insert(frame_number, armature.rotation_euler[i], options={'FAST'})
 
-        for idx, node in enumerate(nodes):
-            pose_bone = get_pose_bone(armature, node.name)
-            if pose_bone is None:
+        for node_idx, node in enumerate(nodes):
+            if local_matrices[node_idx] is None:
                 continue
 
-            rotation = frame[idx].rotation
-            if is_inverted:
-                rotation = frame[idx].rotation.inverted()
+            node_name = node.name
+            pose_bone = get_pose_bone(armature, node.name)
+            rotation_mode = 'QUATERNION'
+            if pose_bone is not None:
+                rotation_mode = pose_bone.rotation_mode
 
-            matrix_scale = Matrix.Scale(frame[idx].scale, 4)
-            matrix_rotation = rotation.to_matrix().to_4x4()
-            matrix_translation = Matrix.Translation(frame[idx].translation)
+            transform_matrix = absolute_frame[node_idx]
+            if node.parent is not None and node.parent is not -1:
+                transform_matrix = absolute_frame[node.parent].inverted() @ transform_matrix
 
-            if JMA.version < 16394 and fix_rotations:
-                matrix_rotation = matrix_rotation @ Matrix.Rotation(radians(-90.0), 4, 'Z')
-
-            transform_matrix = matrix_translation @ matrix_rotation @ matrix_scale
-
-            if JMA.version >= 16394 and pose_bone.parent:
-                parent_idx = node.parent
-
-                parent_rotation = frame[parent_idx].rotation
-                if is_inverted:
-                    parent_rotation = frame[parent_idx].rotation.inverted()
-
-                parent_matrix_scale = Matrix.Scale(frame[parent_idx].scale, 4)
-                parent_matrix_rotation = parent_rotation.to_matrix().to_4x4()
-                parent_matrix_translation = Matrix.Translation(frame[parent_idx].translation)
-
-                if fix_rotations:
-                    parent_matrix_rotation = parent_matrix_rotation @ Matrix.Rotation(radians(-90.0), 4, 'Z')
-
-                parent_transform_matrix = parent_matrix_translation @ parent_matrix_rotation @ parent_matrix_scale
-
-                transform_matrix = parent_transform_matrix.inverted() @ transform_matrix
-
-            if JMA.version >= 16394 and fix_rotations:
-                transform_matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
-
-            transform_matrix = local_matrices[idx].inverted() @ transform_matrix
+            transform_matrix = local_matrices[node_idx].inverted() @ transform_matrix
 
             loc, rot_quat, scl = transform_matrix.decompose()
-            rot_euler = rot_quat.to_euler('XYZ')
-            for i in range(3):
-                fcurve_map[pose_bone.name]['location'][i].keyframe_points.insert(frame_number, loc[i], options={'FAST'})
-                fcurve_map[pose_bone.name]['scale'][i].keyframe_points.insert(frame_number, scl[i], options={'FAST'})
-                if pose_bone.rotation_mode == 'QUATERNION':
-                    fcurve_map[pose_bone.name]['rotation_quaternion'][i].keyframe_points.insert(frame_number, rot_quat[i], options={'FAST'})
-                else:
-                    fcurve_map[pose_bone.name]['rotation_euler'][i].keyframe_points.insert(frame_number, rot_euler[i], options={'FAST'})
+            if rotation_mode is not 'QUATERNION':
+                rot_euler = rot_quat.to_euler('XYZ')
 
-            if pose_bone.rotation_mode == 'QUATERNION':
-                fcurve_map[pose_bone.name]['rotation_quaternion'][3].keyframe_points.insert(frame_number, rot_quat[3], options={'FAST'})
+            for i in range(3):
+                fcurve_map[node_name]['location'][i].keyframe_points.insert(frame_number, loc[i], options={'FAST'})
+                fcurve_map[node_name]['scale'][i].keyframe_points.insert(frame_number, scl[i], options={'FAST'})
+                if rotation_mode == 'QUATERNION':
+                    fcurve_map[node_name]['rotation_quaternion'][i].keyframe_points.insert(frame_number, rot_quat[i], options={'FAST'})
+                else:
+                    fcurve_map[node_name]['rotation_euler'][i].keyframe_points.insert(frame_number, rot_euler[i], options={'FAST'})
+
+            if rotation_mode == 'QUATERNION':
+                fcurve_map[node_name]['rotation_quaternion'][3].keyframe_points.insert(frame_number, rot_quat[3], options={'FAST'})
 
 #https://www.cyril-richon.com/blog/2019/1/23/python-srgb-to-linear-linear-to-srgb
 def srgb2lin(s):
