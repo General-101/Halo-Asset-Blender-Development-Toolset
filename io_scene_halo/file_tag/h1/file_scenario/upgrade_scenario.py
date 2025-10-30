@@ -886,6 +886,11 @@ def get_netgame_equipment(netgame_equipment_tag_block, vehicles_tag_block, vehic
 
             SCENARIO.netgame_equipment.append(netgame_equipment)
 
+    netgame_count = len(SCENARIO.netgame_equipment)
+    if netgame_count > 100:
+        leftovers = netgame_count - 100
+        SCENARIO.netgame_equipment = SCENARIO.netgame_equipment[:100]
+        print(f"Netgame equipment has over 100 items. Delete {leftovers} elements from either the vehicle tag block or the netgame equipment tag block in the Halo 1 Scenario or be forever lost.")
     SCENARIO.netgame_equipment_header = TAG.TagBlockHeader("tbfd", 0, len(SCENARIO.netgame_equipment), 152)
 
 def get_starting_equipment(starting_equipment_tag_block, TAG, SCENARIO):
