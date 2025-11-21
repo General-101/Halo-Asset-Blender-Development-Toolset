@@ -671,9 +671,10 @@ def generate_object_elements(context, level_root, collection_name, scnr_data, as
                     object_asset["Data"]["model"]["group name"] = "mod2"
 
                 model_asset = tag_interface.get_disk_asset(object_asset["Data"]["model"]["path"], h1_tag_groups.get(object_asset["Data"]["model"]["group name"]))
-                mesh = asset_cache[object_asset["Data"]["model"]["group name"]][object_asset["Data"]["model"]["path"]]["blender_assets"].get("blender_asset")
-                if not model_asset == None and not mesh:
-                    get_geometry_layout(object_asset["Data"]["model"], asset_cache, None, False, report, True)
+                if model_asset is not None and len(object_asset["Data"]["model"]["path"]) > 0:
+                    mesh = asset_cache[object_asset["Data"]["model"]["group name"]][object_asset["Data"]["model"]["path"]]["blender_assets"].get("blender_asset")
+                    if not mesh:
+                        get_geometry_layout(object_asset["Data"]["model"], asset_cache, None, False, report, True)
 
     palette_count = len(tag_palette)
     for element_idx, element in enumerate(tag_block):
@@ -685,7 +686,7 @@ def generate_object_elements(context, level_root, collection_name, scnr_data, as
             tag_path_no_ext = pallete_item["path"]
             tag_path = "%s.%s" % (pallete_item["path"], h1_tag_groups.get(pallete_item["group name"]))
             palette_asset = tag_interface.get_disk_asset(pallete_item["path"], h1_tag_groups.get(pallete_item["group name"]))
-            if palette_asset:
+            if palette_asset is not None and len(palette_asset["Data"]["model"]["path"]) > 0:
                 mesh_data = asset_cache[palette_asset["Data"]["model"]["group name"]][palette_asset["Data"]["model"]["path"]]["blender_assets"].get("blender_asset")
 
         tag_name = "NONE"
