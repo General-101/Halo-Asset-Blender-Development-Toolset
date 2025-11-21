@@ -285,7 +285,7 @@ def run_lightmap_postprocessing(image_texture):
 
     scene = bpy.context.scene
     scene.use_nodes = True
-    if (5, 0, 0) >= bpy.app.version:
+    if bpy.app.version >= (5, 0, 0):
         tree = bpy.data.node_groups.new("lightmap postprocessing", "CompositorNodeTree")
         scene.compositing_node_group = tree
     else:
