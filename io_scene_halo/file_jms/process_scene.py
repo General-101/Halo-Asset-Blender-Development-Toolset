@@ -40,7 +40,7 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
     default_region = mesh_processing.get_default_region_permutation_name(game_version)
     default_permutation = mesh_processing.get_default_region_permutation_name(game_version)
 
-    region_list = ['unnamed']
+    region_list = []
     permutation_list = []
     material_list = []
 
@@ -227,6 +227,10 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
 
                 if game_version == 'halo1':
                     variant_name = ""
+                    if region_index == -1:
+                        if not default_region in region_list:
+                            region_list.append(default_region)
+                        region_index = region_list.index(default_region)
 
                 material_index = global_functions.get_material(original_geo.material_slots, evaluted_mesh, face, variant_name, material_list)
 
