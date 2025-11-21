@@ -1,0 +1,1044 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="char" name="character" version="1">
+  <Layout regolithID="block:character" internalName="character_block" name="character">
+    <FieldSet version="0" sizeofValue="288" sizeofSource="sizeof(struct character_definition_v1)">
+      <LongFlags CStyleName="character_flags" pascalStyleName="CharacterFlags" name="Character flags" expertOnly="true">
+        <Options regolithID="enum:character_flags" CStyleName="character_flags" pascalStyleName="CharacterFlags">
+          <Bit name="Flag1" CStyleName="flag1_bit" pascalStyleName="Flag1Bit" />
+        </Options>
+      </LongFlags>
+      <UselessPad length="24" />
+      <TagReference CStyleName="parent_character" pascalStyleName="ParentCharacter" name="parent character">
+        <tag>char</tag>
+      </TagReference>
+      <TagReference CStyleName="unit" pascalStyleName="Unit" name="unit">
+        <tag>unit</tag>
+      </TagReference>
+      <TagReference CStyleName="style" pascalStyleName="Style" name="style">
+        <tag>styl</tag>
+      </TagReference>
+      <UselessPad length="16" />
+      <TagReference CStyleName="major_character" pascalStyleName="MajorCharacter" name="major character">
+        <tag>char</tag>
+      </TagReference>
+      <StringId CStyleName="model_variant" pascalStyleName="ModelVariant" name="model variant" />
+      <UselessPad length="76" />
+      <Block CStyleName="general_properties" pascalStyleName="GeneralProperties" name="general properties" maxElementCount="1">
+        <Layout regolithID="block:character_general" internalName="character_general_block" name="character_general_block">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct character_general_properties)" isLatest="true">
+            <LongFlags CStyleName="general_flags" pascalStyleName="GeneralFlags" name="general flags">
+              <Options regolithID="enum:character_general_flags" CStyleName="character_general_flags" pascalStyleName="CharacterGeneralFlags">
+                <Bit name="swarm" CStyleName="swarm_bit" pascalStyleName="SwarmBit" />
+                <Bit name="flying" CStyleName="flying_bit" pascalStyleName="FlyingBit" />
+                <Bit name="dual wields" CStyleName="dual_wields_bit" pascalStyleName="DualWieldsBit" />
+                <Bit name="uses gravemind" CStyleName="uses_gravemind_bit" pascalStyleName="UsesGravemindBit" />
+              </Options>
+            </LongFlags>
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <Options regolithID="enum:character_type" CStyleName="character_type" pascalStyleName="CharacterType">
+                <Enum name="elite" CStyleName="elite" pascalStyleName="Elite" />
+                <Enum name="jackal" CStyleName="jackal" pascalStyleName="Jackal" />
+                <Enum name="grunt" CStyleName="grunt" pascalStyleName="Grunt" />
+                <Enum name="hunter" CStyleName="hunter" pascalStyleName="Hunter" />
+                <Enum name="engineer" CStyleName="engineer" pascalStyleName="Engineer" />
+                <Enum name="assassin" CStyleName="assassin" pascalStyleName="Assassin" />
+                <Enum name="player" CStyleName="player" pascalStyleName="Player" />
+                <Enum name="marine" CStyleName="marine" pascalStyleName="Marine" />
+                <Enum name="crew" CStyleName="crew" pascalStyleName="Crew" />
+                <Enum name="combat_form" CStyleName="combat_form" pascalStyleName="CombatForm" />
+                <Enum name="infection_form" CStyleName="infection_form" pascalStyleName="InfectionForm" />
+                <Enum name="carrier_form" CStyleName="carrier_form" pascalStyleName="CarrierForm" />
+                <Enum name="monitor" CStyleName="monitor" pascalStyleName="Monitor" />
+                <Enum name="sentinel" CStyleName="sentinel" pascalStyleName="Sentinel" />
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="mounted_weapon" CStyleName="mounted_weapon" pascalStyleName="MountedWeapon" />
+                <Enum name="brute" CStyleName="brute" pascalStyleName="Brute" />
+                <Enum name="prophet" CStyleName="prophet" pascalStyleName="Prophet" />
+                <Enum name="bugger" CStyleName="bugger" pascalStyleName="Bugger" />
+                <Enum name="juggernaut" CStyleName="juggernaut" pascalStyleName="Juggernaut" />
+              </Options>
+            </ShortEnum>
+            <Struct CStyleName="obsolete_campaign_metagame_bucket" pascalStyleName="ObsoleteCampaignMetagameBucket" name="OBSOLETE campaign metagame bucket" expertOnly="true">
+              <LayoutXRef>structure:campaign_metagame_bucket</LayoutXRef>
+            </Struct>
+            <UselessPad length="100" />
+            <Real CStyleName="scariness" pascalStyleName="Scariness" name="scariness" description="the inherent scariness of the character" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="placement_properties" pascalStyleName="PlacementProperties" name="placement properties" maxElementCount="1">
+        <Layout regolithID="block:character_placement" internalName="character_placement_block" name="character_placement_block">
+          <FieldSet version="0" sizeofValue="52" sizeofSource="sizeof(struct character_placement_properties)" isLatest="true">
+            <Pad sizeOfSource="sizeof(long)" length="4" />
+            <Real CStyleName="few_upgrade_chance_easy" pascalStyleName="FewUpgradeChanceEasy" name="few upgrade chance (easy)" />
+            <Real CStyleName="few_upgrade_chance_normal" pascalStyleName="FewUpgradeChanceNormal" name="few upgrade chance (normal)" />
+            <Real CStyleName="few_upgrade_chance_heroic" pascalStyleName="FewUpgradeChanceHeroic" name="few upgrade chance (heroic)" />
+            <Real CStyleName="few_upgrade_chance_legendary" pascalStyleName="FewUpgradeChanceLegendary" name="few upgrade chance (legendary)" />
+            <Real CStyleName="normal_upgrade_chance_easy" pascalStyleName="NormalUpgradeChanceEasy" name="normal upgrade chance (easy)" />
+            <Real CStyleName="normal_upgrade_chance_normal" pascalStyleName="NormalUpgradeChanceNormal" name="normal upgrade chance (normal)" />
+            <Real CStyleName="normal_upgrade_chance_heroic" pascalStyleName="NormalUpgradeChanceHeroic" name="normal upgrade chance (heroic)" />
+            <Real CStyleName="normal_upgrade_chance_legendary" pascalStyleName="NormalUpgradeChanceLegendary" name="normal upgrade chance (legendary)" />
+            <Real CStyleName="many_upgrade_chance_easy" pascalStyleName="ManyUpgradeChanceEasy" name="many upgrade chance (easy)" />
+            <Real CStyleName="many_upgrade_chance_normal" pascalStyleName="ManyUpgradeChanceNormal" name="many upgrade chance (normal)" />
+            <Real CStyleName="many_upgrade_chance_heroic" pascalStyleName="ManyUpgradeChanceHeroic" name="many upgrade chance (heroic)" />
+            <Real CStyleName="many_upgrade_chance_legendary" pascalStyleName="ManyUpgradeChanceLegendary" name="many upgrade chance (legendary)" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="vitality_properties" pascalStyleName="VitalityProperties" name="vitality properties" maxElementCount="1">
+        <Layout regolithID="block:character_vitality" internalName="character_vitality_block" name="character_vitality_block">
+          <FieldSet version="0" sizeofValue="112" sizeofSource="sizeof(struct character_vitality_properties)" isLatest="true">
+            <LongFlags CStyleName="vitality_flags" pascalStyleName="VitalityFlags" name="vitality flags" expertOnly="true">
+              <Options regolithID="enum:character_vitality_flags" CStyleName="character_vitality_flags" pascalStyleName="CharacterVitalityFlags">
+                <Bit name="unused" CStyleName="unused0_bit" pascalStyleName="Unused0Bit" />
+              </Options>
+            </LongFlags>
+            <Real CStyleName="normal_body_vitality" pascalStyleName="NormalBodyVitality" name="normal body vitality" description="maximum body vitality of our unit" />
+            <Real CStyleName="normal_shield_vitality" pascalStyleName="NormalShieldVitality" name="normal shield vitality" description="maximum shield vitality of our unit" />
+            <Real CStyleName="legendary_body_vitality" pascalStyleName="LegendaryBodyVitality" name="legendary body vitality" description="maximum body vitality of our unit (on legendary)" />
+            <Real CStyleName="legendary_shield_vitality" pascalStyleName="LegendaryShieldVitality" name="legendary shield vitality" description="maximum shield vitality of our unit (on legendary)" />
+            <Real CStyleName="body_recharge_fraction" pascalStyleName="BodyRechargeFraction" name="body recharge fraction" description="fraction of body health that can be regained after damage" />
+            <Real CStyleName="soft_ping_threshold_with_shields" pascalStyleName="SoftPingThresholdWithShields" name="soft ping threshold (with shields)" description="damage necessary to trigger a soft ping when shields are up" />
+            <Real CStyleName="soft_ping_threshold_no_shields" pascalStyleName="SoftPingThresholdNoShields" name="soft ping threshold (no shields)" description="damage necessary to trigger a soft ping when shields are down" />
+            <Real CStyleName="soft_ping_min_interrupt_time" pascalStyleName="SoftPingMinInterruptTime" name="soft ping min interrupt time" description="minimum time before a soft ping can be interrupted" />
+            <UselessPad length="4" />
+            <Real CStyleName="hard_ping_threshold_with_shields" pascalStyleName="HardPingThresholdWithShields" name="hard ping threshold (with shields)" description="damage necessary to trigger a hard ping when shields are up" />
+            <Real CStyleName="hard_ping_threshold_no_shields" pascalStyleName="HardPingThresholdNoShields" name="hard ping threshold (no shields)" description="damage necessary to trigger a hard ping when shields are down" />
+            <Real CStyleName="hard_ping_min_interrupt_time" pascalStyleName="HardPingMinInterruptTime" name="hard ping min interrupt time" description="minimum time before a hard ping can be interrupted" />
+            <UselessPad length="4" />
+            <Real CStyleName="current_damage_decay_delay" pascalStyleName="CurrentDamageDecayDelay" name="current damage decay delay" description="current damage begins to fall after a time delay has passed since last the damage (MAX 4.1, because timer is stored in a char so 127 ticks maximum)" />
+            <Real CStyleName="current_damage_decay_time" pascalStyleName="CurrentDamageDecayTime" name="current damage decay time" description="amount of time it would take for 100% current damage to decay to 0" />
+            <UselessPad length="8" />
+            <Real CStyleName="recent_damage_decay_delay" pascalStyleName="RecentDamageDecayDelay" name="recent damage decay delay" description="recent damage begins to fall after a time delay has passed since last the damage (MAX 4.1, because timer is stored in a char so 127 ticks maximum)" />
+            <Real CStyleName="recent_damage_decay_time" pascalStyleName="RecentDamageDecayTime" name="recent damage decay time" description="amount of time it would take for 100% recent damage to decay to 0" />
+            <Real CStyleName="body_recharge_delay_time" pascalStyleName="BodyRechargeDelayTime" name="body recharge delay time" description="amount of time delay before a shield begins to recharge" />
+            <Real CStyleName="body_recharge_time" pascalStyleName="BodyRechargeTime" name="body recharge time" description="amount of time for shields to recharge completely" />
+            <Real CStyleName="shield_recharge_delay_time" pascalStyleName="ShieldRechargeDelayTime" name="shield recharge delay time" description="amount of time delay before a shield begins to recharge" />
+            <Real CStyleName="shield_recharge_time" pascalStyleName="ShieldRechargeTime" name="shield recharge time" description="amount of time for shields to recharge completely" />
+            <Real CStyleName="stun_threshold" pascalStyleName="StunThreshold" name="stun threshold" description="stun level that triggers the stunned state (currently, the 'stunned' behavior)" />
+            <RealBounds CStyleName="stun_time_bounds" pascalStyleName="StunTimeBounds" name="stun time bounds" units="seconds" />
+            <UselessPad length="16" />
+            <Real CStyleName="extended_shield_damage_threshold" pascalStyleName="ExtendedShieldDamageThreshold" name="extended shield damage threshold" units="%" description="Amount of shield damage sustained before it is considered 'extended'" />
+            <Real CStyleName="extended_body_damage_threshold" pascalStyleName="ExtendedBodyDamageThreshold" name="extended body damage threshold" units="%" description="Amount of body damage sustained before it is considered 'extended'" />
+            <UselessPad length="16" />
+            <Real CStyleName="suicide_radius" pascalStyleName="SuicideRadius" name="suicide radius" description="when I die and explode, I damage stuff within this distance of me." />
+            <Real CStyleName="runtime_body_recharge_velocity" pascalStyleName="RuntimeBodyRechargeVelocity" name="runtime_body_recharge_velocity" expertOnly="true" />
+            <Real CStyleName="runtime_shield_recharge_velocity" pascalStyleName="RuntimeShieldRechargeVelocity" name="runtime_shield_recharge_velocity" expertOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="perception_properties" pascalStyleName="PerceptionProperties" name="perception properties" maxElementCount="4">
+        <Layout regolithID="block:character_perception" internalName="character_perception_block" name="character_perception_block">
+          <FieldSet version="0" sizeofValue="52" sizeofSource="sizeof(struct character_perception_properties)" isLatest="true">
+            <LongFlags CStyleName="perception_flags" pascalStyleName="PerceptionFlags" name="perception flags">
+              <Options regolithID="enum:perception_flags" CStyleName="perception_flags" pascalStyleName="PerceptionFlags">
+                <Bit name="Flag1" CStyleName="flag1_bit" pascalStyleName="Flag1Bit" />
+              </Options>
+            </LongFlags>
+            <Real CStyleName="max_vision_distance" pascalStyleName="MaxVisionDistance" name="max vision distance" units="world units" description="maximum range of sight" />
+            <Angle CStyleName="central_vision_angle" pascalStyleName="CentralVisionAngle" name="central vision angle" units="degrees" description="horizontal angle within which we see targets out to our maximum range" />
+            <Angle CStyleName="max_vision_angle" pascalStyleName="MaxVisionAngle" name="max vision angle" units="degrees" description="maximum horizontal angle within which we see targets at range" />
+            <UselessPad length="4" />
+            <Angle CStyleName="peripheral_vision_angle" pascalStyleName="PeripheralVisionAngle" name="peripheral vision angle" units="degrees" description="maximum horizontal angle within which we can see targets out of the corner of our eye" />
+            <Real CStyleName="peripheral_distance" pascalStyleName="PeripheralDistance" name="peripheral distance" units="world units" description="maximum range at which we can see targets our of the corner of our eye" />
+            <UselessPad length="4" />
+            <UselessPad length="24" />
+            <Real CStyleName="hearing_distance" pascalStyleName="HearingDistance" name="hearing distance" units="world units" description="maximum range at which sounds can be heard" />
+            <Real CStyleName="notice_projectile_chance" pascalStyleName="NoticeProjectileChance" name="notice projectile chance" units="[0,1]" description="random chance of noticing a dangerous enemy projectile (e.g. grenade)" />
+            <Real CStyleName="notice_vehicle_chance" pascalStyleName="NoticeVehicleChance" name="notice vehicle chance" units="[0,1]" description="random chance of noticing a dangerous vehicle" />
+            <UselessPad length="8" />
+            <Real CStyleName="combat_perception_time" pascalStyleName="CombatPerceptionTime" name="combat perception time" units="seconds" description="time required to acknowledge a visible enemy when we are already in combat or searching for them" />
+            <Real CStyleName="guard_perception_time" pascalStyleName="GuardPerceptionTime" name="guard perception time" units="seconds" description="time required to acknowledge a visible enemy when we have been alerted" />
+            <Real CStyleName="non_combat_perception_time" pascalStyleName="NonCombatPerceptionTime" name="non-combat perception time" units="seconds" description="time required to acknowledge a visible enemy when we are not alerted" />
+            <UselessPad length="24" />
+            <Real CStyleName="first_ack_surprise_distance" pascalStyleName="FirstAckSurpriseDistance" name="first ack. surprise distance" units="world units" description="If a new prop is acknowledged within the given distance, surprise is registerd" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="retreat_properties" pascalStyleName="RetreatProperties" name="retreat properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <Layout regolithID="block:character_retreat" internalName="character_retreat_block" name="character_retreat_block">
+          <FieldSet version="0" sizeofValue="84" sizeofSource="sizeof(struct character_retreat_properties)" isLatest="true">
+            <LongFlags CStyleName="retreat_flags" pascalStyleName="RetreatFlags" name="Retreat flags">
+              <Options regolithID="enum:character_retreat_flags" CStyleName="character_retreat_flags" pascalStyleName="CharacterRetreatFlags">
+                <Bit name="Zig-zag when fleeing" CStyleName="zig_zag_when_fleeing_bit" pascalStyleName="ZigZagWhenFleeingBit" />
+                <Bit name="Unused1" expertOnly="true" CStyleName="unused1_bit" pascalStyleName="Unused1Bit" />
+              </Options>
+            </LongFlags>
+            <Real CStyleName="shield_threshold" pascalStyleName="ShieldThreshold" name="Shield threshold" description="When shield vitality drops below given amount, retreat is triggered by low_shield_retreat_impulse" />
+            <Real CStyleName="scary_target_threshold" pascalStyleName="ScaryTargetThreshold" name="Scary target threshold" description="When confronting an enemy of over the given scariness, retreat is triggered by scary_target_retreat_impulse" />
+            <Real CStyleName="danger_threshold" pascalStyleName="DangerThreshold" name="Danger threshold" description="When perceived danger rises above the given threshold, retreat is triggered by danger_retreat_impulse" />
+            <Real CStyleName="proximity_threshold" pascalStyleName="ProximityThreshold" name="Proximity threshold" description="When enemy closer than given threshold, retreat is triggered by proximity_retreat_impulse" />
+            <UselessPad length="16" />
+            <RealBounds CStyleName="minmax_forced_cower_time_bounds" pascalStyleName="MinmaxForcedCowerTimeBounds" name="min/max forced cower time bounds" description="actor cowers for at least the given amount of time" />
+            <RealBounds CStyleName="minmax_cower_timeout_bounds" pascalStyleName="MinmaxCowerTimeoutBounds" name="min/max cower timeout bounds" description="actor times out of cower after the given amount of time" />
+            <UselessPad length="12" />
+            <Real CStyleName="proximity_ambush_threshold" pascalStyleName="ProximityAmbushThreshold" name="proximity ambush threshold" description="If target reaches is within the given proximity, an ambush is triggered by the proximity ambush impulse" />
+            <Real CStyleName="awareness_ambush_threshold" pascalStyleName="AwarenessAmbushThreshold" name="awareness ambush threshold" description="If target is less than threshold (0-1) aware of me, an ambush is triggered by the vulnerable enemy ambush impulse" />
+            <UselessPad length="24" />
+            <Real CStyleName="leader_dead_retreat_chance" pascalStyleName="LeaderDeadRetreatChance" name="leader dead retreat chance" description="If leader-dead-retreat-impulse is active, gives the chance that we will flee when our leader dies within 4 world units of us" />
+            <Real CStyleName="peer_dead_retreat_chance" pascalStyleName="PeerDeadRetreatChance" name="peer dead retreat chance" description="If peer-dead-retreat-impulse is active, gives the chance that we will flee when one of our peers (friend of the same race) dies within 4 world units of us" />
+            <Real CStyleName="second_peer_dead_retreat_chance" pascalStyleName="SecondPeerDeadRetreatChance" name="second peer dead retreat chance" description="If peer-dead-retreat-impulse is active, gives the chance that we will flee when a second peer (friend of the same race) dies within 4 world units of us" />
+            <UselessPad length="12" />
+            <Angle CStyleName="zig_zag_angle" pascalStyleName="ZigZagAngle" name="zig-zag angle" units="degrees" description="The angle from the intended destination direction that a zig-zag will cause" />
+            <Real CStyleName="zig_zag_period" pascalStyleName="ZigZagPeriod" name="zig-zag period" units="seconds" description="How long it takes to zig left and then zag right." />
+            <UselessPad length="8" />
+            <Real CStyleName="retreat_grenade_chance" pascalStyleName="RetreatGrenadeChance" name="retreat grenade chance" description="The likelihood of throwing down a grenade to cover our retreat" />
+            <TagReference CStyleName="backup_weapon" pascalStyleName="BackupWeapon" name="backup weapon" description="If I want to flee and I don't have flee animations with my current weapon, throw it away and try a ...">
+              <tag>weap</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="look_properties" pascalStyleName="LookProperties" name="Look properties" maxElementCount="1">
+        <Layout regolithID="block:character_look" internalName="character_look_block" name="character_look_block">
+          <FieldSet version="0" sizeofValue="80" sizeofSource="sizeof(struct character_look_properties)" isLatest="true">
+            <RealEulerAngles2D CStyleName="maximum_aiming_deviation" pascalStyleName="MaximumAimingDeviation" name="maximum aiming deviation" units="degrees" description="how far we can turn our weapon" />
+            <RealEulerAngles2D CStyleName="maximum_looking_deviation" pascalStyleName="MaximumLookingDeviation" name="maximum looking deviation" units="degrees" description="how far we can turn our head" />
+            <RealEulerAngles2D CStyleName="runtime_aiming_deviation_cosines" pascalStyleName="RuntimeAimingDeviationCosines" name="runtime aiming deviation cosines" expertOnly="true" />
+            <RealEulerAngles2D CStyleName="runtime_looking_deviation_cosines" pascalStyleName="RuntimeLookingDeviationCosines" name="runtime looking deviation cosines" expertOnly="true" />
+            <Angle CStyleName="noncombat_look_delta_l" pascalStyleName="NoncombatLookDeltaL" name="noncombat look delta L" units="degrees" description="how far we can turn our head left away from our aiming vector when not in combat" />
+            <Angle CStyleName="noncombat_look_delta_r" pascalStyleName="NoncombatLookDeltaR" name="noncombat look delta R" units="degrees" description="how far we can turn our head right away from our aiming vector when not in combat" />
+            <Angle CStyleName="combat_look_delta_l" pascalStyleName="CombatLookDeltaL" name="combat look delta L" units="degrees" description="how far we can turn our head left away from our aiming vector when in combat" />
+            <Angle CStyleName="combat_look_delta_r" pascalStyleName="CombatLookDeltaR" name="combat look delta R" units="degrees" description="how far we can turn our head right away from our aiming vector when in combat" />
+            <RealBounds CStyleName="noncombat_idle_looking" pascalStyleName="NoncombatIdleLooking" name="noncombat idle looking" units="seconds" description="rate at which we change look around randomly when not in combat" />
+            <RealBounds CStyleName="noncombat_idle_aiming" pascalStyleName="NoncombatIdleAiming" name="noncombat idle aiming" units="seconds" description="rate at which we change aiming directions when looking around randomly when not in combat" />
+            <RealBounds CStyleName="combat_idle_looking" pascalStyleName="CombatIdleLooking" name="combat idle looking" units="seconds" description="rate at which we change look around randomly when searching or in combat" />
+            <RealBounds CStyleName="combat_idle_aiming" pascalStyleName="CombatIdleAiming" name="combat idle aiming" units="seconds" description="rate at which we change aiming directions when looking around randomly when searching or in combat" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="movement_properties" pascalStyleName="MovementProperties" name="Movement properties" maxElementCount="1">
+        <Layout regolithID="block:character_movement" internalName="character_movement_block" name="character_movement_block">
+          <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(struct character_movement_properties)" isLatest="true">
+            <LongFlags CStyleName="movement_flags" pascalStyleName="MovementFlags" name="movement flags">
+              <Options regolithID="enum:character_movement_flags" CStyleName="character_movement_flags" pascalStyleName="CharacterMovementFlags">
+                <Bit name="danger crouch allow movement" CStyleName="danger_crouch_allow_movement_bit" pascalStyleName="DangerCrouchAllowMovementBit" />
+                <Bit name="no side-step" CStyleName="no_side_step_bit" pascalStyleName="NoSideStepBit" />
+                <Bit name="prefer to combat near friends" CStyleName="prefer_to_combat_near_friends_bit" pascalStyleName="PreferToCombatNearFriendsBit" />
+                <Bit name="hop (to cover path segments)" CStyleName="hop_to_cover_path_segments_bit" pascalStyleName="HopToCoverPathSegmentsBit" />
+                <Bit name="perch" CStyleName="perch_bit" pascalStyleName="PerchBit" />
+                <Bit name="has flying mode" CStyleName="has_flying_mode_bit" pascalStyleName="HasFlyingModeBit" />
+                <Bit name="disallow crouch" CStyleName="disallow_crouch_bit" pascalStyleName="DisallowCrouchBit" />
+              </Options>
+            </LongFlags>
+            <Real CStyleName="pathfinding_radius" pascalStyleName="PathfindingRadius" name="pathfinding radius" />
+            <Real CStyleName="destination_radius" pascalStyleName="DestinationRadius" name="destination radius" />
+            <UselessPad length="20" />
+            <Real CStyleName="dive_grenade_chance" pascalStyleName="DiveGrenadeChance" name="dive grenade chance" />
+            <UselessPad length="8" />
+            <ShortEnum CStyleName="obstacle_leap_min_size" pascalStyleName="ObstacleLeapMinSize" name="obstacle leap min size">
+              <Options regolithID="enum:obstacle_size" CStyleName="obstacle_size" pascalStyleName="ObstacleSize">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="tiny" CStyleName="tiny" pascalStyleName="Tiny" />
+                <Enum name="small" CStyleName="small" pascalStyleName="Small" />
+                <Enum name="medium" CStyleName="medium" pascalStyleName="Medium" />
+                <Enum name="large" CStyleName="large" pascalStyleName="Large" />
+                <Enum name="huge" CStyleName="huge" pascalStyleName="Huge" />
+                <Enum name="immobile" CStyleName="immobile" pascalStyleName="Immobile" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="obstacle_leap_max_size" pascalStyleName="ObstacleLeapMaxSize" name="obstacle leap max size">
+              <OptionsXRef>enum:obstacle_size</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="obstacle_ignore_size" pascalStyleName="ObstacleIgnoreSize" name="obstacle ignore size">
+              <OptionsXRef>enum:obstacle_size</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="obstacle_smashable_size" pascalStyleName="ObstacleSmashableSize" name="obstacle smashable size">
+              <OptionsXRef>enum:obstacle_size</OptionsXRef>
+            </ShortEnum>
+            <Pad sizeOfSource="RQEMJY" length="2" />
+            <ShortEnum CStyleName="jump_height" pascalStyleName="JumpHeight" name="jump height">
+              <OptionsXRef>enum:character_jump_mode</OptionsXRef>
+            </ShortEnum>
+            <LongFlags CStyleName="movement_hints" pascalStyleName="MovementHints" name="movement hints">
+              <Options regolithID="enum:character_movement_hints" CStyleName="character_movement_hints" pascalStyleName="CharacterMovementHints">
+                <Bit name="vault step" CStyleName="vault_step_bit" pascalStyleName="VaultStepBit" />
+                <Bit name="vault crouch" CStyleName="vault_crouch_bit" pascalStyleName="VaultCrouchBit" />
+                <Bit name="unused0" expertOnly="true" CStyleName="unused0_bit" pascalStyleName="Unused0Bit" />
+                <Bit name="unused1" expertOnly="true" CStyleName="unused1_bit" pascalStyleName="Unused1Bit" />
+                <Bit name="unused2" expertOnly="true" CStyleName="unused2_bit" pascalStyleName="Unused2Bit" />
+                <Bit name="mount step" CStyleName="mount_step_bit" pascalStyleName="MountStepBit" />
+                <Bit name="mount crouch" CStyleName="mount_crouch_bit" pascalStyleName="MountCrouchBit" />
+                <Bit name="mount stand" CStyleName="mount_stand_bit" pascalStyleName="MountStandBit" />
+                <Bit name="unused3" expertOnly="true" CStyleName="unused3_bit" pascalStyleName="Unused3Bit" />
+                <Bit name="unused4" expertOnly="true" CStyleName="unused4_bit" pascalStyleName="Unused4Bit" />
+                <Bit name="unused5" expertOnly="true" CStyleName="unused5_bit" pascalStyleName="Unused5Bit" />
+                <Bit name="hoist crouch" CStyleName="hoist_crouch_bit" pascalStyleName="HoistCrouchBit" />
+                <Bit name="hoist stand" CStyleName="hoist_stand_bit" pascalStyleName="HoistStandBit" />
+                <Bit name="unused6" expertOnly="true" CStyleName="unused6_bit" pascalStyleName="Unused6Bit" />
+                <Bit name="unused7" expertOnly="true" CStyleName="unused7_bit" pascalStyleName="Unused7Bit" />
+                <Bit name="unused8" expertOnly="true" CStyleName="unused8_bit" pascalStyleName="Unused8Bit" />
+              </Options>
+            </LongFlags>
+            <Real CStyleName="throttle_scale" pascalStyleName="ThrottleScale" name="throttle scale" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="engage_properties" pascalStyleName="EngageProperties" name="Engage properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <Layout regolithID="block:character_engage" internalName="character_engage_block" name="character_engage_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct character_engage_properties)" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:character_engage_flags" CStyleName="character_engage_flags" pascalStyleName="CharacterEngageFlags">
+                <Bit name="engage perch" CStyleName="engage_perch_bit" pascalStyleName="EngagePerchBit" />
+                <Bit name="fight constant movement" CStyleName="fight_constant_movement_bit" pascalStyleName="FightConstantMovementBit" />
+                <Bit name="flight fight constant movement" CStyleName="flight_fight_constant_movement_bit" pascalStyleName="FlightFightConstantMovementBit" />
+              </Options>
+            </LongFlags>
+            <UselessPad length="16" />
+            <Real CStyleName="crouch_danger_threshold" pascalStyleName="CrouchDangerThreshold" name="Crouch danger threshold" description="When danger rises above the threshold, the actor crouches" />
+            <Real CStyleName="stand_danger_threshold" pascalStyleName="StandDangerThreshold" name="Stand danger threshold" description="When danger drops below this threshold, the actor can stand again." />
+            <Real CStyleName="fight_danger_move_threshold" pascalStyleName="FightDangerMoveThreshold" name="Fight danger move threshold" description="When danger goes above given level, this actor switches firing positions" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="Danger Values" description="Danger values can be found in the ai-globals section of the globals tag." />
+      <Block CStyleName="evasion_properties" pascalStyleName="EvasionProperties" name="Evasion properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <Layout regolithID="block:character_evasion" internalName="character_evasion_block" name="character_evasion_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(struct character_evasion_properties)" isLatest="true">
+            <UselessPad length="4" />
+            <Real CStyleName="evasion_danger_threshold" pascalStyleName="EvasionDangerThreshold" name="Evasion danger threshold" description="Consider evading when immediate danger surpasses threshold" />
+            <Real CStyleName="evasion_delay_timer" pascalStyleName="EvasionDelayTimer" name="Evasion delay timer" description="Wait at least this delay between evasions" />
+            <Real CStyleName="evasion_chance" pascalStyleName="EvasionChance" name="Evasion chance" description="If danger is above threshold, the chance that we will evade. Expressed as chance of evading within a 1 second time period" />
+            <Real CStyleName="evasion_proximity_threshold" pascalStyleName="EvasionProximityThreshold" name="Evasion proximity threshold" description="If target is within given proximity, possibly evade" />
+            <UselessPad length="12" />
+            <Real CStyleName="dive_retreat_chance" pascalStyleName="DiveRetreatChance" name="dive retreat chance" description="Chance of retreating (fleeing) after danger avoidance dive" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="cover_properties" pascalStyleName="CoverProperties" name="Cover properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <Layout regolithID="block:character_cover" internalName="character_cover_block" name="character_cover_block">
+          <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(struct character_cover_properties)" isLatest="true">
+            <LongFlags CStyleName="cover_flags" pascalStyleName="CoverFlags" name="cover flags" expertOnly="true">
+              <OptionsXRef>enum:perception_flags</OptionsXRef>
+            </LongFlags>
+            <RealBounds CStyleName="hide_behind_cover_time" pascalStyleName="HideBehindCoverTime" name="hide behind cover time" units="seconds" description="how long we stay behind cover after seeking cover" />
+            <UselessPad length="4" />
+            <Real CStyleName="cover_vitality_threshold" pascalStyleName="CoverVitalityThreshold" name="Cover vitality threshold" description="When vitality drops below this level, possibly trigger a cover" />
+            <Real CStyleName="cover_shield_fraction" pascalStyleName="CoverShieldFraction" name="Cover shield fraction" description="trigger cover when shield drops below this fraction (low shield cover impulse must be enabled)" />
+            <Real CStyleName="cover_check_delay" pascalStyleName="CoverCheckDelay" name="Cover check delay" description="amount of time I will wait before trying again after covering" />
+            <Real CStyleName="emerge_from_cover_when_shield_fraction_reaches_threshold" pascalStyleName="EmergeFromCoverWhenShieldFractionReachesThreshold" name="Emerge from cover when shield fraction reaches threshold" description="Emerge from cover when shield fraction reaches threshold" />
+            <Real CStyleName="cover_danger_threshold" pascalStyleName="CoverDangerThreshold" name="Cover danger threshold" description="Danger must be this high to cover. At a danger level of 'danger threshold', the chance of seeking cover is the cover chance lower bound (below)" />
+            <Real CStyleName="danger_upper_threshold" pascalStyleName="DangerUpperThreshold" name="Danger upper threshold" description="At or above danger level of upper threshold, the chance of seeking cover is the cover chance upper bound (below)" />
+            <Explanation name="Cover chance" description="The Bounds on the chance of seeking cover.&#xA;The lower bound is valid when the danger is at 'danger threshold'&#xA;The upper bound is valid when the danger is at or above 'danger upper threshold'.&#xA;It is interpolated linearly everywhere in between.&#xA; All chances are expressed as 'chance of triggering cover in a 1 second period'." />
+            <RealBounds CStyleName="cover_chance" pascalStyleName="CoverChance" name="Cover chance" description="Bounds on the chances of seeking cover." />
+            <Real CStyleName="proximity_self_preserve" pascalStyleName="ProximitySelfPreserve" name="Proximity self-preserve" units="wus" description="When the proximity_self_preservation impulse is enabled, triggers self-preservation when target within this distance" />
+            <Real CStyleName="disallow_cover_distance" pascalStyleName="DisallowCoverDistance" name="Disallow cover distance" units="world units" description="Disallow covering from visible target under the given distance away" />
+            <UselessPad length="16" />
+            <Real CStyleName="proximity_melee_distance" pascalStyleName="ProximityMeleeDistance" name="proximity melee distance" description="When self preserving from a target less than given distance, causes melee attack (assuming proximity_melee_impulse is enabled)" />
+            <UselessPad length="8" />
+            <Real CStyleName="unreachable_enemy_danger_threshold" pascalStyleName="UnreachableEnemyDangerThreshold" name="unreachable enemy danger threshold" description="When danger from an unreachable enemy surpasses threshold, actor cover (assuming unreachable_enemy_cover impulse is enabled)" />
+            <Real CStyleName="scary_target_threshold" pascalStyleName="ScaryTargetThreshold" name="scary target threshold" description="When target is aware of me and surpasses the given scariness, self-preserve (assuming scary_target_cover_impulse is enabled)" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="search_properties" pascalStyleName="SearchProperties" name="search properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <Layout regolithID="block:character_search" internalName="character_search_block" name="character_search_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(struct character_search_properties)" isLatest="true">
+            <LongFlags CStyleName="search_flags" pascalStyleName="SearchFlags" name="Search flags">
+              <Options regolithID="enum:character_search_flags" CStyleName="character_search_flags" pascalStyleName="CharacterSearchFlags">
+                <Bit name="crouch on investigate" CStyleName="crouch_on_investigate_bit" pascalStyleName="CrouchOnInvestigateBit" />
+                <Bit name="walk on pursuit" CStyleName="walk_on_pursuit_bit" pascalStyleName="WalkOnPursuitBit" />
+              </Options>
+            </LongFlags>
+            <UselessPad length="24" />
+            <RealBounds CStyleName="search_time" pascalStyleName="SearchTime" name="search time" />
+            <UselessPad length="24" />
+            <Explanation name="Uncover" />
+            <RealBounds CStyleName="uncover_distance_bounds" pascalStyleName="UncoverDistanceBounds" name="Uncover distance bounds" description="Distance of uncover point from target. Hard lower limit, soft upper limit." />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="pre_search_properties" pascalStyleName="PreSearchProperties" name="pre-search properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <Layout regolithID="block:character_presearch" internalName="character_presearch_block" name="character_presearch_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(character_presearch_properties_v1)">
+            <LongFlags CStyleName="pre_search_flags" pascalStyleName="PreSearchFlags" name="Pre-search flags" expertOnly="true">
+              <OptionsXRef>enum:perception_flags</OptionsXRef>
+            </LongFlags>
+            <UselessPad length="24" />
+            <RealBounds CStyleName="minmax_pre_search_bounds" pascalStyleName="MinmaxPreSearchBounds" name="Min/Max pre-search bounds" description="If the min presearch time expires and the target is (actually) outside the min-certainty radius, presearch turns off" />
+            <Real CStyleName="min_certainty_radius" pascalStyleName="MinCertaintyRadius" name="Min certainty radius" />
+            <Real CStyleName="max_uncover_distance" pascalStyleName="MaxUncoverDistance" name="Max uncover distance" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="36" sizeofSource="sizeof(struct character_presearch_properties)" isLatest="true">
+            <LongFlags CStyleName="pre_search_flags" pascalStyleName="PreSearchFlags" name="Pre-search flags" expertOnly="true">
+              <OptionsXRef>enum:perception_flags</OptionsXRef>
+            </LongFlags>
+            <RealBounds CStyleName="min_presearch_time" pascalStyleName="MinPresearchTime" name="min presearch time" units="seconds" description="If the min presearch time expires and the target is (actually) outside the min-certainty radius, presearch turns off" />
+            <RealBounds CStyleName="max_presearch_time" pascalStyleName="MaxPresearchTime" name="max presearch time" units="seconds" description="Presearch turns off after the given time" />
+            <Real CStyleName="min_certainty_radius" pascalStyleName="MinCertaintyRadius" name="Min certainty radius" />
+            <Real CStyleName="max_uncover_distance" pascalStyleName="MaxUncoverDistance" name="Max uncover distance" units="DEPRECATED!" />
+            <RealBounds CStyleName="min_suppressing_time" pascalStyleName="MinSuppressingTime" name="min suppressing time" description="if the min suppressing time expires and the target is outside the min-certainty radius, suppressing fire turns off" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="weapons_properties" pascalStyleName="WeaponsProperties" name="weapons properties" maxElementCount="100">
+        <Layout regolithID="block:character_weapons" internalName="character_weapons_block" name="character_weapons_block">
+          <FieldSet version="0" sizeofValue="204" sizeofSource="sizeof(character_weapon_properties_v1)">
+            <LongFlags CStyleName="weapons_flags" pascalStyleName="WeaponsFlags" name="weapons flags">
+              <Options regolithID="enum:weapons_flags" CStyleName="weapons_flags" pascalStyleName="WeaponsFlags">
+                <Bit name="bursting inhibits movement" CStyleName="bursting_inhibits_movement_bit" pascalStyleName="BurstingInhibitsMovementBit" />
+                <Bit name="must crouch to shoot" CStyleName="must_crouch_to_shoot_bit" pascalStyleName="MustCrouchToShootBit" />
+                <Bit name="use extended safe-to-save range" CStyleName="use_extended_safe_to_save_range_bit" pascalStyleName="UseExtendedSafeToSaveRangeBit" />
+              </Options>
+            </LongFlags>
+            <TagReference CStyleName="weapon" pascalStyleName="Weapon" name="weapon" blockNameSource="true">
+              <tag>weap</tag>
+            </TagReference>
+            <Real CStyleName="maximum_firing_distance" pascalStyleName="MaximumFiringDistance" name="maximum firing distance" units="world units" description="we can only fire our weapon at targets within this distance" />
+            <Real CStyleName="rate_of_fire" pascalStyleName="RateOfFire" name="rate of fire" description="how many times per second we pull the trigger (zero = continuously held down)" />
+            <Angle CStyleName="projectile_error" pascalStyleName="ProjectileError" name="projectile error" units="degrees" description="error added to every projectile we fire" />
+            <RealBounds CStyleName="first_burst_delay_time" pascalStyleName="FirstBurstDelayTime" name="first burst delay time" units="seconds" />
+            <Real CStyleName="surprise_delay_time" pascalStyleName="SurpriseDelayTime" name="surprise delay time" units="seconds" />
+            <Real CStyleName="surprise_fire_wildly_time" pascalStyleName="SurpriseFireWildlyTime" name="surprise fire-wildly time" units="seconds" />
+            <Real CStyleName="death_fire_wildly_chance" pascalStyleName="DeathFireWildlyChance" name="death fire-wildly chance" units="[0,1]" />
+            <Real CStyleName="death_fire_wildly_time" pascalStyleName="DeathFireWildlyTime" name="death fire-wildly time" units="seconds" />
+            <RealBounds CStyleName="desired_combat_range" pascalStyleName="DesiredCombatRange" name="desired combat range" units="world units" />
+            <RealVector3D CStyleName="custom_stand_gun_offset" pascalStyleName="CustomStandGunOffset" name="custom stand gun offset" description="custom standing gun offset for overriding the default in the base actor" />
+            <RealVector3D CStyleName="custom_crouch_gun_offset" pascalStyleName="CustomCrouchGunOffset" name="custom crouch gun offset" description="custom crouching gun offset for overriding the default in the base actor" />
+            <Real CStyleName="target_tracking" pascalStyleName="TargetTracking" name="target tracking" units="[0,1]" description="how well our bursts track moving targets. 0.0= fire at the position they were standing when we started the burst. 1.0= fire at current position" />
+            <Real CStyleName="target_leading" pascalStyleName="TargetLeading" name="target leading" units="[0,1]" description="how much we lead moving targets. 0.0= no prediction. 1.0= predict completely." />
+            <Real CStyleName="weapon_damage_modifier" pascalStyleName="WeaponDamageModifier" name="weapon damage modifier" description="what fraction of its normal damage our weapon inflicts (zero = no modifier)" />
+            <Real CStyleName="minimum_firing_range" pascalStyleName="MinimumFiringRange" name="minimum firing range" description="weapon will not be fired at target closer than given distance" />
+            <Explanation name="burst geometry" description="at the start of every burst we pick a random point near the target to fire at, on either the left or the right side.&#xA;the burst origin angle controls whether this error is exactly horizontal or might have some vertical component.&#xA;&#xA;over the course of the burst we move our projectiles back in the opposite direction towards the target. this return motion is also controlled by an angle that specifies how close to the horizontal it is.&#xA;&#xA;for example if the burst origin angle and the burst return angle were both zero, and the return length was the same as the burst length, every burst would start the same amount away from the target (on either the left or right) and move back to exactly over the target at the end of the burst." />
+            <Real CStyleName="burst_origin_radius" pascalStyleName="BurstOriginRadius" name="burst origin radius" units="world units" description="how far away from the target the starting point is" />
+            <Angle CStyleName="burst_origin_angle" pascalStyleName="BurstOriginAngle" name="burst origin angle" units="degrees" description="the range from the horizontal that our starting error can be" />
+            <RealBounds CStyleName="burst_return_length" pascalStyleName="BurstReturnLength" name="burst return length" units="world units" description="how far the burst point moves back towards the target (could be negative)" />
+            <Angle CStyleName="burst_return_angle" pascalStyleName="BurstReturnAngle" name="burst return angle" units="degrees" description="the range from the horizontal that the return direction can be" />
+            <RealBounds CStyleName="burst_duration" pascalStyleName="BurstDuration" name="burst duration" units="seconds" description="how long each burst we fire is" />
+            <RealBounds CStyleName="burst_separation" pascalStyleName="BurstSeparation" name="burst separation" units="seconds" description="how long we wait between bursts" />
+            <Angle CStyleName="burst_angular_velocity" pascalStyleName="BurstAngularVelocity" name="burst angular velocity" units="degrees per second" description="the maximum rate at which we can sweep our fire (zero = unlimited)" />
+            <UselessPad length="4" />
+            <Real CStyleName="special_damage_modifier" pascalStyleName="SpecialDamageModifier" name="special damage modifier" units="[0,1]" description="damage modifier for special weapon fire (applied in addition to the normal damage modifier. zero = no change)" />
+            <Angle CStyleName="special_projectile_error" pascalStyleName="SpecialProjectileError" name="special projectile error" units="degrees" description="projectile error angle for special weapon fire (applied in addition to the normal error)" />
+            <Explanation name="special-case firing properties" />
+            <Real CStyleName="super_ballistic_range" pascalStyleName="SuperBallisticRange" name="super-ballistic range" description="we try to aim our shots super-ballistically if target is outside this range (zero = never)" />
+            <Real CStyleName="bombardment_range" pascalStyleName="BombardmentRange" name="bombardment range" description="we offset our burst targets randomly by this range when firing at non-visible enemies (zero = never)" />
+            <ShortEnum CStyleName="special_fire_mode" pascalStyleName="SpecialFireMode" name="special-fire mode" description="the type of special weapon fire that we can use">
+              <Options regolithID="enum:weapon_special_fire_mode" CStyleName="weapon_special_fire_mode" pascalStyleName="WeaponSpecialFireMode">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="overcharge" CStyleName="overcharge" pascalStyleName="Overcharge" />
+                <Enum name="secondary trigger" CStyleName="secondary_trigger" pascalStyleName="SecondaryTrigger" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="special_fire_situation" pascalStyleName="SpecialFireSituation" name="special-fire situation" description="when we will decide to use our special weapon fire mode">
+              <Options regolithID="enum:special_fire_situation" CStyleName="special_fire_situation" pascalStyleName="SpecialFireSituation">
+                <Enum name="never" CStyleName="never" pascalStyleName="Never" />
+                <Enum name="enemy visible" CStyleName="enemy_visible" pascalStyleName="EnemyVisible" />
+                <Enum name="enemy out of sight" CStyleName="enemy_out_of_sight" pascalStyleName="EnemyOutOfSight" />
+                <Enum name="strafing" CStyleName="strafing" pascalStyleName="Strafing" />
+              </Options>
+            </ShortEnum>
+            <Real CStyleName="special_fire_chance" pascalStyleName="SpecialFireChance" name="special-fire chance" units="[0,1]" description="how likely we are to use our special weapon fire mode" />
+            <Real CStyleName="special_fire_delay" pascalStyleName="SpecialFireDelay" name="special-fire delay" units="seconds" description="how long we must wait between uses of our special weapon fire mode" />
+            <UselessPad length="24" />
+            <Explanation name="Weapon drop when killed" />
+            <RealBounds CStyleName="drop_weapon_loaded" pascalStyleName="DropWeaponLoaded" name="drop weapon loaded" description="amount of ammo loaded into the weapon that we drop (in fractions of a clip, e.g. 0.3 to 0.5)" />
+            <ShortBounds CStyleName="drop_weapon_ammo" pascalStyleName="DropWeaponAmmo" name="drop weapon ammo" description="total number of rounds in the weapon that we drop (ignored for energy weapons)" />
+            <UselessPad length="12" />
+            <Explanation name="Special Targeting" />
+            <Real CStyleName="max_special_target_distance" pascalStyleName="MaxSpecialTargetDistance" name="Max special target distance" units="world units" description="Specific target regions on a vehicle or unit will be fired upon only under the given distance" />
+            <Explanation name="Ballistic firing" />
+            <RealBounds CStyleName="ballistic_firing_bounds" pascalStyleName="BallisticFiringBounds" name="Ballistic firing bounds" units="world units" description="At the min range, the min ballistic fraction is used, at the max, the max ballistic fraction is used" />
+            <RealBounds CStyleName="ballistic_fraction_bounds" pascalStyleName="BallisticFractionBounds" name="Ballistic fraction bounds" units="[0-1]" description="Controls speed and degree of arc. 0 = high, slow, 1 = low, fast" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="224" sizeofSource="sizeof(struct character_weapon_properties)" isLatest="true">
+            <LongFlags CStyleName="weapons_flags" pascalStyleName="WeaponsFlags" name="weapons flags">
+              <OptionsXRef>enum:weapons_flags</OptionsXRef>
+            </LongFlags>
+            <TagReference CStyleName="weapon" pascalStyleName="Weapon" name="weapon" blockNameSource="true">
+              <tag>weap</tag>
+            </TagReference>
+            <UselessPad length="24" />
+            <Explanation name="Combat ranges" />
+            <Real CStyleName="maximum_firing_range" pascalStyleName="MaximumFiringRange" name="maximum firing range" units="world units" description="we can only fire our weapon at targets within this distance" />
+            <Real CStyleName="minimum_firing_range" pascalStyleName="MinimumFiringRange" name="minimum firing range" description="weapon will not be fired at target closer than given distance" />
+            <RealBounds CStyleName="normal_combat_range" pascalStyleName="NormalCombatRange" name="normal combat range" units="world units" />
+            <Real CStyleName="bombardment_range" pascalStyleName="BombardmentRange" name="bombardment range" description="we offset our burst targets randomly by this range when firing at non-visible enemies (zero = never)" />
+            <Real CStyleName="max_special_target_distance" pascalStyleName="MaxSpecialTargetDistance" name="Max special target distance" units="world units" description="Specific target regions on a vehicle or unit will be fired upon only under the given distance" />
+            <RealBounds CStyleName="timid_combat_range" pascalStyleName="TimidCombatRange" name="timid combat range" units="world units" />
+            <RealBounds CStyleName="aggressive_combat_range" pascalStyleName="AggressiveCombatRange" name="aggressive combat range" units="world units" />
+            <Explanation name="Ballistic Firing" />
+            <Real CStyleName="super_ballistic_range" pascalStyleName="SuperBallisticRange" name="super-ballistic range" description="we try to aim our shots super-ballistically if target is outside this range (zero = never)" />
+            <RealBounds CStyleName="ballistic_firing_bounds" pascalStyleName="BallisticFiringBounds" name="Ballistic firing bounds" units="world units" description="At the min range, the min ballistic fraction is used, at the max, the max ballistic fraction is used" />
+            <RealBounds CStyleName="ballistic_fraction_bounds" pascalStyleName="BallisticFractionBounds" name="Ballistic fraction bounds" units="[0-1]" description="Controls speed and degree of arc. 0 = high, slow, 1 = low, fast" />
+            <UselessPad length="24" />
+            <Explanation name="Behavior" />
+            <RealBounds CStyleName="first_burst_delay_time" pascalStyleName="FirstBurstDelayTime" name="first burst delay time" units="seconds" />
+            <Real CStyleName="surprise_delay_time" pascalStyleName="SurpriseDelayTime" name="surprise delay time" units="seconds" />
+            <Real CStyleName="surprise_fire_wildly_time" pascalStyleName="SurpriseFireWildlyTime" name="surprise fire-wildly time" units="seconds" />
+            <Real CStyleName="death_fire_wildly_chance" pascalStyleName="DeathFireWildlyChance" name="death fire-wildly chance" units="[0,1]" />
+            <Real CStyleName="death_fire_wildly_time" pascalStyleName="DeathFireWildlyTime" name="death fire-wildly time" units="seconds" />
+            <UselessPad length="12" />
+            <RealVector3D CStyleName="custom_stand_gun_offset" pascalStyleName="CustomStandGunOffset" name="custom stand gun offset" description="custom standing gun offset for overriding the default in the base actor" />
+            <RealVector3D CStyleName="custom_crouch_gun_offset" pascalStyleName="CustomCrouchGunOffset" name="custom crouch gun offset" description="custom crouching gun offset for overriding the default in the base actor" />
+            <UselessPad length="12" />
+            <Explanation name="special-case firing properties" />
+            <ShortEnum CStyleName="special_fire_mode" pascalStyleName="SpecialFireMode" name="special-fire mode" description="the type of special weapon fire that we can use">
+              <OptionsXRef>enum:weapon_special_fire_mode</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="special_fire_situation" pascalStyleName="SpecialFireSituation" name="special-fire situation" description="when we will decide to use our special weapon fire mode">
+              <OptionsXRef>enum:special_fire_situation</OptionsXRef>
+            </ShortEnum>
+            <Real CStyleName="special_fire_chance" pascalStyleName="SpecialFireChance" name="special-fire chance" units="[0,1]" description="how likely we are to use our special weapon fire mode" />
+            <Real CStyleName="special_fire_delay" pascalStyleName="SpecialFireDelay" name="special-fire delay" units="seconds" description="how long we must wait between uses of our special weapon fire mode" />
+            <Real CStyleName="special_damage_modifier" pascalStyleName="SpecialDamageModifier" name="special damage modifier" units="[0,1]" description="damage modifier for special weapon fire (applied in addition to the normal damage modifier. zero = no change)" />
+            <Angle CStyleName="special_projectile_error" pascalStyleName="SpecialProjectileError" name="special projectile error" units="degrees" description="projectile error angle for special weapon fire (applied in addition to the normal error)" />
+            <UselessPad length="24" />
+            <Explanation name="Weapon drop when killed" />
+            <RealBounds CStyleName="drop_weapon_loaded" pascalStyleName="DropWeaponLoaded" name="drop weapon loaded" description="amount of ammo loaded into the weapon that we drop (in fractions of a clip, e.g. 0.3 to 0.5)" />
+            <ShortBounds CStyleName="drop_weapon_ammo" pascalStyleName="DropWeaponAmmo" name="drop weapon ammo" description="total number of rounds in the weapon that we drop (ignored for energy weapons)" />
+            <UselessPad length="24" />
+            <Explanation name="Accuracy" description="Parameters control how accuracy changes over the duration of a series of bursts&#xA;Accuracy is an analog value between 0 and 1. At zero, the parameters of the first&#xA;firing-pattern block is used. At 1, the parameters in the second block is used. In&#xA;between, all the values are linearly interpolated" />
+            <RealBounds CStyleName="normal_accuracy_bounds" pascalStyleName="NormalAccuracyBounds" name="normal accuracy bounds" description="Indicates starting and ending accuracies at normal difficulty" />
+            <Real CStyleName="normal_accuracy_time" pascalStyleName="NormalAccuracyTime" name="normal accuracy time" description="The amount of time it takes the accuracy to go from starting to ending" />
+            <UselessPad length="4" />
+            <RealBounds CStyleName="heroic_accuracy_bounds" pascalStyleName="HeroicAccuracyBounds" name="heroic accuracy bounds" description="Indicates starting and ending accuracies at heroic difficulty" />
+            <Real CStyleName="heroic_accuracy_time" pascalStyleName="HeroicAccuracyTime" name="heroic accuracy time" description="The amount of time it takes the accuracy to go from starting to ending" />
+            <UselessPad length="4" />
+            <RealBounds CStyleName="legendary_accuracy_bounds" pascalStyleName="LegendaryAccuracyBounds" name="legendary accuracy bounds" description="Indicates starting and ending accuracies at legendary difficulty" />
+            <Real CStyleName="legendary_accuracy_time" pascalStyleName="LegendaryAccuracyTime" name="legendary accuracy time" description="The amount of time it takes the accuracy to go from starting to ending" />
+            <UselessPad length="4" />
+            <UselessPad length="48" />
+            <Block CStyleName="firing_patterns" pascalStyleName="FiringPatterns" name="firing patterns" maxElementCount="2">
+              <Layout regolithID="block:character_firing_pattern" internalName="character_firing_pattern_block" name="character_firing_pattern_block">
+                <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(struct character_firing_pattern)" isLatest="true">
+                  <Real CStyleName="rate_of_fire" pascalStyleName="RateOfFire" name="rate of fire" description="how many times per second we pull the trigger (zero = continuously held down)" />
+                  <Real CStyleName="target_tracking" pascalStyleName="TargetTracking" name="target tracking" units="[0,1]" description="how well our bursts track moving targets. 0.0= fire at the position they were standing when we started the burst. 1.0= fire at current position" />
+                  <Real CStyleName="target_leading" pascalStyleName="TargetLeading" name="target leading" units="[0,1]" description="how much we lead moving targets. 0.0= no prediction. 1.0= predict completely." />
+                  <Explanation name="burst geometry" description="at the start of every burst we pick a random point near the target to fire at, on either the left or the right side.&#xA;the burst origin angle controls whether this error is exactly horizontal or might have some vertical component.&#xA;&#xA;over the course of the burst we move our projectiles back in the opposite direction towards the target. this return motion is also controlled by an angle that specifies how close to the horizontal it is.&#xA;&#xA;for example if the burst origin angle and the burst return angle were both zero, and the return length was the same as the burst length, every burst would start the same amount away from the target (on either the left or right) and move back to exactly over the target at the end of the burst." />
+                  <Real CStyleName="burst_origin_radius" pascalStyleName="BurstOriginRadius" name="burst origin radius" units="world units" description="how far away from the target the starting point is" />
+                  <Angle CStyleName="burst_origin_angle" pascalStyleName="BurstOriginAngle" name="burst origin angle" units="degrees" description="the range from the horizontal that our starting error can be" />
+                  <RealBounds CStyleName="burst_return_length" pascalStyleName="BurstReturnLength" name="burst return length" units="world units" description="how far the burst point moves back towards the target (could be negative)" />
+                  <Angle CStyleName="burst_return_angle" pascalStyleName="BurstReturnAngle" name="burst return angle" units="degrees" description="the range from the horizontal that the return direction can be" />
+                  <RealBounds CStyleName="burst_duration" pascalStyleName="BurstDuration" name="burst duration" units="seconds" description="how long each burst we fire is" />
+                  <RealBounds CStyleName="burst_separation" pascalStyleName="BurstSeparation" name="burst separation" units="seconds" description="how long we wait between bursts" />
+                  <Real CStyleName="weapon_damage_modifier" pascalStyleName="WeaponDamageModifier" name="weapon damage modifier" description="what fraction of its normal damage our weapon inflicts (zero = no modifier)" />
+                  <Angle CStyleName="projectile_error" pascalStyleName="ProjectileError" name="projectile error" units="degrees" description="error added to every projectile we fire" />
+                  <UselessPad length="12" />
+                  <Angle CStyleName="burst_angular_velocity" pascalStyleName="BurstAngularVelocity" name="burst angular velocity" units="degrees per second" description="the maximum rate at which we can sweep our fire (zero = unlimited)" />
+                  <Angle CStyleName="maximum_error_angle" pascalStyleName="MaximumErrorAngle" name="maximum error angle" units="degrees" description="cap on the maximum angle by which we will miss target (restriction on burst origin radius" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <TagReference CStyleName="weapon_melee_damage" pascalStyleName="WeaponMeleeDamage" name="weapon melee damage">
+              <tag>jpt!</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <UselessPad length="24" />
+      <Block CStyleName="grenades_properties" pascalStyleName="GrenadesProperties" name="grenades properties" maxElementCount="10">
+        <Layout regolithID="block:character_grenades" internalName="character_grenades_block" name="character_grenades_block">
+          <FieldSet version="0" sizeofValue="60" sizeofSource="sizeof(struct character_grenade_properties)" isLatest="true">
+            <LongFlags CStyleName="grenades_flags" pascalStyleName="GrenadesFlags" name="grenades flags" expertOnly="true">
+              <OptionsXRef>enum:perception_flags</OptionsXRef>
+            </LongFlags>
+            <ShortEnum CStyleName="grenade_type" pascalStyleName="GrenadeType" name="grenade type" description="type of grenades that we throw^">
+              <OptionsXRef>enum:character_grenade_type</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="trajectory_type" pascalStyleName="TrajectoryType" name="trajectory type" description="how we throw our grenades">
+              <Options regolithID="enum:character_grenade_trajectory_type" CStyleName="character_grenade_trajectory_type" pascalStyleName="CharacterGrenadeTrajectoryType">
+                <Enum name="toss" CStyleName="toss" pascalStyleName="Toss" />
+                <Enum name="lob" CStyleName="lob" pascalStyleName="Lob" />
+                <Enum name="bounce" CStyleName="bounce" pascalStyleName="Bounce" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="YZNPI" length="2" />
+            <ShortInteger CStyleName="minimum_enemy_count" pascalStyleName="MinimumEnemyCount" name="minimum enemy count" description="how many enemies must be within the radius of the grenade before we will consider throwing there" />
+            <Real CStyleName="enemy_radius" pascalStyleName="EnemyRadius" name="enemy radius" units="world units" description="we consider enemies within this radius when determining where to throw" />
+            <Real CStyleName="grenade_ideal_velocity" pascalStyleName="GrenadeIdealVelocity" name="grenade ideal velocity" units="world units per second" description="how fast we LIKE to throw our grenades" />
+            <Real CStyleName="grenade_velocity" pascalStyleName="GrenadeVelocity" name="grenade velocity" units="world units per second" description="the fastest we can possibly throw our grenades" />
+            <RealBounds CStyleName="grenade_ranges" pascalStyleName="GrenadeRanges" name="grenade ranges" units="world units" description="ranges within which we will consider throwing a grenade" />
+            <Real CStyleName="collateral_damage_radius" pascalStyleName="CollateralDamageRadius" name="collateral damage radius" units="world units" description="we won't throw if there are friendlies around our target within this range" />
+            <RealFraction CStyleName="grenade_chance" pascalStyleName="GrenadeChance" name="grenade chance" units="[0,1]" description="how likely we are to throw a grenade in one second" />
+            <Real CStyleName="grenade_throw_delay" pascalStyleName="GrenadeThrowDelay" name="grenade throw delay" units="seconds" description="How long we have to wait after throwing a grenade before we can throw another one" />
+            <UselessPad length="4" />
+            <RealFraction CStyleName="grenade_uncover_chance" pascalStyleName="GrenadeUncoverChance" name="grenade uncover chance" units="[0,1]" description="how likely we are to throw a grenade to flush out a target in one second" />
+            <UselessPad length="4" />
+            <RealFraction CStyleName="anti_vehicle_grenade_chance" pascalStyleName="AntiVehicleGrenadeChance" name="anti-vehicle grenade chance" units="[0,1]" description="how likely we are to throw a grenade against a vehicle" />
+            <UselessPad length="4" />
+            <Explanation name="Grenade drop when killed" />
+            <ShortBounds CStyleName="grenade_count" pascalStyleName="GrenadeCount" name="grenade count" description="number of grenades that we start with" />
+            <Real CStyleName="dont_drop_grenades_chance" pascalStyleName="DontDropGrenadesChance" name="dont drop grenades chance" units="[0,1]" description="how likely we are not to drop any grenades when we die, even if we still have some" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="charge_properties" pascalStyleName="ChargeProperties" name="charge properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <Layout regolithID="block:character_charge" internalName="character_charge_block" name="character_charge_block">
+          <FieldSet version="0" sizeofValue="40" sizeofSource="sizeof(character_charge_properties_v1)">
+            <LongFlags CStyleName="charge_flags" pascalStyleName="ChargeFlags" name="Charge flags" expertOnly="true">
+              <OptionsXRef>enum:perception_flags</OptionsXRef>
+            </LongFlags>
+            <Real CStyleName="melee_attack_range" pascalStyleName="MeleeAttackRange" name="melee attack range" />
+            <Real CStyleName="melee_abort_range" pascalStyleName="MeleeAbortRange" name="melee abort range" />
+            <Real CStyleName="melee_attack_timeout" pascalStyleName="MeleeAttackTimeout" name="melee attack timeout" units="seconds" description="Give up after given amount of time spent charging" />
+            <Real CStyleName="melee_attack_delay_timer" pascalStyleName="MeleeAttackDelayTimer" name="melee attack delay timer" />
+            <RealBounds CStyleName="melee_leap_range" pascalStyleName="MeleeLeapRange" name="melee leap range" />
+            <Real CStyleName="melee_leap_velocity" pascalStyleName="MeleeLeapVelocity" name="melee leap velocity" />
+            <Real CStyleName="melee_leap_chance" pascalStyleName="MeleeLeapChance" name="melee leap chance" />
+            <Real CStyleName="melee_leap_ballistic" pascalStyleName="MeleeLeapBallistic" name="melee leap ballistic" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="44" sizeofSource="sizeof(character_charge_properties_v2)">
+            <LongFlags CStyleName="charge_flags" pascalStyleName="ChargeFlags" name="Charge flags" expertOnly="true">
+              <OptionsXRef>enum:perception_flags</OptionsXRef>
+            </LongFlags>
+            <Real CStyleName="melee_consider_range" pascalStyleName="MeleeConsiderRange" name="melee consider range" />
+            <Real CStyleName="melee_attack_range" pascalStyleName="MeleeAttackRange" name="melee attack range" />
+            <Real CStyleName="melee_abort_range" pascalStyleName="MeleeAbortRange" name="melee abort range" />
+            <Real CStyleName="melee_attack_timeout" pascalStyleName="MeleeAttackTimeout" name="melee attack timeout" units="seconds" description="Give up after given amount of time spent charging" />
+            <Real CStyleName="melee_attack_delay_timer" pascalStyleName="MeleeAttackDelayTimer" name="melee attack delay timer" />
+            <RealBounds CStyleName="melee_leap_range" pascalStyleName="MeleeLeapRange" name="melee leap range" />
+            <Real CStyleName="melee_leap_velocity" pascalStyleName="MeleeLeapVelocity" name="melee leap velocity" />
+            <Real CStyleName="melee_leap_chance" pascalStyleName="MeleeLeapChance" name="melee leap chance" />
+            <Real CStyleName="melee_leap_ballistic" pascalStyleName="MeleeLeapBallistic" name="melee leap ballistic" />
+          </FieldSet>
+          <FieldSet version="2" sizeofValue="48" sizeofSource="sizeof(character_charge_properties_v3)">
+            <LongFlags CStyleName="charge_flags" pascalStyleName="ChargeFlags" name="Charge flags" expertOnly="true">
+              <OptionsXRef>enum:perception_flags</OptionsXRef>
+            </LongFlags>
+            <Real CStyleName="melee_consider_range" pascalStyleName="MeleeConsiderRange" name="melee consider range" />
+            <Real CStyleName="melee_attack_range" pascalStyleName="MeleeAttackRange" name="melee attack range" />
+            <Real CStyleName="melee_abort_range" pascalStyleName="MeleeAbortRange" name="melee abort range" />
+            <Real CStyleName="melee_attack_timeout" pascalStyleName="MeleeAttackTimeout" name="melee attack timeout" units="seconds" description="Give up after given amount of time spent charging" />
+            <Real CStyleName="melee_attack_delay_timer" pascalStyleName="MeleeAttackDelayTimer" name="melee attack delay timer" />
+            <RealBounds CStyleName="melee_leap_range" pascalStyleName="MeleeLeapRange" name="melee leap range" />
+            <Real CStyleName="ideal_leap_velocity" pascalStyleName="IdealLeapVelocity" name="ideal leap velocity" />
+            <Real CStyleName="max_leap_velocity" pascalStyleName="MaxLeapVelocity" name="max leap velocity" />
+            <Real CStyleName="melee_leap_chance" pascalStyleName="MeleeLeapChance" name="melee leap chance" />
+            <Real CStyleName="melee_leap_ballistic" pascalStyleName="MeleeLeapBallistic" name="melee leap ballistic" />
+          </FieldSet>
+          <FieldSet version="3" sizeofValue="72" sizeofSource="sizeof(struct character_charge_properties)" isLatest="true">
+            <LongFlags CStyleName="charge_flags" pascalStyleName="ChargeFlags" name="Charge flags">
+              <Options regolithID="enum:character_charge_flags" CStyleName="character_charge_flags" pascalStyleName="CharacterChargeFlags">
+                <Bit name="offhand melee allowed" CStyleName="offhand_melee_allowed_bit" pascalStyleName="OffhandMeleeAllowedBit" />
+                <Bit name="berserk whenever charge" CStyleName="berserk_whenever_charge_bit" pascalStyleName="BerserkWheneverChargeBit" />
+              </Options>
+            </LongFlags>
+            <Real CStyleName="melee_consider_range" pascalStyleName="MeleeConsiderRange" name="melee consider range" />
+            <Real CStyleName="melee_chance" pascalStyleName="MeleeChance" name="melee chance" description="chance of initiating a melee within a 1 second period" />
+            <Real CStyleName="melee_attack_range" pascalStyleName="MeleeAttackRange" name="melee attack range" />
+            <Real CStyleName="melee_abort_range" pascalStyleName="MeleeAbortRange" name="melee abort range" />
+            <Real CStyleName="melee_attack_timeout" pascalStyleName="MeleeAttackTimeout" name="melee attack timeout" units="seconds" description="Give up after given amount of time spent charging" />
+            <Real CStyleName="melee_attack_delay_timer" pascalStyleName="MeleeAttackDelayTimer" name="melee attack delay timer" units="seconds" description="don't attempt again before given time since last melee" />
+            <RealBounds CStyleName="melee_leap_range" pascalStyleName="MeleeLeapRange" name="melee leap range" />
+            <Real CStyleName="melee_leap_chance" pascalStyleName="MeleeLeapChance" name="melee leap chance" />
+            <Real CStyleName="ideal_leap_velocity" pascalStyleName="IdealLeapVelocity" name="ideal leap velocity" />
+            <Real CStyleName="max_leap_velocity" pascalStyleName="MaxLeapVelocity" name="max leap velocity" />
+            <Real CStyleName="melee_leap_ballistic" pascalStyleName="MeleeLeapBallistic" name="melee leap ballistic" />
+            <Real CStyleName="melee_delay_timer" pascalStyleName="MeleeDelayTimer" name="melee delay timer" units="seconds" description="time between melee leaps" />
+            <UselessPad length="12" />
+            <TagReference CStyleName="berserk_weapon" pascalStyleName="BerserkWeapon" name="berserk weapon" description="when I berserk, I pull out a ...">
+              <tag>weap</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="ready_properties" pascalStyleName="ReadyProperties" name="ready properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <Layout regolithID="block:character_ready" internalName="character_ready_block" name="character_ready_block">
+          <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct character_ready_properties)" isLatest="true">
+            <RealBounds CStyleName="ready_time_bounds" pascalStyleName="ReadyTimeBounds" name="ready time bounds" description="Character will pause for given time before engaging threat" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="vehicle_properties" pascalStyleName="VehicleProperties" name="vehicle properties" maxElementCount="100">
+        <Layout regolithID="block:character_vehicle" internalName="character_vehicle_block" name="character_vehicle_block">
+          <FieldSet version="0" sizeofValue="128" sizeofSource="sizeof(character_vehicle_properties_v1)">
+            <TagReference CStyleName="unit" pascalStyleName="Unit" name="unit" blockNameSource="true">
+              <tag>unit</tag>
+            </TagReference>
+            <LongFlags CStyleName="vehicle_flags" pascalStyleName="VehicleFlags" name="vehicle flags" expertOnly="true">
+              <OptionsXRef>enum:perception_flags</OptionsXRef>
+            </LongFlags>
+            <UselessPad length="8" />
+            <Explanation name="Pathfinding" />
+            <Real CStyleName="ai_pathfinding_radius" pascalStyleName="AiPathfindingRadius" name="ai pathfinding radius" units="world units" description="(Ground vehicles)" />
+            <Real CStyleName="ai_destination_radius" pascalStyleName="AiDestinationRadius" name="ai destination radius" units="world units" description="(All vehicles) Distance within which goal is considered reached" />
+            <Real CStyleName="ai_deceleration_distance" pascalStyleName="AiDecelerationDistance" name="ai deceleration distance" units="world units" description="(All vehicles)Distance from goal at which AI starts to decelerate" />
+            <UselessPad length="8" />
+            <Explanation name="Turning" />
+            <Real CStyleName="ai_turning_radius" pascalStyleName="AiTurningRadius" name="ai turning radius" description="(Warthog, Pelican) Idealized average turning radius (should reflect actual vehicle physics)" />
+            <Real CStyleName="ai_inner_turning_radius__tr" pascalStyleName="AiInnerTurningRadiusTr" name="ai inner turning radius (&lt; tr)" description="(Warthog-type) Idealized minimum turning radius (should reflect actual vehicle physics)" />
+            <Real CStyleName="ai_ideal_turning_radius__tr" pascalStyleName="AiIdealTurningRadiusTr" name="ai ideal turning radius (&gt; tr)" description="(Warthogs, ghosts) Ideal turning radius for rounding turns (barring obstacles, etc.)" />
+            <UselessPad length="8" />
+            <Explanation name="Steering" />
+            <Angle CStyleName="ai_banshee_steering_maximum" pascalStyleName="AiBansheeSteeringMaximum" name="ai banshee steering maximum" description="(Banshee)" />
+            <Real CStyleName="ai_max_steering_angle" pascalStyleName="AiMaxSteeringAngle" name="ai max steering angle" units="degrees" description="(Warthog, ghosts, wraiths)Maximum steering angle from forward (ultimately controls turning speed)" />
+            <Real CStyleName="ai_max_steering_delta" pascalStyleName="AiMaxSteeringDelta" name="ai max steering delta" units="degrees" description="(pelicans, dropships, ghosts, wraiths)Maximum delta in steering angle from one tick to the next (ultimately controls turn acceleration)" />
+            <Real CStyleName="ai_oversteering_scale" pascalStyleName="AiOversteeringScale" name="ai oversteering scale" description="(Warthog, ghosts, wraiths)" />
+            <AngleBounds CStyleName="ai_oversteering_bounds" pascalStyleName="AiOversteeringBounds" name="ai oversteering bounds" description="(Banshee) Angle to goal at which AI will oversteer" />
+            <Real CStyleName="ai_sideslip_distance" pascalStyleName="AiSideslipDistance" name="ai sideslip distance" description="(Ghosts, Dropships) Distance within which AI will strafe to target (as opposed to turning)" />
+            <UselessPad length="8" />
+            <Explanation name="Throttle" />
+            <Real CStyleName="ai_throttle_maximum" pascalStyleName="AiThrottleMaximum" name="ai throttle maximum" units="(0 - 1)" description="(All vehicles)" />
+            <Real CStyleName="ai_goal_min_throttle_scale" pascalStyleName="AiGoalMinThrottleScale" name="ai goal min throttle scale" description="(Warthogs, Dropships, ghosts)scale on throttle when within 'ai deceleration distance' of goal (0...1)" />
+            <Real CStyleName="ai_turn_min_throttle_scale" pascalStyleName="AiTurnMinThrottleScale" name="ai turn min throttle scale" description="(Warthogs, ghosts) Scale on throttle due to nearness to a turn (0...1)" />
+            <Real CStyleName="ai_direction_min_throttle_scale" pascalStyleName="AiDirectionMinThrottleScale" name="ai direction min throttle scale" description="(Warthogs, ghosts) Scale on throttle due to facing away from intended direction (0...1)" />
+            <Real CStyleName="ai_acceleration_scale" pascalStyleName="AiAccelerationScale" name="ai acceleration scale" units="(0-1)" description="(warthogs, ghosts) The maximum allowable change in throttle between ticks" />
+            <UselessPad length="8" />
+            <Explanation name="Behavior" />
+            <Real CStyleName="ai_charge_repeat_timeout" pascalStyleName="AiChargeRepeatTimeout" name="ai charge repeat timeout" description="(All vehicles) Time delay between vehicle charges" />
+            <Real CStyleName="deprecated_ai_strafing_abort_range" pascalStyleName="DeprecatedAiStrafingAbortRange" name="DEPRECATED (ai strafing abort range)" description="(All vehicles) Distance at which charge will be aborted!" />
+            <Real CStyleName="ai_avoidance_distance" pascalStyleName="AiAvoidanceDistance" name="ai avoidance distance" units="world units" description="(Banshee, Sentinels, Dropships) Look-ahead distance for obstacle avoidance" />
+            <Real CStyleName="ai_charge_look_ahead_time" pascalStyleName="AiChargeLookAheadTime" name="ai charge look-ahead time" description="(All vehicles) In deciding when to abort vehicle charge, look ahead these many seconds to predict time of contact" />
+            <UselessPad length="4" />
+            <Angle CStyleName="ai_allowable_aim_deviation_angle" pascalStyleName="AiAllowableAimDeviationAngle" name="ai allowable aim deviation angle" />
+            <UselessPad length="12" />
+            <Real CStyleName="ai_cover_min_distance" pascalStyleName="AiCoverMinDistance" name="ai cover min distance" description="(All vehicles) When executing vehicle-cover, minimum distance from the target to flee to" />
+            <Real CStyleName="ai_cover_time" pascalStyleName="AiCoverTime" name="ai cover time" description="(All vehicles) How long to stay away from the target" />
+            <UselessPad length="20" />
+            <Real CStyleName="ai_charge_consider_distance" pascalStyleName="AiChargeConsiderDistance" name="ai charge consider distance" description="Consider charging the target when it is within this range (0 = infinite distance)" />
+            <Real CStyleName="ai_charge_abort_distance" pascalStyleName="AiChargeAbortDistance" name="ai charge abort distance" description="Abort the charge when the target get more than this far away (0 = never abort)" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="196" sizeofSource="sizeof(struct character_vehicle_properties)" isLatest="true">
+            <TagReference CStyleName="unit" pascalStyleName="Unit" name="unit" blockNameSource="true">
+              <tag>unit</tag>
+            </TagReference>
+            <TagReference CStyleName="style" pascalStyleName="Style" name="style" blockNameSource="true">
+              <tag>styl</tag>
+            </TagReference>
+            <UselessPad length="32" />
+            <LongFlags CStyleName="vehicle_flags" pascalStyleName="VehicleFlags" name="vehicle flags">
+              <Options regolithID="enum:character_vehicle_passenger_behavior" CStyleName="character_vehicle_passenger_behavior" pascalStyleName="CharacterVehiclePassengerBehavior">
+                <Bit name="passengers adopt original squad" CStyleName="passengers_adopt_original_squad_bit" pascalStyleName="PassengersAdoptOriginalSquadBit" />
+              </Options>
+            </LongFlags>
+            <UselessPad length="8" />
+            <Explanation name="Pathfinding" />
+            <Real CStyleName="ai_pathfinding_radius" pascalStyleName="AiPathfindingRadius" name="ai pathfinding radius" units="world units (Ground vehicles)" />
+            <Real CStyleName="ai_destination_radius" pascalStyleName="AiDestinationRadius" name="ai destination radius" units="world units (All vehicles)" description="Distance within which goal is considered reached" />
+            <Real CStyleName="ai_deceleration_distance" pascalStyleName="AiDecelerationDistance" name="ai deceleration distance" units="world units: (All vehicles)" description="Distance from goal at which AI starts to decelerate" />
+            <UselessPad length="8" />
+            <Explanation name="Turning" />
+            <Real CStyleName="ai_turning_radius" pascalStyleName="AiTurningRadius" name="ai turning radius" units="world units (Warthog, Pelican, Ghost)" description="Idealized average turning radius (should reflect actual vehicle physics)" />
+            <Real CStyleName="ai_inner_turning_radius__tr" pascalStyleName="AiInnerTurningRadiusTr" name="ai inner turning radius (&lt; tr)" units="(Warthogs)" description="Idealized minimum turning radius (should reflect actual vehicle physics)" />
+            <Real CStyleName="ai_ideal_turning_radius__tr" pascalStyleName="AiIdealTurningRadiusTr" name="ai ideal turning radius (&gt; tr)" units="(Warthogs, ghosts)" description="Ideal turning radius for rounding turns (barring obstacles, etc.)" />
+            <UselessPad length="8" />
+            <Explanation name="Steering" />
+            <Angle CStyleName="ai_banshee_steering_maximum" pascalStyleName="AiBansheeSteeringMaximum" name="ai banshee steering maximum" units="(banshees)" />
+            <Real CStyleName="ai_max_steering_angle" pascalStyleName="AiMaxSteeringAngle" name="ai max steering angle" units="degrees (warthogs, ghosts, wraiths)" description="Maximum steering angle from forward (ultimately controls turning speed)" />
+            <Real CStyleName="ai_max_steering_delta" pascalStyleName="AiMaxSteeringDelta" name="ai max steering delta" units="degrees (warthogs, dropships, ghosts, wraiths)" description="Maximum delta in steering angle from one tick to the next (ultimately controls turn acceleration)" />
+            <Real CStyleName="ai_oversteering_scale" pascalStyleName="AiOversteeringScale" name="ai oversteering scale" units="(warthogs, ghosts, wraiths)" />
+            <AngleBounds CStyleName="ai_oversteering_bounds" pascalStyleName="AiOversteeringBounds" name="ai oversteering bounds" units="(banshees)" description="Angle to goal at which AI will oversteer" />
+            <Real CStyleName="ai_sideslip_distance" pascalStyleName="AiSideslipDistance" name="ai sideslip distance" units="(ghosts, dropships)" description="Distance within which AI will strafe to target (as opposed to turning)" />
+            <Real CStyleName="ai_avoidance_distance" pascalStyleName="AiAvoidanceDistance" name="ai avoidance distance" units="world units:(banshees)" description="Look-ahead distance for obstacle avoidance" />
+            <Real CStyleName="ai_min_urgency" pascalStyleName="AiMinUrgency" name="ai min urgency" units="[0-1] (Banshees)" description="The minimum urgency with which a turn can be made (urgency = percent of maximum steering delta)" />
+            <UselessPad length="4" />
+            <Explanation name="Throttle" />
+            <Real CStyleName="ai_throttle_maximum" pascalStyleName="AiThrottleMaximum" name="ai throttle maximum" units="(0 - 1) (all vehicles)" />
+            <Real CStyleName="ai_goal_min_throttle_scale" pascalStyleName="AiGoalMinThrottleScale" name="ai goal min throttle scale" units="(warthogs, dropships, ghosts)" description="scale on throttle when within 'ai deceleration distance' of goal (0...1)" />
+            <Real CStyleName="ai_turn_min_throttle_scale" pascalStyleName="AiTurnMinThrottleScale" name="ai turn min throttle scale" units="(warthogs, dropships, ghosts)" description="Scale on throttle due to nearness to a turn (0...1)" />
+            <Real CStyleName="ai_direction_min_throttle_scale" pascalStyleName="AiDirectionMinThrottleScale" name="ai direction min throttle scale" units="(warthogs, dropships, ghosts)" description="Scale on throttle due to facing away from intended direction (0...1)" />
+            <Real CStyleName="ai_acceleration_scale" pascalStyleName="AiAccelerationScale" name="ai acceleration scale" units="(0-1): (warthogs, ghosts)" description="The maximum allowable change in throttle between ticks" />
+            <Real CStyleName="ai_throttle_blend" pascalStyleName="AiThrottleBlend" name="ai throttle blend" units="(0-1): (dropships, sentinels)" description="The degree of throttle blending between one tick and the next (0 = no blending)" />
+            <Real CStyleName="theoretical_max_speed" pascalStyleName="TheoreticalMaxSpeed" name="theoretical max speed" units="wu/s (warthogs, dropships, ghosts)" description="About how fast I can go." />
+            <Real CStyleName="error_scale" pascalStyleName="ErrorScale" name="error scale" units="(warthogs, dropships)" description="scale on the difference between desired and actual speed, applied to throttle" />
+            <UselessPad length="8" />
+            <Explanation name="Combat" />
+            <Angle CStyleName="ai_allowable_aim_deviation_angle" pascalStyleName="AiAllowableAimDeviationAngle" name="ai allowable aim deviation angle" />
+            <UselessPad length="12" />
+            <Explanation name="Behavior" />
+            <Real CStyleName="ai_charge_tight_angle_distance" pascalStyleName="AiChargeTightAngleDistance" name="ai charge tight angle distance" units="(all vehicles)" description="The distance at which the tight angle criterion is used for deciding to vehicle charge" />
+            <Real CStyleName="ai_charge_tight_angle" pascalStyleName="AiChargeTightAngle" name="ai charge tight angle" units="[0-1] (all vehicles)" description="Angle cosine within which the target must be when target is closer than tight angle distance in order to charge" />
+            <Real CStyleName="ai_charge_repeat_timeout" pascalStyleName="AiChargeRepeatTimeout" name="ai charge repeat timeout" units="(all vehicles)" description="Time delay between vehicle charges" />
+            <Real CStyleName="ai_charge_look_ahead_time" pascalStyleName="AiChargeLookAheadTime" name="ai charge look-ahead time" units="(all vehicles)" description="In deciding when to abort vehicle charge, look ahead these many seconds to predict time of contact" />
+            <Real CStyleName="ai_charge_consider_distance" pascalStyleName="AiChargeConsiderDistance" name="ai charge consider distance" units="(all vehicles)" description="Consider charging the target when it is within this range (0 = infinite distance)" />
+            <Real CStyleName="ai_charge_abort_distance" pascalStyleName="AiChargeAbortDistance" name="ai charge abort distance" units="(all vehicles)" description="Abort the charge when the target get more than this far away (0 = never abort)" />
+            <UselessPad length="4" />
+            <Real CStyleName="vehicle_ram_timeout" pascalStyleName="VehicleRamTimeout" name="vehicle ram timeout" description="The ram behavior stops after a maximum of the given number of seconds" />
+            <Real CStyleName="ram_paralysis_time" pascalStyleName="RamParalysisTime" name="ram paralysis time" description="The ram behavior freezes the vehicle for a given number of seconds after performing the ram" />
+            <UselessPad length="4" />
+            <Real CStyleName="ai_cover_damage_threshold" pascalStyleName="AiCoverDamageThreshold" name="ai cover damage threshold" units="(all vehicles)" description="Trigger a cover when recent damage is above given threshold (damage_vehicle_cover impulse)" />
+            <Real CStyleName="ai_cover_min_distance" pascalStyleName="AiCoverMinDistance" name="ai cover min distance" units="(all vehicles)" description="When executing vehicle-cover, minimum distance from the target to flee to" />
+            <Real CStyleName="ai_cover_time" pascalStyleName="AiCoverTime" name="ai cover time" units="(all vehicles)" description="How long to stay away from the target" />
+            <Real CStyleName="ai_cover_min_boost_distance" pascalStyleName="AiCoverMinBoostDistance" name="ai cover min boost distance" units="(all vehicles)" description="Boosting allowed when distance to cover destination is greater then this." />
+            <Real CStyleName="turtling_recent_damage_threshold" pascalStyleName="TurtlingRecentDamageThreshold" name="turtling recent damage threshold" units="%" description="If vehicle turtling behavior is enabled, turtling is initiated if 'recent damage' surpasses the given threshold" />
+            <Real CStyleName="turtling_min_time" pascalStyleName="TurtlingMinTime" name="turtling min time" units="seconds" description="If the vehicle turtling behavior is enabled, turtling occurs for at least the given time" />
+            <Real CStyleName="turtling_timeout" pascalStyleName="TurtlingTimeout" name="turtling timeout" units="seconds" description="The turtled state times out after the given number of seconds" />
+            <UselessPad length="8" />
+            <ShortEnum CStyleName="obstacle_ignore_size" pascalStyleName="ObstacleIgnoreSize" name="obstacle ignore size">
+              <OptionsXRef>enum:obstacle_size</OptionsXRef>
+            </ShortEnum>
+            <Pad sizeOfSource="I" length="2" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="idle_properties" pascalStyleName="IdleProperties" name="idle properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <Layout regolithID="block:character_idle" internalName="character_idle_block" name="character_idle_block">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct character_idle_properties)" isLatest="true">
+            <Pad sizeOfSource="sizeof(long)" length="4" />
+            <UselessPad length="24" />
+            <RealBounds CStyleName="idle_pose_delay_time" pascalStyleName="IdlePoseDelayTime" name="idle pose delay time" units="seconds" description="time range for delays between idle poses" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="340" sizeofSource="sizeof(struct character_definition_v2)">
+      <LongFlags CStyleName="character_flags" pascalStyleName="CharacterFlags" name="Character flags" expertOnly="true">
+        <OptionsXRef>enum:character_flags</OptionsXRef>
+      </LongFlags>
+      <UselessPad length="24" />
+      <TagReference CStyleName="parent_character" pascalStyleName="ParentCharacter" name="parent character">
+        <tag>char</tag>
+      </TagReference>
+      <TagReference CStyleName="unit" pascalStyleName="Unit" name="unit">
+        <tag>unit</tag>
+      </TagReference>
+      <TagReference CStyleName="style" pascalStyleName="Style" name="style">
+        <tag>styl</tag>
+      </TagReference>
+      <UselessPad length="16" />
+      <TagReference CStyleName="major_character" pascalStyleName="MajorCharacter" name="major character">
+        <tag>char</tag>
+      </TagReference>
+      <StringId CStyleName="model_variant" pascalStyleName="ModelVariant" name="model variant" />
+      <TagReference CStyleName="creature" pascalStyleName="Creature" name="creature" description="Creature reference for swarm characters ONLY">
+        <tag>crea</tag>
+      </TagReference>
+      <UselessPad length="32" />
+      <Block CStyleName="general_properties" pascalStyleName="GeneralProperties" name="general properties" maxElementCount="1">
+        <LayoutXRef>block:character_general</LayoutXRef>
+      </Block>
+      <Block CStyleName="vitality_properties" pascalStyleName="VitalityProperties" name="vitality properties" maxElementCount="1">
+        <LayoutXRef>block:character_vitality</LayoutXRef>
+      </Block>
+      <Block CStyleName="placement_properties" pascalStyleName="PlacementProperties" name="placement properties" maxElementCount="1">
+        <LayoutXRef>block:character_placement</LayoutXRef>
+      </Block>
+      <Block CStyleName="perception_properties" pascalStyleName="PerceptionProperties" name="perception properties" maxElementCount="4">
+        <LayoutXRef>block:character_perception</LayoutXRef>
+      </Block>
+      <Block CStyleName="look_properties" pascalStyleName="LookProperties" name="look properties" maxElementCount="1">
+        <LayoutXRef>block:character_look</LayoutXRef>
+      </Block>
+      <Block CStyleName="movement_properties" pascalStyleName="MovementProperties" name="movement properties" maxElementCount="1">
+        <LayoutXRef>block:character_movement</LayoutXRef>
+      </Block>
+      <Block CStyleName="swarm_properties" pascalStyleName="SwarmProperties" name="swarm properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <Layout regolithID="block:character_swarm" internalName="character_swarm_block" name="character_swarm_block">
+          <FieldSet version="0" sizeofValue="40" sizeofSource="sizeof(struct character_swarm_properties)" isLatest="true">
+            <UselessPad length="48" />
+            <ShortInteger CStyleName="scatter_killed_count" pascalStyleName="ScatterKilledCount" name="scatter killed count" description="After the given number of deaths, the swarm scatters" />
+            <Pad sizeOfSource="PEVUDXUKY" length="2" />
+            <Real CStyleName="scatter_radius" pascalStyleName="ScatterRadius" name="scatter radius" description="the distance from the target that the swarm scatters" />
+            <Real CStyleName="scatter_time" pascalStyleName="ScatterTime" name="scatter time" description="amount of time to remain scattered" />
+            <UselessPad length="16" />
+            <Real CStyleName="hound_min_distance" pascalStyleName="HoundMinDistance" name="hound min distance" />
+            <Real CStyleName="hound_max_distance" pascalStyleName="HoundMaxDistance" name="hound max distance" />
+            <UselessPad length="16" />
+            <Real CStyleName="perlin_offset_scale" pascalStyleName="PerlinOffsetScale" name="perlin offset scale" units="[0-1]" description="amount of randomness added to creature's throttle" />
+            <RealBounds CStyleName="offset_period" pascalStyleName="OffsetPeriod" name="offset period" units="s" description="how fast the creature changes random offset to throttle" />
+            <Real CStyleName="perlin_idle_movement_threshold" pascalStyleName="PerlinIdleMovementThreshold" name="perlin idle movement threshold" units="[0-1]" description="a random offset lower then given threshold is made 0. (threshold of 1 = no movement)" />
+            <Real CStyleName="perlin_combat_movement_threshold" pascalStyleName="PerlinCombatMovementThreshold" name="perlin combat movement threshold" units="[0-1]" description="a random offset lower then given threshold is made 0. (threshold of 1 = no movement)" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <UselessPad length="36" />
+      <Block CStyleName="ready_properties" pascalStyleName="ReadyProperties" name="ready properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_ready</LayoutXRef>
+      </Block>
+      <Block CStyleName="engage_properties" pascalStyleName="EngageProperties" name="engage properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_engage</LayoutXRef>
+      </Block>
+      <Block CStyleName="charge_properties" pascalStyleName="ChargeProperties" name="charge properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_charge</LayoutXRef>
+      </Block>
+      <Explanation name="Danger Values" description="Danger values can be found in the ai-globals section of the globals tag." />
+      <Block CStyleName="evasion_properties" pascalStyleName="EvasionProperties" name="evasion properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_evasion</LayoutXRef>
+      </Block>
+      <Block CStyleName="cover_properties" pascalStyleName="CoverProperties" name="cover properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_cover</LayoutXRef>
+      </Block>
+      <Block CStyleName="retreat_properties" pascalStyleName="RetreatProperties" name="retreat properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_retreat</LayoutXRef>
+      </Block>
+      <Block CStyleName="search_properties" pascalStyleName="SearchProperties" name="search properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_search</LayoutXRef>
+      </Block>
+      <Block CStyleName="pre_search_properties" pascalStyleName="PreSearchProperties" name="pre-search properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_presearch</LayoutXRef>
+      </Block>
+      <Block CStyleName="idle_properties" pascalStyleName="IdleProperties" name="idle properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_idle</LayoutXRef>
+      </Block>
+      <Block CStyleName="vocalization_properties" pascalStyleName="VocalizationProperties" name="vocalization properties" maxElementCount="1">
+        <Layout regolithID="block:character_vocalization" internalName="character_vocalization_block" name="character_vocalization_block">
+          <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct character_vocalization_properties)" isLatest="true">
+            <Real CStyleName="look_comment_time" pascalStyleName="LookCommentTime" name="look comment time" units="s" description="How long does the player look at an AI before the AI responds?" />
+            <Real CStyleName="look_long_comment_time" pascalStyleName="LookLongCommentTime" name="look long comment time" units="s" description="How long does the player look at the AI before he responds with his 'long look' comment?" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <UselessPad length="36" />
+      <Block CStyleName="weapons_properties" pascalStyleName="WeaponsProperties" name="weapons properties" tag="sort" maxElementCount="100">
+        <LayoutXRef>block:character_weapons</LayoutXRef>
+      </Block>
+      <Block CStyleName="firing_pattern_properties" pascalStyleName="FiringPatternProperties" name="firing pattern properties" tag="sort" maxElementCount="100">
+        <Layout regolithID="block:character_firing_pattern_properties" internalName="character_firing_pattern_properties_block" name="character_firing_pattern_properties_block">
+          <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(struct character_firing_pattern_properties)" isLatest="true">
+            <TagReference CStyleName="weapon" pascalStyleName="Weapon" name="weapon" blockNameSource="true">
+              <tag>weap</tag>
+            </TagReference>
+            <UselessPad length="24" />
+            <Block CStyleName="firing_patterns" pascalStyleName="FiringPatterns" name="firing patterns" maxElementCount="2">
+              <LayoutXRef>block:character_firing_pattern</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <UselessPad length="24" />
+      <Block CStyleName="grenades_properties" pascalStyleName="GrenadesProperties" name="grenades properties" tag="sort" maxElementCount="10">
+        <LayoutXRef>block:character_grenades</LayoutXRef>
+      </Block>
+      <UselessPad length="24" />
+      <Block CStyleName="vehicle_properties" pascalStyleName="VehicleProperties" name="vehicle properties" tag="sort" maxElementCount="100">
+        <LayoutXRef>block:character_vehicle</LayoutXRef>
+      </Block>
+    </FieldSet>
+    <FieldSet version="2" sizeofValue="408" sizeofSource="sizeof(struct character_definition)" isLatest="true">
+      <LongFlags CStyleName="character_flags" pascalStyleName="CharacterFlags" name="Character flags" expertOnly="true">
+        <OptionsXRef>enum:character_flags</OptionsXRef>
+      </LongFlags>
+      <UselessPad length="24" />
+      <TagReference CStyleName="parent_character" pascalStyleName="ParentCharacter" name="parent character">
+        <tag>char</tag>
+      </TagReference>
+      <TagReference CStyleName="unit" pascalStyleName="Unit" name="unit">
+        <tag>unit</tag>
+      </TagReference>
+      <TagReference CStyleName="creature" pascalStyleName="Creature" name="creature" description="Creature reference for swarm characters ONLY">
+        <tag>crea</tag>
+      </TagReference>
+      <TagReference CStyleName="style" pascalStyleName="Style" name="style">
+        <tag>styl</tag>
+      </TagReference>
+      <UselessPad length="16" />
+      <TagReference CStyleName="major_character" pascalStyleName="MajorCharacter" name="major character">
+        <tag>char</tag>
+      </TagReference>
+      <UselessPad length="12" />
+      <Block CStyleName="variants" pascalStyleName="Variants" name="variants" maxElementCount="64" maxElementCountSource="k_maximum_variants_per_model">
+        <Layout regolithID="block:character_variants" internalName="character_variants_block" name="character_variants_block">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct character_variant)" isLatest="true">
+            <StringId CStyleName="variant_name" pascalStyleName="VariantName" name="variant name" blockNameSource="true" />
+            <ShortInteger CStyleName="variant_index" pascalStyleName="VariantIndex" name="variant index" readOnly="true" />
+            <Pad sizeOfSource="VN" length="2" />
+            <StringId CStyleName="variant_designator" pascalStyleName="VariantDesignator" name="variant designator" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <UselessPad length="36" />
+      <Block CStyleName="general_properties" pascalStyleName="GeneralProperties" name="general properties" maxElementCount="1">
+        <LayoutXRef>block:character_general</LayoutXRef>
+      </Block>
+      <Block CStyleName="vitality_properties" pascalStyleName="VitalityProperties" name="vitality properties" maxElementCount="1">
+        <LayoutXRef>block:character_vitality</LayoutXRef>
+      </Block>
+      <Block CStyleName="placement_properties" pascalStyleName="PlacementProperties" name="placement properties" maxElementCount="1">
+        <LayoutXRef>block:character_placement</LayoutXRef>
+      </Block>
+      <Block CStyleName="perception_properties" pascalStyleName="PerceptionProperties" name="perception properties" maxElementCount="4">
+        <LayoutXRef>block:character_perception</LayoutXRef>
+      </Block>
+      <Block CStyleName="look_properties" pascalStyleName="LookProperties" name="look properties" maxElementCount="1">
+        <LayoutXRef>block:character_look</LayoutXRef>
+      </Block>
+      <Block CStyleName="movement_properties" pascalStyleName="MovementProperties" name="movement properties" maxElementCount="1">
+        <LayoutXRef>block:character_movement</LayoutXRef>
+      </Block>
+      <Block CStyleName="swarm_properties" pascalStyleName="SwarmProperties" name="swarm properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_swarm</LayoutXRef>
+      </Block>
+      <UselessPad length="36" />
+      <Block CStyleName="ready_properties" pascalStyleName="ReadyProperties" name="ready properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_ready</LayoutXRef>
+      </Block>
+      <Block CStyleName="engage_properties" pascalStyleName="EngageProperties" name="engage properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_engage</LayoutXRef>
+      </Block>
+      <Block CStyleName="charge_properties" pascalStyleName="ChargeProperties" name="charge properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_charge</LayoutXRef>
+      </Block>
+      <Explanation name="Danger Values" description="Danger values can be found in the ai-globals section of the globals tag." />
+      <Block CStyleName="evasion_properties" pascalStyleName="EvasionProperties" name="evasion properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_evasion</LayoutXRef>
+      </Block>
+      <Block CStyleName="cover_properties" pascalStyleName="CoverProperties" name="cover properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_cover</LayoutXRef>
+      </Block>
+      <Block CStyleName="retreat_properties" pascalStyleName="RetreatProperties" name="retreat properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_retreat</LayoutXRef>
+      </Block>
+      <Block CStyleName="search_properties" pascalStyleName="SearchProperties" name="search properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_search</LayoutXRef>
+      </Block>
+      <Block CStyleName="pre_search_properties" pascalStyleName="PreSearchProperties" name="pre-search properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_presearch</LayoutXRef>
+      </Block>
+      <Block CStyleName="idle_properties" pascalStyleName="IdleProperties" name="idle properties" maxElementCount="3" maxElementCountSource="k_style_attitude_count">
+        <LayoutXRef>block:character_idle</LayoutXRef>
+      </Block>
+      <Block CStyleName="vocalization_properties" pascalStyleName="VocalizationProperties" name="vocalization properties" maxElementCount="1">
+        <LayoutXRef>block:character_vocalization</LayoutXRef>
+      </Block>
+      <Block CStyleName="boarding_properties" pascalStyleName="BoardingProperties" name="boarding properties" maxElementCount="1">
+        <Layout regolithID="block:character_boarding" internalName="character_boarding_block" name="character_boarding_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct character_boarding_properties)" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:character_boarding_flags" CStyleName="character_boarding_flags" pascalStyleName="CharacterBoardingFlags">
+                <Bit name="airborne boarding" CStyleName="airborne_boarding_bit" pascalStyleName="AirborneBoardingBit" />
+              </Options>
+            </LongFlags>
+            <Real CStyleName="max_distance" pascalStyleName="MaxDistance" name="max distance" units="wu/s" description="maximum distance from entry point that we will consider boarding" />
+            <Real CStyleName="abort_distance" pascalStyleName="AbortDistance" name="abort distance" units="wu/s" description="give up trying to get in boarding seat if entry point is further away than this" />
+            <UselessPad length="12" />
+            <Real CStyleName="max_speed" pascalStyleName="MaxSpeed" name="max speed" units="wu/s" description="maximum speed at which we will consider boarding" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <UselessPad length="12" />
+      <Block CStyleName="boss_properties" pascalStyleName="BossProperties" name="boss properties" maxElementCount="1">
+        <Layout regolithID="block:character_boss" internalName="character_boss_block" name="character_boss_block">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct character_boss_properties)" isLatest="true">
+            <Pad sizeOfSource="sizeof(long)" length="4" />
+            <UselessPad length="36" />
+            <Real CStyleName="flurry_damage_threshold" pascalStyleName="FlurryDamageThreshold" name="flurry damage threshold" units="[0..1]" description="when more than x damage is caused a juggernaut flurry is triggered" />
+            <Real CStyleName="flurry_time" pascalStyleName="FlurryTime" name="flurry time" units="seconds" description="flurry lasts this long" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="weapons_properties" pascalStyleName="WeaponsProperties" name="weapons properties" tag="sort" maxElementCount="100">
+        <LayoutXRef>block:character_weapons</LayoutXRef>
+      </Block>
+      <Block CStyleName="firing_pattern_properties" pascalStyleName="FiringPatternProperties" name="firing pattern properties" tag="sort" maxElementCount="100">
+        <LayoutXRef>block:character_firing_pattern_properties</LayoutXRef>
+      </Block>
+      <UselessPad length="24" />
+      <Block CStyleName="grenades_properties" pascalStyleName="GrenadesProperties" name="grenades properties" tag="sort" maxElementCount="10">
+        <LayoutXRef>block:character_grenades</LayoutXRef>
+      </Block>
+      <UselessPad length="24" />
+      <Block CStyleName="vehicle_properties" pascalStyleName="VehicleProperties" name="vehicle properties" tag="sort" maxElementCount="100">
+        <LayoutXRef>block:character_vehicle</LayoutXRef>
+      </Block>
+      <Block CStyleName="morph_properties" pascalStyleName="MorphProperties" name="morph properties" expertOnly="true" maxElementCount="0">
+        <LayoutXRef>block:g_null</LayoutXRef>
+      </Block>
+      <Block CStyleName="equipment_definitions" pascalStyleName="EquipmentDefinitions" name="equipment definitions" expertOnly="true" maxElementCount="0">
+        <LayoutXRef>block:g_null</LayoutXRef>
+      </Block>
+      <Block CStyleName="campaign_metagame_bucket" pascalStyleName="CampaignMetagameBucket" name="campaign metagame bucket" maxElementCount="1">
+        <Layout regolithID="block:campaign_metagame_bucket" internalName="campaign_metagame_bucket_block" name="campaign_metagame_bucket_block">
+          <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(s_campaign_metagame_bucket)" isLatest="true">
+            <CharEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <OptionsXRef>enum:campaign_metagame_bucket_type</OptionsXRef>
+            </CharEnum>
+            <CharEnum CStyleName="_class" pascalStyleName="Class" name="class">
+              <OptionsXRef>enum:vehicle_class</OptionsXRef>
+            </CharEnum>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

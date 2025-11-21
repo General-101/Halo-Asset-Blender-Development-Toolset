@@ -1,0 +1,14 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="str#" name="string_list" version="1">
+  <Layout regolithID="block:string_list" internalName="string_list_block" name="string_list">
+    <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct string_list_group)" isLatest="true">
+      <Block CStyleName="strings" pascalStyleName="Strings" name="strings" maxElementCount="800">
+        <Layout regolithID="block:strings" internalName="strings_block" name="strings_block">
+          <FieldSet version="0" sizeofValue="20" isLatest="true">
+            <Data CStyleName="string" pascalStyleName="String" name="string" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

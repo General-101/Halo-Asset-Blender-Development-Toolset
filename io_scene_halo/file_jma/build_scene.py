@@ -24,13 +24,16 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import re
+import os
 import bpy
 
 from math import radians
-from .format import JMAAsset
 from mathutils import Matrix
 from ..global_functions import mesh_processing, global_functions, resource_management
+
+from ..file_tag.tag_interface import tag_interface, tag_common
+from ..file_tag.tag_interface.tag_definitions import h1, h2
+from ..file_tag.h1.file_model_animations.animation_parser import JMA_RETAIL_NODES
 
 def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature, fix_rotations, game_version):
     created_bone_list = []
@@ -61,7 +64,7 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
                 parent_name = JMS_A.nodes[parent_idx].name
                 rest_position = JMS_A.transforms[0]
                 jms_node = rest_position[a_idx]
-                bone_distance = mesh_processing.get_bone_distance(None, JMS_A, a_idx, "JMS")
+                bone_distance = mesh_processing.get_bone_distance(JMS_A, a_idx, "JMS")
                 break
 
         for b_idx, jms_b_node in enumerate(JMS_B_nodes):
@@ -71,7 +74,7 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
                 parent_name = JMS_B.nodes[parent_idx].name
                 rest_position = JMS_B.transforms[0]
                 jms_node = rest_position[b_idx]
-                bone_distance = mesh_processing.get_bone_distance(None, JMS_B, b_idx, "JMS")
+                bone_distance = mesh_processing.get_bone_distance(JMS_B, b_idx, "JMS")
                 break
 
         if not jms_node:
@@ -113,13 +116,13 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
 
         transform_matrix = matrix_translate @ matrix_rotation
         if fix_rotations:
-            if file_version < global_functions.get_version_matrix_check(file_type, game_version) and current_bone.parent and not is_root:
+            if file_version < global_functions.get_version_matrix_check(file_type) and current_bone.parent and not is_root:
                 transform_matrix = (current_bone.parent.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
 
             current_bone.matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
 
         else:
-            if file_version < global_functions.get_version_matrix_check(file_type, game_version) and current_bone.parent and not is_root:
+            if file_version < global_functions.get_version_matrix_check(file_type) and current_bone.parent and not is_root:
                 transform_matrix = current_bone.parent.matrix @ transform_matrix
 
             current_bone.matrix = transform_matrix
@@ -147,7 +150,7 @@ def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B,
             parent = JMA.nodes[parent_idx].name
             current_bone.parent = armature.data.edit_bones[parent]
 
-        bone_distance = mesh_processing.get_bone_distance(None, JMA, idx, "JMA")
+        bone_distance = mesh_processing.get_bone_distance(JMA, idx, "JMA")
 
         matrix_translate = Matrix.Translation(first_frame[idx].translation)
         matrix_rotation = first_frame[idx].rotation.to_matrix().to_4x4()
@@ -158,7 +161,7 @@ def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B,
                     file_version = JMS_A.version
                     rest_position = JMS_A.transforms[0]
                     jms_node = rest_position[a_idx]
-                    bone_distance = mesh_processing.get_bone_distance(None, JMS_A, a_idx, "JMS")
+                    bone_distance = mesh_processing.get_bone_distance(JMS_A, a_idx, "JMS")
                     break
 
             for b_idx, jms_b_node in enumerate(JMS_B_nodes):
@@ -166,7 +169,7 @@ def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B,
                     file_version = JMS_B.version
                     rest_position = JMS_B.transforms[0]
                     jms_node = rest_position[b_idx]
-                    bone_distance = mesh_processing.get_bone_distance(None, JMS_B, b_idx, "JMS")
+                    bone_distance = mesh_processing.get_bone_distance(JMS_B, b_idx, "JMS")
                     break
 
             matrix_translate = Matrix.Translation(jms_node.translation)
@@ -185,13 +188,13 @@ def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B,
 
         transform_matrix = matrix_translate @ matrix_rotation
         if fix_rotations:
-            if file_version < global_functions.get_version_matrix_check(file_type, game_version) and current_bone.parent and not is_root:
+            if file_version < global_functions.get_version_matrix_check(file_type) and current_bone.parent and not is_root:
                 transform_matrix = (current_bone.parent.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
 
             current_bone.matrix = transform_matrix @ Matrix.Rotation(radians(-90.0), 4, 'Z')
 
         else:
-            if file_version < global_functions.get_version_matrix_check(file_type, game_version) and current_bone.parent and not is_root:
+            if file_version < global_functions.get_version_matrix_check(file_type) and current_bone.parent and not is_root:
                 transform_matrix = current_bone.parent.matrix @ transform_matrix
 
             current_bone.matrix = transform_matrix
@@ -266,8 +269,8 @@ def find_valid_armature(context, JMA, obj):
         armature_bone_list = list(obj.data.bones)
         for node in armature_bone_list:
             for jma_node in JMA.nodes:
-                if node.name == jma_node.name:
-                    scene_nodes.append(global_functions.remove_node_prefix(node.name))
+                if node.name.lower() == jma_node.name.lower():
+                    scene_nodes.append(global_functions.remove_node_prefix(node.name).lower())
 
         if len(scene_nodes) == len(JMA.nodes):
             is_armature_good = True
@@ -293,16 +296,121 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
     # Gather all scene resources that fit export criteria
     resource_management.gather_scene_resources(context, layer_collection_list, object_list, hidden_geo, nonrender_geo)
 
-    scene_nodes = []
-    jma_nodes = [global_functions.remove_node_prefix(n.name) for n in JMA.nodes]
-
     if active_object and active_object.type == 'ARMATURE':
         armature = active_object
+    
+    game_title = "halo1"
+    if len(JMA.nodes) == 0:
+        asset_cache = {}
+
+        output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h1_merged_output")
+        tag_groups = tag_common.h1_tag_groups
+        tag_extensions = tag_common.h1_tag_extensions
+        engine_tag = tag_interface.EngineTag.H1Latest.value
+        merged_defs = h1.generate_defs(tag_common.h1_defs_directory, output_dir)
+        tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path
+        data_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
+
+        if not global_functions.string_empty_check(data_directory):
+            result = filepath.split(data_directory, 1)
+            if len(result) > 1:
+                local_path = result[1]
+                output_directory = os.path.dirname(os.path.dirname(local_path))
+                output_filename = os.path.basename(output_directory)
+
+                tag_ref = {"group name": "mod2", "path": os.path.join(output_directory, output_filename)}
+                tag_interface.generate_tag_dictionary(game_title, tag_ref, tags_directory, tag_groups, engine_tag, merged_defs, asset_cache)
+
+                gbxmodel_asset = tag_interface.get_disk_asset(tag_ref["path"], tag_groups.get(tag_ref["group name"]))
+                if gbxmodel_asset is not None:
+                    nodes = []
+                    for node in gbxmodel_asset["Data"]["nodes"]:
+                        name = node["name"]
+                        sibling = node["next sibling node"]
+                        child = node["first child node"]
+                        parent = node["parent node"]
+
+                        JMA.nodes.append(JMA.Node(name, parent, child, sibling))
+
+            else:
+                report({'ERROR'}, "Invalid input provided. Check your data directory settings and make sure the file exists in your data directory.")
+        else:
+            report({'ERROR'}, "Invalid data directory path provided. Check your data directory settings.")
+
+    if len(JMA.nodes) == 0:
+        anim_nodes = JMA_RETAIL_NODES.get((JMA.node_count, JMA.node_checksum))
+        if anim_nodes is not None:
+            nodes = []
+            for node in anim_nodes:
+                name = node[0]
+                sibling = node[2]
+                child = node[1]
+                parent = node[3]
+
+                JMA.nodes.append(JMA.Node(name, parent, child, sibling))
+
+    if len(JMA.nodes) == 0 and armature is not None:
+        nodes = []
+        sorted_list = global_functions.sort_by_layer(list(armature.data.bones), armature)
+        joined_list = sorted_list[0]
+        reversed_joined_list = sorted_list[1]
+
+        for node in joined_list:
+            is_bone = False
+            if armature:
+                is_bone = True
+
+            find_child_node = global_functions.get_child(node, reversed_joined_list, game_title, False)
+            find_sibling_node = global_functions.get_sibling(armature, node, reversed_joined_list, game_title, False)
+
+            first_child_node = -1
+            first_sibling_node = -1
+            parent_node = -1
+
+            if not find_child_node == None:
+                first_child_node = joined_list.index(find_child_node)
+            if not find_sibling_node == None:
+                first_sibling_node = joined_list.index(find_sibling_node)
+            if not node.parent == None and not node.parent.name.startswith('!'):
+                if armature:
+                    if node.parent.use_deform:
+                        parent_node = joined_list.index(node.parent)
+                else:
+                    parent_node = joined_list.index(node.parent)
+
+            name = node.name
+            child = first_child_node
+            sibling = first_sibling_node
+            parent = parent_node
+
+            current_node_children = []
+            children = []
+            for child_node in node.children:
+                if child_node in joined_list:
+                    current_node_children.append(child_node.name)
+
+            current_node_children.sort()
+
+            if is_bone:
+                for child_node in current_node_children:
+                    children.append(joined_list.index(armature.data.bones[child_node]))
+
+            else:
+                for child_node in current_node_children:
+                    children.append(joined_list.index(bpy.data.objects[child_node]))
+
+            JMA.nodes.append(JMA.Node(name, parent, child, sibling))    
+
+    nodes = JMA.nodes
+    scene_nodes = []
+    jma_nodes = [global_functions.remove_node_prefix(n.name).lower() for n in JMA.nodes]
+
+    if armature:
         armature_bone_list = list(armature.data.bones)
         for node in armature_bone_list:
             for jma_node in JMA.nodes:
-                if node.name == jma_node.name:
-                    scene_nodes.append(global_functions.remove_node_prefix(node.name))
+                if node.name.lower() == jma_node.name.lower():
+                    scene_nodes.append(global_functions.remove_node_prefix(node.name).lower())
 
     else:
         for obj in object_list:
@@ -322,6 +430,7 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
         if not JMA.broken_skeleton and JMA.version >= 16392:
             armdata = bpy.data.armatures.new('Armature')
             armature = bpy.data.objects.new('Armature', armdata)
+            armature.color = (1, 1, 1, 0)
             collection.objects.link(armature)
             mesh_processing.select_object(context, armature)
 
@@ -333,6 +442,7 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
         elif JMS_A:
             armdata = bpy.data.armatures.new('Armature')
             armature = bpy.data.objects.new('Armature', armdata)
+            armature.color = (1, 1, 1, 0)
             collection.objects.link(armature)
             mesh_processing.select_object(context, armature)
             generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature, fix_rotations, game_version)
@@ -352,11 +462,7 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
     armature.animation_data_create()
     armature.animation_data.action = action
 
-    nodes = JMA.nodes
-    if JMA.version == 16390:
-        nodes = global_functions.sort_by_layer(list(armature.data.bones), armature)[0]
-
-    global_functions.import_fcurve_data(action, armature, nodes, JMA.transforms, JMA, JMAAsset, fix_rotations)
+    global_functions.import_fcurve_data(action, armature, nodes, JMA.transforms, JMA, fix_rotations)
     if (4, 4, 0) <= bpy.app.version:
         armature.animation_data.action_slot = action.slots[0]
 

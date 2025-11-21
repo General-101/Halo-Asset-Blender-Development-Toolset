@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="foot" name="material_effects" version="1">
+  <Layout regolithID="block:material_effects" internalName="material_effects_block" name="material_effects">
+    <FieldSet version="0" sizeofValue="140" sizeofSource="sizeof(struct s_material_effects_definition_v1)">
+      <Block CStyleName="effects" pascalStyleName="Effects" name="effects" maxElementCount="14" maxElementCountSource="k_material_effect_v1_type_count">
+        <Layout regolithID="block:material_effect_block_v1" internalName="material_effect_block_v1" name="material_effect_block_v1">
+          <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(s_material_effect_v1)" isLatest="true">
+            <Block CStyleName="materials" pascalStyleName="Materials" name="materials" maxElementCount="33" maxElementCountSource="NUMBER_OF_MATERIAL_TYPES">
+              <Layout regolithID="block:material_effect_material_block_old_v1" internalName="material_effect_material_block_old_v1" name="material_effect_material_block_old_v1">
+                <FieldSet version="0" sizeofValue="48" sizeofSource="sizeof(s_material_effect_material_old_v1)" isLatest="true">
+                  <TagReference CStyleName="effect" pascalStyleName="Effect" name="effect">
+                    <tag>effe</tag>
+                  </TagReference>
+                  <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound">
+                    <tag />
+                  </TagReference>
+                  <StringId CStyleName="material_name" pascalStyleName="MaterialName" name="material name" tag="sted" />
+                  <Skip sizeOfSource="sizeof(long)" length="4" />
+                  <CharEnum CStyleName="sweetener_mode" pascalStyleName="SweetenerMode" name="sweetener mode">
+                    <Options regolithID="enum:material_effect_sweetener_mode" CStyleName="material_effect_sweetener_mode" pascalStyleName="MaterialEffectSweetenerMode">
+                      <Enum name="sweetener default" CStyleName="sweetener_default" pascalStyleName="SweetenerDefault" />
+                      <Enum name="sweetener enabled" CStyleName="sweetener_enabled" pascalStyleName="SweetenerEnabled" />
+                      <Enum name="sweetener disabled" CStyleName="sweetener_disabled" pascalStyleName="SweetenerDisabled" />
+                    </Options>
+                  </CharEnum>
+                  <Pad sizeOfSource="3" length="3" />
+                  <Pad sizeOfSource="sizeof(long)" length="4" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Pad sizeOfSource="4*sizeof(long)" length="16" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="32*sizeof(long)" length="128" />
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="12" sizeofSource="sizeof(struct s_material_effects_definition)" isLatest="true">
+      <Block CStyleName="effects" pascalStyleName="Effects" name="effects" maxElementCount="21" maxElementCountSource="k_material_effect_type_count">
+        <Layout regolithID="block:material_effect_block_v2" internalName="material_effect_block_v2" name="material_effect_block_v2">
+          <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(s_material_effect)" isLatest="true">
+            <Block CStyleName="old_materials_do_not_use" pascalStyleName="OldMaterialsDoNotUse" name="old materials (DO NOT USE)" maxElementCount="33" maxElementCountSource="NUMBER_OF_MATERIAL_TYPES">
+              <Layout regolithID="block:old_material_effect_material" internalName="old_material_effect_material_block" name="old_material_effect_material_block">
+                <FieldSet version="0" sizeofValue="44" sizeofSource="sizeof(s_material_effect_material_old)" isLatest="true">
+                  <TagReference CStyleName="effect" pascalStyleName="Effect" name="effect">
+                    <tag>effe</tag>
+                  </TagReference>
+                  <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound">
+                    <tag />
+                  </TagReference>
+                  <StringId CStyleName="material_name" pascalStyleName="MaterialName" name="material name" blockNameSource="true" tag="sted" />
+                  <Skip sizeOfSource="sizeof(long)" length="4" />
+                  <CharEnum CStyleName="sweetener_mode" pascalStyleName="SweetenerMode" name="sweetener mode">
+                    <OptionsXRef>enum:material_effect_sweetener_mode</OptionsXRef>
+                  </CharEnum>
+                  <Pad sizeOfSource="3" length="3" />
+                  <UselessPad length="4" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="sounds" pascalStyleName="Sounds" name="sounds" maxElementCount="500" maxElementCountSource="k_maximum_material_effect_blocks">
+              <Layout regolithID="block:material_effect_material" internalName="material_effect_material_block" name="material_effect_material_block">
+                <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(s_material_effect_material_v1)">
+                  <TagReference CStyleName="tag_effect_or_sound" pascalStyleName="TagEffectOrSound" name="tag (effect or sound)">
+                    <tag />
+                  </TagReference>
+                  <StringId CStyleName="material_name" pascalStyleName="MaterialName" name="material name" blockNameSource="true" tag="sted" />
+                  <Skip sizeOfSource="sizeof(short)" length="2" />
+                  <CharEnum CStyleName="sweetener_mode" pascalStyleName="SweetenerMode" name="sweetener mode">
+                    <OptionsXRef>enum:material_effect_sweetener_mode</OptionsXRef>
+                  </CharEnum>
+                  <Pad sizeOfSource="1" length="1" />
+                </FieldSet>
+                <FieldSet version="1" sizeofValue="40" sizeofSource="sizeof(s_material_effect_material)" isLatest="true">
+                  <TagReference CStyleName="tag_effect_or_sound" pascalStyleName="TagEffectOrSound" name="tag (effect or sound)">
+                    <tag />
+                  </TagReference>
+                  <TagReference CStyleName="secondary_tag_effect_or_sound" pascalStyleName="SecondaryTagEffectOrSound" name="secondary tag (effect or sound)">
+                    <tag />
+                  </TagReference>
+                  <StringId CStyleName="material_name" pascalStyleName="MaterialName" name="material name" blockNameSource="true" tag="sted" />
+                  <Skip sizeOfSource="sizeof(short)" length="2" />
+                  <CharEnum CStyleName="sweetener_mode" pascalStyleName="SweetenerMode" name="sweetener mode">
+                    <OptionsXRef>enum:material_effect_sweetener_mode</OptionsXRef>
+                  </CharEnum>
+                  <Pad sizeOfSource="1" length="1" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="effects" pascalStyleName="Effects" name="effects" maxElementCount="500" maxElementCountSource="k_maximum_material_effect_blocks">
+              <LayoutXRef>block:material_effect_material</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <UselessPad length="128" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

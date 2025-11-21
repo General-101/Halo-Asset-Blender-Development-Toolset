@@ -859,7 +859,7 @@ class ImportJMS(Operator, ImportHelper):
 
     if (4, 1, 0) <= bpy.app.version:
         directory: StringProperty(
-            subtype='FILE_PATH', 
+            subtype='DIR_PATH', 
             options={'SKIP_SAVE', 'HIDDEN'}
             )
 

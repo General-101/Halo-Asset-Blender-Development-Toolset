@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="tdtl" name="liquid" version="1">
+  <Layout regolithID="block:liquid" internalName="liquid_block" name="liquid">
+    <FieldSet version="0" sizeofValue="116" sizeofSource="sizeof(s_liquid_definition)" isLatest="true">
+      <Explanation name="LIQUID" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+        <Options regolithID="enum:liquid_type" CStyleName="liquid_type" pascalStyleName="LiquidType">
+          <Enum name="standard" CStyleName="standard" pascalStyleName="Standard" />
+          <Enum name="weapon to projectile" CStyleName="weapon_to_projectile" pascalStyleName="WeaponToProjectile" />
+          <Enum name="projectile from weapon" CStyleName="projectile_from_weapon" pascalStyleName="ProjectileFromWeapon" />
+        </Options>
+      </ShortEnum>
+      <StringId CStyleName="attachment_marker_name" pascalStyleName="AttachmentMarkerName" name="attachment marker name" />
+      <Pad sizeOfSource="14*sizeof(long)" length="56" />
+      <Real CStyleName="falloff_distance_from_camera" pascalStyleName="FalloffDistanceFromCamera" name="falloff distance from camera" units="world units" />
+      <Real CStyleName="cutoff_distance_from_camera" pascalStyleName="CutoffDistanceFromCamera" name="cutoff distance from camera" units="world units" />
+      <Pad sizeOfSource="8*sizeof(long)" length="32" />
+      <Block CStyleName="arcs" pascalStyleName="Arcs" name="arcs" maxElementCount="3" maxElementCountSource="k_maximum_arcs_per_liquid_definition">
+        <Layout regolithID="block:liquid_arc" internalName="liquid_arc_block" name="arc">
+          <FieldSet version="0" sizeofValue="276" sizeofSource="sizeof(s_liquid_arc)" isLatest="true">
+            <Explanation name="LIQUID ARC" description="Note that if the type is not STANDARD, then the 'collide_with_stuff' and material effects will not have any effect. In addition, the 'natural_length' will not have an effect except as a means to compute the collision fraction." />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:liquid_arc_flags" CStyleName="liquid_arc_flags" pascalStyleName="LiquidArcFlags">
+                <Bit name="basis marker-relative" CStyleName="basis_marker_relative_bit" pascalStyleName="BasisMarkerRelativeBit" />
+                <Bit name="spread by external input" CStyleName="spread_by_external_input_bit" pascalStyleName="SpreadByExternalInputBit" />
+                <Bit name="collide with stuff" CStyleName="collide_with_stuff_bit" pascalStyleName="CollideWithStuffBit" />
+                <Bit name="no perspective midpoints" CStyleName="no_perspective_midpoints_bit" pascalStyleName="NoPerspectiveMidpointsBit" />
+              </Options>
+            </WordFlags>
+            <ShortEnum CStyleName="sprite_count" pascalStyleName="SpriteCount" name="sprite count">
+              <Options regolithID="enum:liquid_arc_sprite_count" CStyleName="liquid_arc_sprite_count" pascalStyleName="LiquidArcSpriteCount">
+                <Enum name="4 sprites" CStyleName="_4_sprites" pascalStyleName="4Sprites" />
+                <Enum name="8 sprites" CStyleName="_8_sprites" pascalStyleName="8Sprites" />
+                <Enum name="16 sprites" CStyleName="_16_sprites" pascalStyleName="16Sprites" />
+                <Enum name="32 sprites" CStyleName="_32_sprites" pascalStyleName="32Sprites" />
+                <Enum name="64 sprites" CStyleName="_64_sprites" pascalStyleName="64Sprites" />
+                <Enum name="128 sprites" CStyleName="_128_sprites" pascalStyleName="128Sprites" />
+                <Enum name="256 sprites" CStyleName="_256_sprites" pascalStyleName="256Sprites" />
+              </Options>
+            </ShortEnum>
+            <Real CStyleName="natural_length" pascalStyleName="NaturalLength" name="natural length" units="world units" />
+            <ShortInteger CStyleName="instances" pascalStyleName="Instances" name="instances" />
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <Angle CStyleName="instance_spread_angle" pascalStyleName="InstanceSpreadAngle" name="instance spread angle" units="degrees" />
+            <Real CStyleName="instance_rotation_period" pascalStyleName="InstanceRotationPeriod" name="instance rotation period" units="seconds" />
+            <Pad sizeOfSource="2*sizeof(long)" length="8" />
+            <TagReference CStyleName="material_effects" pascalStyleName="MaterialEffects" name="material effects">
+              <tag>foot</tag>
+            </TagReference>
+            <TagReference CStyleName="bitmap" pascalStyleName="Bitmap" name="bitmap">
+              <tag>bitm</tag>
+            </TagReference>
+            <Pad sizeOfSource="2*sizeof(long)" length="8" />
+            <Explanation name="HORIZONTAL RANGE" description="In world units, how far the noise extends horizontally. By default the horizontal range is along the world XY plane." />
+            <Struct CStyleName="horizontal_range" pascalStyleName="HorizontalRange" name="horizontal range">
+              <LayoutXRef>structure:scalar_function</LayoutXRef>
+            </Struct>
+            <Explanation name="VERTICAL RANGE" description="In world units, how far the noise extends vertically. By default the vertical range is along the world Z axis (up)." />
+            <Struct CStyleName="vertical_range" pascalStyleName="VerticalRange" name="vertical range">
+              <LayoutXRef>structure:scalar_function</LayoutXRef>
+            </Struct>
+            <RealFraction CStyleName="vertical_negative_scale" pascalStyleName="VerticalNegativeScale" name="vertical negative scale" units="[0,1]" />
+            <Explanation name="ROUGHNESS" description="Roughness controls how the different 'octaves' of noise get scaled. Usually it is in the range [0,1] but it can be slightly higher or lower and still make sense (zero is actually a pretty decent value). The mathematical equation used is 2^(-k*(1-r)) where 'k' is the octave index starting at 0 and 'r' is the roughness value." />
+            <Struct CStyleName="roughness" pascalStyleName="Roughness" name="roughness">
+              <LayoutXRef>structure:scalar_function</LayoutXRef>
+            </Struct>
+            <Pad sizeOfSource="16*sizeof(long)" length="64" />
+            <Explanation name="NOISE FREQUENCIES" description="4 sprites is 3 octaves&#xA;8 sprites is 4 octaves&#xA;16 sprites is 5 octaves&#xA;32 sprites is 6 octaves&#xA;64 sprites is 7 octaves&#xA;128 sprites is 8 octaves&#xA;256 sprites is 9 octaves, etc." />
+            <Real CStyleName="octave_1_frequency" pascalStyleName="Octave1Frequency" name="octave 1 frequency" units="cycles/second" />
+            <Real CStyleName="octave_2_frequency" pascalStyleName="Octave2Frequency" name="octave 2 frequency" units="cycles/second" />
+            <Real CStyleName="octave_3_frequency" pascalStyleName="Octave3Frequency" name="octave 3 frequency" units="cycles/second" />
+            <Real CStyleName="octave_4_frequency" pascalStyleName="Octave4Frequency" name="octave 4 frequency" units="cycles/second" />
+            <Real CStyleName="octave_5_frequency" pascalStyleName="Octave5Frequency" name="octave 5 frequency" units="cycles/second" />
+            <Real CStyleName="octave_6_frequency" pascalStyleName="Octave6Frequency" name="octave 6 frequency" units="cycles/second" />
+            <Real CStyleName="octave_7_frequency" pascalStyleName="Octave7Frequency" name="octave 7 frequency" units="cycles/second" />
+            <Real CStyleName="octave_8_frequency" pascalStyleName="Octave8Frequency" name="octave 8 frequency" units="cycles/second" />
+            <Real CStyleName="octave_9_frequency" pascalStyleName="Octave9Frequency" name="octave 9 frequency" units="cycles/second" />
+            <Pad sizeOfSource="7*sizeof(long)" length="28" />
+            <WordFlags CStyleName="octave_flags" pascalStyleName="OctaveFlags" name="octave flags">
+              <Options regolithID="enum:liquid_arc_octave_flags" CStyleName="liquid_arc_octave_flags" pascalStyleName="LiquidArcOctaveFlags">
+                <Bit name="octave 1" CStyleName="octave_1_bit" pascalStyleName="Octave1Bit" />
+                <Bit name="octave 2" CStyleName="octave_2_bit" pascalStyleName="Octave2Bit" />
+                <Bit name="octave 3" CStyleName="octave_3_bit" pascalStyleName="Octave3Bit" />
+                <Bit name="octave 4" CStyleName="octave_4_bit" pascalStyleName="Octave4Bit" />
+                <Bit name="octave 5" CStyleName="octave_5_bit" pascalStyleName="Octave5Bit" />
+                <Bit name="octave 6" CStyleName="octave_6_bit" pascalStyleName="Octave6Bit" />
+                <Bit name="octave 7" CStyleName="octave_7_bit" pascalStyleName="Octave7Bit" />
+                <Bit name="octave 8" CStyleName="octave_8_bit" pascalStyleName="Octave8Bit" />
+                <Bit name="octave 9" CStyleName="octave_9_bit" pascalStyleName="Octave9Bit" />
+              </Options>
+            </WordFlags>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <Block CStyleName="cores" pascalStyleName="Cores" name="cores" maxElementCount="4" maxElementCountSource="k_maximum_cores_per_liquid_arc">
+              <Layout regolithID="block:liquid_core" internalName="liquid_core_block" name="core">
+                <FieldSet version="0" sizeofValue="76" sizeofSource="sizeof(s_liquid_core)" isLatest="true">
+                  <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                  <ShortInteger CStyleName="bitmap_index" pascalStyleName="BitmapIndex" name="bitmap index" />
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <Explanation name="THICKNESS" description="In world units." />
+                  <Struct CStyleName="thickness" pascalStyleName="Thickness" name="thickness">
+                    <LayoutXRef>structure:scalar_function</LayoutXRef>
+                  </Struct>
+                  <Explanation name="COLOR" />
+                  <Struct CStyleName="color" pascalStyleName="Color" name="color">
+                    <LayoutXRef>structure:color_function</LayoutXRef>
+                  </Struct>
+                  <Explanation name="BRIGHTNESS/TIME" description="Periodic function based on time." />
+                  <Struct CStyleName="brightness_time" pascalStyleName="BrightnessTime" name="brightness-time">
+                    <LayoutXRef>structure:scalar_function</LayoutXRef>
+                  </Struct>
+                  <Explanation name="BRIGHTNESS/FACING" description="Brightness when facing perpendicular versus parallel." />
+                  <Struct CStyleName="brightness_facing" pascalStyleName="BrightnessFacing" name="brightness-facing">
+                    <LayoutXRef>structure:scalar_function</LayoutXRef>
+                  </Struct>
+                  <Explanation name="ALONG-AXIS SCALE" description="Scale along-axis. Default should be 1." />
+                  <Struct CStyleName="along_axis_scale" pascalStyleName="AlongAxisScale" name="along-axis scale">
+                    <LayoutXRef>structure:scalar_function</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Explanation name="RANGE-COLLISION SCALE" description="Scales range (amplitude) by collision fraction. The input to the function will be 1 if there is no collision, and 0 if the collision occurs at the origin." />
+            <Struct CStyleName="range_scale" pascalStyleName="RangeScale" name="range-scale">
+              <LayoutXRef>structure:scalar_function</LayoutXRef>
+            </Struct>
+            <Explanation name="BRIGHTNESS-COLLISION SCALE" description="Scales brightness by collision fraction." />
+            <Struct CStyleName="brightness_scale" pascalStyleName="BrightnessScale" name="brightness-scale">
+              <LayoutXRef>structure:scalar_function</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

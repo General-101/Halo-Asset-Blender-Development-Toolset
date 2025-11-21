@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="ngpr" name="preferences_network_game" version="2">
+  <Layout regolithID="block:preferences_network_game" internalName="preferences_network_game_block" name="preferences_network_game">
+    <FieldSet version="0" sizeofValue="896" sizeofSource="sizeof(struct preferences_network_game_group)" isLatest="true">
+      <String CStyleName="name" pascalStyleName="Name" name="name" />
+      <RealRgbColor CStyleName="primary_color" pascalStyleName="PrimaryColor" name="primary color" />
+      <RealRgbColor CStyleName="secondary_color" pascalStyleName="SecondaryColor" name="secondary color" />
+      <TagReference CStyleName="pattern" pascalStyleName="Pattern" name="pattern">
+        <tag>bitmap</tag>
+      </TagReference>
+      <ShortInteger CStyleName="pattern_bitmap_index" pascalStyleName="PatternBitmapIndex" name="pattern bitmap index" />
+      <Pad name="pad" length="2" />
+      <TagReference CStyleName="decal" pascalStyleName="Decal" name="decal">
+        <tag>bitmap</tag>
+      </TagReference>
+      <ShortInteger CStyleName="decal_bitmap_index" pascalStyleName="DecalBitmapIndex" name="decal bitmap index" />
+      <Pad name="pad" length="2" />
+      <Pad name="pad" length="800" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

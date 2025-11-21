@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedLayouts>
+  <Layout regolithID="structure:mapping_function" Name="Mapping" tag="MAPP" internalName="mapping_function" backingBlockInternalName="mapping_function_block">
+    <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(s_function_definition_v1)">
+      <Custom name="HIDE_GROUP_ID" tag="hide" />
+      <CharInteger CStyleName="function_type" pascalStyleName="FunctionType" name="Function Type" />
+      <ByteFlags CStyleName="flags" pascalStyleName="Flags" name="Flags">
+        <Options regolithID="enum:mapping_function_flags" CStyleName="mapping_function_flags" pascalStyleName="MappingFunctionFlags">
+          <Bit name="Range" CStyleName="range_bit" pascalStyleName="RangeBit" />
+          <Bit name="Unused 0" CStyleName="unused_0_bit" pascalStyleName="Unused0Bit" />
+          <Bit name="Unused 1" CStyleName="unused_1_bit" pascalStyleName="Unused1Bit" />
+          <Bit name="Unused 2" CStyleName="unused_2_bit" pascalStyleName="Unused2Bit" />
+          <Bit name="Color Bit 0" CStyleName="color_bit_0_bit" pascalStyleName="ColorBit0Bit" />
+          <Bit name="Color Bit 1" CStyleName="color_bit_1_bit" pascalStyleName="ColorBit1Bit" />
+          <Bit name="Color Bit 2" CStyleName="color_bit_2_bit" pascalStyleName="ColorBit2Bit" />
+          <Bit name="Color Bit 3" CStyleName="color_bit_3_bit" pascalStyleName="ColorBit3Bit" />
+        </Options>
+      </ByteFlags>
+      <CharInteger CStyleName="function_1" pascalStyleName="Function1" name="Function 1" />
+      <CharInteger CStyleName="function_2" pascalStyleName="Function2" name="Function 2" />
+      <RgbColor CStyleName="color_0" pascalStyleName="Color0" name="Color 0" />
+      <RgbColor CStyleName="color_1" pascalStyleName="Color1" name="Color 1" />
+      <RgbColor CStyleName="color_2" pascalStyleName="Color2" name="Color 2" />
+      <RgbColor CStyleName="color_3" pascalStyleName="Color3" name="Color 3" />
+      <Block CStyleName="values" pascalStyleName="Values" name="Values" maxElementCount="64">
+        <Layout regolithID="block:real" internalName="real_block" name="real_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(real)" isLatest="true">
+            <Real CStyleName="value" pascalStyleName="Value" name="Value" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Custom name="END_HIDE_GROUP_ID" tag="edih" />
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="12" sizeofSource="sizeof(c_function_definition)" isLatest="true">
+      <Custom name="HIDE_GROUP_ID" tag="hide" />
+      <Block CStyleName="data" pascalStyleName="Data" name="data" maxElementCount="1024" maxElementCountSource="k_kilo">
+        <Layout regolithID="block:byte" internalName="byte_block" name="byte_block">
+          <FieldSet version="0" sizeofValue="1" sizeofSource="sizeof(byte)" isLatest="true">
+            <CharInteger CStyleName="value" pascalStyleName="Value" name="Value" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Custom name="END_HIDE_GROUP_ID" tag="edih" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="structure:scalar_function" tag="SCFN" internalName="scalar_function_struct" backingBlockInternalName="scalar_function_struct_block" name="scalar_function_struct">
+    <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(c_function_definition)" isLatest="true">
+      <Custom name="function" tag="fned" />
+      <Struct CStyleName="function" pascalStyleName="Function" name="function">
+        <LayoutXRef>structure:mapping_function</LayoutXRef>
+      </Struct>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="structure:color_function" tag="CLFN" internalName="color_function_struct" backingBlockInternalName="color_function_struct_block" name="color_function_struct">
+    <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(c_function_definition)" isLatest="true">
+      <Custom name="function" tag="fned" />
+      <Struct CStyleName="function" pascalStyleName="Function" name="function">
+        <LayoutXRef>structure:mapping_function</LayoutXRef>
+      </Struct>
+    </FieldSet>
+  </Layout>
+</SharedLayouts>

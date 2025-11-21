@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="dobc" name="detail_object_collection" version="1">
+  <Layout regolithID="block:detail_object_collection" internalName="detail_object_collection_block" name="detail_object_collection">
+    <FieldSet version="0" sizeofValue="128" sizeofSource="sizeof(struct detail_object_collection_definition)" isLatest="true">
+      <ShortEnum CStyleName="collection_type" pascalStyleName="CollectionType" name="collection type">
+        <Options regolithID="enum:object_collection_type" CStyleName="object_collection_type" pascalStyleName="ObjectCollectionType">
+          <Enum name="screen-facing" CStyleName="screen_facing" pascalStyleName="ScreenFacing" />
+          <Enum name="viewer-facing" CStyleName="viewer_facing" pascalStyleName="ViewerFacing" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Real CStyleName="global_z_offset" pascalStyleName="GlobalZOffset" name="global z offset" units="applied to all detail objects of in this collection so they don't float above the ground" />
+      <Pad sizeOfSource="sizeof(long)*11" length="44" />
+      <TagReference CStyleName="sprite_plate" pascalStyleName="SpritePlate" name="sprite plate">
+        <tag>bitm</tag>
+      </TagReference>
+      <Block CStyleName="types" pascalStyleName="Types" name="types" maxElementCount="16" maxElementCountSource="MAXIMUM_DETAIL_OBJECT_TYPES_PER_COLLECTION">
+        <Layout regolithID="block:detail_object_type" internalName="detail_object_type_block" name="detail_object_type_block">
+          <FieldSet version="0" sizeofValue="96" sizeofSource="sizeof(struct detail_object_type_definition)" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+            <CharInteger CStyleName="sequence_index" pascalStyleName="SequenceIndex" name="sequence index" units="[0,15]" />
+            <ByteFlags CStyleName="type_flags" pascalStyleName="TypeFlags" name="type flags">
+              <Options regolithID="enum:detail_object_color_interpolation_type_flags" CStyleName="detail_object_color_interpolation_type_flags" pascalStyleName="DetailObjectColorInterpolationTypeFlags">
+                <Bit name="unused" CStyleName="unused0_bit" pascalStyleName="Unused0Bit" />
+                <Bit name="unused" CStyleName="unused1_bit" pascalStyleName="Unused1Bit" />
+                <Bit name="interpolate color in hsv" CStyleName="interpolate_color_in_hsv_bit" pascalStyleName="InterpolateColorInHsvBit" />
+                <Bit name="...more colors" CStyleName="more_colors_bit" pascalStyleName="MoreColorsBit" />
+              </Options>
+            </ByteFlags>
+            <Pad sizeOfSource="sizeof(byte)*2" length="2" />
+            <RealFraction CStyleName="color_override_factor" pascalStyleName="ColorOverrideFactor" name="color override factor" description="fraction of detail object color to use instead of the base map color in the environment:[0,1]" />
+            <Pad sizeOfSource="sizeof(long)*2" length="8" />
+            <Real CStyleName="near_fade_distance" pascalStyleName="NearFadeDistance" name="near fade distance" units="world units" />
+            <Real CStyleName="far_fade_distance" pascalStyleName="FarFadeDistance" name="far fade distance" units="world units" />
+            <Real CStyleName="size" pascalStyleName="Size" name="size" units="world units per pixel" />
+            <Pad sizeOfSource="sizeof(real)" length="4" />
+            <RealRgbColor CStyleName="minimum_color" pascalStyleName="MinimumColor" name="minimum color" units="[0,1]" />
+            <RealRgbColor CStyleName="maximum_color" pascalStyleName="MaximumColor" name="maximum color" units="[0,1]" />
+            <ArgbColor CStyleName="ambient_color" pascalStyleName="AmbientColor" name="ambient color" units="[0,255]" />
+            <Pad sizeOfSource="sizeof(long)*1" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="sizeof(long)*12" length="48" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

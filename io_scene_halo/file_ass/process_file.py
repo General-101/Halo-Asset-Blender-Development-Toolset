@@ -37,39 +37,17 @@ def process_file(filepath):
 
     ASS.skip(4) # skip header
     material_count = int(ASS.next())
-    used_material_names = []
     for material in range(material_count):
         name = ASS.next().strip('\"')
-        scene_name = name
-        file_name = ""
-        if ASS.version >= 3:
-            if scene_name in used_material_names:
-                file_name = name
-                duplicate_name = None
-                loop_count = 1
-                while duplicate_name == None:
-                    while_name = name + "." + str(loop_count).zfill(3)
-                    if not while_name in used_material_names:
-                        duplicate_name = while_name
 
-                    loop_count += 1
-
-                scene_name = duplicate_name
-
-        used_material_names.append(scene_name)
-        material_effect = ASS.next().strip('\"')
-        material_strings = []
+        variant_name = ASS.next().strip('\"')
+        lighting_info = []
         if ASS.version >= 4:
-            material_string_count = int(ASS.next())
-            for string in range(material_string_count):
-                material_strings.append(ASS.next().strip('\"'))
+            lighting_info_count = int(ASS.next())
+            for string in range(lighting_info_count):
+                lighting_info.append(ASS.next().strip('\"'))
 
-        #material_definition_items = material_effect.split()
-        #print(material_definition_items)
-        region = material_effect
-        #lod, permutation, region = global_functions.material_definition_parser(True, material_definition_items, 'Default', 'Default')
-
-        ASS.materials.append(ASSAsset.Material(scene_name, file_name, None, material, "", "", region, material_strings))
+        ASS.materials.append(ASSAsset.Material(name, variant_name, lighting_info))
 
     object_count = int(ASS.next())
     for object in range(object_count):

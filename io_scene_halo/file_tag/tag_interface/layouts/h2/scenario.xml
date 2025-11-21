@@ -1,0 +1,1507 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="scnr" name="scenario" version="2">
+  <Layout regolithID="block:scenario" internalName="scenario_block" name="scenario">
+    <FieldSet version="0" sizeofValue="1456" sizeofSource="sizeof(struct scenario_v1)">
+      <TagReference CStyleName="dont_use" pascalStyleName="DontUse" name="DON'T USE">
+        <tag>sbsp</tag>
+      </TagReference>
+      <TagReference CStyleName="wont_use" pascalStyleName="WontUse" name="WON'T USE">
+        <tag>sbsp</tag>
+      </TagReference>
+      <TagReference CStyleName="cant_use" pascalStyleName="CantUse" name="CAN'T USE" description="set me!! me!!!  i do something cool!!!  you'll be happy forever if there this tag reference is filled in!  don't believe the lies!!! LIESSSS!!!!!!!!  YESS, MY PRECIOUSSSSS, LIESSSS...">
+        <tag>sky </tag>
+      </TagReference>
+      <Block CStyleName="skies" pascalStyleName="Skies" name="skies" maxElementCount="32" maxElementCountSource="MAXIMUM_SKIES_PER_SCENARIO">
+        <Layout regolithID="block:scenario_sky_reference" internalName="scenario_sky_reference_block" name="scenario_sky_reference_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct tag_reference)" isLatest="true">
+            <TagReference CStyleName="sky" pascalStyleName="Sky" name="sky" blockNameSource="true">
+              <tag>sky </tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+        <Options regolithID="enum:scenario_type" CStyleName="scenario_type" pascalStyleName="ScenarioType">
+          <Enum name="solo" CStyleName="solo" pascalStyleName="Solo" />
+          <Enum name="multiplayer" CStyleName="multiplayer" pascalStyleName="Multiplayer" />
+          <Enum name="main menu" CStyleName="main_menu" pascalStyleName="MainMenu" />
+          <Enum name="multiplayer shared" CStyleName="multiplayer_shared" pascalStyleName="MultiplayerShared" />
+          <Enum name="single player shared" CStyleName="single_player_shared" pascalStyleName="SinglePlayerShared" />
+        </Options>
+      </ShortEnum>
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:scenario_flags" CStyleName="scenario_flags" pascalStyleName="ScenarioFlags">
+          <Bit name="cortana hack" description="sort cortana in front of other transparent geometry" CStyleName="cortana_hack_bit" pascalStyleName="CortanaHackBit" />
+          <Bit name="always draw sky" description="always draw sky 0, even if no +sky polygons are visible" CStyleName="always_draw_sky_bit" pascalStyleName="AlwaysDrawSkyBit" />
+          <Bit name="don't strip pathfinding" description="always leave pathfinding in, even for a multiplayer scenario" CStyleName="dont_strip_pathfinding_bit" pascalStyleName="DontStripPathfindingBit" />
+          <Bit name="symmetric multiplayer map" CStyleName="symmetric_multiplayer_map_bit" pascalStyleName="SymmetricMultiplayerMapBit" />
+          <Bit name="quick loading (cinematic only) scenario" CStyleName="quick_loading_cinematic_only_scenario_bit" pascalStyleName="QuickLoadingCinematicOnlyScenarioBit" />
+          <Bit name="characters use previous mission weapons" CStyleName="characters_use_previous_mission_weapons_bit" pascalStyleName="CharactersUsePreviousMissionWeaponsBit" />
+          <Bit name="lightmaps smooth palettes with neighbors" CStyleName="lightmaps_smooth_palettes_with_neighbors_bit" pascalStyleName="LightmapsSmoothPalettesWithNeighborsBit" />
+          <Bit name="snap to white at start" CStyleName="snap_to_white_at_start_bit" pascalStyleName="SnapToWhiteAtStartBit" />
+          <Bit name="DO NOT apply bungie MP tag patches" description="Inhibit the Auto-Update 3 (April 18, 2005) balance patch changes from the final multiplayer map" CStyleName="do_not_apply_bungie_mp_tag_patches_bit" pascalStyleName="DoNotApplyBungieMpTagPatchesBit" />
+        </Options>
+      </WordFlags>
+      <Block CStyleName="child_scenarios" pascalStyleName="ChildScenarios" name="@child scenarios" maxElementCount="16" maxElementCountSource="MAXIMUM_CHILD_SCENARIOS_PER_SCENARIO">
+        <Layout regolithID="block:scenario_child_scenario" internalName="scenario_child_scenario_block" name="scenario_child_scenario_block">
+          <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(struct scenario_child_scenario_reference)" isLatest="true">
+            <TagReference CStyleName="child_scenario" pascalStyleName="ChildScenario" name="child scenario" blockNameSource="true">
+              <tag>scnr</tag>
+            </TagReference>
+            <Pad sizeOfSource="4*sizeof(long)" length="16" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Angle CStyleName="local_north" pascalStyleName="LocalNorth" name="local north" />
+      <Pad sizeOfSource="5*sizeof(long)" length="20" />
+      <Pad sizeOfSource="34*sizeof(long)" length="136" />
+      <Block CStyleName="predicted_resources" pascalStyleName="PredictedResources" name="predicted resources" readOnly="true" maxElementCount="2048">
+        <LayoutXRef>block:predicted_resource</LayoutXRef>
+      </Block>
+      <Block CStyleName="functions" pascalStyleName="Functions" name="functions" maxElementCount="32" maxElementCountSource="MAXIMUM_FUNCTIONS_PER_SCENARIO">
+        <Layout regolithID="block:scenario_function" internalName="scenario_function_block" name="scenario_function_block">
+          <FieldSet version="0" sizeofValue="120" sizeofSource="sizeof(struct scenario_function)" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:function_flags" CStyleName="function_flags" pascalStyleName="FunctionFlags">
+                <Bit name="scripted" description="the level script will set this value; the other settings here will be ignored." CStyleName="scripted_bit" pascalStyleName="ScriptedBit" />
+                <Bit name="invert" description="result of function is one minus actual result" CStyleName="invert_bit" pascalStyleName="InvertBit" />
+                <Bit name="additive" CStyleName="additive_bit" pascalStyleName="AdditiveBit" />
+                <Bit name="always active" description="function does not deactivate when at or below lower bound" CStyleName="always_active_bit" pascalStyleName="AlwaysActiveBit" />
+              </Options>
+            </LongFlags>
+            <String CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+            <Real CStyleName="period" pascalStyleName="Period" name="period" units="seconds" description="this is the period for the above function (lower values make the function oscillate quickly, higher values make it oscillate slowly)" />
+            <ShortBlockIndex CStyleName="scale_period_by" pascalStyleName="ScalePeriodBy" name="scale period by" description="multiply this function by the above period" blockReference="block:scenario_function" />
+            <ShortEnum CStyleName="function" pascalStyleName="Function" name="function">
+              <OptionsXRef>enum:scenario_function</OptionsXRef>
+            </ShortEnum>
+            <ShortBlockIndex CStyleName="scale_function_by" pascalStyleName="ScaleFunctionBy" name="scale function by" description="multiply this function by the result of the above function" blockReference="block:scenario_function" />
+            <ShortEnum CStyleName="wobble_function" pascalStyleName="WobbleFunction" name="wobble function" description="the curve used for the wobble">
+              <OptionsXRef>enum:scenario_function</OptionsXRef>
+            </ShortEnum>
+            <Real CStyleName="wobble_period" pascalStyleName="WobblePeriod" name="wobble period" units="seconds" description="the length of time it takes for the magnitude of this function to complete a wobble" />
+            <Real CStyleName="wobble_magnitude" pascalStyleName="WobbleMagnitude" name="wobble magnitude" units="percent" description="the amount of random wobble in the magnitude" />
+            <RealFraction CStyleName="square_wave_threshold" pascalStyleName="SquareWaveThreshold" name="square wave threshold" description="if non-zero, all values above the square wave threshold are snapped to 1.0, and all values below it are snapped to 0.0 to create a square wave." />
+            <ShortInteger CStyleName="step_count" pascalStyleName="StepCount" name="step count" description="the number of discrete values to snap to (e.g., a step count of 5 would snap the function to 0.00,0.25,0.50,0.75 or 1.00)" />
+            <ShortEnum CStyleName="map_to" pascalStyleName="MapTo" name="map to">
+              <OptionsXRef>enum:function_angle_change_function</OptionsXRef>
+            </ShortEnum>
+            <ShortInteger CStyleName="sawtooth_count" pascalStyleName="SawtoothCount" name="sawtooth count" description="the number of times this function should repeat (e.g., a sawtooth count of 5 would give the function a value of 1.0 at each of 0.25,0.50,0.75 as well as at 1.0" />
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <ShortBlockIndex CStyleName="scale_result_by" pascalStyleName="ScaleResultBy" name="scale result by" description="multiply this function (from a weapon, vehicle, etc.) final result of all of the above math" blockReference="block:scenario_function" />
+            <ShortEnum CStyleName="bounds_mode" pascalStyleName="BoundsMode" name="bounds mode" description="controls how the bounds, below, are used">
+              <Options regolithID="enum:function_bounds_mode" CStyleName="function_bounds_mode" pascalStyleName="FunctionBoundsMode">
+                <Enum name="clip" CStyleName="clip" pascalStyleName="Clip" />
+                <Enum name="clip and normalize" CStyleName="clip_and_normalize" pascalStyleName="ClipAndNormalize" />
+                <Enum name="scale to fit" CStyleName="scale_to_fit" pascalStyleName="ScaleToFit" />
+              </Options>
+            </ShortEnum>
+            <RealFractionBounds CStyleName="bounds" pascalStyleName="Bounds" name="bounds" />
+            <Pad sizeOfSource="sizeof(real)" length="4" />
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <ShortBlockIndex CStyleName="turn_off_with" pascalStyleName="TurnOffWith" name="turn off with" description="if the specified function is off, so is this function" blockReference="block:scenario_function" />
+            <Pad sizeOfSource="4*sizeof(long)" length="16" />
+            <Pad sizeOfSource="4*sizeof(real)" length="16" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Data CStyleName="editor_scenario_data" pascalStyleName="EditorScenarioData" name="editor scenario data" />
+      <Block CStyleName="comments" pascalStyleName="Comments" name="comments" maxElementCount="65536" maxElementCountSource="MAXIMUM_EDITOR_COMMENTS">
+        <LayoutXRef>block:editor_comment</LayoutXRef>
+      </Block>
+      <Block readOnly="true" maxElementCount="4096" maxElementCountSource="MAXIMUM_ENVIRONMENT_OBJECTS_PER_SCENARIO">
+        <LayoutXRef>block:dont_use_me_scenario_environment_object</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="53*sizeof(long)" length="212" />
+      <Block CStyleName="object_names" pascalStyleName="ObjectNames" name="object names" readOnly="true" maxElementCount="640" maxElementCountSource="MAXIMUM_OBJECT_NAMES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_object_names</LayoutXRef>
+      </Block>
+      <Block CStyleName="scenery" pascalStyleName="Scenery" name="scenery" maxElementCount="2000" maxElementCountSource="MAXIMUM_SCENERY_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_scenery</LayoutXRef>
+      </Block>
+      <Block CStyleName="scenery_palette" pascalStyleName="SceneryPalette" name="scenery palette" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_scenery_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="bipeds" pascalStyleName="Bipeds" name="bipeds" maxElementCount="128" maxElementCountSource="MAXIMUM_BIPED_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_biped</LayoutXRef>
+      </Block>
+      <Block CStyleName="biped_palette" pascalStyleName="BipedPalette" name="biped palette" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_biped_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="vehicles" pascalStyleName="Vehicles" name="vehicles" maxElementCount="256" maxElementCountSource="MAXIMUM_VEHICLE_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_vehicle</LayoutXRef>
+      </Block>
+      <Block CStyleName="vehicle_palette" pascalStyleName="VehiclePalette" name="vehicle palette" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_vehicle_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="equipment" pascalStyleName="Equipment" name="equipment" maxElementCount="256" maxElementCountSource="MAXIMUM_EQUIPMENT_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_equipment</LayoutXRef>
+      </Block>
+      <Block CStyleName="equipment_palette" pascalStyleName="EquipmentPalette" name="equipment palette" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_equipment_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="weapons" pascalStyleName="Weapons" name="weapons" maxElementCount="128" maxElementCountSource="MAXIMUM_WEAPON_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_weapon</LayoutXRef>
+      </Block>
+      <Block CStyleName="weapon_palette" pascalStyleName="WeaponPalette" name="weapon palette" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_weapon_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="device_groups" pascalStyleName="DeviceGroups" name="device groups" maxElementCount="128" maxElementCountSource="MAXIMUM_DEVICE_GROUPS_PER_SCENARIO">
+        <LayoutXRef>block:device_group</LayoutXRef>
+      </Block>
+      <Block CStyleName="machines" pascalStyleName="Machines" name="machines" maxElementCount="400" maxElementCountSource="MAXIMUM_MACHINE_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_machine</LayoutXRef>
+      </Block>
+      <Block CStyleName="machine_palette" pascalStyleName="MachinePalette" name="machine palette" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_machine_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="controls" pascalStyleName="Controls" name="controls" maxElementCount="100" maxElementCountSource="MAXIMUM_CONTROL_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_control</LayoutXRef>
+      </Block>
+      <Block CStyleName="control_palette" pascalStyleName="ControlPalette" name="control palette" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_control_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="light_fixtures" pascalStyleName="LightFixtures" name="light fixtures" maxElementCount="500" maxElementCountSource="MAXIMUM_LIGHT_FIXTURE_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_light_fixture</LayoutXRef>
+      </Block>
+      <Block CStyleName="light_fixtures_palette" pascalStyleName="LightFixturesPalette" name="light fixtures palette" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_light_fixture_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="sound_scenery" pascalStyleName="SoundScenery" name="sound scenery" maxElementCount="256" maxElementCountSource="MAXIMUM_SOUND_SCENERY_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_sound_scenery</LayoutXRef>
+      </Block>
+      <Block CStyleName="sound_scenery_palette" pascalStyleName="SoundSceneryPalette" name="sound scenery palette" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_sound_scenery_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="light_volumes" pascalStyleName="LightVolumes" name="light volumes" maxElementCount="500" maxElementCountSource="MAXIMUM_LIGHTS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_light</LayoutXRef>
+      </Block>
+      <Block CStyleName="light_volumes_palette" pascalStyleName="LightVolumesPalette" name="light volumes palette" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_light_palette</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="5*sizeof(struct tag_block)" length="60" />
+      <Block CStyleName="player_starting_profile" pascalStyleName="PlayerStartingProfile" name="player starting profile" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_PLAYERS_PER_BLOCK">
+        <Layout regolithID="block:scenario_profiles" internalName="scenario_profiles_block" name="scenario_profiles_block">
+          <FieldSet version="0" sizeofValue="84" sizeofSource="sizeof(struct scenario_starting_profile)" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+            <RealFraction CStyleName="starting_health_damage" pascalStyleName="StartingHealthDamage" name="starting health damage" units="[0,1]" />
+            <RealFraction CStyleName="starting_shield_damage" pascalStyleName="StartingShieldDamage" name="starting shield damage" units="[0,1]" />
+            <TagReference CStyleName="primary_weapon" pascalStyleName="PrimaryWeapon" name="primary weapon">
+              <tag>weap</tag>
+            </TagReference>
+            <ShortInteger name="rounds loaded" />
+            <ShortInteger name="rounds total" />
+            <TagReference CStyleName="secondary_weapon" pascalStyleName="SecondaryWeapon" name="secondary weapon">
+              <tag>weap</tag>
+            </TagReference>
+            <ShortInteger name="rounds loaded" />
+            <ShortInteger name="rounds total" />
+            <CharInteger CStyleName="starting_fragmentation_grenade_count" pascalStyleName="StartingFragmentationGrenadeCount" name="starting fragmentation grenade count" />
+            <CharInteger CStyleName="starting_plasma_grenade_count" pascalStyleName="StartingPlasmaGrenadeCount" name="starting plasma grenade count" />
+            <CharInteger CStyleName="starting_unknown2_grenade_count" pascalStyleName="StartingUnknown2GrenadeCount" name="starting &lt;unknown2&gt; grenade count" expertOnly="true" />
+            <CharInteger CStyleName="starting_unknown3_grenade_count" pascalStyleName="StartingUnknown3GrenadeCount" name="starting &lt;unknown3&gt; grenade count" expertOnly="true" />
+            <UselessPad length="20" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="player_starting_locations" pascalStyleName="PlayerStartingLocations" name="player starting locations" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_PLAYERS_PER_BLOCK">
+        <LayoutXRef>block:scenario_players</LayoutXRef>
+      </Block>
+      <Block CStyleName="trigger_volumes" pascalStyleName="TriggerVolumes" name="trigger volumes" maxElementCount="256" maxElementCountSource="MAXIMUM_TRIGGER_VOLUMES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_trigger_volume</LayoutXRef>
+      </Block>
+      <Block CStyleName="recorded_animations" pascalStyleName="RecordedAnimations" name="recorded animations" maxElementCount="1024" maxElementCountSource="MAXIMUM_RECORDED_ANIMATIONS_PER_MAP">
+        <LayoutXRef>block:recorded_animation</LayoutXRef>
+      </Block>
+      <Block CStyleName="netgame_flags" pascalStyleName="NetgameFlags" name="netgame flags" maxElementCount="200" maxElementCountSource="MAXIMUM_SCENARIO_NETPOINTS_PER_SCENARIO">
+        <Layout regolithID="block:scenario_netpoints" internalName="scenario_netpoints_block" name="scenario_netpoints_block">
+          <FieldSet version="0" sizeofValue="148" sizeofSource="sizeof(scenario_netpoint_v1)">
+            <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" />
+            <Angle CStyleName="facing" pascalStyleName="Facing" name="facing" units="degrees" />
+            <Custom name="FILTER_ON_NEXT_FIELD_FOLDER_ID,0" tag="filx" />
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <Options regolithID="enum:netpoint_type" CStyleName="netpoint_type" pascalStyleName="NetpointType">
+                <Enum name="CTF flag spawn" CStyleName="ctf_flag_spawn" pascalStyleName="CtfFlagSpawn" />
+                <Enum name="CTF flag return" CStyleName="ctf_flag_return" pascalStyleName="CtfFlagReturn" />
+                <Enum name="Assault bomb spawn" CStyleName="assault_bomb_spawn" pascalStyleName="AssaultBombSpawn" />
+                <Enum name="Assault bomb return" CStyleName="assault_bomb_return" pascalStyleName="AssaultBombReturn" />
+                <Enum name="Oddball spawn" CStyleName="oddball_spawn" pascalStyleName="OddballSpawn" />
+                <Enum name="unused" CStyleName="unused5" pascalStyleName="Unused5" />
+                <Enum name="Race checkpoint" CStyleName="race_checkpoint" pascalStyleName="RaceCheckpoint" />
+                <Enum name="Teleporter (src)" CStyleName="teleporter_src" pascalStyleName="TeleporterSrc" />
+                <Enum name="Teleporter (dest)" CStyleName="teleporter_dest" pascalStyleName="TeleporterDest" />
+                <Enum name="Headhunter bin" CStyleName="headhunter_bin" pascalStyleName="HeadhunterBin" />
+                <Enum name="Territories flag" CStyleName="territories_flag" pascalStyleName="TerritoriesFlag" />
+                <Enum name="King Hill 0" CStyleName="king_hill_0" pascalStyleName="KingHill0" />
+                <Enum name="King Hill 1" CStyleName="king_hill_1" pascalStyleName="KingHill1" />
+                <Enum name="King Hill 2" CStyleName="king_hill_2" pascalStyleName="KingHill2" />
+                <Enum name="King Hill 3" CStyleName="king_hill_3" pascalStyleName="KingHill3" />
+                <Enum name="King Hill 4" CStyleName="king_hill_4" pascalStyleName="KingHill4" />
+                <Enum name="King Hill 5" CStyleName="king_hill_5" pascalStyleName="KingHill5" />
+                <Enum name="King Hill 6" CStyleName="king_hill_6" pascalStyleName="KingHill6" />
+                <Enum name="King Hill 7" CStyleName="king_hill_7" pascalStyleName="KingHill7" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="team_designator" pascalStyleName="TeamDesignator" name="team designator">
+              <OptionsXRef>enum:scenario_team_designator</OptionsXRef>
+            </ShortEnum>
+            <TagReference CStyleName="weapon_group" pascalStyleName="WeaponGroup" name="weapon group">
+              <tag>itmc</tag>
+            </TagReference>
+            <StringId CStyleName="spawn_object_name" pascalStyleName="SpawnObjectName" name="spawn object name" />
+            <StringId CStyleName="spawn_marker_name" pascalStyleName="SpawnMarkerName" name="spawn marker name" />
+            <StringId CStyleName="optional_flag_name" pascalStyleName="OptionalFlagName" name="optional flag name" />
+            <Pad sizeOfSource="25*sizeof(long)" length="100" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="32" sizeofSource="sizeof(scenario_netpoint)" isLatest="true">
+            <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" />
+            <Angle CStyleName="facing" pascalStyleName="Facing" name="facing" units="degrees" />
+            <Custom name="FILTER_ON_NEXT_FIELD_FOLDER_ID,0" tag="filx" />
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <OptionsXRef>enum:netpoint_type</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="team_designator" pascalStyleName="TeamDesignator" name="team designator">
+              <OptionsXRef>enum:scenario_team_designator</OptionsXRef>
+            </ShortEnum>
+            <ShortInteger CStyleName="identifier" pascalStyleName="Identifier" name="identifier" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:scenario_netpoint_flags" CStyleName="scenario_netpoint_flags" pascalStyleName="ScenarioNetpointFlags">
+                <Bit name="multi flag/bomb" CStyleName="multi_flagbomb_bit" pascalStyleName="MultiFlagbombBit" />
+                <Bit name="single flag/bomb" CStyleName="single_flagbomb_bit" pascalStyleName="SingleFlagbombBit" />
+                <Bit name="neutral flag/bomb" CStyleName="neutral_flagbomb_bit" pascalStyleName="NeutralFlagbombBit" />
+              </Options>
+            </WordFlags>
+            <StringId CStyleName="spawn_object_name" pascalStyleName="SpawnObjectName" name="spawn_object_name" expertOnly="true" />
+            <StringId CStyleName="spawn_marker_name" pascalStyleName="SpawnMarkerName" name="spawn_marker_name" expertOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="netgame_equipment" pascalStyleName="NetgameEquipment" name="netgame equipment" maxElementCount="100" maxElementCountSource="MAXIMUM_SCENARIO_NETGAME_EQUIPMENT_PER_SCENARIO">
+        <Layout regolithID="block:scenario_netgame_equipment" internalName="scenario_netgame_equipment_block" name="scenario_netgame_equipment_block">
+          <FieldSet version="0" sizeofValue="152" sizeofSource="sizeof(struct scenario_netgame_equipment)" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:netgame_equipment_flags" CStyleName="netgame_equipment_flags" pascalStyleName="NetgameEquipmentFlags">
+                <Bit name="levitate" CStyleName="levitate_bit" pascalStyleName="LevitateBit" />
+                <Bit name="destroy existing on new spawn" CStyleName="destroy_existing_on_new_spawn_bit" pascalStyleName="DestroyExistingOnNewSpawnBit" />
+              </Options>
+            </LongFlags>
+            <ShortEnum CStyleName="type_0" pascalStyleName="Type0" name="type 0">
+              <OptionsXRef>enum:scenario_game_mode</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="type_1" pascalStyleName="Type1" name="type 1">
+              <OptionsXRef>enum:scenario_game_mode</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="type_2" pascalStyleName="Type2" name="type 2">
+              <OptionsXRef>enum:scenario_game_mode</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="type_3" pascalStyleName="Type3" name="type 3">
+              <OptionsXRef>enum:scenario_game_mode</OptionsXRef>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <ShortInteger CStyleName="spawn_time_in_seconds_0__default" pascalStyleName="SpawnTimeInSeconds0Default" name="spawn time (in seconds, 0 = default)" />
+            <ShortInteger CStyleName="respawn_on_empty_time" pascalStyleName="RespawnOnEmptyTime" name="respawn on empty time" units="seconds" />
+            <ShortEnum CStyleName="respawn_timer_starts" pascalStyleName="RespawnTimerStarts" name="respawn timer starts">
+              <Options regolithID="enum:equipment_respawn_timer_starts" CStyleName="equipment_respawn_timer_starts" pascalStyleName="EquipmentRespawnTimerStarts">
+                <Enum name="on pick up" CStyleName="on_pick_up" pascalStyleName="OnPickUp" />
+                <Enum name="on body depletion" CStyleName="on_body_depletion" pascalStyleName="OnBodyDepletion" />
+              </Options>
+            </ShortEnum>
+            <CharEnum CStyleName="classification" pascalStyleName="Classification" name="classification">
+              <Options regolithID="enum:scenario_netgame_equipment_classification" CStyleName="scenario_netgame_equipment_classification" pascalStyleName="ScenarioNetgameEquipmentClassification">
+                <Enum name="weapon" CStyleName="weapon" pascalStyleName="Weapon" />
+                <Enum name="primary light land" CStyleName="primary_light_land" pascalStyleName="PrimaryLightLand" />
+                <Enum name="secondary light land" CStyleName="secondary_light_land" pascalStyleName="SecondaryLightLand" />
+                <Enum name="primary heavy land" CStyleName="primary_heavy_land" pascalStyleName="PrimaryHeavyLand" />
+                <Enum name="primary flying" CStyleName="primary_flying" pascalStyleName="PrimaryFlying" />
+                <Enum name="secondary heavy land" CStyleName="secondary_heavy_land" pascalStyleName="SecondaryHeavyLand" />
+                <Enum name="primary turret" CStyleName="primary_turret" pascalStyleName="PrimaryTurret" />
+                <Enum name="secondary turret" CStyleName="secondary_turret" pascalStyleName="SecondaryTurret" />
+                <Enum name="grenade" CStyleName="grenade" pascalStyleName="Grenade" />
+                <Enum name="powerup" CStyleName="powerup" pascalStyleName="Powerup" />
+              </Options>
+            </CharEnum>
+            <Pad sizeOfSource="sizeof(byte)*3" length="3" />
+            <Pad sizeOfSource="sizeof(long)*10" length="40" />
+            <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" />
+            <Struct CStyleName="orientation" pascalStyleName="Orientation" name="orientation">
+              <Layout regolithID="structure:scenario_netgame_equipment_orientation" tag="ntor" internalName="scenario_netgame_equipment_orientation_struct" backingBlockInternalName="scenario_netgame_equipment_orientation_struct_block" name="scenario_netgame_equipment_orientation_struct">
+                <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(real_euler_angles3d)" sizeofOverride="4" isLatest="true">
+                  <RealEulerAngles3D CStyleName="orientation" pascalStyleName="Orientation" name="orientation" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <TagReference CStyleName="itemvehicle_collection" pascalStyleName="ItemvehicleCollection" name="item/vehicle collection">
+              <tag />
+            </TagReference>
+            <Pad sizeOfSource="sizeof(long)*12" length="48" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="starting_equipment" pascalStyleName="StartingEquipment" name="starting equipment" maxElementCount="200" maxElementCountSource="MAXIMUM_SCENARIO_STARTING_EQUIPMENT_PER_SCENARIO">
+        <Layout regolithID="block:scenario_starting_equipment" internalName="scenario_starting_equipment_block" name="scenario_starting_equipment_block">
+          <FieldSet version="0" sizeofValue="204" sizeofSource="sizeof(struct scenario_starting_equipment)" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:starting_equipment_grenade_type" CStyleName="starting_equipment_grenade_type" pascalStyleName="StartingEquipmentGrenadeType">
+                <Bit name="no grenades" CStyleName="no_grenades_bit" pascalStyleName="NoGrenadesBit" />
+                <Bit name="plasma grenades" CStyleName="plasma_grenades_bit" pascalStyleName="PlasmaGrenadesBit" />
+              </Options>
+            </LongFlags>
+            <ShortEnum CStyleName="type_0" pascalStyleName="Type0" name="type 0">
+              <OptionsXRef>enum:scenario_game_mode</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="type_1" pascalStyleName="Type1" name="type 1">
+              <OptionsXRef>enum:scenario_game_mode</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="type_2" pascalStyleName="Type2" name="type 2">
+              <OptionsXRef>enum:scenario_game_mode</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="type_3" pascalStyleName="Type3" name="type 3">
+              <OptionsXRef>enum:scenario_game_mode</OptionsXRef>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(long) * 12" length="48" />
+            <TagReference CStyleName="item_collection_1" pascalStyleName="ItemCollection1" name="item collection 1">
+              <tag>itmc</tag>
+            </TagReference>
+            <TagReference CStyleName="item_collection_2" pascalStyleName="ItemCollection2" name="item collection 2">
+              <tag>itmc</tag>
+            </TagReference>
+            <TagReference CStyleName="item_collection_3" pascalStyleName="ItemCollection3" name="item collection 3">
+              <tag>itmc</tag>
+            </TagReference>
+            <TagReference CStyleName="item_collection_4" pascalStyleName="ItemCollection4" name="item collection 4">
+              <tag>itmc</tag>
+            </TagReference>
+            <TagReference CStyleName="item_collection_5" pascalStyleName="ItemCollection5" name="item collection 5">
+              <tag>itmc</tag>
+            </TagReference>
+            <TagReference CStyleName="item_collection_6" pascalStyleName="ItemCollection6" name="item collection 6">
+              <tag>itmc</tag>
+            </TagReference>
+            <Pad sizeOfSource="sizeof(long) * 12" length="48" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="bsp_switch_trigger_volumes" pascalStyleName="BspSwitchTriggerVolumes" name="bsp switch trigger volumes" maxElementCount="256" maxElementCountSource="MAXIMUM_TRIGGER_VOLUMES_PER_SCENARIO">
+        <Layout regolithID="block:scenario_bsp_switch_trigger_volume" internalName="scenario_bsp_switch_trigger_volume_block" name="scenario_bsp_switch_trigger_volume_block">
+          <FieldSet version="0" sizeofValue="14" sizeofSource="sizeof(struct scenario_bsp_switch_trigger_volume)" isLatest="true">
+            <ShortBlockIndex CStyleName="trigger_volume" pascalStyleName="TriggerVolume" name="trigger volume" blockReference="block:scenario_trigger_volume" />
+            <ShortBlockIndex CStyleName="source" pascalStyleName="Source" name="source" blockReference="block:scenario_structure_bsp_reference" />
+            <ShortBlockIndex CStyleName="destination" pascalStyleName="Destination" name="destination" blockReference="block:scenario_structure_bsp_reference" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="decals" pascalStyleName="Decals" name="decals" maxElementCount="65536" maxElementCountSource="MAXIMUM_DECALS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_decals</LayoutXRef>
+      </Block>
+      <Block CStyleName="decal_palette" pascalStyleName="DecalPalette" name="decal palette" maxElementCount="128" maxElementCountSource="MAXIMUM_DECAL_PALETTES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_decal_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="detail_object_collection_palette" pascalStyleName="DetailObjectCollectionPalette" name="detail object collection palette" maxElementCount="32" maxElementCountSource="MAXIMUM_DETAIL_OBJECT_LAYERS_PER_STRUCTURE">
+        <Layout regolithID="block:scenario_detail_object_collection_palette" internalName="scenario_detail_object_collection_palette_block" name="scenario_detail_object_collection_palette_block">
+          <FieldSet version="0" sizeofValue="48" sizeofSource="sizeof(struct scenario_detail_object_collection_palette_entry)" isLatest="true">
+            <TagReference CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true">
+              <tag>dobc</tag>
+            </TagReference>
+            <Pad sizeOfSource="8*sizeof(long)" length="32" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="9*sizeof(long)" length="36" />
+      <Block CStyleName="style_pallette" pascalStyleName="StylePallette" name="style pallette" maxElementCount="50">
+        <LayoutXRef>block:style_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="squad_groups" pascalStyleName="SquadGroups" name="squad groups" maxElementCount="100">
+        <LayoutXRef>block:squad_groups</LayoutXRef>
+      </Block>
+      <Block CStyleName="squads" pascalStyleName="Squads" name="squads" maxElementCount="335">
+        <LayoutXRef>block:squads</LayoutXRef>
+      </Block>
+      <Block CStyleName="zones" pascalStyleName="Zones" name="zones" maxElementCount="128">
+        <LayoutXRef>block:zone</LayoutXRef>
+      </Block>
+      <Block CStyleName="actor_palette" pascalStyleName="ActorPalette" name="actor palette" maxElementCount="64">
+        <Layout regolithID="block:actor_palette" internalName="actor_palette_block" name="actor_palette_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="4*sizeof(long)" isLatest="true">
+            <Pad sizeOfSource="4*sizeof(long)" length="16" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="character_palette" pascalStyleName="CharacterPalette" name="character palette" maxElementCount="64">
+        <LayoutXRef>block:character_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_pathfinding_data" pascalStyleName="AiPathfindingData" name="ai pathfinding data" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:pathfinding_data</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_animation_references" pascalStyleName="AiAnimationReferences" name="ai animation references" maxElementCount="128">
+        <LayoutXRef>block:ai_animation_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_script_references" pascalStyleName="AiScriptReferences" name="ai script references" maxElementCount="128">
+        <LayoutXRef>block:ai_script_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_recording_references" pascalStyleName="AiRecordingReferences" name="ai recording references" maxElementCount="128">
+        <LayoutXRef>block:ai_recording_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_conversations" pascalStyleName="AiConversations" name="ai conversations" maxElementCount="128">
+        <LayoutXRef>block:ai_conversation</LayoutXRef>
+      </Block>
+      <Data CStyleName="script_syntax_data" pascalStyleName="ScriptSyntaxData" name="script syntax data" />
+      <Data CStyleName="script_string_data" pascalStyleName="ScriptStringData" name="script string data" />
+      <Block CStyleName="scripts" pascalStyleName="Scripts" name="scripts" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_hs_scripts_per_scenario">
+        <Layout regolithID="block:hs_scripts" internalName="hs_scripts_block" name="hs_scripts_block">
+          <FieldSet version="0" sizeofValue="40" sizeofSource="sizeof(struct hs_script)" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <ShortEnum CStyleName="script_type" pascalStyleName="ScriptType" name="script type" readOnly="true">
+              <Options regolithID="enum:hs_script_type" CStyleName="hs_script_type" pascalStyleName="HsScriptType">
+                <Enum name="startup" CStyleName="startup" pascalStyleName="Startup" />
+                <Enum name="dormant" CStyleName="dormant" pascalStyleName="Dormant" />
+                <Enum name="continuous" CStyleName="continuous" pascalStyleName="Continuous" />
+                <Enum name="static" CStyleName="_static" pascalStyleName="Static" />
+                <Enum name="stub" CStyleName="stub" pascalStyleName="Stub" />
+                <Enum name="command_script" CStyleName="command_script" pascalStyleName="CommandScript" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="return_type" pascalStyleName="ReturnType" name="return type" readOnly="true">
+              <Options regolithID="enum:hs_return_type" CStyleName="hs_return_type" pascalStyleName="HsReturnType">
+                <Enum name="unparsed" CStyleName="unparsed" pascalStyleName="Unparsed" />
+                <Enum name="special form" CStyleName="special_form" pascalStyleName="SpecialForm" />
+                <Enum name="function name" CStyleName="function_name" pascalStyleName="FunctionName" />
+                <Enum name="passthrough" CStyleName="passthrough" pascalStyleName="Passthrough" />
+                <Enum name="void" CStyleName="_void" pascalStyleName="Void" />
+                <Enum name="boolean" CStyleName="boolean" pascalStyleName="Boolean" />
+                <Enum name="real" CStyleName="real" pascalStyleName="Real" />
+                <Enum name="short" CStyleName="_short" pascalStyleName="Short" />
+                <Enum name="long" CStyleName="_long" pascalStyleName="Long" />
+                <Enum name="string" CStyleName="string" pascalStyleName="String" />
+                <Enum name="script" CStyleName="script" pascalStyleName="Script" />
+                <Enum name="string_id" CStyleName="string_id" pascalStyleName="StringId" />
+                <Enum name="unit_seat_mapping" CStyleName="unit_seat_mapping" pascalStyleName="UnitSeatMapping" />
+                <Enum name="trigger_volume" CStyleName="trigger_volume" pascalStyleName="TriggerVolume" />
+                <Enum name="cutscene_flag" CStyleName="cutscene_flag" pascalStyleName="CutsceneFlag" />
+                <Enum name="cutscene_camera_point" CStyleName="cutscene_camera_point" pascalStyleName="CutsceneCameraPoint" />
+                <Enum name="cutscene_title" CStyleName="cutscene_title" pascalStyleName="CutsceneTitle" />
+                <Enum name="cutscene_recording" CStyleName="cutscene_recording" pascalStyleName="CutsceneRecording" />
+                <Enum name="device_group" CStyleName="device_group" pascalStyleName="DeviceGroup" />
+                <Enum name="ai" CStyleName="ai" pascalStyleName="Ai" />
+                <Enum name="ai_command_list" CStyleName="ai_command_list" pascalStyleName="AiCommandList" />
+                <Enum name="ai_command_script" CStyleName="ai_command_script" pascalStyleName="AiCommandScript" />
+                <Enum name="ai_behavior" CStyleName="ai_behavior" pascalStyleName="AiBehavior" />
+                <Enum name="ai_orders" CStyleName="ai_orders" pascalStyleName="AiOrders" />
+                <Enum name="starting_profile" CStyleName="starting_profile" pascalStyleName="StartingProfile" />
+                <Enum name="conversation" CStyleName="conversation" pascalStyleName="Conversation" />
+                <Enum name="structure_bsp" CStyleName="structure_bsp" pascalStyleName="StructureBsp" />
+                <Enum name="navpoint" CStyleName="navpoint" pascalStyleName="Navpoint" />
+                <Enum name="point reference" CStyleName="point_reference" pascalStyleName="PointReference" />
+                <Enum name="style" CStyleName="style" pascalStyleName="Style" />
+                <Enum name="hud_message" CStyleName="hud_message" pascalStyleName="HudMessage" />
+                <Enum name="object_list" CStyleName="object_list" pascalStyleName="ObjectList" />
+                <Enum name="sound" CStyleName="sound" pascalStyleName="Sound" />
+                <Enum name="effect" CStyleName="effect" pascalStyleName="Effect" />
+                <Enum name="damage" CStyleName="damage" pascalStyleName="Damage" />
+                <Enum name="looping_sound" CStyleName="looping_sound" pascalStyleName="LoopingSound" />
+                <Enum name="animation_graph" CStyleName="animation_graph" pascalStyleName="AnimationGraph" />
+                <Enum name="damage_effect" CStyleName="damage_effect" pascalStyleName="DamageEffect" />
+                <Enum name="object_definition" CStyleName="object_definition" pascalStyleName="ObjectDefinition" />
+                <Enum name="bitmap" CStyleName="bitmap" pascalStyleName="Bitmap" />
+                <Enum name="shader" CStyleName="shader" pascalStyleName="Shader" />
+                <Enum name="render model" CStyleName="render_model" pascalStyleName="RenderModel" />
+                <Enum name="structure definition" CStyleName="structure_definition" pascalStyleName="StructureDefinition" />
+                <Enum name="lightmap definition" CStyleName="lightmap_definition" pascalStyleName="LightmapDefinition" />
+                <Enum name="game_difficulty" CStyleName="game_difficulty" pascalStyleName="GameDifficulty" />
+                <Enum name="team" CStyleName="team" pascalStyleName="Team" />
+                <Enum name="actor_type" CStyleName="actor_type" pascalStyleName="ActorType" />
+                <Enum name="hud_corner" CStyleName="hud_corner" pascalStyleName="HudCorner" />
+                <Enum name="model_state" CStyleName="model_state" pascalStyleName="ModelState" />
+                <Enum name="network_event" CStyleName="network_event" pascalStyleName="NetworkEvent" />
+                <Enum name="object" CStyleName="object" pascalStyleName="Object" />
+                <Enum name="unit" CStyleName="unit" pascalStyleName="Unit" />
+                <Enum name="vehicle" CStyleName="vehicle" pascalStyleName="Vehicle" />
+                <Enum name="weapon" CStyleName="weapon" pascalStyleName="Weapon" />
+                <Enum name="device" CStyleName="device" pascalStyleName="Device" />
+                <Enum name="scenery" CStyleName="scenery" pascalStyleName="Scenery" />
+                <Enum name="object_name" CStyleName="object_name" pascalStyleName="ObjectName" />
+                <Enum name="unit_name" CStyleName="unit_name" pascalStyleName="UnitName" />
+                <Enum name="vehicle_name" CStyleName="vehicle_name" pascalStyleName="VehicleName" />
+                <Enum name="weapon_name" CStyleName="weapon_name" pascalStyleName="WeaponName" />
+                <Enum name="device_name" CStyleName="device_name" pascalStyleName="DeviceName" />
+                <Enum name="scenery_name" CStyleName="scenery_name" pascalStyleName="SceneryName" />
+              </Options>
+            </ShortEnum>
+            <LongInteger CStyleName="root_expression_index" pascalStyleName="RootExpressionIndex" name="root expression index" readOnly="true" />
+            <UselessPad length="52" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="globals" pascalStyleName="Globals" name="globals" readOnly="true" maxElementCount="512" maxElementCountSource="k_maximum_hs_globals_per_scenario">
+        <Layout regolithID="block:hs_globals" internalName="hs_globals_block" name="hs_globals_block">
+          <FieldSet version="0" sizeofValue="40" sizeofSource="sizeof(struct hs_global_internal)" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type" readOnly="true">
+              <OptionsXRef>enum:hs_return_type</OptionsXRef>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <UselessPad length="4" />
+            <LongInteger CStyleName="initialization_expression_index" pascalStyleName="InitializationExpressionIndex" name="initialization expression index" readOnly="true" />
+            <UselessPad length="48" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="references" pascalStyleName="References" name="references" readOnly="true" maxElementCount="512" maxElementCountSource="k_maximum_hs_references_per_scenario">
+        <Layout regolithID="block:hs_references" internalName="hs_references_block" name="hs_references_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct hs_tag_reference)" isLatest="true">
+            <UselessPad length="24" />
+            <TagReference CStyleName="reference" pascalStyleName="Reference" name="reference" blockNameSource="true" readOnly="true">
+              <tag />
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="source_files" pascalStyleName="SourceFiles" name="source files" readOnly="true" maxElementCount="16" maxElementCountSource="k_maximum_hs_source_files_per_scenario">
+        <LayoutXRef>block:hs_source_files</LayoutXRef>
+      </Block>
+      <Block CStyleName="scripting_data" pascalStyleName="ScriptingData" name="scripting data" maxElementCount="1">
+        <LayoutXRef>block:cs_script_data</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <Block CStyleName="cutscene_flags" pascalStyleName="CutsceneFlags" name="cutscene flags" maxElementCount="512" maxElementCountSource="MAXIMUM_CUTSCENE_FLAGS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_cutscene_flag</LayoutXRef>
+      </Block>
+      <Block CStyleName="cutscene_camera_points" pascalStyleName="CutsceneCameraPoints" name="cutscene camera points" maxElementCount="512" maxElementCountSource="MAXIMUM_CUTSCENE_CAMERA_POINTS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_cutscene_camera_point</LayoutXRef>
+      </Block>
+      <Block CStyleName="cutscene_titles" pascalStyleName="CutsceneTitles" name="cutscene titles" maxElementCount="128" maxElementCountSource="k_maximum_scenario_cutscene_titles">
+        <Layout regolithID="block:scenario_cutscene_title" internalName="scenario_cutscene_title_block" name="scenario_cutscene_title_block">
+          <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(s_scenario_cutscene_title)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+            <Rectangle2D CStyleName="text_bounds_on_screen" pascalStyleName="TextBoundsOnScreen" name="text bounds (on screen)" />
+            <ShortEnum CStyleName="justification" pascalStyleName="Justification" name="justification">
+              <Options regolithID="enum:scenario_cutscene_title_justification" CStyleName="scenario_cutscene_title_justification" pascalStyleName="ScenarioCutsceneTitleJustification">
+                <Enum name="left" CStyleName="left" pascalStyleName="Left" />
+                <Enum name="right" CStyleName="right" pascalStyleName="Right" />
+                <Enum name="center" CStyleName="center" pascalStyleName="Center" />
+                <Enum name="custom_text_entry" CStyleName="custom_text_entry" pascalStyleName="CustomTextEntry" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="font" pascalStyleName="Font" name="font">
+              <Options regolithID="enum:scenario_cutscene_title_font" CStyleName="scenario_cutscene_title_font" pascalStyleName="ScenarioCutsceneTitleFont">
+                <Enum name="terminal font" CStyleName="terminal_font" pascalStyleName="TerminalFont" />
+                <Enum name="body text font" CStyleName="body_text_font" pascalStyleName="BodyTextFont" />
+                <Enum name="title font" CStyleName="title_font" pascalStyleName="TitleFont" />
+                <Enum name="super large font" CStyleName="super_large_font" pascalStyleName="SuperLargeFont" />
+                <Enum name="large body text font" CStyleName="large_body_text_font" pascalStyleName="LargeBodyTextFont" />
+                <Enum name="split screen hud message font" CStyleName="split_screen_hud_message_font" pascalStyleName="SplitScreenHudMessageFont" />
+                <Enum name="full screen hud message font" CStyleName="full_screen_hud_message_font" pascalStyleName="FullScreenHudMessageFont" />
+                <Enum name="english body text font" CStyleName="english_body_text_font" pascalStyleName="EnglishBodyTextFont" />
+                <Enum name="hud number font" CStyleName="hud_number_font" pascalStyleName="HudNumberFont" />
+                <Enum name="subtitle font" CStyleName="subtitle_font" pascalStyleName="SubtitleFont" />
+                <Enum name="main menu font" CStyleName="main_menu_font" pascalStyleName="MainMenuFont" />
+                <Enum name="text chat font" CStyleName="text_chat_font" pascalStyleName="TextChatFont" />
+              </Options>
+            </ShortEnum>
+            <RgbColor CStyleName="text_color" pascalStyleName="TextColor" name="text color" />
+            <RgbColor CStyleName="shadow_color" pascalStyleName="ShadowColor" name="shadow color" />
+            <Real CStyleName="fade_in_time_seconds" pascalStyleName="FadeInTimeSeconds" name="fade in time [seconds]" />
+            <Real CStyleName="up_time_seconds" pascalStyleName="UpTimeSeconds" name="up time [seconds]" />
+            <Real CStyleName="fade_out_time_seconds" pascalStyleName="FadeOutTimeSeconds" name="fade out time [seconds]" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="27*sizeof(long)" length="108" />
+      <TagReference CStyleName="custom_object_names" pascalStyleName="CustomObjectNames" name="custom object names">
+        <tag>unic</tag>
+      </TagReference>
+      <TagReference CStyleName="ingame_help_text" pascalStyleName="IngameHelpText" name="ingame help text">
+        <tag>unic</tag>
+      </TagReference>
+      <TagReference CStyleName="hud_messages" pascalStyleName="HudMessages" name="hud messages">
+        <tag>hmt </tag>
+      </TagReference>
+      <Block CStyleName="structure_bsps" pascalStyleName="StructureBsps" name="structure bsps" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_structure_bsp_reference</LayoutXRef>
+      </Block>
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="1476" sizeofSource="sizeof(struct scenario)">
+      <TagReference CStyleName="dont_use" pascalStyleName="DontUse" name="DON'T USE" expertOnly="true">
+        <tag>sbsp</tag>
+      </TagReference>
+      <Block CStyleName="skies" pascalStyleName="Skies" name="skies" maxElementCount="32" maxElementCountSource="MAXIMUM_SKIES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_sky_reference</LayoutXRef>
+      </Block>
+      <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+        <OptionsXRef>enum:scenario_type</OptionsXRef>
+      </ShortEnum>
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:scenario_flags</OptionsXRef>
+      </WordFlags>
+      <Block CStyleName="child_scenarios" pascalStyleName="ChildScenarios" name="@child scenarios" maxElementCount="16" maxElementCountSource="MAXIMUM_CHILD_SCENARIOS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_child_scenario</LayoutXRef>
+      </Block>
+      <Angle CStyleName="local_north" pascalStyleName="LocalNorth" name="local north" />
+      <Block CStyleName="predicted_resources" pascalStyleName="PredictedResources" name="predicted resources" readOnly="true" expertOnly="true" maxElementCount="2048">
+        <LayoutXRef>block:predicted_resource</LayoutXRef>
+      </Block>
+      <Block CStyleName="functions" pascalStyleName="Functions" name="functions" expertOnly="true" maxElementCount="32" maxElementCountSource="MAXIMUM_FUNCTIONS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_function</LayoutXRef>
+      </Block>
+      <Data CStyleName="editor_scenario_data" pascalStyleName="EditorScenarioData" name="editor scenario data" expertOnly="true" />
+      <Block CStyleName="comments" pascalStyleName="Comments" name="comments" maxElementCount="65536" maxElementCountSource="MAXIMUM_EDITOR_COMMENTS">
+        <LayoutXRef>block:editor_comment</LayoutXRef>
+      </Block>
+      <Block CStyleName="environment_objects" pascalStyleName="EnvironmentObjects" name="environment objects" readOnly="true" expertOnly="true" maxElementCount="4096" maxElementCountSource="MAXIMUM_ENVIRONMENT_OBJECTS_PER_SCENARIO">
+        <LayoutXRef>block:dont_use_me_scenario_environment_object</LayoutXRef>
+      </Block>
+      <Block CStyleName="object_names" pascalStyleName="ObjectNames" name="object names" readOnly="true" tag="sort" maxElementCount="640" maxElementCountSource="MAXIMUM_OBJECT_NAMES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_object_names</LayoutXRef>
+      </Block>
+      <Block CStyleName="scenery" pascalStyleName="Scenery" name="scenery" maxElementCount="2000" maxElementCountSource="MAXIMUM_SCENERY_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_scenery</LayoutXRef>
+      </Block>
+      <Block CStyleName="scenery_palette" pascalStyleName="SceneryPalette" name="scenery palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_scenery_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="bipeds" pascalStyleName="Bipeds" name="bipeds" maxElementCount="128" maxElementCountSource="MAXIMUM_BIPED_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_biped</LayoutXRef>
+      </Block>
+      <Block CStyleName="biped_palette" pascalStyleName="BipedPalette" name="biped palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_biped_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="vehicles" pascalStyleName="Vehicles" name="vehicles" maxElementCount="256" maxElementCountSource="MAXIMUM_VEHICLE_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_vehicle</LayoutXRef>
+      </Block>
+      <Block CStyleName="vehicle_palette" pascalStyleName="VehiclePalette" name="vehicle palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_vehicle_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="equipment" pascalStyleName="Equipment" name="equipment" maxElementCount="256" maxElementCountSource="MAXIMUM_EQUIPMENT_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_equipment</LayoutXRef>
+      </Block>
+      <Block CStyleName="equipment_palette" pascalStyleName="EquipmentPalette" name="equipment palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_equipment_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="weapons" pascalStyleName="Weapons" name="weapons" maxElementCount="128" maxElementCountSource="MAXIMUM_WEAPON_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_weapon</LayoutXRef>
+      </Block>
+      <Block CStyleName="weapon_palette" pascalStyleName="WeaponPalette" name="weapon palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_weapon_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="device_groups" pascalStyleName="DeviceGroups" name="device groups" tag="sort" maxElementCount="128" maxElementCountSource="MAXIMUM_DEVICE_GROUPS_PER_SCENARIO">
+        <LayoutXRef>block:device_group</LayoutXRef>
+      </Block>
+      <Block CStyleName="machines" pascalStyleName="Machines" name="machines" maxElementCount="400" maxElementCountSource="MAXIMUM_MACHINE_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_machine</LayoutXRef>
+      </Block>
+      <Block CStyleName="machine_palette" pascalStyleName="MachinePalette" name="machine palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_machine_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="controls" pascalStyleName="Controls" name="controls" maxElementCount="100" maxElementCountSource="MAXIMUM_CONTROL_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_control</LayoutXRef>
+      </Block>
+      <Block CStyleName="control_palette" pascalStyleName="ControlPalette" name="control palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_control_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="light_fixtures" pascalStyleName="LightFixtures" name="light fixtures" maxElementCount="500" maxElementCountSource="MAXIMUM_LIGHT_FIXTURE_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_light_fixture</LayoutXRef>
+      </Block>
+      <Block CStyleName="light_fixtures_palette" pascalStyleName="LightFixturesPalette" name="light fixtures palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_light_fixture_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="sound_scenery" pascalStyleName="SoundScenery" name="sound scenery" maxElementCount="256" maxElementCountSource="MAXIMUM_SOUND_SCENERY_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_sound_scenery</LayoutXRef>
+      </Block>
+      <Block CStyleName="sound_scenery_palette" pascalStyleName="SoundSceneryPalette" name="sound scenery palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_sound_scenery_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="light_volumes" pascalStyleName="LightVolumes" name="light volumes" maxElementCount="500" maxElementCountSource="MAXIMUM_LIGHTS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_light</LayoutXRef>
+      </Block>
+      <Block CStyleName="light_volumes_palette" pascalStyleName="LightVolumesPalette" name="light volumes palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_light_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="player_starting_profile" pascalStyleName="PlayerStartingProfile" name="player starting profile" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_PLAYERS_PER_BLOCK">
+        <LayoutXRef>block:scenario_profiles</LayoutXRef>
+      </Block>
+      <Block CStyleName="player_starting_locations" pascalStyleName="PlayerStartingLocations" name="player starting locations" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_PLAYERS_PER_BLOCK">
+        <LayoutXRef>block:scenario_players</LayoutXRef>
+      </Block>
+      <Block CStyleName="trigger_volumes" pascalStyleName="TriggerVolumes" name="trigger volumes" maxElementCount="256" maxElementCountSource="MAXIMUM_TRIGGER_VOLUMES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_trigger_volume</LayoutXRef>
+      </Block>
+      <Block CStyleName="recorded_animations" pascalStyleName="RecordedAnimations" name="recorded animations" maxElementCount="1024" maxElementCountSource="MAXIMUM_RECORDED_ANIMATIONS_PER_MAP">
+        <LayoutXRef>block:recorded_animation</LayoutXRef>
+      </Block>
+      <Block CStyleName="netgame_flags" pascalStyleName="NetgameFlags" name="netgame flags" maxElementCount="200" maxElementCountSource="MAXIMUM_SCENARIO_NETPOINTS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_netpoints</LayoutXRef>
+      </Block>
+      <Block CStyleName="netgame_equipment" pascalStyleName="NetgameEquipment" name="netgame equipment" maxElementCount="100" maxElementCountSource="MAXIMUM_SCENARIO_NETGAME_EQUIPMENT_PER_SCENARIO">
+        <LayoutXRef>block:scenario_netgame_equipment</LayoutXRef>
+      </Block>
+      <Block CStyleName="starting_equipment" pascalStyleName="StartingEquipment" name="starting equipment" maxElementCount="200" maxElementCountSource="MAXIMUM_SCENARIO_STARTING_EQUIPMENT_PER_SCENARIO">
+        <LayoutXRef>block:scenario_starting_equipment</LayoutXRef>
+      </Block>
+      <Block CStyleName="bsp_switch_trigger_volumes" pascalStyleName="BspSwitchTriggerVolumes" name="bsp switch trigger volumes" readOnly="true" expertOnly="true" maxElementCount="256" maxElementCountSource="MAXIMUM_TRIGGER_VOLUMES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_bsp_switch_trigger_volume</LayoutXRef>
+      </Block>
+      <Block CStyleName="decals" pascalStyleName="Decals" name="decals" maxElementCount="65536" maxElementCountSource="MAXIMUM_DECALS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_decals</LayoutXRef>
+      </Block>
+      <Block CStyleName="decal_palette" pascalStyleName="DecalPalette" name="decal palette" tag="sort" maxElementCount="128" maxElementCountSource="MAXIMUM_DECAL_PALETTES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_decal_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="detail_object_collection_palette" pascalStyleName="DetailObjectCollectionPalette" name="detail object collection palette" maxElementCount="32" maxElementCountSource="MAXIMUM_DETAIL_OBJECT_LAYERS_PER_STRUCTURE">
+        <LayoutXRef>block:scenario_detail_object_collection_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="style_pallette" pascalStyleName="StylePallette" name="style pallette" tag="sort" maxElementCount="50">
+        <LayoutXRef>block:style_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="squad_groups" pascalStyleName="SquadGroups" name="squad groups" maxElementCount="100">
+        <LayoutXRef>block:squad_groups</LayoutXRef>
+      </Block>
+      <Block CStyleName="squads" pascalStyleName="Squads" name="squads" maxElementCount="335">
+        <LayoutXRef>block:squads</LayoutXRef>
+      </Block>
+      <Block CStyleName="zones" pascalStyleName="Zones" name="zones" maxElementCount="128">
+        <LayoutXRef>block:zone</LayoutXRef>
+      </Block>
+      <Block CStyleName="mission_scenes" pascalStyleName="MissionScenes" name="mission scenes" maxElementCount="100" maxElementCountSource="k_max_scenes_per_scenario">
+        <LayoutXRef>block:ai_scene</LayoutXRef>
+      </Block>
+      <Block CStyleName="character_palette" pascalStyleName="CharacterPalette" name="character palette" tag="sort" maxElementCount="64">
+        <LayoutXRef>block:character_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_pathfinding_data" pascalStyleName="AiPathfindingData" name="ai pathfinding data" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:pathfinding_data</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_animation_references" pascalStyleName="AiAnimationReferences" name="ai animation references" expertOnly="true" maxElementCount="128">
+        <LayoutXRef>block:ai_animation_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_script_references" pascalStyleName="AiScriptReferences" name="ai script references" expertOnly="true" maxElementCount="128">
+        <LayoutXRef>block:ai_script_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_recording_references" pascalStyleName="AiRecordingReferences" name="ai recording references" maxElementCount="128">
+        <LayoutXRef>block:ai_recording_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_conversations" pascalStyleName="AiConversations" name="ai conversations" expertOnly="true" maxElementCount="128">
+        <LayoutXRef>block:ai_conversation</LayoutXRef>
+      </Block>
+      <Data CStyleName="script_syntax_data" pascalStyleName="ScriptSyntaxData" name="script syntax data" expertOnly="true" />
+      <Data CStyleName="script_string_data" pascalStyleName="ScriptStringData" name="script string data" expertOnly="true" />
+      <Block CStyleName="scripts" pascalStyleName="Scripts" name="scripts" readOnly="true" expertOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_hs_scripts_per_scenario">
+        <LayoutXRef>block:hs_scripts</LayoutXRef>
+      </Block>
+      <Block CStyleName="globals" pascalStyleName="Globals" name="globals" readOnly="true" expertOnly="true" maxElementCount="512" maxElementCountSource="k_maximum_hs_globals_per_scenario">
+        <LayoutXRef>block:hs_globals</LayoutXRef>
+      </Block>
+      <Block CStyleName="references" pascalStyleName="References" name="references" readOnly="true" expertOnly="true" maxElementCount="512" maxElementCountSource="k_maximum_hs_references_per_scenario">
+        <LayoutXRef>block:hs_references</LayoutXRef>
+      </Block>
+      <Block CStyleName="source_files" pascalStyleName="SourceFiles" name="source files" readOnly="true" maxElementCount="16" maxElementCountSource="k_maximum_hs_source_files_per_scenario">
+        <LayoutXRef>block:hs_source_files</LayoutXRef>
+      </Block>
+      <Block CStyleName="scripting_data" pascalStyleName="ScriptingData" name="scripting data" maxElementCount="1">
+        <LayoutXRef>block:cs_script_data</LayoutXRef>
+      </Block>
+      <Block CStyleName="cutscene_flags" pascalStyleName="CutsceneFlags" name="cutscene flags" maxElementCount="512" maxElementCountSource="MAXIMUM_CUTSCENE_FLAGS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_cutscene_flag</LayoutXRef>
+      </Block>
+      <Block CStyleName="cutscene_camera_points" pascalStyleName="CutsceneCameraPoints" name="cutscene camera points" maxElementCount="512" maxElementCountSource="MAXIMUM_CUTSCENE_CAMERA_POINTS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_cutscene_camera_point</LayoutXRef>
+      </Block>
+      <Block CStyleName="cutscene_titles" pascalStyleName="CutsceneTitles" name="cutscene titles" maxElementCount="128" maxElementCountSource="k_maximum_scenario_cutscene_titles">
+        <LayoutXRef>block:scenario_cutscene_title</LayoutXRef>
+      </Block>
+      <TagReference CStyleName="custom_object_names" pascalStyleName="CustomObjectNames" name="custom object names">
+        <tag>unic</tag>
+      </TagReference>
+      <TagReference CStyleName="chapter_title_text" pascalStyleName="ChapterTitleText" name="chapter title text">
+        <tag>unic</tag>
+      </TagReference>
+      <TagReference CStyleName="hud_messages" pascalStyleName="HudMessages" name="hud messages">
+        <tag>hmt </tag>
+      </TagReference>
+      <Block CStyleName="structure_bsps" pascalStyleName="StructureBsps" name="structure bsps" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_structure_bsp_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="scenario_resources" pascalStyleName="ScenarioResources" name="scenario resources" maxElementCount="1">
+        <Layout regolithID="block:scenario_resources" internalName="scenario_resources_block" name="scenario_resources_block">
+          <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(struct scenario_resources_definition)" isLatest="true">
+            <Block CStyleName="references" pascalStyleName="References" name="references" readOnly="true" maxElementCount="16" maxElementCountSource="NUMBER_OF_SCENARIO_RESOURCE_TYPES">
+              <Layout regolithID="block:scenario_resource_reference" internalName="scenario_resource_reference_block" name="scenario_resource_reference_block">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct scenario_resource_reference)" isLatest="true">
+                  <TagReference CStyleName="reference" pascalStyleName="Reference" name="reference" blockNameSource="true" readOnly="true">
+                    <tag />
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="script_source" pascalStyleName="ScriptSource" name="script source" readOnly="true" maxElementCount="16" maxElementCountSource="k_maximum_hs_source_files_per_scenario">
+              <Layout regolithID="block:scenario_hs_source_reference" internalName="scenario_hs_source_reference_block" name="scenario_hs_source_reference_block">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct s_hs_source_reference)" isLatest="true">
+                  <TagReference CStyleName="reference" pascalStyleName="Reference" name="reference" blockNameSource="true" readOnly="true">
+                    <tag>hsc*</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="ai_resources" pascalStyleName="AiResources" name="ai resources" readOnly="true" maxElementCount="2" maxElementCountSource="k_number_of_scenario_ai_types">
+              <Layout regolithID="block:scenario_ai_resource_reference" internalName="scenario_ai_resource_reference_block" name="scenario_ai_resource_reference_block">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct s_ai_resource_reference)" isLatest="true">
+                  <TagReference CStyleName="reference" pascalStyleName="Reference" name="reference" blockNameSource="true" readOnly="true">
+                    <tag>ai**</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="old_structure_physics" pascalStyleName="OldStructurePhysics" name="OLD structure physics" expertOnly="true" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <Layout regolithID="block:old_unused_strucure_physics" internalName="old_unused_strucure_physics_block" name="old_unused_strucure_physics_block">
+          <FieldSet version="0" sizeofValue="60" sizeofSource="sizeof(s_here_but_for_the_grace_of_god_go_this_poor_soul)" isLatest="true">
+            <Data CStyleName="mopp_code" pascalStyleName="MoppCode" name="mopp code" readOnly="true" />
+            <Block CStyleName="environment_object_identifiers" pascalStyleName="EnvironmentObjectIdentifiers" name="environment object identifiers" readOnly="true" maxElementCount="2048" maxElementCountSource="k_maximum_objects_per_map">
+              <Layout regolithID="block:old_unused_object_identifiers" internalName="old_unused_object_identifiers_block" name="old_unused_object_identifiers_block">
+                <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(c_object_identifier)" isLatest="true">
+                  <Struct CStyleName="object_id" pascalStyleName="ObjectId" name="object id">
+                    <LayoutXRef>structure:scenario_object_id</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Pad sizeOfSource="sizeof(real)" length="4" />
+            <RealPoint3D CStyleName="mopp_bounds_min" pascalStyleName="MoppBoundsMin" name="mopp bounds min" readOnly="true" />
+            <RealPoint3D CStyleName="mopp_bounds_max" pascalStyleName="MoppBoundsMax" name="mopp bounds max" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="hs_unit_seats" pascalStyleName="HsUnitSeats" name="hs unit seats" expertOnly="true" maxElementCount="65536" maxElementCountSource="k_maximum_hs_unit_seat_mappings">
+        <Layout regolithID="block:hs_unit_seat" internalName="hs_unit_seat_block" name="hs_unit_seat_block">
+          <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(s_hs_unit_seat_mapping)" isLatest="true">
+            <LongInteger CStyleName="unit_definition_tag_index" pascalStyleName="UnitDefinitionTagIndex" name="unit definition tag index" expertOnly="true" />
+            <LongInteger CStyleName="unit_seats" pascalStyleName="UnitSeats" name="unit seats" expertOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="scenario_kill_triggers" pascalStyleName="ScenarioKillTriggers" name="scenario kill triggers" expertOnly="true" maxElementCount="256" maxElementCountSource="MAXIMUM_TRIGGER_VOLUMES_PER_SCENARIO">
+        <Layout regolithID="block:scenario_kill_trigger_volumes" internalName="scenario_kill_trigger_volumes_block" name="scenario_kill_trigger_volumes_block">
+          <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(struct s_scenario_kill_trigger_volume)" isLatest="true">
+            <ShortBlockIndex CStyleName="trigger_volume" pascalStyleName="TriggerVolume" name="trigger volume" blockNameSource="true" blockReference="block:scenario_trigger_volume" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="hs_syntax_datums" pascalStyleName="HsSyntaxDatums" name="hs syntax datums" readOnly="true" expertOnly="true" maxElementCount="64512" maxElementCountSource="k_maximum_hs_syntax_nodes_per_scenario">
+        <Layout regolithID="block:syntax_datum" internalName="syntax_datum_block" name="syntax_datum_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(struct hs_syntax_node)" isLatest="true">
+            <ShortInteger CStyleName="datum_header" pascalStyleName="DatumHeader" name="datum header" />
+            <ShortInteger CStyleName="script_indexfunction_indexconstant_type_union" pascalStyleName="ScriptIndexfunctionIndexconstantTypeUnion" name="script index/function index/constant type union" />
+            <ShortInteger CStyleName="type" pascalStyleName="Type" name="type" />
+            <ShortInteger CStyleName="flags" pascalStyleName="Flags" name="flags" />
+            <LongInteger CStyleName="next_node_index" pascalStyleName="NextNodeIndex" name="next node index" />
+            <LongInteger CStyleName="data" pascalStyleName="Data" name="data" />
+            <LongInteger CStyleName="source_offset" pascalStyleName="SourceOffset" name="source_offset" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="orders" pascalStyleName="Orders" name="Orders" maxElementCount="300">
+        <LayoutXRef>block:orders</LayoutXRef>
+      </Block>
+      <Block CStyleName="triggers" pascalStyleName="Triggers" name="Triggers" maxElementCount="256">
+        <LayoutXRef>block:triggers</LayoutXRef>
+      </Block>
+      <Block CStyleName="background_sound_palette" pascalStyleName="BackgroundSoundPalette" name="background sound palette" tag="sort" maxElementCount="64" maxElementCountSource="k_maximum_cluster_sound_palette_entries_per_structure">
+        <LayoutXRef>block:structure_bsp_background_sound_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="sound_environment_palette" pascalStyleName="SoundEnvironmentPalette" name="sound environment palette" tag="sort" maxElementCount="64" maxElementCountSource="k_maximum_cluster_sound_palette_entries_per_structure">
+        <LayoutXRef>block:structure_bsp_sound_environment_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="weather_palette" pascalStyleName="WeatherPalette" name="weather palette" tag="sort" maxElementCount="32" maxElementCountSource="MAXIMUM_WEATHER_PALETTE_ENTRIES_PER_STRUCTURE">
+        <LayoutXRef>block:structure_bsp_weather_palette</LayoutXRef>
+      </Block>
+      <Block maxElementCount="0">
+        <LayoutXRef>block:g_null</LayoutXRef>
+      </Block>
+      <Block maxElementCount="0">
+        <LayoutXRef>block:g_null</LayoutXRef>
+      </Block>
+      <Block maxElementCount="0">
+        <LayoutXRef>block:g_null</LayoutXRef>
+      </Block>
+      <Block maxElementCount="0">
+        <LayoutXRef>block:g_null</LayoutXRef>
+      </Block>
+      <Block CStyleName="scavenger_hunt_objects" pascalStyleName="ScavengerHuntObjects" name="scavenger hunt objects" maxElementCount="16" maxElementCountSource="k_maximum_scavenger_hunt_objects_per_scenario">
+        <Layout regolithID="block:scenario_scavenger_hunt_object" internalName="scenario_scavenger_hunt_object_block" name="scavenger hunt object">
+          <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(s_scenario_scavenger_hunt_object)" isLatest="true">
+            <String CStyleName="exported_name" pascalStyleName="ExportedName" name="exported name" />
+            <ShortBlockIndex CStyleName="scenario_object_name_index" pascalStyleName="ScenarioObjectNameIndex" name="scenario object name index" blockNameSource="true" blockReference="block:scenario_object_names" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="scenario_cluster_data" pascalStyleName="ScenarioClusterData" name="scenario cluster data" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_cluster_data</LayoutXRef>
+      </Block>
+      <Array CStyleName="object_salts" pascalStyleName="ObjectSalts" name="object_salts" readOnly="true" count="32">
+        <LongInteger CStyleName="salt" pascalStyleName="Salt" name="salt" readOnly="true" expertOnly="true" />
+      </Array>
+      <Block CStyleName="spawn_data" pascalStyleName="SpawnData" name="spawn data" maxElementCount="1">
+        <Layout regolithID="block:scenario_spawn_data" internalName="scenario_spawn_data_block" name="scenario_spawn_data_block">
+          <FieldSet version="0" sizeofValue="108" sizeofSource="sizeof(struct s_scenario_spawn_data)" isLatest="true">
+            <Explanation name="dynamic spawn" description="non-zero values here overload what appears in multiplayer_globals" />
+            <Real CStyleName="dynamic_spawn_lower_height" pascalStyleName="DynamicSpawnLowerHeight" name="dynamic spawn lower height" />
+            <Real CStyleName="dynamic_spawn_upper_height" pascalStyleName="DynamicSpawnUpperHeight" name="dynamic spawn upper height" />
+            <Real CStyleName="game_object_reset_height" pascalStyleName="GameObjectResetHeight" name="game object reset height" />
+            <Pad sizeOfSource="sizeof(long)*15" length="60" />
+            <Block CStyleName="dynamic_spawn_overloads" pascalStyleName="DynamicSpawnOverloads" name="dynamic spawn overloads" maxElementCount="32" maxElementCountSource="k_maximum_number_of_dynamic_spawn_zones">
+              <Layout regolithID="block:dynamic_spawn_zone_overload" internalName="dynamic_spawn_zone_overload_block" name="dynamic_spawn_zone_overload_block">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct s_dynamic_spawn_zone_overload)" isLatest="true">
+                  <ShortEnum CStyleName="overload_type" pascalStyleName="OverloadType" name="overload type">
+                    <Options regolithID="enum:dynamic_spawn_zone_overload_type" CStyleName="dynamic_spawn_zone_overload_type" pascalStyleName="DynamicSpawnZoneOverloadType">
+                      <Enum name="enemy" CStyleName="enemy" pascalStyleName="Enemy" />
+                      <Enum name="friend" CStyleName="_friend" pascalStyleName="Friend" />
+                      <Enum name="enemy vehicle" CStyleName="enemy_vehicle" pascalStyleName="EnemyVehicle" />
+                      <Enum name="friendly vehicle" CStyleName="friendly_vehicle" pascalStyleName="FriendlyVehicle" />
+                      <Enum name="empty vehicle" CStyleName="empty_vehicle" pascalStyleName="EmptyVehicle" />
+                      <Enum name="oddball inclusion" CStyleName="oddball_inclusion" pascalStyleName="OddballInclusion" />
+                      <Enum name="oddball exclusion" CStyleName="oddball_exclusion" pascalStyleName="OddballExclusion" />
+                      <Enum name="hill inclusion" CStyleName="hill_inclusion" pascalStyleName="HillInclusion" />
+                      <Enum name="hill exclusion" CStyleName="hill_exclusion" pascalStyleName="HillExclusion" />
+                      <Enum name="last race flag" CStyleName="last_race_flag" pascalStyleName="LastRaceFlag" />
+                      <Enum name="dead ally" CStyleName="dead_ally" pascalStyleName="DeadAlly" />
+                      <Enum name="controlled territory" CStyleName="controlled_territory" pascalStyleName="ControlledTerritory" />
+                      <Enum name="medic" CStyleName="medic" pascalStyleName="Medic" />
+                    </Options>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <Real CStyleName="inner_radius" pascalStyleName="InnerRadius" name="inner radius" />
+                  <Real CStyleName="outer_radius" pascalStyleName="OuterRadius" name="outer radius" />
+                  <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="static_respawn_zones" pascalStyleName="StaticRespawnZones" name="static respawn zones" maxElementCount="128" maxElementCountSource="MAXIMUM_STATIC_SPAWN_ZONES_PER_SCENARIO">
+              <Layout regolithID="block:static_spawn_zone" internalName="static_spawn_zone_block" name="static_spawn_zone_block">
+                <FieldSet version="0" sizeofValue="48" sizeofSource="sizeof(struct s_static_spawn_zone)" isLatest="true">
+                  <Custom name="CUSTOM_BLOCK_FILTER_FIELD_ID,&amp;g_spawn_zone_block_filter" tag="cflt" />
+                  <Explanation name="static spawn zones" description="lower and upper height can be left at zero, in which case they&#xA;use the defaults.  leaving relevant teams empty means all teams,&#xA;leaving all games empty means all games" />
+                  <Struct CStyleName="data" pascalStyleName="Data" name="data">
+                    <Layout regolithID="structure:static_spawn_zone_data" tag="sszd" internalName="static_spawn_zone_data_struct" backingBlockInternalName="static_spawn_zone_data_struct_block" name="static_spawn_zone_data_struct">
+                      <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_static_spawn_zone_data)" sizeofOverride="12" isLatest="true">
+                        <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+                        <LongFlags CStyleName="relevant_team" pascalStyleName="RelevantTeam" name="relevant team">
+                          <Options regolithID="enum:team_name" CStyleName="team_name" pascalStyleName="TeamName">
+                            <Bit name="Alpha team" CStyleName="alpha_team_bit" pascalStyleName="AlphaTeamBit" />
+                            <Bit name="Bravo team" CStyleName="bravo_team_bit" pascalStyleName="BravoTeamBit" />
+                            <Bit name="Charlie team" CStyleName="charlie_team_bit" pascalStyleName="CharlieTeamBit" />
+                            <Bit name="Delta team" CStyleName="delta_team_bit" pascalStyleName="DeltaTeamBit" />
+                            <Bit name="Echo team" CStyleName="echo_team_bit" pascalStyleName="EchoTeamBit" />
+                            <Bit name="Foxtrot team" CStyleName="foxtrot_team_bit" pascalStyleName="FoxtrotTeamBit" />
+                            <Bit name="Golf team" CStyleName="golf_team_bit" pascalStyleName="GolfTeamBit" />
+                            <Bit name="Hotel team" CStyleName="hotel_team_bit" pascalStyleName="HotelTeamBit" />
+                            <Bit name="Neutral" CStyleName="neutral_bit" pascalStyleName="NeutralBit" />
+                          </Options>
+                        </LongFlags>
+                        <Custom name="FILTER_ON_NEXT_FIELD_FOLDER_ID,0" tag="filx" />
+                        <LongFlags CStyleName="relevant_games" pascalStyleName="RelevantGames" name="relevant games">
+                          <Options regolithID="enum:static_spawn_zone_data_relevant_games" CStyleName="static_spawn_zone_data_relevant_games" pascalStyleName="StaticSpawnZoneDataRelevantGames">
+                            <Bit name="all slayer" CStyleName="all_slayer_bit" pascalStyleName="AllSlayerBit" />
+                            <Bit name="all oddball" CStyleName="all_oddball_bit" pascalStyleName="AllOddballBit" />
+                            <Bit name="all king" CStyleName="all_king_bit" pascalStyleName="AllKingBit" />
+                            <Bit name="all ctf" CStyleName="all_ctf_bit" pascalStyleName="AllCtfBit" />
+                            <Bit name="all race" CStyleName="all_race_bit" pascalStyleName="AllRaceBit" />
+                            <Bit name="all headhunter" CStyleName="all_headhunter_bit" pascalStyleName="AllHeadhunterBit" />
+                            <Bit name="all juggernaut" CStyleName="all_juggernaut_bit" pascalStyleName="AllJuggernautBit" />
+                            <Bit name="all territories" CStyleName="all_territories_bit" pascalStyleName="AllTerritoriesBit" />
+                            <Bit name="all medic" CStyleName="all_medic_bit" pascalStyleName="AllMedicBit" />
+                            <Bit name="all vip" CStyleName="all_vip_bit" pascalStyleName="AllVipBit" />
+                            <Bit name="all infection" CStyleName="all_infection_bit" pascalStyleName="AllInfectionBit" />
+                          </Options>
+                        </LongFlags>
+                        <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                          <Options regolithID="enum:static_spawn_zone_data_flags" CStyleName="static_spawn_zone_data_flags" pascalStyleName="StaticSpawnZoneDataFlags">
+                            <Bit name="disabled if flag home" CStyleName="disabled_if_flag_home_bit" pascalStyleName="DisabledIfFlagHomeBit" />
+                            <Bit name="disabled if flag away" CStyleName="disabled_if_flag_away_bit" pascalStyleName="DisabledIfFlagAwayBit" />
+                            <Bit name="disabled if bomb home" CStyleName="disabled_if_bomb_home_bit" pascalStyleName="DisabledIfBombHomeBit" />
+                            <Bit name="disabled if bomb away" CStyleName="disabled_if_bomb_away_bit" pascalStyleName="DisabledIfBombAwayBit" />
+                          </Options>
+                        </LongFlags>
+                      </FieldSet>
+                    </Layout>
+                  </Struct>
+                  <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" />
+                  <Real CStyleName="lower_height" pascalStyleName="LowerHeight" name="lower height" />
+                  <Real CStyleName="upper_height" pascalStyleName="UpperHeight" name="upper height" />
+                  <Real CStyleName="inner_radius" pascalStyleName="InnerRadius" name="inner radius" />
+                  <Real CStyleName="outer_radius" pascalStyleName="OuterRadius" name="outer radius" />
+                  <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="static_initial_spawn_zones" pascalStyleName="StaticInitialSpawnZones" name="static initial spawn zones" maxElementCount="128" maxElementCountSource="MAXIMUM_STATIC_SPAWN_ZONES_PER_SCENARIO">
+              <LayoutXRef>block:static_spawn_zone</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <TagReference CStyleName="sound_effect_collection" pascalStyleName="SoundEffectCollection" name="sound effect collection">
+        <tag>sfx+</tag>
+      </TagReference>
+      <Block CStyleName="crates" pascalStyleName="Crates" name="crates" maxElementCount="1024" maxElementCountSource="MAXIMUM_CRATE_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_crate</LayoutXRef>
+      </Block>
+      <Block CStyleName="crate_palette" pascalStyleName="CratePalette" name="crate palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_crate_palette</LayoutXRef>
+      </Block>
+      <Explanation name="Global lighting override" />
+      <TagReference CStyleName="global_lighting" pascalStyleName="GlobalLighting" name="global lighting">
+        <tag>gldf</tag>
+      </TagReference>
+      <Explanation name="WARNING" description="Editing fog palette data will not behave as expected with split scenarios" />
+      <Block CStyleName="atmospheric_fog_palette" pascalStyleName="AtmosphericFogPalette" name="atmospheric fog palette" tag="sort" maxElementCount="127" maxElementCountSource="MAXIMUM_ATMOSPHERIC_FOG_PALETTE_ENTRIES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_atmospheric_fog_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="planar_fog_palette" pascalStyleName="PlanarFogPalette" name="planar fog palette" maxElementCount="127" maxElementCountSource="MAXIMUM_PLANAR_FOG_PALETTE_ENTRIES_PER_SCENARIO">
+        <Layout regolithID="block:scenario_planar_fog_palette" internalName="scenario_planar_fog_palette" name="scenario_planar_fog_palette">
+          <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(s_scenario_planar_fog_palette_entry)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+            <TagReference CStyleName="planar_fog" pascalStyleName="PlanarFog" name="planar fog">
+              <tag>fog </tag>
+            </TagReference>
+            <Pad sizeOfSource="sizeof(c_global_material_type)" length="2" />
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="flocks" pascalStyleName="Flocks" name="flocks" maxElementCount="20" maxElementCountSource="k_max_flock_definitions_per_map">
+        <LayoutXRef>block:flock_definition</LayoutXRef>
+      </Block>
+      <TagReference CStyleName="subtitles" pascalStyleName="Subtitles" name="subtitles">
+        <tag>unic</tag>
+      </TagReference>
+      <Block CStyleName="decorators" pascalStyleName="Decorators" name="decorators" maxElementCount="1">
+        <LayoutXRef>block:decorator_placement_definition</LayoutXRef>
+      </Block>
+      <Block CStyleName="creatures" pascalStyleName="Creatures" name="creatures" maxElementCount="128" maxElementCountSource="MAXIMUM_CREATURE_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_creature</LayoutXRef>
+      </Block>
+      <Block CStyleName="creature_palette" pascalStyleName="CreaturePalette" name="creature palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_creature_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="decorator_palette" pascalStyleName="DecoratorPalette" name="decorator palette" maxElementCount="32" maxElementCountSource="c_decorator_set_definition::k_maximum_decorator_sets_per_scenario">
+        <LayoutXRef>block:scenario_decorator_set_palette_entry</LayoutXRef>
+      </Block>
+      <Block CStyleName="bsp_transition_volumes" pascalStyleName="BspTransitionVolumes" name="bsp transition volumes" expertOnly="true" maxElementCount="256" maxElementCountSource="MAXIMUM_TRIGGER_VOLUMES_PER_SCENARIO">
+        <Layout regolithID="block:scenario_bsp_switch_transition_volume" internalName="scenario_bsp_switch_transition_volume_block" name="scenario_bsp_switch_transition_volume_block">
+          <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct s_scenario_bsp_switch_transition_volume)" isLatest="true">
+            <LongInteger CStyleName="bsp_index_key" pascalStyleName="BspIndexKey" name="bsp index key" />
+            <ShortBlockIndex CStyleName="trigger_volume" pascalStyleName="TriggerVolume" name="trigger volume" blockNameSource="true" blockReference="block:scenario_trigger_volume" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="structure_bsp_lighting" pascalStyleName="StructureBspLighting" name="structure bsp lighting" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_structure_bsp_spherical_harmonic_lighting</LayoutXRef>
+      </Block>
+      <Block CStyleName="editor_folders" pascalStyleName="EditorFolders" name="editor folders" expertOnly="true" maxElementCount="32767" maxElementCountSource="k_maximum_scenario_editor_folders">
+        <LayoutXRef>block:g_scenario_editor_folder</LayoutXRef>
+      </Block>
+      <Block CStyleName="level_data" pascalStyleName="LevelData" name="level data" expertOnly="true" maxElementCount="1">
+        <Layout regolithID="block:scenario_level_data" internalName="scenario_level_data_block" name="scenario_level_data_block">
+          <FieldSet version="0" sizeofValue="40" sizeofSource="sizeof(s_scenario_level_data)" isLatest="true">
+            <TagReference CStyleName="level_strings" pascalStyleName="LevelStrings" name="level_strings">
+              <tag>unic</tag>
+            </TagReference>
+            <Block CStyleName="campaign_level_data" pascalStyleName="CampaignLevelData" name="campaign level data" maxElementCount="64" maxElementCountSource="k_maximum_number_of_campaign_maps">
+              <LayoutXRef>block:global_ui_campaign_level</LayoutXRef>
+            </Block>
+            <Block CStyleName="multiplayer_level_data" pascalStyleName="MultiplayerLevelData" name="multiplayer level data" maxElementCount="50" maxElementCountSource="k_maximum_number_of_multiplayer_maps">
+              <LayoutXRef>block:global_ui_multiplayer_level</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <TagReference CStyleName="game_engine_strings" pascalStyleName="GameEngineStrings" name="game engine strings">
+        <tag>unic</tag>
+      </TagReference>
+      <Pad sizeOfSource="2*sizeof(long)" length="8" />
+      <Block CStyleName="mission_dialogue" pascalStyleName="MissionDialogue" name="mission dialogue" maxElementCount="1">
+        <Layout regolithID="block:ai_scenario_mission_dialogue" internalName="ai_scenario_mission_dialogue_block" name="ai_scenario_mission_dialogue_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct ai_scenario_mission_dialogue)" isLatest="true">
+            <TagReference CStyleName="mission_dialogue" pascalStyleName="MissionDialogue" name="mission dialogue" blockNameSource="true">
+              <tag>mdlg</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <TagReference CStyleName="objectives" pascalStyleName="Objectives" name="objectives">
+        <tag>unic</tag>
+      </TagReference>
+      <Block CStyleName="interpolators" pascalStyleName="Interpolators" name="interpolators" maxElementCount="16" maxElementCountSource="k_maximum_interpolators_per_scenario">
+        <Layout regolithID="block:scenario_interpolator" internalName="scenario_interpolator_block" name="interpolators">
+          <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(s_scenario_interpolator)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+            <StringId CStyleName="accelerator_name" pascalStyleName="AcceleratorName" name="accelerator name" units="interpolator" />
+            <StringId CStyleName="multiplier_name" pascalStyleName="MultiplierName" name="multiplier name" units="interpolator" />
+            <Struct CStyleName="function" pascalStyleName="Function" name="function">
+              <LayoutXRef>structure:scalar_function</LayoutXRef>
+            </Struct>
+            <Skip sizeOfSource="sizeof(short)" length="2" />
+            <Skip sizeOfSource="sizeof(short)" length="2" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="shared_references" pascalStyleName="SharedReferences" name="shared references" maxElementCount="512" maxElementCountSource="k_maximum_hs_references_per_scenario">
+        <LayoutXRef>block:hs_references</LayoutXRef>
+      </Block>
+      <Block CStyleName="screen_effect_references" pascalStyleName="ScreenEffectReferences" name="screen effect references" maxElementCount="16" maxElementCountSource="k_maximum_screen_effect_references_per_scenario">
+        <Layout regolithID="block:scenario_screen_effect_reference" internalName="scenario_screen_effect_reference_block" name="screen effect reference">
+          <FieldSet version="0" sizeofValue="44" sizeofSource="sizeof(s_scenario_screen_effect_reference)" isLatest="true">
+            <Pad sizeOfSource="4*sizeof(long)" length="16" />
+            <TagReference CStyleName="screen_effect" pascalStyleName="ScreenEffect" name="screen effect" blockNameSource="true">
+              <tag>egor</tag>
+            </TagReference>
+            <StringId CStyleName="primary_input" pascalStyleName="PrimaryInput" name="primary input" units="interpolator" />
+            <StringId CStyleName="secondary_input" pascalStyleName="SecondaryInput" name="secondary input" units="interpolator" />
+            <Skip sizeOfSource="sizeof(short)" length="2" />
+            <Skip sizeOfSource="sizeof(short)" length="2" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="simulation_definition_table" pascalStyleName="SimulationDefinitionTable" name="simulation definition table" expertOnly="true" maxElementCount="512" maxElementCountSource="k_maximum_simulation_definition_table_elements_per_scenario">
+        <Layout regolithID="block:scenario_simulation_definition_table" internalName="scenario_simulation_definition_table_block" name="simulation definition table element">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(s_scenario_simulation_definition_table_element)" isLatest="true">
+            <Skip sizeOfSource="sizeof(long)" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+    <FieldSet version="2" sizeofValue="1476" sizeofSource="sizeof(struct scenario)" isLatest="true">
+      <TagReference CStyleName="dont_use" pascalStyleName="DontUse" name="DON'T USE" expertOnly="true">
+        <tag>sbsp</tag>
+      </TagReference>
+      <Block CStyleName="skies" pascalStyleName="Skies" name="skies" maxElementCount="32" maxElementCountSource="MAXIMUM_SKIES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_sky_reference</LayoutXRef>
+      </Block>
+      <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+        <OptionsXRef>enum:scenario_type</OptionsXRef>
+      </ShortEnum>
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:scenario_flags</OptionsXRef>
+      </WordFlags>
+      <Block CStyleName="child_scenarios" pascalStyleName="ChildScenarios" name="@child scenarios" maxElementCount="16" maxElementCountSource="MAXIMUM_CHILD_SCENARIOS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_child_scenario</LayoutXRef>
+      </Block>
+      <Angle CStyleName="local_north" pascalStyleName="LocalNorth" name="local north" />
+      <Block CStyleName="predicted_resources" pascalStyleName="PredictedResources" name="predicted resources" readOnly="true" expertOnly="true" maxElementCount="2048">
+        <LayoutXRef>block:predicted_resource</LayoutXRef>
+      </Block>
+      <Block CStyleName="functions" pascalStyleName="Functions" name="functions" expertOnly="true" maxElementCount="32" maxElementCountSource="MAXIMUM_FUNCTIONS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_function</LayoutXRef>
+      </Block>
+      <Data CStyleName="editor_scenario_data" pascalStyleName="EditorScenarioData" name="editor scenario data" expertOnly="true" />
+      <Block CStyleName="comments" pascalStyleName="Comments" name="comments" maxElementCount="65536" maxElementCountSource="MAXIMUM_EDITOR_COMMENTS">
+        <LayoutXRef>block:editor_comment</LayoutXRef>
+      </Block>
+      <Block CStyleName="environment_objects" pascalStyleName="EnvironmentObjects" name="environment objects" readOnly="true" expertOnly="true" maxElementCount="4096" maxElementCountSource="MAXIMUM_ENVIRONMENT_OBJECTS_PER_SCENARIO">
+        <LayoutXRef>block:dont_use_me_scenario_environment_object</LayoutXRef>
+      </Block>
+      <Block CStyleName="object_names" pascalStyleName="ObjectNames" name="object names" readOnly="true" tag="sort" maxElementCount="640" maxElementCountSource="MAXIMUM_OBJECT_NAMES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_object_names</LayoutXRef>
+      </Block>
+      <Block CStyleName="scenery" pascalStyleName="Scenery" name="scenery" maxElementCount="2000" maxElementCountSource="MAXIMUM_SCENERY_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_scenery</LayoutXRef>
+      </Block>
+      <Block CStyleName="scenery_palette" pascalStyleName="SceneryPalette" name="scenery palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_scenery_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="bipeds" pascalStyleName="Bipeds" name="bipeds" maxElementCount="128" maxElementCountSource="MAXIMUM_BIPED_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_biped</LayoutXRef>
+      </Block>
+      <Block CStyleName="biped_palette" pascalStyleName="BipedPalette" name="biped palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_biped_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="vehicles" pascalStyleName="Vehicles" name="vehicles" maxElementCount="256" maxElementCountSource="MAXIMUM_VEHICLE_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_vehicle</LayoutXRef>
+      </Block>
+      <Block CStyleName="vehicle_palette" pascalStyleName="VehiclePalette" name="vehicle palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_vehicle_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="equipment" pascalStyleName="Equipment" name="equipment" maxElementCount="256" maxElementCountSource="MAXIMUM_EQUIPMENT_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_equipment</LayoutXRef>
+      </Block>
+      <Block CStyleName="equipment_palette" pascalStyleName="EquipmentPalette" name="equipment palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_equipment_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="weapons" pascalStyleName="Weapons" name="weapons" maxElementCount="128" maxElementCountSource="MAXIMUM_WEAPON_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_weapon</LayoutXRef>
+      </Block>
+      <Block CStyleName="weapon_palette" pascalStyleName="WeaponPalette" name="weapon palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_weapon_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="device_groups" pascalStyleName="DeviceGroups" name="device groups" tag="sort" maxElementCount="128" maxElementCountSource="MAXIMUM_DEVICE_GROUPS_PER_SCENARIO">
+        <LayoutXRef>block:device_group</LayoutXRef>
+      </Block>
+      <Block CStyleName="machines" pascalStyleName="Machines" name="machines" maxElementCount="400" maxElementCountSource="MAXIMUM_MACHINE_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_machine</LayoutXRef>
+      </Block>
+      <Block CStyleName="machine_palette" pascalStyleName="MachinePalette" name="machine palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_machine_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="controls" pascalStyleName="Controls" name="controls" maxElementCount="100" maxElementCountSource="MAXIMUM_CONTROL_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_control</LayoutXRef>
+      </Block>
+      <Block CStyleName="control_palette" pascalStyleName="ControlPalette" name="control palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_control_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="light_fixtures" pascalStyleName="LightFixtures" name="light fixtures" maxElementCount="500" maxElementCountSource="MAXIMUM_LIGHT_FIXTURE_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_light_fixture</LayoutXRef>
+      </Block>
+      <Block CStyleName="light_fixtures_palette" pascalStyleName="LightFixturesPalette" name="light fixtures palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_light_fixture_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="sound_scenery" pascalStyleName="SoundScenery" name="sound scenery" maxElementCount="256" maxElementCountSource="MAXIMUM_SOUND_SCENERY_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_sound_scenery</LayoutXRef>
+      </Block>
+      <Block CStyleName="sound_scenery_palette" pascalStyleName="SoundSceneryPalette" name="sound scenery palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_sound_scenery_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="light_volumes" pascalStyleName="LightVolumes" name="light volumes" maxElementCount="500" maxElementCountSource="MAXIMUM_LIGHTS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_light</LayoutXRef>
+      </Block>
+      <Block CStyleName="light_volumes_palette" pascalStyleName="LightVolumesPalette" name="light volumes palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_light_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="player_starting_profile" pascalStyleName="PlayerStartingProfile" name="player starting profile" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_PLAYERS_PER_BLOCK">
+        <LayoutXRef>block:scenario_profiles</LayoutXRef>
+      </Block>
+      <Block CStyleName="player_starting_locations" pascalStyleName="PlayerStartingLocations" name="player starting locations" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_PLAYERS_PER_BLOCK">
+        <LayoutXRef>block:scenario_players</LayoutXRef>
+      </Block>
+      <Block CStyleName="trigger_volumes" pascalStyleName="TriggerVolumes" name="trigger volumes" maxElementCount="256" maxElementCountSource="MAXIMUM_TRIGGER_VOLUMES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_trigger_volume</LayoutXRef>
+      </Block>
+      <Block CStyleName="recorded_animations" pascalStyleName="RecordedAnimations" name="recorded animations" maxElementCount="1024" maxElementCountSource="MAXIMUM_RECORDED_ANIMATIONS_PER_MAP">
+        <LayoutXRef>block:recorded_animation</LayoutXRef>
+      </Block>
+      <Block CStyleName="netgame_flags" pascalStyleName="NetgameFlags" name="netgame flags" maxElementCount="200" maxElementCountSource="MAXIMUM_SCENARIO_NETPOINTS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_netpoints</LayoutXRef>
+      </Block>
+      <Block CStyleName="netgame_equipment" pascalStyleName="NetgameEquipment" name="netgame equipment" maxElementCount="100" maxElementCountSource="MAXIMUM_SCENARIO_NETGAME_EQUIPMENT_PER_SCENARIO">
+        <LayoutXRef>block:scenario_netgame_equipment</LayoutXRef>
+      </Block>
+      <Block CStyleName="starting_equipment" pascalStyleName="StartingEquipment" name="starting equipment" maxElementCount="200" maxElementCountSource="MAXIMUM_SCENARIO_STARTING_EQUIPMENT_PER_SCENARIO">
+        <LayoutXRef>block:scenario_starting_equipment</LayoutXRef>
+      </Block>
+      <Block CStyleName="bsp_switch_trigger_volumes" pascalStyleName="BspSwitchTriggerVolumes" name="bsp switch trigger volumes" readOnly="true" expertOnly="true" maxElementCount="256" maxElementCountSource="MAXIMUM_TRIGGER_VOLUMES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_bsp_switch_trigger_volume</LayoutXRef>
+      </Block>
+      <Block CStyleName="decals" pascalStyleName="Decals" name="decals" maxElementCount="65536" maxElementCountSource="MAXIMUM_DECALS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_decals</LayoutXRef>
+      </Block>
+      <Block CStyleName="decal_palette" pascalStyleName="DecalPalette" name="decal palette" tag="sort" maxElementCount="128" maxElementCountSource="MAXIMUM_DECAL_PALETTES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_decal_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="detail_object_collection_palette" pascalStyleName="DetailObjectCollectionPalette" name="detail object collection palette" maxElementCount="32" maxElementCountSource="MAXIMUM_DETAIL_OBJECT_LAYERS_PER_STRUCTURE">
+        <LayoutXRef>block:scenario_detail_object_collection_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="style_pallette" pascalStyleName="StylePallette" name="style pallette" tag="sort" maxElementCount="50">
+        <LayoutXRef>block:style_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="squad_groups" pascalStyleName="SquadGroups" name="squad groups" maxElementCount="100">
+        <LayoutXRef>block:squad_groups</LayoutXRef>
+      </Block>
+      <Block CStyleName="squads" pascalStyleName="Squads" name="squads" maxElementCount="335">
+        <LayoutXRef>block:squads</LayoutXRef>
+      </Block>
+      <Block CStyleName="zones" pascalStyleName="Zones" name="zones" maxElementCount="128">
+        <LayoutXRef>block:zone</LayoutXRef>
+      </Block>
+      <Block CStyleName="mission_scenes" pascalStyleName="MissionScenes" name="mission scenes" maxElementCount="100" maxElementCountSource="k_max_scenes_per_scenario">
+        <LayoutXRef>block:ai_scene</LayoutXRef>
+      </Block>
+      <Block CStyleName="character_palette" pascalStyleName="CharacterPalette" name="character palette" tag="sort" maxElementCount="64">
+        <LayoutXRef>block:character_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_pathfinding_data" pascalStyleName="AiPathfindingData" name="ai pathfinding data" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:pathfinding_data</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_animation_references" pascalStyleName="AiAnimationReferences" name="ai animation references" expertOnly="true" maxElementCount="128">
+        <LayoutXRef>block:ai_animation_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_script_references" pascalStyleName="AiScriptReferences" name="ai script references" expertOnly="true" maxElementCount="128">
+        <LayoutXRef>block:ai_script_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_recording_references" pascalStyleName="AiRecordingReferences" name="ai recording references" maxElementCount="128">
+        <LayoutXRef>block:ai_recording_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_conversations" pascalStyleName="AiConversations" name="ai conversations" expertOnly="true" maxElementCount="128">
+        <LayoutXRef>block:ai_conversation</LayoutXRef>
+      </Block>
+      <Data CStyleName="script_syntax_data" pascalStyleName="ScriptSyntaxData" name="script syntax data" expertOnly="true" />
+      <Data CStyleName="script_string_data" pascalStyleName="ScriptStringData" name="script string data" expertOnly="true" />
+      <Block CStyleName="scripts" pascalStyleName="Scripts" name="scripts" readOnly="true" expertOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_hs_scripts_per_scenario">
+        <LayoutXRef>block:hs_scripts</LayoutXRef>
+      </Block>
+      <Block CStyleName="globals" pascalStyleName="Globals" name="globals" readOnly="true" expertOnly="true" maxElementCount="512" maxElementCountSource="k_maximum_hs_globals_per_scenario">
+        <LayoutXRef>block:hs_globals</LayoutXRef>
+      </Block>
+      <Block CStyleName="references" pascalStyleName="References" name="references" readOnly="true" expertOnly="true" maxElementCount="512" maxElementCountSource="k_maximum_hs_references_per_scenario">
+        <LayoutXRef>block:hs_references</LayoutXRef>
+      </Block>
+      <Block CStyleName="source_files" pascalStyleName="SourceFiles" name="source files" readOnly="true" maxElementCount="16" maxElementCountSource="k_maximum_hs_source_files_per_scenario">
+        <LayoutXRef>block:hs_source_files</LayoutXRef>
+      </Block>
+      <Block CStyleName="scripting_data" pascalStyleName="ScriptingData" name="scripting data" maxElementCount="1">
+        <LayoutXRef>block:cs_script_data</LayoutXRef>
+      </Block>
+      <Block CStyleName="cutscene_flags" pascalStyleName="CutsceneFlags" name="cutscene flags" maxElementCount="512" maxElementCountSource="MAXIMUM_CUTSCENE_FLAGS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_cutscene_flag</LayoutXRef>
+      </Block>
+      <Block CStyleName="cutscene_camera_points" pascalStyleName="CutsceneCameraPoints" name="cutscene camera points" maxElementCount="512" maxElementCountSource="MAXIMUM_CUTSCENE_CAMERA_POINTS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_cutscene_camera_point</LayoutXRef>
+      </Block>
+      <Block CStyleName="cutscene_titles" pascalStyleName="CutsceneTitles" name="cutscene titles" maxElementCount="128" maxElementCountSource="k_maximum_scenario_cutscene_titles">
+        <LayoutXRef>block:scenario_cutscene_title</LayoutXRef>
+      </Block>
+      <TagReference CStyleName="custom_object_names" pascalStyleName="CustomObjectNames" name="custom object names">
+        <tag>unic</tag>
+      </TagReference>
+      <TagReference CStyleName="chapter_title_text" pascalStyleName="ChapterTitleText" name="chapter title text">
+        <tag>unic</tag>
+      </TagReference>
+      <TagReference CStyleName="hud_messages" pascalStyleName="HudMessages" name="hud messages">
+        <tag>hmt </tag>
+      </TagReference>
+      <Block CStyleName="structure_bsps" pascalStyleName="StructureBsps" name="structure bsps" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_structure_bsp_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="scenario_resources" pascalStyleName="ScenarioResources" name="scenario resources" maxElementCount="1">
+        <LayoutXRef>block:scenario_resources</LayoutXRef>
+      </Block>
+      <Block CStyleName="old_structure_physics" pascalStyleName="OldStructurePhysics" name="OLD structure physics" expertOnly="true" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:old_unused_strucure_physics</LayoutXRef>
+      </Block>
+      <Block CStyleName="hs_unit_seats" pascalStyleName="HsUnitSeats" name="hs unit seats" expertOnly="true" maxElementCount="65536" maxElementCountSource="k_maximum_hs_unit_seat_mappings">
+        <LayoutXRef>block:hs_unit_seat</LayoutXRef>
+      </Block>
+      <Block CStyleName="scenario_kill_triggers" pascalStyleName="ScenarioKillTriggers" name="scenario kill triggers" expertOnly="true" maxElementCount="256" maxElementCountSource="MAXIMUM_TRIGGER_VOLUMES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_kill_trigger_volumes</LayoutXRef>
+      </Block>
+      <Block CStyleName="hs_syntax_datums" pascalStyleName="HsSyntaxDatums" name="hs syntax datums" readOnly="true" expertOnly="true" maxElementCount="64512" maxElementCountSource="k_maximum_hs_syntax_nodes_per_scenario">
+        <LayoutXRef>block:syntax_datum</LayoutXRef>
+      </Block>
+      <Block CStyleName="orders" pascalStyleName="Orders" name="Orders" maxElementCount="300">
+        <LayoutXRef>block:orders</LayoutXRef>
+      </Block>
+      <Block CStyleName="triggers" pascalStyleName="Triggers" name="Triggers" maxElementCount="256">
+        <LayoutXRef>block:triggers</LayoutXRef>
+      </Block>
+      <Block CStyleName="background_sound_palette" pascalStyleName="BackgroundSoundPalette" name="background sound palette" tag="sort" maxElementCount="64" maxElementCountSource="k_maximum_cluster_sound_palette_entries_per_structure">
+        <LayoutXRef>block:structure_bsp_background_sound_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="sound_environment_palette" pascalStyleName="SoundEnvironmentPalette" name="sound environment palette" tag="sort" maxElementCount="64" maxElementCountSource="k_maximum_cluster_sound_palette_entries_per_structure">
+        <LayoutXRef>block:structure_bsp_sound_environment_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="weather_palette" pascalStyleName="WeatherPalette" name="weather palette" tag="sort" maxElementCount="32" maxElementCountSource="MAXIMUM_WEATHER_PALETTE_ENTRIES_PER_STRUCTURE">
+        <LayoutXRef>block:structure_bsp_weather_palette</LayoutXRef>
+      </Block>
+      <Block maxElementCount="0">
+        <LayoutXRef>block:g_null</LayoutXRef>
+      </Block>
+      <Block maxElementCount="0">
+        <LayoutXRef>block:g_null</LayoutXRef>
+      </Block>
+      <Block maxElementCount="0">
+        <LayoutXRef>block:g_null</LayoutXRef>
+      </Block>
+      <Block maxElementCount="0">
+        <LayoutXRef>block:g_null</LayoutXRef>
+      </Block>
+      <Block CStyleName="scavenger_hunt_objects" pascalStyleName="ScavengerHuntObjects" name="scavenger hunt objects" maxElementCount="16" maxElementCountSource="k_maximum_scavenger_hunt_objects_per_scenario">
+        <LayoutXRef>block:scenario_scavenger_hunt_object</LayoutXRef>
+      </Block>
+      <Block CStyleName="scenario_cluster_data" pascalStyleName="ScenarioClusterData" name="scenario cluster data" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_cluster_data</LayoutXRef>
+      </Block>
+      <Array CStyleName="object_salts" pascalStyleName="ObjectSalts" name="object_salts" readOnly="true" count="32">
+        <LongInteger CStyleName="salt" pascalStyleName="Salt" name="salt" readOnly="true" expertOnly="true" />
+      </Array>
+      <Block CStyleName="spawn_data" pascalStyleName="SpawnData" name="spawn data" maxElementCount="1">
+        <LayoutXRef>block:scenario_spawn_data</LayoutXRef>
+      </Block>
+      <TagReference CStyleName="sound_effect_collection" pascalStyleName="SoundEffectCollection" name="sound effect collection">
+        <tag>sfx+</tag>
+      </TagReference>
+      <Block CStyleName="crates" pascalStyleName="Crates" name="crates" maxElementCount="1024" maxElementCountSource="MAXIMUM_CRATE_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_crate</LayoutXRef>
+      </Block>
+      <Block CStyleName="crate_palette" pascalStyleName="CratePalette" name="crate palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_crate_palette</LayoutXRef>
+      </Block>
+      <Explanation name="Global lighting override" />
+      <TagReference CStyleName="global_lighting" pascalStyleName="GlobalLighting" name="global lighting">
+        <tag>gldf</tag>
+      </TagReference>
+      <Explanation name="WARNING" description="Editing fog palette data will not behave as expected with split scenarios" />
+      <Block CStyleName="atmospheric_fog_palette" pascalStyleName="AtmosphericFogPalette" name="atmospheric fog palette" tag="sort" maxElementCount="127" maxElementCountSource="MAXIMUM_ATMOSPHERIC_FOG_PALETTE_ENTRIES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_atmospheric_fog_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="planar_fog_palette" pascalStyleName="PlanarFogPalette" name="planar fog palette" maxElementCount="127" maxElementCountSource="MAXIMUM_PLANAR_FOG_PALETTE_ENTRIES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_planar_fog_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="flocks" pascalStyleName="Flocks" name="flocks" maxElementCount="20" maxElementCountSource="k_max_flock_definitions_per_map">
+        <LayoutXRef>block:flock_definition</LayoutXRef>
+      </Block>
+      <TagReference CStyleName="subtitles" pascalStyleName="Subtitles" name="subtitles">
+        <tag>unic</tag>
+      </TagReference>
+      <Block CStyleName="decorators" pascalStyleName="Decorators" name="decorators" maxElementCount="1">
+        <LayoutXRef>block:decorator_placement_definition</LayoutXRef>
+      </Block>
+      <Block CStyleName="creatures" pascalStyleName="Creatures" name="creatures" maxElementCount="128" maxElementCountSource="MAXIMUM_CREATURE_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_creature</LayoutXRef>
+      </Block>
+      <Block CStyleName="creature_palette" pascalStyleName="CreaturePalette" name="creature palette" tag="sort" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_creature_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="decorator_palette" pascalStyleName="DecoratorPalette" name="decorator palette" maxElementCount="32" maxElementCountSource="c_decorator_set_definition::k_maximum_decorator_sets_per_scenario">
+        <LayoutXRef>block:scenario_decorator_set_palette_entry</LayoutXRef>
+      </Block>
+      <Block CStyleName="bsp_transition_volumes" pascalStyleName="BspTransitionVolumes" name="bsp transition volumes" expertOnly="true" maxElementCount="256" maxElementCountSource="MAXIMUM_TRIGGER_VOLUMES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_bsp_switch_transition_volume</LayoutXRef>
+      </Block>
+      <Block CStyleName="structure_bsp_lighting" pascalStyleName="StructureBspLighting" name="structure bsp lighting" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_structure_bsp_spherical_harmonic_lighting</LayoutXRef>
+      </Block>
+      <Block CStyleName="editor_folders" pascalStyleName="EditorFolders" name="editor folders" expertOnly="true" maxElementCount="32767" maxElementCountSource="k_maximum_scenario_editor_folders">
+        <LayoutXRef>block:g_scenario_editor_folder</LayoutXRef>
+      </Block>
+      <Block CStyleName="level_data" pascalStyleName="LevelData" name="level data" expertOnly="true" maxElementCount="1">
+        <LayoutXRef>block:scenario_level_data</LayoutXRef>
+      </Block>
+      <TagReference CStyleName="game_engine_strings" pascalStyleName="GameEngineStrings" name="game engine strings">
+        <tag>unic</tag>
+      </TagReference>
+      <Pad sizeOfSource="2*sizeof(long)" length="8" />
+      <Block CStyleName="mission_dialogue" pascalStyleName="MissionDialogue" name="mission dialogue" maxElementCount="1">
+        <LayoutXRef>block:ai_scenario_mission_dialogue</LayoutXRef>
+      </Block>
+      <TagReference CStyleName="objectives" pascalStyleName="Objectives" name="objectives">
+        <tag>unic</tag>
+      </TagReference>
+      <Block CStyleName="interpolators" pascalStyleName="Interpolators" name="interpolators" maxElementCount="16" maxElementCountSource="k_maximum_interpolators_per_scenario">
+        <LayoutXRef>block:scenario_interpolator</LayoutXRef>
+      </Block>
+      <Block CStyleName="shared_references" pascalStyleName="SharedReferences" name="shared references" maxElementCount="512" maxElementCountSource="k_maximum_hs_references_per_scenario">
+        <LayoutXRef>block:hs_references</LayoutXRef>
+      </Block>
+      <Block CStyleName="screen_effect_references" pascalStyleName="ScreenEffectReferences" name="screen effect references" maxElementCount="16" maxElementCountSource="k_maximum_screen_effect_references_per_scenario">
+        <LayoutXRef>block:scenario_screen_effect_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="simulation_definition_table" pascalStyleName="SimulationDefinitionTable" name="simulation definition table" expertOnly="true" maxElementCount="512" maxElementCountSource="k_maximum_simulation_definition_table_elements_per_scenario">
+        <LayoutXRef>block:scenario_simulation_definition_table</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

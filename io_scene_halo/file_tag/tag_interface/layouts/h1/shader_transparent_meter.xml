@@ -1,0 +1,170 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="smet" name="shader_transparent_meter" version="1">
+  <Layout regolithID="block:shader_transparent_meter" internalName="shader_transparent_meter_block" name="shader_transparent_meter">
+    <FieldSet version="0" sizeofValue="260" sizeofSource="sizeof(struct shader_transparent_meter_group)" isLatest="true">
+      <Explanation name="Radiosity" />
+      <Struct CStyleName="radiosity" pascalStyleName="Radiosity" name="radiosity">
+        <Layout regolithID="structure:shader_radiosity_properties" internalName="shader_radiosity_properties_struct" backingBlockInternalName="shader_radiosity_properties_struct_block" name="shader radiosity properties">
+          <FieldSet version="0" sizeofValue="32" isLatest="true">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="simple parameterization" CStyleName="simple_parameterization_bit" pascalStyleName="SimpleParameterizationBit" />
+                <Bit name="ignore normals" CStyleName="ignore_normals_bit" pascalStyleName="IgnoreNormalsBit" />
+                <Bit name="transparent lit" CStyleName="transparent_lit_bit" pascalStyleName="TransparentLitBit" />
+              </Options>
+            </WordFlags>
+            <ShortEnum CStyleName="detail_level" pascalStyleName="DetailLevel" name="detail level">
+              <Options regolithID="enum:detail_level" CStyleName="detail_level" pascalStyleName="DetailLevel">
+                <Enum name="high" CStyleName="high" pascalStyleName="High" />
+                <Enum name="medium" CStyleName="medium" pascalStyleName="Medium" />
+                <Enum name="low" CStyleName="low" pascalStyleName="Low" />
+                <Enum name="turd" CStyleName="turd" pascalStyleName="Turd" />
+              </Options>
+            </ShortEnum>
+            <Real CStyleName="power" pascalStyleName="Power" name="power" />
+            <RealRgbColor CStyleName="color_of_emitted_light" pascalStyleName="ColorOfEmittedLight" name="color of emitted light" />
+            <RealRgbColor CStyleName="tint_color" pascalStyleName="TintColor" name="tint color" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Physics" />
+      <Struct CStyleName="physics" pascalStyleName="Physics" name="physics">
+        <Layout regolithID="structure:shader_physics_properties" internalName="shader_physics_properties_struct" backingBlockInternalName="shader_physics_properties_struct_block" name="shader physics properties">
+          <FieldSet version="0" sizeofValue="8" isLatest="true">
+            <Pad name="pad" length="2" />
+            <ShortEnum CStyleName="material_type" pascalStyleName="MaterialType" name="material type">
+              <Options regolithID="enum:material_type" CStyleName="material_type" pascalStyleName="MaterialType">
+                <Enum name="dirt" CStyleName="dirt" pascalStyleName="Dirt" />
+                <Enum name="sand" CStyleName="sand" pascalStyleName="Sand" />
+                <Enum name="stone" CStyleName="stone" pascalStyleName="Stone" />
+                <Enum name="snow" CStyleName="snow" pascalStyleName="Snow" />
+                <Enum name="wood" CStyleName="wood" pascalStyleName="Wood" />
+                <Enum name="metal hollow" CStyleName="metal_hollow" pascalStyleName="MetalHollow" />
+                <Enum name="metal thin" CStyleName="metal_thin" pascalStyleName="MetalThin" />
+                <Enum name="metal thick" CStyleName="metal_thick" pascalStyleName="MetalThick" />
+                <Enum name="rubber" CStyleName="rubber" pascalStyleName="Rubber" />
+                <Enum name="glass" CStyleName="glass" pascalStyleName="Glass" />
+                <Enum name="force field" CStyleName="force_field" pascalStyleName="ForceField" />
+                <Enum name="grunt" CStyleName="grunt" pascalStyleName="Grunt" />
+                <Enum name="hunter armor" CStyleName="hunter_armor" pascalStyleName="HunterArmor" />
+                <Enum name="hunter skin" CStyleName="hunter_skin" pascalStyleName="HunterSkin" />
+                <Enum name="elite" CStyleName="elite" pascalStyleName="Elite" />
+                <Enum name="jackal" CStyleName="jackal" pascalStyleName="Jackal" />
+                <Enum name="jackal energy shield" CStyleName="jackal_energy_shield" pascalStyleName="JackalEnergyShield" />
+                <Enum name="engineer skin" CStyleName="engineer_skin" pascalStyleName="EngineerSkin" />
+                <Enum name="engineer force field" CStyleName="engineer_force_field" pascalStyleName="EngineerForceField" />
+                <Enum name="flood combat form" CStyleName="flood_combat_form" pascalStyleName="FloodCombatForm" />
+                <Enum name="flood carrier form" CStyleName="flood_carrier_form" pascalStyleName="FloodCarrierForm" />
+                <Enum name="cyborg armor" CStyleName="cyborg_armor" pascalStyleName="CyborgArmor" />
+                <Enum name="cyborg energy shield" CStyleName="cyborg_energy_shield" pascalStyleName="CyborgEnergyShield" />
+                <Enum name="human armor" CStyleName="human_armor" pascalStyleName="HumanArmor" />
+                <Enum name="human skin" CStyleName="human_skin" pascalStyleName="HumanSkin" />
+                <Enum name="sentinel" CStyleName="sentinel" pascalStyleName="Sentinel" />
+                <Enum name="monitor" CStyleName="monitor" pascalStyleName="Monitor" />
+                <Enum name="plastic" CStyleName="plastic" pascalStyleName="Plastic" />
+                <Enum name="water" CStyleName="water" pascalStyleName="Water" />
+                <Enum name="leaves" CStyleName="leaves" pascalStyleName="Leaves" />
+                <Enum name="elite energy shield" CStyleName="elite_energy_shield" pascalStyleName="EliteEnergyShield" />
+                <Enum name="ice" CStyleName="ice" pascalStyleName="Ice" />
+                <Enum name="hunter shield" CStyleName="hunter_shield" pascalStyleName="HunterShield" />
+              </Options>
+            </ShortEnum>
+            <ShortInteger CStyleName="type" pascalStyleName="Type" name="type" cacheOnly="true" unsigned="true" />
+            <Pad name="pad" length="2" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Properties" />
+      <Struct CStyleName="properties" pascalStyleName="Properties" name="properties">
+        <Layout regolithID="structure:shader_transparent_meter_properties" internalName="shader_transparent_meter_properties_struct" backingBlockInternalName="shader_transparent_meter_properties_struct_block" name="shader transparent meter properties">
+          <FieldSet version="0" sizeofValue="84" isLatest="true">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="decal" CStyleName="decal_bit" pascalStyleName="DecalBit" />
+                <Bit name="two sided" CStyleName="two_sided_bit" pascalStyleName="TwoSidedBit" />
+                <Bit name="flash color is negative" CStyleName="flash_color_is_negative_bit" pascalStyleName="FlashColorIsNegativeBit" />
+                <Bit name="tint mode 2" CStyleName="tint_mode_2_bit" pascalStyleName="TintMode2Bit" />
+                <Bit name="unfiltered" CStyleName="unfiltered_bit" pascalStyleName="UnfilteredBit" />
+              </Options>
+            </WordFlags>
+            <Pad name="pad" length="2" />
+            <Pad name="pad" length="32" />
+            <TagReference CStyleName="map" pascalStyleName="Map" name="map">
+              <tag>bitmap</tag>
+            </TagReference>
+            <Pad name="pad" length="32" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Colors" />
+      <Struct CStyleName="colors" pascalStyleName="Colors" name="colors">
+        <Layout regolithID="structure:shader_transparent_meter_colors" internalName="shader_transparent_meter_colors_struct" backingBlockInternalName="shader_transparent_meter_colors_struct_block" name="shader transparent meter colors">
+          <FieldSet version="0" sizeofValue="92" isLatest="true">
+            <RealRgbColor CStyleName="gradient_min_color" pascalStyleName="GradientMinColor" name="gradient min color" />
+            <RealRgbColor CStyleName="gradient_max_color" pascalStyleName="GradientMaxColor" name="gradient max color" />
+            <RealRgbColor CStyleName="background_color" pascalStyleName="BackgroundColor" name="background color" />
+            <RealRgbColor CStyleName="flash_color" pascalStyleName="FlashColor" name="flash color" />
+            <RealRgbColor CStyleName="meter_tint_color" pascalStyleName="MeterTintColor" name="meter tint color" />
+            <Real CStyleName="meter_transparency" pascalStyleName="MeterTransparency" name="meter transparency" />
+            <Real CStyleName="background_transparency" pascalStyleName="BackgroundTransparency" name="background transparency" />
+            <Pad name="pad" length="24" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="External Function Sources" />
+      <Struct CStyleName="external_function_sources" pascalStyleName="ExternalFunctionSources" name="external function sources">
+        <Layout regolithID="structure:shader_transparent_meter_external_function_sources" internalName="shader_transparent_meter_external_function_sources_struct" backingBlockInternalName="shader_transparent_meter_external_function_sources_struct_block" name="shader transparent meter external function sources">
+          <FieldSet version="0" sizeofValue="44" isLatest="true">
+            <ShortEnum CStyleName="meter_brightness_source" pascalStyleName="MeterBrightnessSource" name="meter brightness source">
+              <Options regolithID="enum:meter_brightness_source" CStyleName="meter_brightness_source" pascalStyleName="MeterBrightnessSource">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="flash_brightness_source" pascalStyleName="FlashBrightnessSource" name="flash brightness source">
+              <Options regolithID="enum:flash_brightness_source" CStyleName="flash_brightness_source" pascalStyleName="FlashBrightnessSource">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="value_source" pascalStyleName="ValueSource" name="value source">
+              <Options regolithID="enum:value_source" CStyleName="value_source" pascalStyleName="ValueSource">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="gradient_source" pascalStyleName="GradientSource" name="gradient source">
+              <Options regolithID="enum:gradient_source" CStyleName="gradient_source" pascalStyleName="GradientSource">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="flash_extension_source" pascalStyleName="FlashExtensionSource" name="flash extension source">
+              <Options regolithID="enum:flash_extension_source" CStyleName="flash_extension_source" pascalStyleName="FlashExtensionSource">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Pad name="pad" length="32" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="lens" name="lens_flare" version="2">
+  <Layout regolithID="block:lens_flare" internalName="lens_flare_block" name="lens_flare">
+    <FieldSet version="0" sizeofValue="124" sizeofSource="sizeof(s_lens_flare_definition)" isLatest="true">
+      <Explanation name="LENS FLARE" />
+      <Angle CStyleName="falloff_angle" pascalStyleName="FalloffAngle" name="falloff angle" units="degrees" />
+      <Angle CStyleName="cutoff_angle" pascalStyleName="CutoffAngle" name="cutoff angle" units="degrees" />
+      <Skip sizeOfSource="sizeof(real)" length="4" />
+      <Skip sizeOfSource="sizeof(real)" length="4" />
+      <Explanation name="OCCLUSION" description="Occlusion factor affects overall lens flare brightness and can also affect scale. Occlusion never affects rotation." />
+      <Real CStyleName="occlusion_radius" pascalStyleName="OcclusionRadius" name="occlusion radius" units="world units" description="radius of the square used to test occlusion" />
+      <ShortEnum CStyleName="occlusion_offset_direction" pascalStyleName="OcclusionOffsetDirection" name="occlusion offset direction">
+        <Options regolithID="enum:lens_flare_offset_direction" CStyleName="lens_flare_offset_direction" pascalStyleName="LensFlareOffsetDirection">
+          <Enum name="toward viewer" CStyleName="toward_viewer" pascalStyleName="TowardViewer" />
+          <Enum name="marker forward" CStyleName="marker_forward" pascalStyleName="MarkerForward" />
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="occlusion_inner_radius_scale" pascalStyleName="OcclusionInnerRadiusScale" name="occlusion inner radius scale">
+        <Options regolithID="enum:lens_flare_occlusion_inner_radius_scale" CStyleName="lens_flare_occlusion_inner_radius_scale" pascalStyleName="LensFlareOcclusionInnerRadiusScale">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="1/2" CStyleName="_12" pascalStyleName="12" />
+          <Enum name="1/4" CStyleName="_14" pascalStyleName="14" />
+          <Enum name="1/8" CStyleName="_18" pascalStyleName="18" />
+          <Enum name="1/16" CStyleName="_116" pascalStyleName="116" />
+          <Enum name="1/32" CStyleName="_132" pascalStyleName="132" />
+          <Enum name="1/64" CStyleName="_164" pascalStyleName="164" />
+        </Options>
+      </ShortEnum>
+      <Real CStyleName="near_fade_distance" pascalStyleName="NearFadeDistance" name="near fade distance" units="world units" description="distance at which the lens flare brightness is maximum" />
+      <Real CStyleName="far_fade_distance" pascalStyleName="FarFadeDistance" name="far fade distance" units="world units" description="distance at which the lens flare brightness is minimum; set to zero to disable distance fading" />
+      <TagReference CStyleName="bitmap" pascalStyleName="Bitmap" name="bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <WordFlags name="flags">
+        <Options regolithID="enum:lens_flare_flags" CStyleName="lens_flare_flags" pascalStyleName="LensFlareFlags">
+          <Bit name="sun" CStyleName="sun_bit" pascalStyleName="SunBit" />
+          <Bit name="no occlusion test" CStyleName="no_occlusion_test_bit" pascalStyleName="NoOcclusionTestBit" />
+          <Bit name="only render in first person" CStyleName="only_render_in_first_person_bit" pascalStyleName="OnlyRenderInFirstPersonBit" />
+          <Bit name="only render in third person" CStyleName="only_render_in_third_person_bit" pascalStyleName="OnlyRenderInThirdPersonBit" />
+          <Bit name="fade in more quickly" CStyleName="fade_in_more_quickly_bit" pascalStyleName="FadeInMoreQuicklyBit" />
+          <Bit name="fade out more quickly" CStyleName="fade_out_more_quickly_bit" pascalStyleName="FadeOutMoreQuicklyBit" />
+          <Bit name="scale by marker" CStyleName="scale_by_marker_bit" pascalStyleName="ScaleByMarkerBit" />
+        </Options>
+      </WordFlags>
+      <Skip sizeOfSource="sizeof(word)" length="2" />
+      <UselessPad length="76" />
+      <ShortEnum CStyleName="rotation_function" pascalStyleName="RotationFunction" name="rotation function">
+        <Options regolithID="enum:lens_flare_rotation_function" CStyleName="lens_flare_rotation_function" pascalStyleName="LensFlareRotationFunction">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="rotation A" CStyleName="rotation_a" pascalStyleName="RotationA" />
+          <Enum name="rotation B" CStyleName="rotation_b" pascalStyleName="RotationB" />
+          <Enum name="rotation-translation" CStyleName="rotation_translation" pascalStyleName="RotationTranslation" />
+          <Enum name="translation" CStyleName="translation" pascalStyleName="Translation" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Angle CStyleName="rotation_function_scale" pascalStyleName="RotationFunctionScale" name="rotation function scale" units="degrees" />
+      <UselessPad length="24" />
+      <RealVector2D CStyleName="corona_scale" pascalStyleName="CoronaScale" name="corona scale" description="amount to stretch the corona" />
+      <Explanation name="EFFECT PARAMETERS" description="Only affects lens flares created by effects." />
+      <ShortEnum CStyleName="falloff_function" pascalStyleName="FalloffFunction" name="falloff function">
+        <OptionsXRef>enum:falloff_function</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <UselessPad length="24" />
+      <Block CStyleName="reflections" pascalStyleName="Reflections" name="reflections" maxElementCount="32" maxElementCountSource="k_maximum_reflections_per_lens_flare">
+        <Layout regolithID="block:lens_flare_reflection" internalName="lens_flare_reflection_block" name="reflection">
+          <FieldSet version="0" sizeofValue="48" sizeofSource="sizeof(s_lens_flare_reflection)" isLatest="true">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:lens_flare_reflection_flags" CStyleName="lens_flare_reflection_flags" pascalStyleName="LensFlareReflectionFlags">
+                <Bit name="align rotation with screen center" CStyleName="align_rotation_with_screen_center_bit" pascalStyleName="AlignRotationWithScreenCenterBit" />
+                <Bit name="radius NOT scaled by distance" CStyleName="radius_not_scaled_by_distance_bit" pascalStyleName="RadiusNotScaledByDistanceBit" />
+                <Bit name="radius scaled by occlusion factor" CStyleName="radius_scaled_by_occlusion_factor_bit" pascalStyleName="RadiusScaledByOcclusionFactorBit" />
+                <Bit name="occluded by solid objects" CStyleName="occluded_by_solid_objects_bit" pascalStyleName="OccludedBySolidObjectsBit" />
+                <Bit name="ignore light color" CStyleName="ignore_light_color_bit" pascalStyleName="IgnoreLightColorBit" />
+                <Bit name="not affected by inner occlusion" CStyleName="not_affected_by_inner_occlusion_bit" pascalStyleName="NotAffectedByInnerOcclusionBit" />
+              </Options>
+            </WordFlags>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <ShortInteger CStyleName="bitmap_index" pascalStyleName="BitmapIndex" name="bitmap index" />
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <UselessPad length="20" />
+            <Real CStyleName="position" pascalStyleName="Position" name="position" units="along flare axis" description="0 is on top of light, 1 is opposite light, 0.5 is the center of the screen, etc." />
+            <Real CStyleName="rotation_offset" pascalStyleName="RotationOffset" name="rotation offset" units="degrees" />
+            <UselessPad length="4" />
+            <RealBounds CStyleName="radius" pascalStyleName="Radius" name="radius" units="world units" description="interpolated by external input" />
+            <UselessPad length="4" />
+            <RealFractionBounds CStyleName="brightness" pascalStyleName="Brightness" name="brightness" units="[0,1]" description="interpolated by external input" />
+            <UselessPad length="4" />
+            <Explanation name="TINT COLOR" description="Tinting and modulating are not the same; 'tinting' a reflection will color the darker regions but leave the highlights, while 'modulating' will color everything uniformly. The modulation factor controls how much the reflection is modulated as opposed to tinted (0 is tinted, 1 is modulated)." />
+            <RealFraction CStyleName="modulation_factor" pascalStyleName="ModulationFactor" name="modulation factor" units="[0,1]" />
+            <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+            <UselessPad length="48" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="ANIMATION" />
+      <WordFlags name="flags">
+        <Options regolithID="enum:lens_flare_animation_flags" CStyleName="lens_flare_animation_flags" pascalStyleName="LensFlareAnimationFlags">
+          <Bit name="synchronized" CStyleName="_synchronized_bit" pascalStyleName="SynchronizedBit" />
+        </Options>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Block CStyleName="brightness" pascalStyleName="Brightness" name="brightness" maxElementCount="1">
+        <Layout regolithID="block:lens_flare_scalar_animation" internalName="lens_flare_scalar_animation_block" name="lens_flare_scalar_animation_block">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(c_function_definition)" isLatest="true">
+            <Struct CStyleName="function" pascalStyleName="Function" name="function">
+              <LayoutXRef>structure:scalar_function</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="color" pascalStyleName="Color" name="color" maxElementCount="1">
+        <Layout regolithID="block:lens_flare_color_animation" internalName="lens_flare_color_animation_block" name="lens_flare_color_animation_block">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(c_function_definition)" isLatest="true">
+            <Struct CStyleName="function" pascalStyleName="Function" name="function">
+              <LayoutXRef>structure:color_function</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="rotation" pascalStyleName="Rotation" name="rotation" maxElementCount="1">
+        <LayoutXRef>block:lens_flare_scalar_animation</LayoutXRef>
+      </Block>
+      <UselessPad length="4" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -26,91 +26,15 @@
 
 import os
 import bpy
+import copy
 import bmesh
 
 from math import radians
 from mathutils import Matrix
 from .process_file import process_file
 from ..global_functions import mesh_processing, shader_processing, global_functions
-
-def set_ass_material_properties(ass_mat, mat):
-    material_strings = ass_mat.material_strings
-    if len(material_strings) > 0:
-        mat.ass_jms.is_bm = True
-
-    for string in material_strings:
-        if string.startswith("BM_FLAGS"):
-            string_bitfield = string.split()[1] #Split the string and retrieve the bitfield.
-            settings_count = len(string_bitfield)
-            mat.ass_jms.two_sided = int(string_bitfield[0])
-            mat.ass_jms.transparent_1_sided = int(string_bitfield[1])
-            mat.ass_jms.transparent_2_sided = int(string_bitfield[2])
-            mat.ass_jms.render_only = int(string_bitfield[3])
-            mat.ass_jms.collision_only = int(string_bitfield[4])
-            mat.ass_jms.sphere_collision_only = int(string_bitfield[5])
-            mat.ass_jms.fog_plane = int(string_bitfield[6])
-            mat.ass_jms.ladder = int(string_bitfield[7])
-            mat.ass_jms.breakable = int(string_bitfield[8])
-            mat.ass_jms.ai_deafening = int(string_bitfield[9])
-            mat.ass_jms.no_shadow = int(string_bitfield[10])
-            mat.ass_jms.shadow_only = int(string_bitfield[11])
-            mat.ass_jms.lightmap_only = int(string_bitfield[12])
-            mat.ass_jms.precise = int(string_bitfield[13])
-            mat.ass_jms.conveyor = int(string_bitfield[14])
-            mat.ass_jms.portal_1_way = int(string_bitfield[15])
-            mat.ass_jms.portal_door = int(string_bitfield[16])
-            mat.ass_jms.portal_vis_blocker = int(string_bitfield[17])
-            mat.ass_jms.ignored_by_lightmaps = int(string_bitfield[18])
-            mat.ass_jms.blocks_sound = int(string_bitfield[19])
-            mat.ass_jms.decal_offset = int(string_bitfield[20])
-            if settings_count >= 22:
-                mat.ass_jms.slip_surface = int(string_bitfield[21])
-
-        elif string.startswith("BM_LMRES"):
-            lmres_string_args = string.split()
-            lmres_count = len(lmres_string_args) - 1
-            mat.ass_jms.lightmap_res = float(lmres_string_args[1])
-            mat.ass_jms.photon_fidelity = int(lmres_string_args[2])
-            if lmres_count >= 3:
-                transparent_color = float(lmres_string_args[3])
-                mat.ass_jms.two_sided_transparent_tint = (transparent_color, transparent_color, transparent_color)
-            else:
-                mat.ass_jms.two_sided_transparent_tint = (float(lmres_string_args[3]), float(lmres_string_args[4]), float(lmres_string_args[5]))
-            if lmres_count >= 6:
-                mat.ass_jms.override_lightmap_transparency = int(lmres_string_args[6])
-                mat.ass_jms.additive_transparency = (float(lmres_string_args[7]), float(lmres_string_args[8]), float(lmres_string_args[9]))
-                mat.ass_jms.use_shader_gel = int(lmres_string_args[10])
-            if lmres_count >= 11:
-                mat.ass_jms.ignore_default_res_scale = int(lmres_string_args[11])
-
-        elif string.startswith("BM_LIGHTING_BASIC"):
-            lighting_basic_args = string.split()
-            lighting_count = len(lighting_basic_args) - 1
-            mat.ass_jms.power = float(lighting_basic_args[1])
-            mat.ass_jms.color = (float(lighting_basic_args[2]), float(lighting_basic_args[3]), float(lighting_basic_args[4]))
-            mat.ass_jms.quality = float(lighting_basic_args[5])
-            if lighting_count >= 6:
-                mat.ass_jms.power_per_unit_area = int(lighting_basic_args[6])
-            if lighting_count >= 7:
-                mat.ass_jms.emissive_focus = float(lighting_basic_args[7])
-
-        elif string.startswith("BM_LIGHTING_ATTEN"):
-            lighting_attenuation_args = string.split()
-            mat.ass_jms.attenuation_enabled = int(lighting_attenuation_args[1])
-            mat.ass_jms.falloff_distance = float(lighting_attenuation_args[2])
-            mat.ass_jms.cutoff_distance = float(lighting_attenuation_args[3])
-
-        elif string.startswith("BM_LIGHTING_FRUS"):
-            lighting_frus_args = string.split()
-            mat.ass_jms.frustum_blend = float(lighting_frus_args[1])
-            mat.ass_jms.frustum_falloff = float(lighting_frus_args[2])
-            mat.ass_jms.frustum_cutoff = float(lighting_frus_args[3])
-
-def set_primitive_material(object_material_index, ASS, mesh):
-    if not object_material_index == -1:
-        mat = ASS.materials[object_material_index]
-        if mesh.materials:
-            mesh.materials[0] = bpy.data.materials[mat.name]
+from ..file_tag.tag_interface import tag_interface, tag_common
+from ..file_tag.tag_interface.tag_definitions import h1, h2
 
 def find_root_instances(instances):
     root_instances_indices = []
@@ -180,46 +104,51 @@ def build_scene(context, filepath, report):
     collection = context.collection
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
 
+    asset_cache = {}
+
+    tag_groups = None
+    engine_tag = None
+    merged_defs = None
+    if game_title == "halo1":
+        output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h1_merged_output")
+        tag_groups = tag_common.h1_tag_groups
+        engine_tag = tag_interface.EngineTag.H1Latest.value
+        merged_defs = h1.generate_defs(tag_common.h1_defs_directory, output_dir)
+        tag_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path
+        
+    elif game_title == "halo2":
+        output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h2_merged_output")
+        tag_groups = tag_common.h2_tag_groups
+        engine_tag = tag_interface.EngineTag.H2Latest.value
+        merged_defs = h2.generate_defs(tag_common.h2_defs_directory, output_dir)
+        tag_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path
+    else:
+        print("%s is not supported." % game_title)
+
     object_list = []
-    object_settings_list = []
-    for idx, ass_mat in enumerate(ASS.materials):
+    vertex_weights_list = []
+    blender_mats = []
+    material_count = len(ASS.materials)
+    for ass_mat in ASS.materials:
         material_name = ass_mat.name
+        blend_mat = bpy.data.materials.new(name=material_name)
+        if game_title == "halo1":
+            shader_ref = shader_processing.find_h1_shader_tag(ASS.filepath, material_name)
+            tag_interface.generate_tag_dictionary(game_title, shader_ref, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache)
+            shader_processing.generate_h1_shader(blend_mat, shader_ref, 0, asset_cache, report)
+        elif game_title == "halo2":
+            shader_ref = shader_processing.find_h2_shader_tag(ASS.filepath, material_name)
+            tag_interface.generate_tag_dictionary(game_title, shader_ref, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache)
+            shader_processing.generate_h2_shader(blend_mat, shader_ref, 0, asset_cache, report)
+        elif game_title == "halo3":
+            shader_ref = shader_processing.find_h3_shader_tag(ASS.filepath, material_name)
+            shader_processing.generate_h3_shader(blend_mat, shader_ref, asset_cache, report)
 
-        mat = bpy.data.materials.get(material_name)
-        if mat is None:
-            mat = bpy.data.materials.new(name=material_name)
+        global_functions.set_ass_material_properties(ass_mat, blend_mat)
+        blend_mat.ass_jms.name_override = ass_mat.name
+        blend_mat.diffuse_color = random_color_gen.next()
 
-            ass_mat_name = ass_mat.name
-            if not global_functions.string_empty_check(ass_mat.asset_name):
-                ass_mat_name = ass_mat.asset_name
-
-            if game_title == "halo1":
-                shader = shader_processing.find_h1_shader_tag(ASS.filepath, ass_mat_name)
-                if not shader == None:
-                    shader_processing.generate_h1_shader(mat, shader, 0, print)
-                else:
-                    print("Halo 1 Shader tag returned as None. Something went terribly wrong")
-
-            elif game_title == "halo2":
-                shader = shader_processing.find_h2_shader_tag(ASS.filepath, ass_mat_name)
-                if not shader == None:
-                    shader_processing.generate_h2_shader(mat, shader, print)
-                else:
-                    print("Halo 2 Shader tag returned as None. Something went terribly wrong")
-
-            elif game_title == "halo3":
-                shader_path = shader_processing.find_h3_shader_tag(ASS.filepath, ass_mat_name)
-                if not shader_path == None:
-                    shader_processing.generate_h3_shader(mat, shader_path, print)
-                else:
-                    print("Halo 3 Shader path returned as None. Something went terribly wrong")
-
-            else:
-                print("Game title is unsupported: %s" % game_title)
-
-        set_ass_material_properties(ass_mat, mat)
-        mat.ass_jms.name_override = ass_mat.asset_name
-        mat.diffuse_color = random_color_gen.next()
+        blender_mats.append(blend_mat)
 
     ordered_instances = sort_by_parent(ASS)
     node_prefix_tuple = ('b ', 'b_', 'bone', 'frame', 'bip01')
@@ -236,6 +165,7 @@ def build_scene(context, filepath, report):
     if len(bone_instance_index_list) > 0:
         armdata = bpy.data.armatures.new('Armature')
         armature = bpy.data.objects.new('Armature', armdata)
+        armature.color = (1, 1, 1, 0)
         collection.objects.link(armature)
         for bone_instance in bone_instance_index_list:
             mesh_processing.select_object(context, armature)
@@ -255,7 +185,7 @@ def build_scene(context, filepath, report):
         object_extents = ass_object.extents
         object_material_index = ass_object.material_index
 
-        object_settings = None
+        vertex_weights_sets = None
         object_data = None
         if not ob_idx in bone_object_index_list:
             if geo_class == 'GENERIC_LIGHT':
@@ -283,6 +213,8 @@ def build_scene(context, filepath, report):
                 object_data.color = (ass_object.light_properties.light_color)
                 object_data.energy = (ass_object.light_properties.intensity)
                 if ass_object.light_properties.light_type == 'SPOT_LGT' or ass_object.light_properties.light_type == 'DIRECT_LGT':
+                    HFS = ass_object.light_properties.hotspot_falloff_size
+                    HS = ass_object.light_properties.hotspot_size
                     if ass_object.light_properties.light_type == 'DIRECT_LGT':
                         light_shape_type = "DISK"
                         if not ass_object.light_properties.light_shape == 0:
@@ -291,13 +223,11 @@ def build_scene(context, filepath, report):
                         object_data.shape = light_shape_type
 
                     else:
-                        object_data.spot_size = radians(ass_object.light_properties.hotspot_size)
-                        if not ass_object.light_properties.hotspot_size == 0.0:
-                            object_data.spot_blend = ass_object.light_properties.hotspot_falloff_size / ass_object.light_properties.hotspot_size
+                        object_data.spot_size = radians(HFS)
+                        object_data.spot_blend = (HFS - HS) / HFS
 
-                    object_data.halo_light.spot_size = radians(ass_object.light_properties.hotspot_size)
-                    if not ass_object.light_properties.hotspot_size == 0.0:
-                        object_data.halo_light.spot_blend = ass_object.light_properties.hotspot_falloff_size / ass_object.light_properties.hotspot_size
+                    object_data.halo_light.spot_size = radians(HFS)
+                    object_data.halo_light.spot_blend = (HFS - HS) / HFS
 
                     object_data.halo_light.light_cone_shape = str(ass_object.light_properties.light_shape)
                     object_data.halo_light.light_aspect_ratio = ass_object.light_properties.light_aspect_ratio
@@ -310,8 +240,6 @@ def build_scene(context, filepath, report):
                     object_data.halo_light.far_atten_end = ass_object.light_properties.far_attenuation_end
 
             elif geo_class == 'PILL':
-                set_primitive_material(object_material_index, ASS, object_data)
-
                 bm = bmesh.new()
                 bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=12, radius1=1, radius2=1, depth=2)
                 bm.transform(Matrix.Translation((0, 0, 1)))
@@ -323,9 +251,14 @@ def build_scene(context, filepath, report):
                 bm.to_mesh(object_data)
                 bm.free()
 
-            elif geo_class == 'SPHERE':
-                set_primitive_material(object_material_index, ASS, object_data)
+                if 0 <= object_material_index < material_count:
+                    object_data.materials.append(blender_mats[object_material_index])
 
+                    current_variant = ASS.materials[object_material_index].variant
+                    if not global_functions.string_empty_check(current_variant) and not current_variant in object_data.region_list.keys():
+                        object_data.region_add(current_variant)
+
+            elif geo_class == 'SPHERE':
                 bm = bmesh.new()
                 bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
 
@@ -336,9 +269,14 @@ def build_scene(context, filepath, report):
                 bm.to_mesh(object_data)
                 bm.free()
 
-            elif geo_class == 'BOX':
-                set_primitive_material(object_material_index, ASS, object_data)
+                if 0 <= object_material_index < material_count:
+                    object_data.materials.append(blender_mats[object_material_index])
 
+                    current_variant = ASS.materials[object_material_index].variant
+                    if not global_functions.string_empty_check(current_variant) and not current_variant in object_data.region_list.keys():
+                        object_data.region_add(current_variant)
+
+            elif geo_class == 'BOX':
                 bm = bmesh.new()
                 bmesh.ops.create_cube(bm, size=1.0)
 
@@ -348,15 +286,17 @@ def build_scene(context, filepath, report):
                 bm.to_mesh(object_data)
                 bm.free()
 
+                if 0 <= object_material_index < material_count:
+                    object_data.materials.append(blender_mats[object_material_index])
+
+                    current_variant = ASS.materials[object_material_index].variant
+                    if not global_functions.string_empty_check(current_variant) and not current_variant in object_data.region_list.keys():
+                        object_data.region_add(current_variant)
+
             elif geo_class == 'MESH':
-                vertex_weights_sets, regions = mesh_processing.generate_mesh_retail(context, ASS, ass_object.vertices, ass_object.triangles, object_data, "halo3", random_color_gen)
-                object_settings = (vertex_weights_sets, regions)
+                vertex_weights_sets = mesh_processing.generate_mesh_retail(context, ASS, ass_object.vertices, ass_object.triangles, object_data, game_title, random_color_gen, blender_mats, asset_cache, material_count, report)
 
-                for region in regions:
-                    if not global_functions.string_empty_check(region):
-                        object_data.region_add(region)
-
-        object_settings_list.append(object_settings)
+        vertex_weights_list.append(vertex_weights_sets)
         object_list.append(object_data)
 
     instances = []
@@ -389,11 +329,11 @@ def build_scene(context, filepath, report):
             pivot_matrix = Matrix.LocRotScale(pivot_transform.translation, pivot_transform.rotation, pivot_scale)
 
             mesh = None
-            object_setings = None
+            vertex_weights_set = None
             xref = False
             if not object_index == -1:
                 mesh = object_list[object_index]
-                object_setings = object_settings_list[object_index]
+                vertex_weights_set = vertex_weights_list[object_index]
                 if hasattr(mesh, 'ass_jms') and not len(mesh.ass_jms.XREF_path) == 0:
                     xref = True
 
@@ -402,6 +342,7 @@ def build_scene(context, filepath, report):
                 instance_name_override = instance_element.name
 
             instance = bpy.data.objects.new(instance_element.name, mesh)
+            instance.color = (1, 1, 1, 0)
             collection.objects.link(instance)
             instances.append(instance)
 
@@ -411,18 +352,15 @@ def build_scene(context, filepath, report):
             if (4, 1, 0) > bpy.app.version and instance.type == 'MESH':
                 instance.data.use_auto_smooth = True
 
-            if not object_setings == None:
-                vertex_weights_sets = object_setings[0]
-                regions = object_setings[1]
-
+            if not vertex_weights_set == None:
                 for bone_goup in instance_element.bone_groups:
                     instance.vertex_groups.new(name = ordered_instances[bone_goup].name)
 
-                for vertex_weights_set_idx, vertex_weights_set in enumerate(vertex_weights_sets):
-                    for node_set in vertex_weights_set:
+                for vertex_weights_idx, vertex_weights in enumerate(vertex_weights_set):
+                    for node_set in vertex_weights:
                         group_index = node_set[0]
                         node_weight = node_set[1]
-                        instance.vertex_groups[group_index].add([vertex_weights_set_idx], node_weight, 'ADD')
+                        instance.vertex_groups[group_index].add([vertex_weights_idx], node_weight, 'ADD')
 
             if xref and instance.type == 'MESH' and not visited_objects[object_index]:
                 visited_objects[object_index] = True

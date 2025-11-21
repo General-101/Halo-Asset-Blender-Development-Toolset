@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="shad" name="shader" version="1">
+  <Layout regolithID="block:shader" internalName="shader_block" name="shader">
+    <FieldSet version="0" sizeofValue="128" sizeofSource="sizeof(s_shader_definition)" isLatest="true">
+      <TagReference CStyleName="_template" pascalStyleName="Template" name="template">
+        <tag>stem</tag>
+      </TagReference>
+      <StringId CStyleName="material_name" pascalStyleName="MaterialName" name="material name" tag="sted" />
+      <Block CStyleName="runtime_properties" pascalStyleName="RuntimeProperties" name="runtime properties" readOnly="true" maxElementCount="1">
+        <Layout regolithID="block:shader_properties" internalName="shader_properties_block" name="runtime properties">
+          <FieldSet version="0" sizeofValue="112" sizeofSource="sizeof(s_shader_properties)" isLatest="true">
+            <TagReference CStyleName="diffuse_map" pascalStyleName="DiffuseMap" name="diffuse map" readOnly="true">
+              <tag>bitm</tag>
+            </TagReference>
+            <TagReference CStyleName="lightmap_emissive_map" pascalStyleName="LightmapEmissiveMap" name="lightmap emissive map" readOnly="true">
+              <tag>bitm</tag>
+            </TagReference>
+            <RealRgbColor CStyleName="lightmap_emissive_color" pascalStyleName="LightmapEmissiveColor" name="lightmap emissive color" readOnly="true" />
+            <Real CStyleName="lightmap_emissive_power" pascalStyleName="LightmapEmissivePower" name="lightmap emissive power" readOnly="true" />
+            <Real CStyleName="lightmap_resolution_scale" pascalStyleName="LightmapResolutionScale" name="lightmap resolution scale" readOnly="true" />
+            <Real CStyleName="lightmap_half_life" pascalStyleName="LightmapHalfLife" name="lightmap half life" readOnly="true" />
+            <Real CStyleName="lightmap_diffuse_scale" pascalStyleName="LightmapDiffuseScale" name="lightmap diffuse scale" readOnly="true" />
+            <TagReference CStyleName="alphatest_map" pascalStyleName="AlphatestMap" name="alphatest map" readOnly="true">
+              <tag>bitm</tag>
+            </TagReference>
+            <TagReference CStyleName="translucent_map" pascalStyleName="TranslucentMap" name="translucent map" readOnly="true">
+              <tag>bitm</tag>
+            </TagReference>
+            <RealRgbColor CStyleName="lightmap_transparent_color" pascalStyleName="LightmapTransparentColor" name="lightmap transparent color" readOnly="true" />
+            <Real CStyleName="lightmap_transparent_alpha" pascalStyleName="LightmapTransparentAlpha" name="lightmap transparent alpha" readOnly="true" />
+            <Real CStyleName="lightmap_foliage_scale" pascalStyleName="LightmapFoliageScale" name="lightmap foliage scale" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:shader_flags" CStyleName="shader_flags" pascalStyleName="ShaderFlags">
+          <Bit name="water" CStyleName="water_bit" pascalStyleName="WaterBit" />
+          <Bit name="sort first" CStyleName="sort_first_bit" pascalStyleName="SortFirstBit" />
+          <Bit name="no active camo" CStyleName="no_active_camo_bit" pascalStyleName="NoActiveCamoBit" />
+        </Options>
+      </WordFlags>
+      <Block CStyleName="parameters" pascalStyleName="Parameters" name="parameters" maxElementCount="64" maxElementCountSource="k_maximum_parameters_per_shader">
+        <LayoutXRef>block:global_shader_parameter</LayoutXRef>
+      </Block>
+      <Block CStyleName="postprocess_definition" pascalStyleName="PostprocessDefinition" name="postprocess definition" readOnly="true" maxElementCount="3" maxElementCountSource="k_render_shader_platform_count">
+        <LayoutXRef>block:shader_postprocess_definition_new</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <UselessPad length="12" />
+      <Block CStyleName="predicted_resources" pascalStyleName="PredictedResources" name="predicted resources" maxElementCount="2048">
+        <LayoutXRef>block:predicted_resource</LayoutXRef>
+      </Block>
+      <TagReference CStyleName="light_response" pascalStyleName="LightResponse" name="light response">
+        <tag>slit</tag>
+      </TagReference>
+      <ShortEnum CStyleName="shader_lod_bias" pascalStyleName="ShaderLodBias" name="shader LOD bias">
+        <Options regolithID="enum:shader_lod_bias_level" CStyleName="shader_lod_bias_level" pascalStyleName="ShaderLodBiasLevel">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="4 times size" CStyleName="_4_times_size" pascalStyleName="4TimesSize" />
+          <Enum name="2 times size" CStyleName="_2_times_size" pascalStyleName="2TimesSize" />
+          <Enum name="1/2 size" CStyleName="_12_size" pascalStyleName="12Size" />
+          <Enum name="1/4 size" CStyleName="_14_size" pascalStyleName="14Size" />
+          <Enum name="never" CStyleName="never" pascalStyleName="Never" />
+          <Enum name="cinematic" CStyleName="cinematic" pascalStyleName="Cinematic" />
+          <Enum name="lowest" CStyleName="lowest" pascalStyleName="Lowest" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="specular_type" pascalStyleName="SpecularType" name="specular type">
+        <Options regolithID="enum:shader_specular_type" CStyleName="shader_specular_type" pascalStyleName="ShaderSpecularType">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="default" CStyleName="default_value" pascalStyleName="Default" />
+          <Enum name="dull" CStyleName="dull" pascalStyleName="Dull" />
+          <Enum name="shiny" CStyleName="shiny" pascalStyleName="Shiny" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="lightmap_type" pascalStyleName="LightmapType" name="lightmap type">
+        <Options regolithID="enum:shader_lightmap_type" CStyleName="shader_lightmap_type" pascalStyleName="ShaderLightmapType">
+          <Enum name="diffuse" CStyleName="diffuse" pascalStyleName="Diffuse" />
+          <Enum name="default specular" CStyleName="default_specular" pascalStyleName="DefaultSpecular" />
+          <Enum name="dull specular" CStyleName="dull_specular" pascalStyleName="DullSpecular" />
+          <Enum name="shiny specular" CStyleName="shiny_specular" pascalStyleName="ShinySpecular" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Real CStyleName="lightmap_specular_brightness" pascalStyleName="LightmapSpecularBrightness" name="lightmap specular brightness" />
+      <Real CStyleName="lightmap_ambient_bias" pascalStyleName="LightmapAmbientBias" name="lightmap ambient bias" units="[-1,1]" />
+      <Block CStyleName="postprocess_properties" pascalStyleName="PostprocessProperties" name="postprocess properties" maxElementCount="5" maxElementCountSource="k_shader_bitmap_property_count">
+        <Layout regolithID="block:long" internalName="long_block" name="long_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(long)" isLatest="true">
+            <LongInteger CStyleName="bitmap_group_index" pascalStyleName="BitmapGroupIndex" name="bitmap group index" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Real CStyleName="added_depth_bias_offset" pascalStyleName="AddedDepthBiasOffset" name="Added depth bias offset" />
+      <Real CStyleName="added_depth_bias_slope_scale" pascalStyleName="AddedDepthBiasSlopeScale" name="Added depth bias slope scale" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

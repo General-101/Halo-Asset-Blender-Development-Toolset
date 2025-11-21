@@ -35,6 +35,7 @@ from ..global_functions.mesh_processing import deselect_objects
 def build_object(context):
     armdata = bpy.data.armatures.new('Armature')
     armature = bpy.data.objects.new('Armature', armdata)
+    armature.color = (1, 1, 1, 0)
     context.collection.objects.link(armature)
 
     armature.select_set(True)
@@ -51,6 +52,7 @@ def build_object(context):
 def build_camera(context, report, scene, view_layer, shots, camera_name, camera_type="", is_extra_camera=False, armatures=[]):
     camera_data = bpy.data.cameras.new(name=camera_name)
     ob = bpy.data.objects.new(camera_name, camera_data)
+    ob.color = (1, 1, 1, 0)
     camera_data.qua.ubercam_type = camera_type
     context.collection.objects.link(ob)
 
@@ -123,6 +125,7 @@ def build_camera(context, report, scene, view_layer, shots, camera_name, camera_
             speaker_name = "shot_%s_speaker_%s" % (shot_idx, audio_idx)
             speaker_data = bpy.data.speakers.new(name=speaker_name)
             speaker = bpy.data.objects.new(speaker_name, speaker_data)
+            speaker.color = (1, 1, 1, 0)
             context.collection.objects.link(speaker)
             for armature in armatures:
                 if armature.name == audio.character:
@@ -148,11 +151,10 @@ def build_camera(context, report, scene, view_layer, shots, camera_name, camera_
 
                 speaker.data.sound = bpy.data.sounds.load(audio.audio_filename)
             except:
-                report({'WARNING'}, "No NLA window found. Reimport with the NLA window open or set the details printed to the console manually")
-                print("Object Name: ", speaker_name)
-                print("Starting Frame: ", audio.frame)
-                print("Sound Filepath: ",audio.audio_filename)
-                print(" ")
+                report({'WARNING'}, "No NLA window found. Reimport with the NLA window open or set the details printed here manually")
+                report({'WARNING'}, "Object Name: ", speaker_name)
+                report({'WARNING'}, "Starting Frame: ", audio.frame)
+                report({'WARNING'}, "Sound Filepath: ",audio.audio_filename)
 
 def build_scene(context, QUA, report):
     deselect_objects(context)

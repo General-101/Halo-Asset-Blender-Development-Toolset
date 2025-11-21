@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="sky " name="sky" version="1">
+  <Layout regolithID="block:sky" internalName="sky_block" name="sky">
+    <FieldSet version="0" sizeofValue="220" sizeofSource="sizeof(s_sky_definition)" isLatest="true">
+      <TagReference CStyleName="render_model" pascalStyleName="RenderModel" name="render model">
+        <tag>mode</tag>
+      </TagReference>
+      <TagReference CStyleName="animation_graph" pascalStyleName="AnimationGraph" name="animation graph">
+        <tag>jmad</tag>
+      </TagReference>
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:sky_flags" CStyleName="sky_flags" pascalStyleName="SkyFlags">
+          <Bit name="fixed in worldspace" CStyleName="fixed_in_worldspace_bit" pascalStyleName="FixedInWorldspaceBit" />
+          <Bit name="depreciated" CStyleName="depreciated_bit" pascalStyleName="DepreciatedBit" />
+          <Bit name="sky casts light from below" CStyleName="sky_casts_light_from_below_bit" pascalStyleName="SkyCastsLightFromBelowBit" />
+          <Bit name="disable sky in lightmaps" CStyleName="disable_sky_in_lightmaps_bit" pascalStyleName="DisableSkyInLightmapsBit" />
+          <Bit name="fog only affects containing clusters" CStyleName="fog_only_affects_containing_clusters_bit" pascalStyleName="FogOnlyAffectsContainingClustersBit" />
+          <Bit name="use clear color" CStyleName="use_clear_color_bit" pascalStyleName="UseClearColorBit" />
+        </Options>
+      </LongFlags>
+      <Real CStyleName="render_model_scale" pascalStyleName="RenderModelScale" name="render model scale" description="multiplier to scale the model's geometry up or down by (zero defaults to 'standard', 0.03)" />
+      <Real CStyleName="movement_scale" pascalStyleName="MovementScale" name="movement scale" description="how much the sky moves to remain centered on the player (zero defaults to 1.0, which means no parallax)" />
+      <Block CStyleName="cubemap" pascalStyleName="Cubemap" name="cubemap" maxElementCount="1">
+        <Layout regolithID="block:sky_cubemap" internalName="sky_cubemap_block" name="sky_cubemap_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_sky_cubemap)" isLatest="true">
+            <TagReference CStyleName="cubemap_reference" pascalStyleName="CubemapReference" name="cubemap reference" blockNameSource="true">
+              <tag>bitm</tag>
+            </TagReference>
+            <Real CStyleName="power_scale" pascalStyleName="PowerScale" name="power scale" description="0 defaults to 1" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="AMBIENT LIGHT" />
+      <RealRgbColor CStyleName="indoor_ambient_color" pascalStyleName="IndoorAmbientColor" name="indoor ambient color" description="the indoor ambient light color" />
+      <Pad sizeOfSource="sizeof(real)" length="4" />
+      <RealRgbColor CStyleName="outdoor_ambient_color" pascalStyleName="OutdoorAmbientColor" name="outdoor ambient color" description="the indoor ambient light color" />
+      <Pad sizeOfSource="sizeof(real)" length="4" />
+      <Explanation name="FOG" />
+      <Real CStyleName="fog_spread_distance" pascalStyleName="FogSpreadDistance" name="fog spread distance" units="world units" description="how far fog spreads into adjacent clusters" />
+      <Block CStyleName="atmospheric_fog" pascalStyleName="AtmosphericFog" name="atmospheric fog" maxElementCount="1">
+        <Layout regolithID="block:sky_atmospheric_fog" internalName="sky_atmospheric_fog_block" name="sky_atmospheric_fog_block">
+          <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(s_sky_atmospheric_fog)" isLatest="true">
+            <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+            <RealFraction CStyleName="maximum_density" pascalStyleName="MaximumDensity" name="maximum density" units="[0,1]" description="fog density is clamped to this value" />
+            <Real CStyleName="start_distance" pascalStyleName="StartDistance" name="start distance" units="world units" description="before this distance there is no fog" />
+            <Real CStyleName="opaque_distance" pascalStyleName="OpaqueDistance" name="opaque distance" units="world units" description="the fog becomes opaque (maximum density) at this distance from the viewer" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="secondary_fog" pascalStyleName="SecondaryFog" name="secondary fog" maxElementCount="1">
+        <LayoutXRef>block:sky_atmospheric_fog</LayoutXRef>
+      </Block>
+      <Block CStyleName="sky_fog" pascalStyleName="SkyFog" name="sky fog" maxElementCount="1">
+        <Layout regolithID="block:sky_fog" internalName="sky_fog_block" name="sky_fog_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_sky_fog)" isLatest="true">
+            <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+            <RealFraction CStyleName="density" pascalStyleName="Density" name="density" units="[0,1]" description="fog density is clamped to this value" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="patchy_fog" pascalStyleName="PatchyFog" name="patchy fog" maxElementCount="1">
+        <Layout regolithID="block:sky_patchy_fog" internalName="sky_patchy_fog_block" name="sky_patchy_fog_block">
+          <FieldSet version="0" sizeofValue="88" sizeofSource="sizeof(s_sky_patchy_fog)" isLatest="true">
+            <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+            <Pad sizeOfSource="sizeof(real_rgb_color)" length="12" />
+            <RealFractionBounds CStyleName="density" pascalStyleName="Density" name="density" units="[0,1]" />
+            <RealBounds CStyleName="distance" pascalStyleName="Distance" name="distance" units="world units" />
+            <Pad sizeOfSource="8*sizeof(long)" length="32" />
+            <TagReference CStyleName="patchy_fog" pascalStyleName="PatchyFog" name="patchy fog">
+              <tag>fpch</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="BLOOM OVERRIDE" />
+      <RealFraction CStyleName="amount" pascalStyleName="Amount" name="amount" units="[0,1]" />
+      <RealFraction CStyleName="threshold" pascalStyleName="Threshold" name="threshold" units="[0,1]" />
+      <RealFraction CStyleName="brightness" pascalStyleName="Brightness" name="brightness" units="[0,1]" />
+      <Real CStyleName="gamma_power" pascalStyleName="GammaPower" name="gamma power" />
+      <Block CStyleName="lights" pascalStyleName="Lights" name="lights" maxElementCount="8" maxElementCountSource="MAXIMUM_LIGHTS_PER_SKY">
+        <Layout regolithID="block:sky_light" internalName="sky_light_block" name="sky_light_block">
+          <FieldSet version="0" sizeofValue="72" sizeofSource="sizeof(s_sky_light)" isLatest="true">
+            <RealVector3D CStyleName="direction_vector" pascalStyleName="DirectionVector" name="direction vector" />
+            <RealEulerAngles2D CStyleName="direction" pascalStyleName="Direction" name="direction" />
+            <TagReference CStyleName="lens_flare" pascalStyleName="LensFlare" name="lens flare">
+              <tag>lens</tag>
+            </TagReference>
+            <Block CStyleName="fog" pascalStyleName="Fog" name="fog" maxElementCount="1">
+              <Layout regolithID="block:sky_light_fog" internalName="sky_light_fog_block" name="sky_light_fog_block">
+                <FieldSet version="0" sizeofValue="44" sizeofSource="sizeof(s_sky_light_fog)" isLatest="true">
+                  <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+                  <RealFraction CStyleName="maximum_density" pascalStyleName="MaximumDensity" name="maximum density" units="[0,1]" description="fog density is clamped to this value" />
+                  <Real CStyleName="start_distance" pascalStyleName="StartDistance" name="start distance" units="world units" description="before this distance there is no fog" />
+                  <Real CStyleName="opaque_distance" pascalStyleName="OpaqueDistance" name="opaque distance" units="world units" description="the fog becomes opaque (maximum density) at this distance from the viewer" />
+                  <Explanation name="FOG INFLUENCES" />
+                  <AngleBounds CStyleName="cone" pascalStyleName="Cone" name="cone" units="degrees" />
+                  <RealFraction CStyleName="atmospheric_fog_influence" pascalStyleName="AtmosphericFogInfluence" name="atmospheric fog influence" units="[0,1]" />
+                  <RealFraction CStyleName="secondary_fog_influence" pascalStyleName="SecondaryFogInfluence" name="secondary fog influence" units="[0,1]" />
+                  <RealFraction CStyleName="sky_fog_influence" pascalStyleName="SkyFogInfluence" name="sky fog influence" units="[0,1]" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="fog_opposite" pascalStyleName="FogOpposite" name="fog opposite" description="fog from the opposite direction" maxElementCount="1">
+              <LayoutXRef>block:sky_light_fog</LayoutXRef>
+            </Block>
+            <Block CStyleName="radiosity" pascalStyleName="Radiosity" name="radiosity" maxElementCount="1">
+              <Layout regolithID="block:sky_radiosity_light" internalName="sky_radiosity_light_block" name="sky_radiosity_light_block">
+                <FieldSet version="0" sizeofValue="40" sizeofSource="sizeof(s_sky_radiosity_light)" isLatest="true">
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:sky_radiosity_light_flags" CStyleName="sky_radiosity_light_flags" pascalStyleName="SkyRadiosityLightFlags">
+                      <Bit name="affects exteriors" CStyleName="affects_exteriors_bit" pascalStyleName="AffectsExteriorsBit" />
+                      <Bit name="affects interiors" CStyleName="affects_interiors_bit" pascalStyleName="AffectsInteriorsBit" />
+                      <Bit name="direct illumination in lightmaps" CStyleName="direct_illumination_in_lightmaps_bit" pascalStyleName="DirectIlluminationInLightmapsBit" />
+                      <Bit name="indirect illumination in lightmaps" CStyleName="indirect_illumination_in_lightmaps_bit" pascalStyleName="IndirectIlluminationInLightmapsBit" />
+                    </Options>
+                  </LongFlags>
+                  <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" description="light color" />
+                  <Real CStyleName="power" pascalStyleName="Power" name="power" units="[0,+inf]" description="light power from 0 to infinity" />
+                  <Real CStyleName="test_distance" pascalStyleName="TestDistance" name="test distance" units="world units" description="the length of the ray for shadow testing" />
+                  <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                  <Angle CStyleName="diameter" pascalStyleName="Diameter" name="diameter" units="degrees" description="angular diameter of the light source in the sky" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="ROTATION" />
+      <Angle CStyleName="global_sky_rotation" pascalStyleName="GlobalSkyRotation" name="global sky rotation" />
+      <Block CStyleName="shader_functions" pascalStyleName="ShaderFunctions" name="shader functions" expertOnly="true" maxElementCount="8" maxElementCountSource="MAXIMUM_SHADER_FUNCTIONS_PER_SKY">
+        <Layout regolithID="block:sky_shader_function" internalName="sky_shader_function_block" name="sky_shader_function_block">
+          <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(s_sky_shader_function)" isLatest="true">
+            <Pad sizeOfSource="sizeof(long)" length="4" />
+            <String CStyleName="global_function_name" pascalStyleName="GlobalFunctionName" name="global function name" description="the global function that controls this shader value" blockNameSource="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="animations" pascalStyleName="Animations" name="animations" expertOnly="true" maxElementCount="8" maxElementCountSource="MAXIMUM_ANIMATIONS_PER_SKY">
+        <Layout regolithID="block:sky_animation" internalName="sky_animation_block" name="sky_animation_block">
+          <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(s_sky_animation)" isLatest="true">
+            <ShortInteger CStyleName="animation_index" pascalStyleName="AnimationIndex" name="animation index" description="the index of the animation in the animation graph" />
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <Real CStyleName="period" pascalStyleName="Period" name="period" units="seconds" />
+            <Pad sizeOfSource="7*sizeof(long)" length="28" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <RealRgbColor CStyleName="clear_color" pascalStyleName="ClearColor" name="clear color" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

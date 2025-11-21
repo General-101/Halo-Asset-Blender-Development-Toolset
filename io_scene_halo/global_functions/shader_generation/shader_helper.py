@@ -27,14 +27,17 @@
 import os
 import bpy
 import zlib
+import base64
 import numpy as np
 
+from enum import Enum, auto
 from mathutils import Vector
-from ...global_functions.parse_tags import parse_tag
 from ...global_functions import global_functions
-from ...file_tag.h1.file_shader_model.format import ModelFlags, DetailFumctionEnum, DetailMaskEnum, FunctionEnum
+from .image_helper import get_texture_from_plate
+from ...file_tag.tag_interface import tag_interface, tag_common
 try:
     from PIL import Image
+
 except ModuleNotFoundError:
     print("PIL not found. Unable to create image node.")
     Image = None
@@ -42,8 +45,10 @@ except ModuleNotFoundError:
 HALO_1_SHADER_RESOURCES = os.path.join(os.path.dirname(os.path.realpath(__file__)), "halo_1_shader_resources.blend")
 HALO_2_SHADER_RESOURCES = os.path.join(os.path.dirname(os.path.realpath(__file__)), "halo_2_shader_resources.blend")
 
-from ...file_tag.h2.file_shader.format import AnimationTypeEnum
-from ...file_tag.h2.file_shader_template.format import TypeEnum
+class DetailFumctionEnum(Enum):
+    double_biased_multiply = 0
+    multiply = auto()
+    double_biased_add = auto()
 
 class ParameterSettings():
     def __init__(self, name="", bitmap=None, translation=Vector(), scale=Vector(), rotation=Vector(), color=(0.0, 0.0, 0.0, 1.0), value=0.0):
@@ -54,50 +59,6 @@ class ParameterSettings():
         self.rotation = rotation
         self.color = color
         self.value = value
-
-def get_bitmap(tag_ref, texture_root):
-    texture_extensions = ("tif", "tiff")
-    texture_path = None
-    bitmap_name = "White"
-    if not tag_ref == None and tag_ref.name_length > 0:
-        bitmap_name = "%s_%s" % (global_functions.string_checksum(tag_ref.name, checksum = 0), os.path.basename(tag_ref.name))
-        for extension in texture_extensions:
-            check_path = os.path.join(texture_root, "%s.%s" % (tag_ref.name, extension))
-            if os.path.isfile(check_path):
-                texture_path = check_path
-                break
-
-        if not texture_path:
-            print("data texture for the following bitmap was not found")
-            print(tag_ref.name)
-    else:
-        print("No bitmap was set")
-
-    return texture_path, bitmap_name
-
-def get_h2_bitmap(tag_ref, texture_root, report):
-    texture_extensions = ("tif", "tiff")
-    texture_path = None
-    bitmap_name = "White"
-    bitmap_tag = None
-    if not tag_ref == None and tag_ref.name_length > 0:
-        bitmap_name = "%s_%s" % (global_functions.string_checksum(tag_ref.name, checksum = 0), os.path.basename(tag_ref.name))
-        for extension in texture_extensions:
-            check_path = os.path.join(texture_root, "%s.%s" % (tag_ref.name, extension))
-            if os.path.isfile(check_path):
-                texture_path = check_path
-                break
-
-        if not texture_path:
-            print("data texture for the following bitmap was not found")
-            print(tag_ref.name)
-
-        bitmap_tag = parse_tag(tag_ref, report, "halo2", "retail")
-
-    else:
-        print("No bitmap was set")
-
-    return texture_path, bitmap_name, bitmap_tag
 
 def get_output_material_node(mat):
     output_material_node = None
@@ -127,59 +88,96 @@ def get_linked_node(node, input_name, search_type):
 def connect_inputs(tree, output_node, output_name, input_node, input_name):
     tree.links.new(output_node.outputs[output_name], input_node.inputs[input_name])
 
-def generate_image_node(mat, texture, BITMAP=None, bitmap_name="White", is_env=False, pixel_data=None):
-    if is_env:
-        image_node = mat.node_tree.nodes.new("ShaderNodeTexEnvironment")
-    else:
-        image_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
+def generate_image_node(mat, tag_ref, permutation_index, asset_cache, game_title, report):
+    tool_preferences = bpy.context.preferences.addons["io_scene_halo"].preferences
+    if game_title == "halo1":
+        data_path = tool_preferences.halo_1_data_path
+        tag_path = tool_preferences.halo_1_tag_path
+        tag_groups = tag_common.h1_tag_groups
+    elif game_title == "halo2":
+        data_path = tool_preferences.halo_2_data_path
+        tag_path = tool_preferences.halo_2_tag_path
+        tag_groups = tag_common.h2_tag_groups
+    elif game_title == "halo3":
+        data_path = tool_preferences.halo_3_data_path
+        tag_path = tool_preferences.halo_3_tag_path
+        tag_groups = tag_common.h2_tag_groups
+    elif game_title == "haloodst":
+        data_path = tool_preferences.halo_odst_data_path
+        tag_path = tool_preferences.halo_odst_tag_path
+        tag_groups = tag_common.h2_tag_groups
 
-    if BITMAP and Image and BITMAP.compressed_color_plate_data.size > 0:
-        image = bpy.data.images.get(bitmap_name)
-        if not image:
-            x = BITMAP.color_plate_width
-            y = BITMAP.color_plate_height
+    texture_extensions = ("tif", "tiff")
+    texture_path = None
+    bitmap_name = "White"
+    image_path = tag_ref.get("path", "")
+    image_group = tag_ref.get("group name", None)
+    if not tag_ref == None and len(image_path) > 0:
+        if game_title == "halo1" or game_title == "halo2":
+            bitmap_name = os.path.basename(image_path)
+            for extension in texture_extensions:
+                check_path = os.path.join(data_path, "%s.%s" % (image_path, extension))
+                if os.path.isfile(check_path):
+                    texture_path = check_path
+                    break
+        elif game_title == "halo3":
+            bitmap_directory = os.path.dirname(image_path)
+            bitmap_name = os.path.basename(image_path)
+            check_path = os.path.join(os.path.dirname(os.path.dirname(tool_preferences.halo_3_data_path)), "blender_dumps", bitmap_directory, "pixel_data_%s%s" % (bitmap_name, "_00_00.tga"))
+            if os.path.isfile(check_path):
+                texture_path = check_path
 
-            image = bpy.data.images.new(bitmap_name, x, y, alpha = True)
-            decompressed_data = zlib.decompress(BITMAP.compressed_color_plate)
-            pil_image = Image.frombuffer("RGBA", (x, y), decompressed_data, 'raw', "BGRA").transpose(method=Image.Transpose.FLIP_TOP_BOTTOM)
-            pixels = list(pil_image.getdata())
-            background_color = pixels[0][:3]
-            divider_color = pixels[1][:3]
-            dummy_color = pixels[2][:3]
+        elif game_title == "haloodst":
+            bitmap_directory = os.path.dirname(image_path)
+            bitmap_name = os.path.basename(image_path)
+            check_path = os.path.join(os.path.dirname(os.path.dirname(tool_preferences.halo_odst_data_path)), "blender_dumps", bitmap_directory, "pixel_data_%s%s" % (bitmap_name, "_00_00.tga"))
+            if os.path.isfile(check_path):
+                texture_path = check_path
 
-            normalized = 1.0 / 255.0
+    texture = None
+    bitmap_asset = tag_interface.get_disk_asset(image_path, tag_groups.get(image_group))
+    if bitmap_asset:
+        tag_root = bitmap_asset["Data"]
+        color_plate = base64.b64decode(tag_root["compressed color plate data"]["encoded"])
+        if bitmap_asset and Image and len(color_plate) > 0:
+            texture = asset_cache[image_group][image_path]["blender_assets"].get("blender_asset")
+            if texture is None:
+                x = tag_root["color plate width"]
+                y = tag_root["color plate height"]
+
+                decompressed_data = zlib.decompress(color_plate[4:])
+                pil_image = Image.frombytes("RGBA", (x, y), decompressed_data, 'raw', "BGRA")
+
+                #TODO: This needs a better method. This basically locks in the first permutation only. 
+                # I need some sort of setup that imports all the image variants to select from. 
+                is_cubemap = False
+                if tag_root["type"]["value"] == 2:
+                    is_cubemap = True
+
+                pil_image = get_texture_from_plate(pil_image, permutation_index, is_cubemap)
+
+                normalized = 1.0 / 255.0
+                
+                blender_pixels = (np.asarray(pil_image.convert('RGBA').transpose(method=Image.Transpose.FLIP_TOP_BOTTOM),dtype=np.float32) * normalized).ravel()
+
+                w, h = pil_image.size
+                texture = bpy.data.images.new(bitmap_name, w, h, alpha = True)
+                texture.pixels[:] = blender_pixels
+                texture.pack()
+
+                asset_cache[image_group][image_path]["blender_assets"]["blender_asset"] = texture
+
+    if texture is None:
+        tag_group_entry = asset_cache.get(image_group)
+        if tag_group_entry is not None:
+            path_entry = tag_group_entry.get(image_path)
+            if path_entry is not None:
+                texture = path_entry["blender_assets"].get("blender_asset")
+                if not texture_path == None and os.path.isfile(texture_path):
+                    texture = bpy.data.images.load(texture_path, check_existing=True)
+                    asset_cache[image_group][image_path]["blender_assets"]["blender_asset"] = texture
             
-            blender_pixels = (np.asarray(pil_image.convert('RGBA'),dtype=np.float32) * normalized).ravel()
-
-            image.pixels[:] = blender_pixels
-            image.pack()
-
-        image_node.image = image
-
-    else:
-        if not texture == None and os.path.isfile(texture):
-            print("No color plate found. Loading texture found in data directory.")
-            image = bpy.data.images.load(texture, check_existing=True)
-            image_node.image = image
-
-        elif not pixel_data == None:
-            print("No color plate found. Loading texture dumped from pixel data. Expect quality loss.")
-            image = bpy.data.images.load(pixel_data, check_existing=True)
-            image_node.image = image
-
-        else:
-            print("No color plate found. Generating white image.")
-            image = bpy.data.images.get(bitmap_name)
-            if not image:
-                image = bpy.data.images.new(bitmap_name, 2, 2)
-                image.generated_color = (1, 1, 1, 1)
-                image.pack()
-
-            image_node.image = image
-
-        print(" ")
-
-    return image_node
+    return texture
 
 def generate_biased_multiply_node(tree):
     biased_multiply_logic_group = bpy.data.node_groups.get("Biased Multiply")
@@ -823,7 +821,7 @@ def get_shader_node(tree, shader_name):
 
     return shader_node
 
-def get_fallback_shader_node(tree, shader_name):
+def get_fallback_shader_node(tree, shader_name, blacklist=None):
     shader_node = None
     best_score = (-1, float('inf'))
     node_group = None
@@ -857,7 +855,7 @@ def get_fallback_shader_node(tree, shader_name):
 
     return shader_node
 
-def set_image_scale(mat, image_node, image_scale):
+def set_image_scale(mat, image_node, image_scale, rescale_image=False, bitmap_1=None, bitmap_2=None, permutation_index=0):
     vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
     vect_math_node.operation = 'MULTIPLY'
     vect_math_node.location = Vector((-200, -125)) + image_node.location
@@ -871,8 +869,47 @@ def set_image_scale(mat, image_node, image_scale):
     connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
     connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
 
-    combine_xyz_node.inputs[0].default_value = image_scale[0]
-    combine_xyz_node.inputs[1].default_value = image_scale[1]
-    combine_xyz_node.inputs[2].default_value = image_scale[2]
+    x, y, z = image_scale
+    if rescale_image:
+        bitmap_1_count = len(bitmap_1["Data"]["bitmaps"])
+        bitmap_2_count = len(bitmap_2["Data"]["bitmaps"])
+        if bitmap_1_count > 0 and bitmap_2_count > 0:
+            if bitmap_1_count > permutation_index and permutation_index >= 0:
+                bitmap_1_element = bitmap_1["Data"]["bitmaps"][permutation_index]
+            else:
+                bitmap_1_element = bitmap_1["Data"]["bitmaps"][0]
+            if bitmap_2_count > permutation_index and permutation_index >= 0:
+                bitmap_2_element = bitmap_2["Data"]["bitmaps"][permutation_index]
+            else:
+                bitmap_2_element = bitmap_2["Data"]["bitmaps"][0]
+
+            x *= bitmap_1_element["width"] / bitmap_2_element["width"]
+            y *= bitmap_1_element["height"] / bitmap_2_element["height"]
+
+    combine_xyz_node.inputs[0].default_value = x
+    combine_xyz_node.inputs[1].default_value = y
+    combine_xyz_node.inputs[2].default_value = z
 
     uv_map_node.uv_map = "UVMap_Render"
+
+def place_node(node, col=0, row=0, spacing=100):
+    width = getattr(node, 'width', 140)
+    height = getattr(node, 'height', 100)
+
+    x = -((col + 1) * (width + spacing))
+    y = -(row + 1) * (height + spacing)
+
+    node.location = (x, y)
+
+def convert_to_blender_color(color_dict, has_alpha):
+    a = color_dict.get("A", 1.0)
+    r = global_functions.srgb2lin(color_dict.get("R", 0.0))
+    g = global_functions.srgb2lin(color_dict.get("G", 0.0))
+    b = global_functions.srgb2lin(color_dict.get("B", 0.0))
+
+    color = (r, g, b)
+    if has_alpha:
+        color = (r, g, b, a)
+
+    return color
+

@@ -26,16 +26,43 @@
 
 import bpy
 
+from enum import Flag, Enum, auto
 from mathutils import Vector
-from ...global_functions.parse_tags import parse_tag
-from ...file_tag.h1.file_shader_environment.format import EnvironmentTypeEnum, EnvironmentFlags, DiffuseFlags, ReflectionFlags, FunctionEnum
+from ...global_functions import global_functions
+from ...file_tag.tag_interface import tag_interface, tag_common
 from .shader_helper import (
-    get_bitmap, 
+    convert_to_blender_color, 
+    set_image_scale, 
     get_output_material_node, 
     connect_inputs, 
-    generate_image_node, 
+    generate_image_node,
+    place_node,
     HALO_1_SHADER_RESOURCES
     )
+
+class DiffuseFlags(Flag):
+    rescale_detail_maps = auto()
+    rescale_bump_maps = auto()
+
+class EnvironmentFlags(Flag):
+    alpha_tested = auto()
+    bump_map_is_specular_mask = auto()
+    true_atmospheric_fog = auto()
+    use_alternate_bump_attenuation = auto()
+
+class FunctionEnum(Enum):
+    one = 0
+    zero = auto()
+    cosine = auto()
+    cosine_variable_period = auto()
+    diagonal_wave = auto()
+    diagonal_wave_variable_period = auto()
+    slide = auto()
+    slide_variable_period = auto()
+    noise = auto()
+    jitter = auto()
+    wander = auto()
+    spark = auto()
 
 def get_shader_environment_node(tree):
     if not bpy.data.node_groups.get("shader_environment"):
@@ -47,292 +74,139 @@ def get_shader_environment_node(tree):
 
     return shader_environment_node
 
-def set_primary_detail_scale(shader, mat, primary_detail_node, base_bitmap_count, primary_detail_bitmap_count, base_bitmap, primary_detail_bitmap, permutation_index, rescale_detail):
-    vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
-    vect_math_node.operation = 'MULTIPLY'
-    vect_math_node.location = Vector((-1400.0, 800.0))
+def generate_shader_environment(mat, shader_asset, permutation_index, asset_cache, report):
+    tag_groups = tag_common.h1_tag_groups
+    shader_data = shader_asset["Data"]
 
-    connect_inputs(mat.node_tree, vect_math_node, "Vector", primary_detail_node, "Vector")
-
-    uv_map_node = mat.node_tree.nodes.new("ShaderNodeUVMap")
-    combine_xyz_node = mat.node_tree.nodes.new("ShaderNodeCombineXYZ")
-    uv_map_node.location = Vector((-1600, 875))
-    combine_xyz_node.location = Vector((-1600, 750))
-    connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
-    connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
-
-    scale = shader.primary_detail_map_scale
-    if shader.primary_detail_map_scale == 0.0:
-        scale = 1.0
-
-    primary_detail_rescale_i = scale
-    primary_detail_rescale_j = scale
-    if base_bitmap_count > 0 and primary_detail_bitmap_count > 0 and rescale_detail:
-        if base_bitmap_count > permutation_index:
-            base_element = base_bitmap.bitmaps[permutation_index]
-        else:
-            base_element = base_bitmap.bitmaps[0]
-
-        if primary_detail_bitmap_count > permutation_index:
-            primary_detail_element = primary_detail_bitmap.bitmaps[permutation_index]
-        else:
-            primary_detail_element = primary_detail_bitmap.bitmaps[0]
-
-        primary_detail_rescale_i *= base_element.width / primary_detail_element.width
-        primary_detail_rescale_j *= base_element.height / primary_detail_element.height
-
-    combine_xyz_node.inputs[0].default_value = primary_detail_rescale_i
-    combine_xyz_node.inputs[1].default_value = primary_detail_rescale_j
-    combine_xyz_node.inputs[2].default_value = 1
-
-def set_secondary_detail_scale(shader, mat, secondary_detail_node, base_bitmap_count, secondary_detail_bitmap_count, base_bitmap, secondary_detail_bitmap, permutation_index, rescale_detail):
-    vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
-    vect_math_node.operation = 'MULTIPLY'
-    vect_math_node.location = Vector((-1400.0, 500.0))
-
-    connect_inputs(mat.node_tree, vect_math_node, "Vector", secondary_detail_node, "Vector")
-
-    uv_map_node = mat.node_tree.nodes.new("ShaderNodeUVMap")
-    combine_xyz_node = mat.node_tree.nodes.new("ShaderNodeCombineXYZ")
-    uv_map_node.location = Vector((-1600, 575))
-    combine_xyz_node.location = Vector((-1600, 450))
-    connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
-    connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
-
-    scale = shader.secondary_detail_map_scale
-    if shader.secondary_detail_map_scale == 0.0:
-        scale = 1.0
-
-    secondary_detail_rescale_i = scale
-    secondary_detail_rescale_j = scale
-    if base_bitmap_count > 0 and secondary_detail_bitmap_count > 0 and rescale_detail:
-        if base_bitmap_count > permutation_index:
-            base_element = base_bitmap.bitmaps[permutation_index]
-        else:
-            base_element = base_bitmap.bitmaps[0]
-        if secondary_detail_bitmap_count > permutation_index:
-            secondary_detail_element = secondary_detail_bitmap.bitmaps[permutation_index]
-        else:
-            secondary_detail_element = secondary_detail_bitmap.bitmaps[0]
-
-        secondary_detail_rescale_i *= base_element.width / secondary_detail_element.width
-        secondary_detail_rescale_j *= base_element.height / secondary_detail_element.height
-
-    combine_xyz_node.inputs[0].default_value = secondary_detail_rescale_i
-    combine_xyz_node.inputs[1].default_value = secondary_detail_rescale_j
-    combine_xyz_node.inputs[2].default_value = 1
-
-def set_micro_detail_scale(shader, mat, micro_detail_node, base_bitmap_count, micro_detail_bitmap_count, base_bitmap, micro_detail_bitmap, permutation_index, rescale_detail):
-    vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
-    vect_math_node.operation = 'MULTIPLY'
-    vect_math_node.location = Vector((-1400.0, 200.0))
-
-    connect_inputs(mat.node_tree, vect_math_node, "Vector", micro_detail_node, "Vector")
-
-    uv_map_node = mat.node_tree.nodes.new("ShaderNodeUVMap")
-    combine_xyz_node = mat.node_tree.nodes.new("ShaderNodeCombineXYZ")
-    uv_map_node.location = Vector((-1600, 275))
-    combine_xyz_node.location = Vector((-1600, 150))
-    connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
-    connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
-
-    scale = shader.micro_detail_map_scale
-    if shader.micro_detail_map_scale == 0.0:
-        scale = 1.0
-
-    micro_detail_rescale_i = scale
-    micro_detail_rescale_j = scale
-    if base_bitmap_count > 0 and micro_detail_bitmap_count > 0 and rescale_detail:
-        if base_bitmap_count > permutation_index:
-            base_element = base_bitmap.bitmaps[permutation_index]
-        else:
-            base_element = base_bitmap.bitmaps[0]
-        if micro_detail_bitmap_count > permutation_index:
-            micro_detail_element = micro_detail_bitmap.bitmaps[permutation_index]
-        else:
-            micro_detail_element = micro_detail_bitmap.bitmaps[0]
-
-        micro_detail_rescale_i *= base_element.width / micro_detail_element.width
-        micro_detail_rescale_j *= base_element.height / micro_detail_element.height
-
-    combine_xyz_node.inputs[0].default_value = micro_detail_rescale_i
-    combine_xyz_node.inputs[1].default_value = micro_detail_rescale_j
-    combine_xyz_node.inputs[2].default_value = 1
-
-def set_bump_scale(shader, mat, bump_node, base_bitmap_count, bump_bitmap_count, base_bitmap, bump_bitmap, permutation_index, rescale_bump_maps):
-    vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
-    vect_math_node.operation = 'MULTIPLY'
-    vect_math_node.location = Vector((-1400.0, -100.0))
-
-    connect_inputs(mat.node_tree, vect_math_node, "Vector", bump_node, "Vector")
-
-    uv_map_node = mat.node_tree.nodes.new("ShaderNodeUVMap")
-    combine_xyz_node = mat.node_tree.nodes.new("ShaderNodeCombineXYZ")
-    uv_map_node.location = Vector((-1600, -25))
-    combine_xyz_node.location = Vector((-1600, -150))
-    connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
-    connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
-
-    scale = shader.bump_map_scale
-    if shader.bump_map_scale == 0.0:
-        scale = 1.0
-
-    bump_rescale_i = scale
-    bump_rescale_j = scale
-    if base_bitmap_count > 0 and bump_bitmap_count > 0 and rescale_bump_maps:
-        if base_bitmap_count > permutation_index:
-            base_element = base_bitmap.bitmaps[permutation_index]
-        else:
-            base_element = base_bitmap.bitmaps[0]
-        if bump_bitmap_count > permutation_index:
-            bump_element = bump_bitmap.bitmaps[permutation_index]
-        else:
-            bump_element = bump_bitmap.bitmaps[0]
-
-        bump_rescale_i *= base_element.width / bump_element.width
-        bump_rescale_j *= base_element.height / bump_element.height
-
-    combine_xyz_node.inputs[0].default_value = bump_rescale_i
-    combine_xyz_node.inputs[1].default_value = bump_rescale_j
-    combine_xyz_node.inputs[2].default_value = 1
-
-def set_illum_scale(shader, mat, self_illumination_node):
-    vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
-    vect_math_node.operation = 'MULTIPLY'
-    vect_math_node.location = Vector((-1400.0, -350.0))
-
-    connect_inputs(mat.node_tree, vect_math_node, "Vector", self_illumination_node, "Vector")
-
-    uv_map_node = mat.node_tree.nodes.new("ShaderNodeUVMap")
-    combine_xyz_node = mat.node_tree.nodes.new("ShaderNodeCombineXYZ")
-    uv_map_node.location = Vector((-1600, -325))
-    combine_xyz_node.location = Vector((-1600, -450))
-    connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
-    connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
-
-    scale = shader.map_scale
-    if shader.map_scale == 0.0:
-        scale = 1.0
-
-    combine_xyz_node.inputs[0].default_value = scale
-    combine_xyz_node.inputs[1].default_value = scale
-    combine_xyz_node.inputs[2].default_value = 1
-
-def generate_shader_environment(mat, shader, permutation_index, report):
     mat.use_nodes = True
 
-    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
-    base_map, base_map_name = get_bitmap(shader.base_map, texture_root)
-    primary_detail_map, primary_detail_map_name = get_bitmap(shader.primary_detail_map, texture_root)
-    secondary_detail_map, secondary_detail_map_name = get_bitmap(shader.secondary_detail_map, texture_root)
-    micro_detail_map, micro_detail_map_name = get_bitmap(shader.micro_detail_map, texture_root)
-    bump_map, bump_map_name = get_bitmap(shader.bump_map, texture_root)
-    illum_map, illum_map_name = get_bitmap(shader.map, texture_root)
-    reflection_map, reflection_map_name = get_bitmap(shader.reflection_cube_map, texture_root)
-
-    base_bitmap = parse_tag(shader.base_map, report, "halo1", "retail")
-    primary_detail_bitmap = parse_tag(shader.primary_detail_map, report, "halo1", "retail")
-    secondary_detail_bitmap = parse_tag(shader.secondary_detail_map, report, "halo1", "retail")
-    micro_detail_bitmap = parse_tag(shader.micro_detail_map, report, "halo1", "retail")
-    base_bitmap = parse_tag(shader.base_map, report, "halo1", "retail")
-    bump_bitmap = parse_tag(shader.bump_map, report, "halo1", "retail")
-    illum_bitmap = parse_tag(shader.map, report, "halo1", "retail")
-    reflection_bitmap = parse_tag(shader.reflection_cube_map, report, "halo1", "retail")
-
-    rescale_detail = DiffuseFlags.rescale_detail_maps in DiffuseFlags(shader.diffuse_flags)
-    rescale_bump_maps = DiffuseFlags.rescale_bump_maps in DiffuseFlags(shader.diffuse_flags)
-
-    base_bitmap_count = 0
-    primary_detail_bitmap_count = 0
-    secondary_detail_bitmap_count = 0
-    micro_detail_bitmap_count = 0
-    bump_bitmap_count = 0
-    if base_bitmap:
-        base_bitmap_count = len(base_bitmap.bitmaps)
-    if primary_detail_bitmap:
-        primary_detail_bitmap_count = len(primary_detail_bitmap.bitmaps)
-    if secondary_detail_bitmap:
-        secondary_detail_bitmap_count = len(secondary_detail_bitmap.bitmaps)
-    if micro_detail_bitmap:
-        micro_detail_bitmap_count = len(micro_detail_bitmap.bitmaps)
-    if bump_bitmap:
-        bump_bitmap_count = len(bump_bitmap.bitmaps)
-
+    diffuse_flags = DiffuseFlags(shader_data["flags_2"])
+    rescale_detail = DiffuseFlags.rescale_detail_maps in diffuse_flags
+    rescale_bump = DiffuseFlags.rescale_bump_maps in diffuse_flags
     for node in mat.node_tree.nodes:
         mat.node_tree.nodes.remove(node)
 
     output_material_node = get_output_material_node(mat)
-    output_material_node.location = Vector((0.0, 0.0))
+    place_node(output_material_node, 0)
 
     shader_environment_node = get_shader_environment_node(mat.node_tree)
-    shader_environment_node.location = Vector((-450.0, -20.0))
+    place_node(shader_environment_node, 1)
     shader_environment_node.name = "Shader Environment"
     shader_environment_node.width = 400.0
     shader_environment_node.height = 100.0
 
     connect_inputs(mat.node_tree, shader_environment_node, "Shader", output_material_node, "Surface")
 
-    base_node = generate_image_node(mat, base_map, base_bitmap, base_map_name)
-    base_node.name = "Base Map"
-    base_node.location = Vector((-1200, 1200))
-    if not base_node.image == None:
-        base_node.image.alpha_mode = 'CHANNEL_PACKED'
+    base_map_texture = generate_image_node(mat, shader_data["base map"], permutation_index, asset_cache, "halo1", report)
+    base_bitmap = tag_interface.get_disk_asset(shader_data["base map"]["path"], tag_groups.get(shader_data["base map"]["group name"]))
+    if base_map_texture:
+        base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
+        base_map_node.image = base_map_texture
+        base_map_node.image.alpha_mode = 'CHANNEL_PACKED'
+        place_node(base_map_node, 2)
+        connect_inputs(mat.node_tree, base_map_node, "Color", shader_environment_node, "Base Map")
+        connect_inputs(mat.node_tree, base_map_node, "Alpha", shader_environment_node, "Base Map Alpha")
 
-    primary_detail_node = generate_image_node(mat, primary_detail_map, primary_detail_bitmap, primary_detail_map_name)
-    primary_detail_node.name = "Primary Detail Map"
-    primary_detail_node.location = Vector((-1200, 900))
-    if not primary_detail_node.image == None:
+    primary_detail_texture = generate_image_node(mat, shader_data["primary detail map"], permutation_index, asset_cache, "halo1", report)
+    if primary_detail_texture:
+        primary_detail_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
+        primary_detail_node.image = primary_detail_texture
         primary_detail_node.image.alpha_mode = 'CHANNEL_PACKED'
+        place_node(primary_detail_node, 2, 1)
+        connect_inputs(mat.node_tree, primary_detail_node, "Color", shader_environment_node, "Primary Detail Map")
+        connect_inputs(mat.node_tree, primary_detail_node, "Alpha", shader_environment_node, "Primary Detail Map Alpha")
 
-    secondary_detail_node = generate_image_node(mat, secondary_detail_map, secondary_detail_bitmap, secondary_detail_map_name)
-    secondary_detail_node.name = "Secondary Detail Map"
-    secondary_detail_node.location = Vector((-1200, 600))
-    if not secondary_detail_node.image == None:
+        pdm_scale = shader_data["primary detail map scale"]
+        if pdm_scale == 0.0:
+            pdm_scale = 1.0
+
+        pdm_image_scale = (pdm_scale, pdm_scale, pdm_scale)
+
+        primary_detail_bitmap = tag_interface.get_disk_asset(shader_data["primary detail map"]["path"], tag_groups.get(shader_data["primary detail map"]["group name"]))
+        set_image_scale(mat, primary_detail_node, pdm_image_scale, rescale_detail, base_bitmap, primary_detail_bitmap, permutation_index)
+
+    secondary_detail_texture = generate_image_node(mat, shader_data["secondary detail map"], permutation_index, asset_cache, "halo1", report)
+    if secondary_detail_texture:
+        secondary_detail_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
+        secondary_detail_node.image = secondary_detail_texture
         secondary_detail_node.image.alpha_mode = 'CHANNEL_PACKED'
+        place_node(secondary_detail_node, 2, 2)
+        connect_inputs(mat.node_tree, secondary_detail_node, "Color", shader_environment_node, "Secondary Detail Map")
+        connect_inputs(mat.node_tree, secondary_detail_node, "Alpha", shader_environment_node, "Secondary Detail Map Alpha")
 
-    micro_detail_node = generate_image_node(mat, micro_detail_map, micro_detail_bitmap, micro_detail_map_name)
-    micro_detail_node.name = "Micro Detail Map"
-    micro_detail_node.location = Vector((-1200, 300))
-    if not micro_detail_node.image == None:
+        sdm_scale = shader_data["secondary detail map scale"]
+        if sdm_scale == 0.0:
+            sdm_scale = 1.0
+
+        sdm_image_scale = (sdm_scale, sdm_scale, sdm_scale)
+
+        secondary_detail_bitmap = tag_interface.get_disk_asset(shader_data["secondary detail map"]["path"], tag_groups.get(shader_data["secondary detail map"]["group name"]))
+        set_image_scale(mat, secondary_detail_node, sdm_image_scale, rescale_detail, base_bitmap, secondary_detail_bitmap, permutation_index)
+
+    micro_detail_texture = generate_image_node(mat, shader_data["micro detail map"], permutation_index, asset_cache, "halo1", report)
+    if micro_detail_texture:
+        micro_detail_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
+        micro_detail_node.image = micro_detail_texture
         micro_detail_node.image.alpha_mode = 'CHANNEL_PACKED'
+        place_node(micro_detail_node, 2, 3)
+        connect_inputs(mat.node_tree, micro_detail_node, "Color", shader_environment_node, "Micro Detail Map")
+        connect_inputs(mat.node_tree, micro_detail_node, "Alpha", shader_environment_node, "Micro Detail Map Alpha")
 
-    bump_node = generate_image_node(mat, bump_map, bump_bitmap, bump_map_name)
-    bump_node.name = "Bump Map"
-    bump_node.location = Vector((-1200, 0))
-    bump_node.interpolation = 'Cubic'
-    if not bump_node.image == None:
+        mdm_scale = shader_data["micro detail map scale"]
+        if mdm_scale == 0.0:
+            mdm_scale = 1.0
+
+        mdm_image_scale = (mdm_scale, mdm_scale, mdm_scale)
+
+        micro_detail_bitmap = tag_interface.get_disk_asset(shader_data["micro detail map"]["path"], tag_groups.get(shader_data["micro detail map"]["group name"]))
+        set_image_scale(mat, micro_detail_node, mdm_image_scale, rescale_detail, base_bitmap, micro_detail_bitmap, permutation_index)
+
+    bump_texture = generate_image_node(mat, shader_data["bump map"], permutation_index, asset_cache, "halo1", report)
+    bump_bitmap = None
+    if bump_texture:
+        bump_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
+        bump_node.image = bump_texture
+        bump_node.image.alpha_mode = 'CHANNEL_PACKED'
+        bump_node.interpolation = 'Cubic'
         bump_node.image.colorspace_settings.name = 'Non-Color'
+        place_node(bump_node, 2, 4)
+        connect_inputs(mat.node_tree, bump_node, "Color", shader_environment_node, "Bump Map")
+        connect_inputs(mat.node_tree, bump_node, "Alpha", shader_environment_node, "Bump Map Alpha")
 
-    self_illumination_node = generate_image_node(mat, illum_map, illum_bitmap, illum_map_name)
-    self_illumination_node.name = "Self-Illumination Map"
-    self_illumination_node.location = Vector((-1200, -300))
+        bm_scale = shader_data["bump map scale"]
+        if bm_scale == 0.0:
+            bm_scale = 1.0
 
-    reflection_node = generate_image_node(mat, reflection_map, reflection_bitmap, reflection_map_name, True)
-    reflection_node.name = "Reflection Map"
-    reflection_node.location = Vector((-1200, -600))
+        bm_image_scale = (bm_scale, bm_scale, bm_scale)
 
-    connect_inputs(mat.node_tree, base_node, "Color", shader_environment_node, "Base Map")
-    connect_inputs(mat.node_tree, base_node, "Alpha", shader_environment_node, "Base Map Alpha")
-    connect_inputs(mat.node_tree, primary_detail_node, "Color", shader_environment_node, "Primary Detail Map")
-    connect_inputs(mat.node_tree, primary_detail_node, "Alpha", shader_environment_node, "Primary Detail Map Alpha")
-    connect_inputs(mat.node_tree, secondary_detail_node, "Color", shader_environment_node, "Secondary Detail Map")
-    connect_inputs(mat.node_tree, secondary_detail_node, "Alpha", shader_environment_node, "Secondary Detail Map Alpha")
-    connect_inputs(mat.node_tree, micro_detail_node, "Color", shader_environment_node, "Micro Detail Map")
-    connect_inputs(mat.node_tree, micro_detail_node, "Alpha", shader_environment_node, "Micro Detail Map Alpha")
-    connect_inputs(mat.node_tree, bump_node, "Color", shader_environment_node, "Bump Map")
-    connect_inputs(mat.node_tree, bump_node, "Alpha", shader_environment_node, "Bump Map Alpha")
-    connect_inputs(mat.node_tree, self_illumination_node, "Color", shader_environment_node, "Self-Illumination Map")
-    connect_inputs(mat.node_tree, reflection_node, "Color", shader_environment_node, "Reflection Cube Map")
+        bump_bitmap = tag_interface.get_disk_asset(shader_data["bump map"]["path"], tag_groups.get(shader_data["bump map"]["group name"]))
+        set_image_scale(mat, bump_node, bm_image_scale, rescale_bump, base_bitmap, bump_bitmap, permutation_index)
 
-    set_primary_detail_scale(shader, mat, primary_detail_node, base_bitmap_count, primary_detail_bitmap_count, base_bitmap, primary_detail_bitmap, permutation_index, rescale_detail)
-    set_secondary_detail_scale(shader, mat, secondary_detail_node, base_bitmap_count, secondary_detail_bitmap_count, base_bitmap, secondary_detail_bitmap, permutation_index, rescale_detail)
-    set_micro_detail_scale(shader, mat, micro_detail_node, base_bitmap_count, micro_detail_bitmap_count, base_bitmap, micro_detail_bitmap, permutation_index, rescale_detail)
-    set_bump_scale(shader, mat, bump_node, base_bitmap_count, bump_bitmap_count, base_bitmap, bump_bitmap, permutation_index, rescale_bump_maps)
-    set_illum_scale(shader, mat, self_illumination_node)
+    self_illumination_texture = generate_image_node(mat, shader_data["map"], permutation_index, asset_cache, "halo1", report)
+    if self_illumination_texture:
+        self_illumination_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
+        self_illumination_node.image = self_illumination_texture
+        place_node(self_illumination_node, 2, 5)
+        connect_inputs(mat.node_tree, self_illumination_node, "Color", shader_environment_node, "Self-Illumination Map")
 
-    shader_environment_node.inputs["Power"].default_value = shader.power
-    shader_environment_node.inputs["Color of Emitted Light"].default_value = shader.color_of_emitted_light
-    alpha_shader = EnvironmentFlags.alpha_tested in EnvironmentFlags(shader.environment_flags)
+        sim_scale = shader_data["map scale"]
+        if sim_scale == 0.0:
+            sim_scale = 1.0
+
+        sim_image_scale = (sim_scale, sim_scale, sim_scale)
+
+        set_image_scale(mat, self_illumination_node, sim_image_scale)
+
+    reflection_texture = generate_image_node(mat, shader_data["reflection cube map"], permutation_index, asset_cache, "halo1", report)
+    if reflection_texture:
+        reflection_node = mat.node_tree.nodes.new("ShaderNodeTexEnvironment")
+        reflection_node.image = reflection_texture
+        place_node(reflection_node, 2, 6)
+        connect_inputs(mat.node_tree, reflection_node, "Color", shader_environment_node, "Reflection Cube Map")
+
+    shader_environment_node.inputs["Power"].default_value = shader_data["power"]
+    shader_environment_node.inputs["Color of Emitted Light"].default_value = convert_to_blender_color(shader_data["color of emitted light"], True)
+    alpha_shader = EnvironmentFlags.alpha_tested in EnvironmentFlags(shader_data["flags_1"])
     if alpha_shader:
         shader_environment_node.inputs["Alpha Tested"].default_value = True
         if bpy.app.version <= (4, 2, 0):
@@ -340,34 +214,33 @@ def generate_shader_environment(mat, shader, permutation_index, report):
         mat.blend_method = 'HASHED'
 
     mat.use_backface_culling = True
-    shader_environment_node.inputs["Blend Type"].default_value = shader.environment_type
-    shader_environment_node.inputs["Detail Map Function"].default_value = shader.detail_map_function
-    shader_environment_node.inputs["Micro Detail Map Function"].default_value = shader.micro_detail_map_function
+    shader_environment_node.inputs["Blend Type"].default_value = shader_data["shader environment type"]["value"]
+    shader_environment_node.inputs["Detail Map Function"].default_value = shader_data["detail map function"]["value"]
+    shader_environment_node.inputs["Micro Detail Map Function"].default_value = shader_data["micro detail map function"]["value"]
+    if bump_bitmap is not None:
+        shader_environment_node.inputs["Bump Strength"].default_value = bump_bitmap["Data"]["bump height"] * 15
 
-    if bump_bitmap:
-        shader_environment_node.inputs["Bump Strength"].default_value = bump_bitmap.bump_height * 15
-
-    shader_environment_node.inputs["Primary On Color"].default_value = shader.primary_on_color
-    shader_environment_node.inputs["Primary Off Color"].default_value = shader.primary_off_color
+    shader_environment_node.inputs["Primary On Color"].default_value = convert_to_blender_color(shader_data["primary on color"], True)
+    shader_environment_node.inputs["Primary Off Color"].default_value = convert_to_blender_color(shader_data["primary off color"], True)
     shader_environment_node.inputs["Primary Self-Illumination Activation Level"].default_value = 0
-    if not FunctionEnum.one.value == shader.primary_animation_function:
+    if not FunctionEnum.one.value == shader_data["primary animation function"]:
         shader_environment_node.inputs["Primary Self-Illumination Activation Level"].default_value = 1
 
-    shader_environment_node.inputs["Secondary On Color"].default_value = shader.secondary_on_color
-    shader_environment_node.inputs["Secondary Off Color"].default_value = shader.secondary_off_color
+    shader_environment_node.inputs["Secondary On Color"].default_value = convert_to_blender_color(shader_data["secondary on color"], True)
+    shader_environment_node.inputs["Secondary Off Color"].default_value = convert_to_blender_color(shader_data["secondary off color"], True)
     shader_environment_node.inputs["Secondary Self-Illumination Activation Level"].default_value = 0
-    if not FunctionEnum.one.value == shader.secondary_animation_function:
+    if not FunctionEnum.one.value == shader_data["secondary animation function"]:
         shader_environment_node.inputs["Secondary Self-Illumination Activation Level"].default_value = 1
 
-    shader_environment_node.inputs["Plasma On Color"].default_value = shader.plasma_on_color
-    shader_environment_node.inputs["Plasma Off Color"].default_value = shader.plasma_off_color
+    shader_environment_node.inputs["Plasma On Color"].default_value = convert_to_blender_color(shader_data["plasma on color"], True)
+    shader_environment_node.inputs["Plasma Off Color"].default_value = convert_to_blender_color(shader_data["plasma off color"], True)
     shader_environment_node.inputs["Plasma Self-Illumination Activation Level"].default_value = 0
-    if not FunctionEnum.one.value == shader.plasma_animation_function:
+    if not FunctionEnum.one.value == shader_data["plasma animation function"]:
         shader_environment_node.inputs["Plasma Self-Illumination Activation Level"].default_value = 1
 
-    shader_environment_node.inputs["Brightness"].default_value = shader.brightness
-    shader_environment_node.inputs["Perpendicular Color"].default_value = shader.perpendicular_color
-    shader_environment_node.inputs["Parallel Color"].default_value = shader.parallel_color
+    shader_environment_node.inputs["Brightness"].default_value = shader_data["brightness"]
+    shader_environment_node.inputs["Perpendicular Color"].default_value = convert_to_blender_color(shader_data["perpendicular color"], True)
+    shader_environment_node.inputs["Parallel Color"].default_value = convert_to_blender_color(shader_data["parallel color"], True)
 
-    shader_environment_node.inputs["Perpendicular Brightness"].default_value = shader.perpendicular_brightness
-    shader_environment_node.inputs["Parallel Brightness"].default_value = shader.parallel_brightness
+    shader_environment_node.inputs["Perpendicular Brightness"].default_value = shader_data["perpendicular brightness"]
+    shader_environment_node.inputs["Parallel Brightness"].default_value = shader_data["parallel brightness"]

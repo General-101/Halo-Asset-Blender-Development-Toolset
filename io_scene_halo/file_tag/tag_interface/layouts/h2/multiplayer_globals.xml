@@ -1,0 +1,869 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="mulg" name="multiplayer_globals" version="1">
+  <Layout regolithID="block:multiplayer_globals" internalName="multiplayer_globals_block" name="multiplayer_globals">
+    <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(s_multiplayer_globals_definition)" isLatest="true">
+      <Block CStyleName="universal" pascalStyleName="Universal" name="universal" maxElementCount="1">
+        <Layout regolithID="block:multiplayer_universal" internalName="multiplayer_universal_block" name="multiplayer_universal_block">
+          <FieldSet version="0" sizeofValue="60" sizeofSource="sizeof(s_multiplayer_universal_globals_definition)" isLatest="true">
+            <TagReference CStyleName="random_player_names" pascalStyleName="RandomPlayerNames" name="random player names">
+              <tag>unic</tag>
+            </TagReference>
+            <TagReference CStyleName="team_names" pascalStyleName="TeamNames" name="team names">
+              <tag>unic</tag>
+            </TagReference>
+            <Block CStyleName="team_colors" pascalStyleName="TeamColors" name="team colors" maxElementCount="32" maxElementCountSource="k_game_globals_maximum_multiplayer_colors">
+              <LayoutXRef>block:multiplayer_color</LayoutXRef>
+            </Block>
+            <TagReference CStyleName="multiplayer_text" pascalStyleName="MultiplayerText" name="multiplayer text">
+              <tag>unic</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="runtime" pascalStyleName="Runtime" name="runtime" maxElementCount="1">
+        <Layout regolithID="block:multiplayer_runtime" internalName="multiplayer_runtime_block" name="multiplayer_runtime_block">
+          <FieldSet version="0" sizeofValue="1236" sizeofSource="sizeof(s_multiplayer_runtime_globals_definition_v1)">
+            <TagReference CStyleName="flag" pascalStyleName="Flag" name="flag">
+              <tag>item</tag>
+            </TagReference>
+            <TagReference CStyleName="ball" pascalStyleName="Ball" name="ball">
+              <tag>item</tag>
+            </TagReference>
+            <TagReference CStyleName="unit" pascalStyleName="Unit" name="unit">
+              <tag>unit</tag>
+            </TagReference>
+            <TagReference CStyleName="flag_shader" pascalStyleName="FlagShader" name="flag shader">
+              <tag>shad</tag>
+            </TagReference>
+            <TagReference CStyleName="hill_shader" pascalStyleName="HillShader" name="hill shader">
+              <tag>shad</tag>
+            </TagReference>
+            <Block CStyleName="weapons" pascalStyleName="Weapons" name="weapons" maxElementCount="64" maxElementCountSource="((k_weapon_list_count)&gt;(64)?(k_weapon_list_count):(64))">
+              <Layout regolithID="block:weapons" internalName="weapons_block" name="weapons_block">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct tag_reference)" isLatest="true">
+                  <TagReference CStyleName="weapon" pascalStyleName="Weapon" name="weapon" blockNameSource="true">
+                    <tag>item</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="vehicles" pascalStyleName="Vehicles" name="vehicles" maxElementCount="64" maxElementCountSource="((k_vehicle_list_count)&gt;(64)?(k_vehicle_list_count):(64))">
+              <Layout regolithID="block:vehicles" internalName="vehicles_block" name="vehicles_block">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct tag_reference)" isLatest="true">
+                  <TagReference CStyleName="vehicle" pascalStyleName="Vehicle" name="vehicle" blockNameSource="true">
+                    <tag>vehi</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <TagReference CStyleName="in_game_text" pascalStyleName="InGameText" name="in game text">
+              <tag>unic</tag>
+            </TagReference>
+            <Block CStyleName="sounds" pascalStyleName="Sounds" name="sounds" maxElementCount="60">
+              <Layout regolithID="block:sounds" internalName="sounds_block" name="sounds_block">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct tag_reference)" isLatest="true">
+                  <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+                    <tag>snd!</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="general_events" pascalStyleName="GeneralEvents" name="general events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <LayoutXRef>block:game_engine_general_event</LayoutXRef>
+            </Block>
+            <Block CStyleName="slayer_events" pascalStyleName="SlayerEvents" name="slayer events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <LayoutXRef>block:game_engine_slayer_event</LayoutXRef>
+            </Block>
+            <Block CStyleName="ctf_events" pascalStyleName="CtfEvents" name="ctf events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <LayoutXRef>block:game_engine_ctf_event</LayoutXRef>
+            </Block>
+            <Block CStyleName="oddball_events" pascalStyleName="OddballEvents" name="oddball events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <LayoutXRef>block:game_engine_oddball_event</LayoutXRef>
+            </Block>
+            <Pad sizeOfSource="sizeof(struct tag_block)" length="12" />
+            <Block CStyleName="king_events" pascalStyleName="KingEvents" name="king events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <LayoutXRef>block:game_engine_king_event</LayoutXRef>
+            </Block>
+            <TagReference CStyleName="default_item_collection_1" pascalStyleName="DefaultItemCollection1" name="default item collection 1">
+              <tag>itmc</tag>
+            </TagReference>
+            <TagReference CStyleName="default_item_collection_2" pascalStyleName="DefaultItemCollection2" name="default item collection 2">
+              <tag>itmc</tag>
+            </TagReference>
+            <LongInteger CStyleName="default_frag_grenade_count" pascalStyleName="DefaultFragGrenadeCount" name="default frag grenade count" />
+            <LongInteger CStyleName="default_plasma_grenade_count" pascalStyleName="DefaultPlasmaGrenadeCount" name="default plasma grenade count" />
+            <Explanation name="dynamic spawn zones" />
+            <Real CStyleName="dynamic_zone_upper_height" pascalStyleName="DynamicZoneUpperHeight" name="dynamic zone upper height" />
+            <Real CStyleName="dynamic_zone_lower_height" pascalStyleName="DynamicZoneLowerHeight" name="dynamic zone lower height" />
+            <Pad sizeOfSource="sizeof(long)*10" length="40" />
+            <Explanation name="enemy" />
+            <Real CStyleName="enemy_inner_radius" pascalStyleName="EnemyInnerRadius" name="enemy inner radius" />
+            <Real CStyleName="enemy_outer_radius" pascalStyleName="EnemyOuterRadius" name="enemy outer radius" />
+            <Real CStyleName="enemy_weight" pascalStyleName="EnemyWeight" name="enemy weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="friend" />
+            <Real CStyleName="friend_inner_radius" pascalStyleName="FriendInnerRadius" name="friend inner radius" />
+            <Real CStyleName="friend_outer_radius" pascalStyleName="FriendOuterRadius" name="friend outer radius" />
+            <Real CStyleName="friend_weight" pascalStyleName="FriendWeight" name="friend weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="enemy vehicle" />
+            <Real CStyleName="enemy_vehicle_inner_radius" pascalStyleName="EnemyVehicleInnerRadius" name="enemy vehicle inner radius" />
+            <Real CStyleName="enemy_vehicle_outer_radius" pascalStyleName="EnemyVehicleOuterRadius" name="enemy vehicle outer radius" />
+            <Real CStyleName="enemy_vehicle_weight" pascalStyleName="EnemyVehicleWeight" name="enemy vehicle weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="friendly vehicle" />
+            <Real CStyleName="friendly_vehicle_inner_radius" pascalStyleName="FriendlyVehicleInnerRadius" name="friendly vehicle inner radius" />
+            <Real CStyleName="friendly_vehicle_outer_radius" pascalStyleName="FriendlyVehicleOuterRadius" name="friendly vehicle outer radius" />
+            <Real CStyleName="friendly_vehicle_weight" pascalStyleName="FriendlyVehicleWeight" name="friendly vehicle weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="empty vehicle" />
+            <Real CStyleName="empty_vehicle_inner_radius" pascalStyleName="EmptyVehicleInnerRadius" name="empty vehicle inner radius" />
+            <Real CStyleName="empty_vehicle_outer_radius" pascalStyleName="EmptyVehicleOuterRadius" name="empty vehicle outer radius" />
+            <Real CStyleName="empty_vehicle_weight" pascalStyleName="EmptyVehicleWeight" name="empty vehicle weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="oddball inclusion" />
+            <Real CStyleName="oddball_inclusion_inner_radius" pascalStyleName="OddballInclusionInnerRadius" name="oddball inclusion inner radius" />
+            <Real CStyleName="oddball_inclusion_outer_radius" pascalStyleName="OddballInclusionOuterRadius" name="oddball inclusion outer radius" />
+            <Real CStyleName="oddball_inclusion_weight" pascalStyleName="OddballInclusionWeight" name="oddball inclusion weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="oddball exclusion" />
+            <Real CStyleName="oddball_exclusion_inner_radius" pascalStyleName="OddballExclusionInnerRadius" name="oddball exclusion inner radius" />
+            <Real CStyleName="oddball_exclusion_outer_radius" pascalStyleName="OddballExclusionOuterRadius" name="oddball exclusion outer radius" />
+            <Real CStyleName="oddball_exclusion_weight" pascalStyleName="OddballExclusionWeight" name="oddball exclusion weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="hill inclusion" />
+            <Real CStyleName="hill_inclusion_inner_radius" pascalStyleName="HillInclusionInnerRadius" name="hill inclusion inner radius" />
+            <Real CStyleName="hill_inclusion_outer_radius" pascalStyleName="HillInclusionOuterRadius" name="hill inclusion outer radius" />
+            <Real CStyleName="hill_inclusion_weight" pascalStyleName="HillInclusionWeight" name="hill inclusion weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="hill exclusion" />
+            <Real CStyleName="hill_exclusion_inner_radius" pascalStyleName="HillExclusionInnerRadius" name="hill exclusion inner radius" />
+            <Real CStyleName="hill_exclusion_outer_radius" pascalStyleName="HillExclusionOuterRadius" name="hill exclusion outer radius" />
+            <Real CStyleName="hill_exclusion_weight" pascalStyleName="HillExclusionWeight" name="hill exclusion weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="last race flag" />
+            <Real CStyleName="last_race_flag_inner_radius" pascalStyleName="LastRaceFlagInnerRadius" name="last race flag inner radius" />
+            <Real CStyleName="last_race_flag_outer_radius" pascalStyleName="LastRaceFlagOuterRadius" name="last race flag outer radius" />
+            <Real CStyleName="last_race_flag_weight" pascalStyleName="LastRaceFlagWeight" name="last race flag weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="medic" />
+            <Real CStyleName="medic_inner_radius" pascalStyleName="MedicInnerRadius" name="medic inner radius" />
+            <Real CStyleName="medic_outer_radius" pascalStyleName="MedicOuterRadius" name="medic outer radius" />
+            <Real CStyleName="medic_weight" pascalStyleName="MedicWeight" name="medic weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Pad sizeOfSource="sizeof(s_dynamic_spawn_zone_definition)*(k_maximum_number_of_dynamic_spawn_zones - k_number_of_dynamic_spawn_zones + 2)" length="588" />
+            <Pad sizeOfSource="sizeof(long)*12" length="48" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="1640" sizeofSource="sizeof(s_multiplayer_runtime_globals_definition)" isLatest="true">
+            <TagReference CStyleName="flag" pascalStyleName="Flag" name="flag">
+              <tag>item</tag>
+            </TagReference>
+            <TagReference CStyleName="ball" pascalStyleName="Ball" name="ball">
+              <tag>item</tag>
+            </TagReference>
+            <TagReference CStyleName="unit" pascalStyleName="Unit" name="unit">
+              <tag>unit</tag>
+            </TagReference>
+            <TagReference CStyleName="flag_shader" pascalStyleName="FlagShader" name="flag shader">
+              <tag>shad</tag>
+            </TagReference>
+            <TagReference CStyleName="hill_shader" pascalStyleName="HillShader" name="hill shader">
+              <tag>shad</tag>
+            </TagReference>
+            <TagReference CStyleName="head" pascalStyleName="Head" name="head">
+              <tag>item</tag>
+            </TagReference>
+            <TagReference CStyleName="juggernaut_powerup" pascalStyleName="JuggernautPowerup" name="juggernaut powerup">
+              <tag>item</tag>
+            </TagReference>
+            <TagReference CStyleName="da_bomb" pascalStyleName="DaBomb" name="da bomb">
+              <tag>item</tag>
+            </TagReference>
+            <TagReference>
+              <tag />
+            </TagReference>
+            <TagReference>
+              <tag />
+            </TagReference>
+            <TagReference>
+              <tag />
+            </TagReference>
+            <TagReference>
+              <tag />
+            </TagReference>
+            <TagReference>
+              <tag />
+            </TagReference>
+            <Block CStyleName="weapons" pascalStyleName="Weapons" name="weapons" maxElementCount="64" maxElementCountSource="((k_weapon_list_count)&gt;(64)?(k_weapon_list_count):(64))">
+              <LayoutXRef>block:weapons</LayoutXRef>
+            </Block>
+            <Block CStyleName="vehicles" pascalStyleName="Vehicles" name="vehicles" maxElementCount="64" maxElementCountSource="((k_vehicle_list_count)&gt;(64)?(k_vehicle_list_count):(64))">
+              <LayoutXRef>block:vehicles</LayoutXRef>
+            </Block>
+            <Struct CStyleName="arr" pascalStyleName="Arr" name="arr">
+              <Layout regolithID="structure:grenade_and_powerup" tag="gapu" internalName="grenade_and_powerup_struct" backingBlockInternalName="grenade_and_powerup_struct_block" name="grenade_and_powerup_struct">
+                <FieldSet version="0" sizeofValue="0" sizeofSource="0" />
+                <FieldSet version="1" sizeofValue="24" sizeofSource="sizeof(struct tag_block)*2" isLatest="true">
+                  <Block CStyleName="grenades" pascalStyleName="Grenades" name="grenades" maxElementCount="20" maxElementCountSource="((k_grenade_list_count)&gt;(20)?(k_grenade_list_count):(20))">
+                    <Layout regolithID="block:grenade" internalName="grenade_block" name="grenade_block">
+                      <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct tag_reference)" isLatest="true">
+                        <TagReference CStyleName="grenade" pascalStyleName="Grenade" name="grenade" blockNameSource="true">
+                          <tag>eqip</tag>
+                        </TagReference>
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="powerups" pascalStyleName="Powerups" name="powerups" maxElementCount="20" maxElementCountSource="((k_powerup_list_count)&gt;(20)?(k_powerup_list_count):(20))">
+                    <Layout regolithID="block:powerup" internalName="powerup_block" name="powerup_block">
+                      <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct tag_reference)" isLatest="true">
+                        <TagReference CStyleName="equipment" pascalStyleName="Equipment" name="equipment" blockNameSource="true">
+                          <tag>eqip</tag>
+                        </TagReference>
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <TagReference CStyleName="in_game_text" pascalStyleName="InGameText" name="in game text">
+              <tag>unic</tag>
+            </TagReference>
+            <Block CStyleName="sounds" pascalStyleName="Sounds" name="sounds" maxElementCount="60">
+              <LayoutXRef>block:sounds</LayoutXRef>
+            </Block>
+            <Block CStyleName="general_events" pascalStyleName="GeneralEvents" name="general events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <LayoutXRef>block:game_engine_general_event</LayoutXRef>
+            </Block>
+            <Block CStyleName="flavor_events" pascalStyleName="FlavorEvents" name="flavor events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <Layout regolithID="block:game_engine_flavor_event" internalName="game_engine_flavor_event_block" name="game_engine_flavor_event_block">
+                <FieldSet version="0" sizeofValue="244" sizeofSource="sizeof(struct s_multiplayer_event_response_definition)" isLatest="true">
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <OptionsXRef>enum:game_engine_quantity_flags</OptionsXRef>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <ShortEnum CStyleName="event" pascalStyleName="Event" name="event" blockNameSource="true">
+                    <Options regolithID="enum:game_engine_event_kill_streak" CStyleName="game_engine_event_kill_streak" pascalStyleName="GameEngineEventKillStreak">
+                      <Enum name="double kill" CStyleName="double_kill" pascalStyleName="DoubleKill" />
+                      <Enum name="triple kill" CStyleName="triple_kill" pascalStyleName="TripleKill" />
+                      <Enum name="killtacular" CStyleName="killtacular" pascalStyleName="Killtacular" />
+                      <Enum name="killing spree" CStyleName="killing_spree" pascalStyleName="KillingSpree" />
+                      <Enum name="running riot" CStyleName="running_riot" pascalStyleName="RunningRiot" />
+                      <Enum name="well placed kill" CStyleName="well_placed_kill" pascalStyleName="WellPlacedKill" />
+                      <Enum name="broke killing spree" CStyleName="broke_killing_spree" pascalStyleName="BrokeKillingSpree" />
+                      <Enum name="kill frenzy" CStyleName="kill_frenzy" pascalStyleName="KillFrenzy" />
+                      <Enum name="killtrocity" CStyleName="killtrocity" pascalStyleName="Killtrocity" />
+                      <Enum name="killimajaro" CStyleName="killimajaro" pascalStyleName="Killimajaro" />
+                      <Enum name="15 in a row" CStyleName="_15_in_a_row" pascalStyleName="15InARow" />
+                      <Enum name="20 in a row" CStyleName="_20_in_a_row" pascalStyleName="20InARow" />
+                      <Enum name="25 in a row" CStyleName="_25_in_a_row" pascalStyleName="25InARow" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="audience" pascalStyleName="Audience" name="audience" blockNameSource="true">
+                    <OptionsXRef>enum:game_engine_audience</OptionsXRef>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <StringId CStyleName="display_string" pascalStyleName="DisplayString" name="display string" />
+                  <ShortEnum CStyleName="required_field" pascalStyleName="RequiredField" name="required field">
+                    <OptionsXRef>enum:event_audience</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="excluded_audience" pascalStyleName="ExcludedAudience" name="excluded audience">
+                    <OptionsXRef>enum:event_audience</OptionsXRef>
+                  </ShortEnum>
+                  <StringId CStyleName="primary_string" pascalStyleName="PrimaryString" name="primary string" />
+                  <LongInteger CStyleName="primary_string_duration" pascalStyleName="PrimaryStringDuration" name="primary string duration" units="seconds" />
+                  <StringId CStyleName="plural_display_string" pascalStyleName="PluralDisplayString" name="plural display string" />
+                  <Pad sizeOfSource="sizeof(long)*7" length="28" />
+                  <Real CStyleName="sound_delay_announcer_only" pascalStyleName="SoundDelayAnnouncerOnly" name="sound delay (announcer only)" />
+                  <WordFlags CStyleName="sound_flags" pascalStyleName="SoundFlags" name="sound flags">
+                    <OptionsXRef>enum:sound_response_flags</OptionsXRef>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+                    <tag>snd!</tag>
+                  </TagReference>
+                  <Struct CStyleName="extra_sounds" pascalStyleName="ExtraSounds" name="extra sounds">
+                    <LayoutXRef>structure:sound_response_extra_sounds</LayoutXRef>
+                  </Struct>
+                  <Pad sizeOfSource="sizeof(real)*1" length="4" />
+                  <Pad sizeOfSource="sizeof(long)*4" length="16" />
+                  <Block CStyleName="sound_permutations" pascalStyleName="SoundPermutations" name="sound permutations" maxElementCount="10">
+                    <LayoutXRef>block:sound_response_definition</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="slayer_events" pascalStyleName="SlayerEvents" name="slayer events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <LayoutXRef>block:game_engine_slayer_event</LayoutXRef>
+            </Block>
+            <Block CStyleName="ctf_events" pascalStyleName="CtfEvents" name="ctf events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <LayoutXRef>block:game_engine_ctf_event</LayoutXRef>
+            </Block>
+            <Block CStyleName="oddball_events" pascalStyleName="OddballEvents" name="oddball events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <LayoutXRef>block:game_engine_oddball_event</LayoutXRef>
+            </Block>
+            <Block CStyleName="medic_events" pascalStyleName="MedicEvents" name="medic events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <Layout regolithID="block:game_engine_medic_event" internalName="game_engine_medic_event_block" name="game_engine_medic_event_block">
+                <FieldSet version="0" sizeofValue="244" sizeofSource="sizeof(struct s_multiplayer_event_response_definition)" isLatest="true">
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <OptionsXRef>enum:game_engine_quantity_flags</OptionsXRef>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <ShortEnum CStyleName="event" pascalStyleName="Event" name="event" blockNameSource="true">
+                    <Options regolithID="enum:medic_event" CStyleName="medic_event" pascalStyleName="MedicEvent">
+                      <Enum name="game start" CStyleName="game_start" pascalStyleName="GameStart" />
+                      <Enum name="medic killed" CStyleName="medic_killed" pascalStyleName="MedicKilled" />
+                      <Enum name="new medic" CStyleName="new_medic" pascalStyleName="NewMedic" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="audience" pascalStyleName="Audience" name="audience" blockNameSource="true">
+                    <OptionsXRef>enum:game_engine_audience</OptionsXRef>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <StringId CStyleName="display_string" pascalStyleName="DisplayString" name="display string" />
+                  <ShortEnum CStyleName="required_field" pascalStyleName="RequiredField" name="required field">
+                    <OptionsXRef>enum:event_audience</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="excluded_audience" pascalStyleName="ExcludedAudience" name="excluded audience">
+                    <OptionsXRef>enum:event_audience</OptionsXRef>
+                  </ShortEnum>
+                  <StringId CStyleName="primary_string" pascalStyleName="PrimaryString" name="primary string" />
+                  <LongInteger CStyleName="primary_string_duration" pascalStyleName="PrimaryStringDuration" name="primary string duration" units="seconds" />
+                  <StringId CStyleName="plural_display_string" pascalStyleName="PluralDisplayString" name="plural display string" />
+                  <Pad sizeOfSource="sizeof(long)*7" length="28" />
+                  <Real CStyleName="sound_delay_announcer_only" pascalStyleName="SoundDelayAnnouncerOnly" name="sound delay (announcer only)" />
+                  <WordFlags CStyleName="sound_flags" pascalStyleName="SoundFlags" name="sound flags">
+                    <OptionsXRef>enum:sound_response_flags</OptionsXRef>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+                    <tag>snd!</tag>
+                  </TagReference>
+                  <Struct CStyleName="extra_sounds" pascalStyleName="ExtraSounds" name="extra sounds">
+                    <LayoutXRef>structure:sound_response_extra_sounds</LayoutXRef>
+                  </Struct>
+                  <Pad sizeOfSource="sizeof(real)*1" length="4" />
+                  <Pad sizeOfSource="sizeof(long)*4" length="16" />
+                  <Block CStyleName="sound_permutations" pascalStyleName="SoundPermutations" name="sound permutations" maxElementCount="10">
+                    <LayoutXRef>block:sound_response_definition</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="king_events" pascalStyleName="KingEvents" name="king events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <LayoutXRef>block:game_engine_king_event</LayoutXRef>
+            </Block>
+            <Block CStyleName="vip_events" pascalStyleName="VipEvents" name="vip events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <Layout regolithID="block:game_engine_vip_event" internalName="game_engine_vip_event_block" name="game_engine_vip_event_block">
+                <FieldSet version="0" sizeofValue="244" sizeofSource="sizeof(struct s_multiplayer_event_response_definition)" isLatest="true">
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <OptionsXRef>enum:game_engine_quantity_flags</OptionsXRef>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <ShortEnum CStyleName="event" pascalStyleName="Event" name="event" blockNameSource="true">
+                    <Options regolithID="enum:vip_event" CStyleName="vip_event" pascalStyleName="VipEvent">
+                      <Enum name="game start" CStyleName="game_start" pascalStyleName="GameStart" />
+                      <Enum name="vip killed" CStyleName="vip_killed" pascalStyleName="VipKilled" />
+                      <Enum name="new vip" CStyleName="new_vip" pascalStyleName="NewVip" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="audience" pascalStyleName="Audience" name="audience" blockNameSource="true">
+                    <OptionsXRef>enum:game_engine_audience</OptionsXRef>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <StringId CStyleName="display_string" pascalStyleName="DisplayString" name="display string" />
+                  <ShortEnum CStyleName="required_field" pascalStyleName="RequiredField" name="required field">
+                    <OptionsXRef>enum:event_audience</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="excluded_audience" pascalStyleName="ExcludedAudience" name="excluded audience">
+                    <OptionsXRef>enum:event_audience</OptionsXRef>
+                  </ShortEnum>
+                  <StringId CStyleName="primary_string" pascalStyleName="PrimaryString" name="primary string" />
+                  <LongInteger CStyleName="primary_string_duration" pascalStyleName="PrimaryStringDuration" name="primary string duration" units="seconds" />
+                  <StringId CStyleName="plural_display_string" pascalStyleName="PluralDisplayString" name="plural display string" />
+                  <Pad sizeOfSource="sizeof(long)*7" length="28" />
+                  <Real CStyleName="sound_delay_announcer_only" pascalStyleName="SoundDelayAnnouncerOnly" name="sound delay (announcer only)" />
+                  <WordFlags CStyleName="sound_flags" pascalStyleName="SoundFlags" name="sound flags">
+                    <OptionsXRef>enum:sound_response_flags</OptionsXRef>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+                    <tag>snd!</tag>
+                  </TagReference>
+                  <Struct CStyleName="extra_sounds" pascalStyleName="ExtraSounds" name="extra sounds">
+                    <LayoutXRef>structure:sound_response_extra_sounds</LayoutXRef>
+                  </Struct>
+                  <Pad sizeOfSource="sizeof(real)*1" length="4" />
+                  <Pad sizeOfSource="sizeof(long)*4" length="16" />
+                  <Block CStyleName="sound_permutations" pascalStyleName="SoundPermutations" name="sound permutations" maxElementCount="10">
+                    <LayoutXRef>block:sound_response_definition</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="juggernaut_events" pascalStyleName="JuggernautEvents" name="juggernaut events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <Layout regolithID="block:game_engine_juggernaut_event" internalName="game_engine_juggernaut_event_block" name="game_engine_juggernaut_event_block">
+                <FieldSet version="0" sizeofValue="244" sizeofSource="sizeof(struct s_multiplayer_event_response_definition)" isLatest="true">
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <OptionsXRef>enum:game_engine_quantity_flags</OptionsXRef>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <ShortEnum CStyleName="event" pascalStyleName="Event" name="event" blockNameSource="true">
+                    <Options regolithID="enum:game_engine_juggernaut_event" CStyleName="game_engine_juggernaut_event" pascalStyleName="GameEngineJuggernautEvent">
+                      <Enum name="game start" CStyleName="game_start" pascalStyleName="GameStart" />
+                      <Enum name="new juggernaut" CStyleName="new_juggernaut" pascalStyleName="NewJuggernaut" />
+                      <Enum name="juggernaut killed" CStyleName="juggernaut_killed" pascalStyleName="JuggernautKilled" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="audience" pascalStyleName="Audience" name="audience" blockNameSource="true">
+                    <OptionsXRef>enum:game_engine_audience</OptionsXRef>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <StringId CStyleName="display_string" pascalStyleName="DisplayString" name="display string" />
+                  <ShortEnum CStyleName="required_field" pascalStyleName="RequiredField" name="required field">
+                    <OptionsXRef>enum:event_audience</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="excluded_audience" pascalStyleName="ExcludedAudience" name="excluded audience">
+                    <OptionsXRef>enum:event_audience</OptionsXRef>
+                  </ShortEnum>
+                  <StringId CStyleName="primary_string" pascalStyleName="PrimaryString" name="primary string" />
+                  <LongInteger CStyleName="primary_string_duration" pascalStyleName="PrimaryStringDuration" name="primary string duration" units="seconds" />
+                  <StringId CStyleName="plural_display_string" pascalStyleName="PluralDisplayString" name="plural display string" />
+                  <Pad sizeOfSource="sizeof(long)*7" length="28" />
+                  <Real CStyleName="sound_delay_announcer_only" pascalStyleName="SoundDelayAnnouncerOnly" name="sound delay (announcer only)" />
+                  <WordFlags CStyleName="sound_flags" pascalStyleName="SoundFlags" name="sound flags">
+                    <OptionsXRef>enum:sound_response_flags</OptionsXRef>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+                    <tag>snd!</tag>
+                  </TagReference>
+                  <Struct CStyleName="extra_sounds" pascalStyleName="ExtraSounds" name="extra sounds">
+                    <LayoutXRef>structure:sound_response_extra_sounds</LayoutXRef>
+                  </Struct>
+                  <Pad sizeOfSource="sizeof(real)*1" length="4" />
+                  <Pad sizeOfSource="sizeof(long)*4" length="16" />
+                  <Block CStyleName="sound_permutations" pascalStyleName="SoundPermutations" name="sound permutations" maxElementCount="10">
+                    <LayoutXRef>block:sound_response_definition</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="territories_events" pascalStyleName="TerritoriesEvents" name="territories events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <Layout regolithID="block:game_engine_territories_event" internalName="game_engine_territories_event_block" name="game_engine_territories_event_block">
+                <FieldSet version="0" sizeofValue="244" sizeofSource="sizeof(struct s_multiplayer_event_response_definition)" isLatest="true">
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <OptionsXRef>enum:game_engine_quantity_flags</OptionsXRef>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <ShortEnum CStyleName="event" pascalStyleName="Event" name="event" blockNameSource="true">
+                    <Options regolithID="enum:territory_control_event" CStyleName="territory_control_event" pascalStyleName="TerritoryControlEvent">
+                      <Enum name="game start" CStyleName="game_start" pascalStyleName="GameStart" />
+                      <Enum name="territory control gained" CStyleName="territory_control_gained" pascalStyleName="TerritoryControlGained" />
+                      <Enum name="territory contest lost" CStyleName="territory_contest_lost" pascalStyleName="TerritoryContestLost" />
+                      <Enum name="all territories cntrld" CStyleName="all_territories_cntrld" pascalStyleName="AllTerritoriesCntrld" />
+                      <Enum name="team territory ctrl gained" CStyleName="team_territory_ctrl_gained" pascalStyleName="TeamTerritoryCtrlGained" />
+                      <Enum name="team territory ctrl lost" CStyleName="team_territory_ctrl_lost" pascalStyleName="TeamTerritoryCtrlLost" />
+                      <Enum name="team all territories cntrld" CStyleName="team_all_territories_cntrld" pascalStyleName="TeamAllTerritoriesCntrld" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="audience" pascalStyleName="Audience" name="audience" blockNameSource="true">
+                    <OptionsXRef>enum:game_engine_audience</OptionsXRef>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <StringId CStyleName="display_string" pascalStyleName="DisplayString" name="display string" />
+                  <ShortEnum CStyleName="required_field" pascalStyleName="RequiredField" name="required field">
+                    <OptionsXRef>enum:event_audience</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="excluded_audience" pascalStyleName="ExcludedAudience" name="excluded audience">
+                    <OptionsXRef>enum:event_audience</OptionsXRef>
+                  </ShortEnum>
+                  <StringId CStyleName="primary_string" pascalStyleName="PrimaryString" name="primary string" />
+                  <LongInteger CStyleName="primary_string_duration" pascalStyleName="PrimaryStringDuration" name="primary string duration" units="seconds" />
+                  <StringId CStyleName="plural_display_string" pascalStyleName="PluralDisplayString" name="plural display string" />
+                  <Pad sizeOfSource="sizeof(long)*7" length="28" />
+                  <Real CStyleName="sound_delay_announcer_only" pascalStyleName="SoundDelayAnnouncerOnly" name="sound delay (announcer only)" />
+                  <WordFlags CStyleName="sound_flags" pascalStyleName="SoundFlags" name="sound flags">
+                    <OptionsXRef>enum:sound_response_flags</OptionsXRef>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+                    <tag>snd!</tag>
+                  </TagReference>
+                  <Struct CStyleName="extra_sounds" pascalStyleName="ExtraSounds" name="extra sounds">
+                    <LayoutXRef>structure:sound_response_extra_sounds</LayoutXRef>
+                  </Struct>
+                  <Pad sizeOfSource="sizeof(real)*1" length="4" />
+                  <Pad sizeOfSource="sizeof(long)*4" length="16" />
+                  <Block CStyleName="sound_permutations" pascalStyleName="SoundPermutations" name="sound permutations" maxElementCount="10">
+                    <LayoutXRef>block:sound_response_definition</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="invasion_events" pascalStyleName="InvasionEvents" name="invasion events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <Layout regolithID="block:game_engine_assault_event" internalName="game_engine_assault_event_block" name="game_engine_assault_event_block">
+                <FieldSet version="0" sizeofValue="244" sizeofSource="sizeof(struct s_multiplayer_event_response_definition)" isLatest="true">
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <OptionsXRef>enum:game_engine_quantity_flags</OptionsXRef>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <ShortEnum CStyleName="event" pascalStyleName="Event" name="event" blockNameSource="true">
+                    <Options regolithID="enum:game_engine_assault_event" CStyleName="game_engine_assault_event" pascalStyleName="GameEngineAssaultEvent">
+                      <Enum name="game start" CStyleName="game_start" pascalStyleName="GameStart" />
+                      <Enum name="bomb taken" CStyleName="bomb_taken" pascalStyleName="BombTaken" />
+                      <Enum name="bomb dropped" CStyleName="bomb_dropped" pascalStyleName="BombDropped" />
+                      <Enum name="bomb returned by player" CStyleName="bomb_returned_by_player" pascalStyleName="BombReturnedByPlayer" />
+                      <Enum name="bomb returned by timeout" CStyleName="bomb_returned_by_timeout" pascalStyleName="BombReturnedByTimeout" />
+                      <Enum name="bomb captured" CStyleName="bomb_captured" pascalStyleName="BombCaptured" />
+                      <Enum name="bomb new defensive team" CStyleName="bomb_new_defensive_team" pascalStyleName="BombNewDefensiveTeam" />
+                      <Enum name="bomb return faliure" CStyleName="bomb_return_faliure" pascalStyleName="BombReturnFaliure" />
+                      <Enum name="side switch tick" CStyleName="side_switch_tick" pascalStyleName="SideSwitchTick" />
+                      <Enum name="side switch final tick" CStyleName="side_switch_final_tick" pascalStyleName="SideSwitchFinalTick" />
+                      <Enum name="side switch 30 seconds" CStyleName="side_switch_30_seconds" pascalStyleName="SideSwitch30Seconds" />
+                      <Enum name="side switch 10 seconds" CStyleName="side_switch_10_seconds" pascalStyleName="SideSwitch10Seconds" />
+                      <Enum name="bomb returned by defusing" CStyleName="bomb_returned_by_defusing" pascalStyleName="BombReturnedByDefusing" />
+                      <Enum name="bomb placed on enemy post" CStyleName="bomb_placed_on_enemy_post" pascalStyleName="BombPlacedOnEnemyPost" />
+                      <Enum name="bomb arming started" CStyleName="bomb_arming_started" pascalStyleName="BombArmingStarted" />
+                      <Enum name="bomb arming completed" CStyleName="bomb_arming_completed" pascalStyleName="BombArmingCompleted" />
+                      <Enum name="bomb contested" CStyleName="bomb_contested" pascalStyleName="BombContested" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="audience" pascalStyleName="Audience" name="audience" blockNameSource="true">
+                    <OptionsXRef>enum:game_engine_audience</OptionsXRef>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <StringId CStyleName="display_string" pascalStyleName="DisplayString" name="display string" />
+                  <ShortEnum CStyleName="required_field" pascalStyleName="RequiredField" name="required field">
+                    <OptionsXRef>enum:event_audience</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="excluded_audience" pascalStyleName="ExcludedAudience" name="excluded audience">
+                    <OptionsXRef>enum:event_audience</OptionsXRef>
+                  </ShortEnum>
+                  <StringId CStyleName="primary_string" pascalStyleName="PrimaryString" name="primary string" />
+                  <LongInteger CStyleName="primary_string_duration" pascalStyleName="PrimaryStringDuration" name="primary string duration" units="seconds" />
+                  <StringId CStyleName="plural_display_string" pascalStyleName="PluralDisplayString" name="plural display string" />
+                  <Pad sizeOfSource="sizeof(long)*7" length="28" />
+                  <Real CStyleName="sound_delay_announcer_only" pascalStyleName="SoundDelayAnnouncerOnly" name="sound delay (announcer only)" />
+                  <WordFlags CStyleName="sound_flags" pascalStyleName="SoundFlags" name="sound flags">
+                    <OptionsXRef>enum:sound_response_flags</OptionsXRef>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+                    <tag>snd!</tag>
+                  </TagReference>
+                  <Struct CStyleName="extra_sounds" pascalStyleName="ExtraSounds" name="extra sounds">
+                    <LayoutXRef>structure:sound_response_extra_sounds</LayoutXRef>
+                  </Struct>
+                  <Pad sizeOfSource="sizeof(real)*1" length="4" />
+                  <Pad sizeOfSource="sizeof(long)*4" length="16" />
+                  <Block CStyleName="sound_permutations" pascalStyleName="SoundPermutations" name="sound permutations" maxElementCount="10">
+                    <LayoutXRef>block:sound_response_definition</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="infection_events" pascalStyleName="InfectionEvents" name="infection events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <Layout regolithID="block:game_engine_infection_event" internalName="game_engine_infection_event_block" name="game_engine_infection_event_block">
+                <FieldSet version="0" sizeofValue="244" sizeofSource="sizeof(struct s_multiplayer_event_response_definition)" isLatest="true">
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <OptionsXRef>enum:game_engine_quantity_flags</OptionsXRef>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <ShortEnum CStyleName="event" pascalStyleName="Event" name="event" blockNameSource="true">
+                    <Options regolithID="enum:game_infection_event" CStyleName="game_infection_event" pascalStyleName="GameInfectionEvent">
+                      <Enum name="game start" CStyleName="game_start" pascalStyleName="GameStart" />
+                      <Enum name="player infected" CStyleName="player_infected" pascalStyleName="PlayerInfected" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="audience" pascalStyleName="Audience" name="audience" blockNameSource="true">
+                    <OptionsXRef>enum:game_engine_audience</OptionsXRef>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <StringId CStyleName="display_string" pascalStyleName="DisplayString" name="display string" />
+                  <ShortEnum CStyleName="required_field" pascalStyleName="RequiredField" name="required field">
+                    <OptionsXRef>enum:event_audience</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="excluded_audience" pascalStyleName="ExcludedAudience" name="excluded audience">
+                    <OptionsXRef>enum:event_audience</OptionsXRef>
+                  </ShortEnum>
+                  <StringId CStyleName="primary_string" pascalStyleName="PrimaryString" name="primary string" />
+                  <LongInteger CStyleName="primary_string_duration" pascalStyleName="PrimaryStringDuration" name="primary string duration" units="seconds" />
+                  <StringId CStyleName="plural_display_string" pascalStyleName="PluralDisplayString" name="plural display string" />
+                  <Pad sizeOfSource="sizeof(long)*7" length="28" />
+                  <Real CStyleName="sound_delay_announcer_only" pascalStyleName="SoundDelayAnnouncerOnly" name="sound delay (announcer only)" />
+                  <WordFlags CStyleName="sound_flags" pascalStyleName="SoundFlags" name="sound flags">
+                    <OptionsXRef>enum:sound_response_flags</OptionsXRef>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+                    <tag>snd!</tag>
+                  </TagReference>
+                  <Struct CStyleName="extra_sounds" pascalStyleName="ExtraSounds" name="extra sounds">
+                    <LayoutXRef>structure:sound_response_extra_sounds</LayoutXRef>
+                  </Struct>
+                  <Pad sizeOfSource="sizeof(real)*1" length="4" />
+                  <Pad sizeOfSource="sizeof(long)*4" length="16" />
+                  <Block CStyleName="sound_permutations" pascalStyleName="SoundPermutations" name="sound permutations" maxElementCount="10">
+                    <LayoutXRef>block:sound_response_definition</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="headhunter_events" pascalStyleName="HeadhunterEvents" name="headhunter events" maxElementCount="128" maxElementCountSource="k_maximum_game_engine_event_responses_per_type">
+              <Layout regolithID="block:game_engine_headhunter_event" internalName="game_engine_headhunter_event_block" name="game_engine_headhunter_event_block">
+                <FieldSet version="0" sizeofValue="244" sizeofSource="sizeof(struct s_multiplayer_event_response_definition)" isLatest="true">
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <OptionsXRef>enum:game_engine_quantity_flags</OptionsXRef>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <ShortEnum CStyleName="event" pascalStyleName="Event" name="event" blockNameSource="true">
+                    <Options regolithID="enum:headhunter_event" CStyleName="headhunter_event" pascalStyleName="HeadhunterEvent">
+                      <Enum name="game start" CStyleName="game_start" pascalStyleName="GameStart" />
+                      <Enum name="head pickup" CStyleName="head_pickup" pascalStyleName="HeadPickup" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="audience" pascalStyleName="Audience" name="audience" blockNameSource="true">
+                    <OptionsXRef>enum:game_engine_audience</OptionsXRef>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <StringId CStyleName="display_string" pascalStyleName="DisplayString" name="display string" />
+                  <ShortEnum CStyleName="required_field" pascalStyleName="RequiredField" name="required field">
+                    <OptionsXRef>enum:event_audience</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="excluded_audience" pascalStyleName="ExcludedAudience" name="excluded audience">
+                    <OptionsXRef>enum:event_audience</OptionsXRef>
+                  </ShortEnum>
+                  <StringId CStyleName="primary_string" pascalStyleName="PrimaryString" name="primary string" />
+                  <LongInteger CStyleName="primary_string_duration" pascalStyleName="PrimaryStringDuration" name="primary string duration" units="seconds" />
+                  <StringId CStyleName="plural_display_string" pascalStyleName="PluralDisplayString" name="plural display string" />
+                  <Pad sizeOfSource="sizeof(long)*7" length="28" />
+                  <Real CStyleName="sound_delay_announcer_only" pascalStyleName="SoundDelayAnnouncerOnly" name="sound delay (announcer only)" />
+                  <WordFlags CStyleName="sound_flags" pascalStyleName="SoundFlags" name="sound flags">
+                    <OptionsXRef>enum:sound_response_flags</OptionsXRef>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+                    <tag>snd!</tag>
+                  </TagReference>
+                  <Struct CStyleName="extra_sounds" pascalStyleName="ExtraSounds" name="extra sounds">
+                    <LayoutXRef>structure:sound_response_extra_sounds</LayoutXRef>
+                  </Struct>
+                  <Pad sizeOfSource="sizeof(real)*1" length="4" />
+                  <Pad sizeOfSource="sizeof(long)*4" length="16" />
+                  <Block CStyleName="sound_permutations" pascalStyleName="SoundPermutations" name="sound permutations" maxElementCount="10">
+                    <LayoutXRef>block:sound_response_definition</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="race_events" pascalStyleName="RaceEvents" name="race events" maxElementCount="0">
+              <LayoutXRef>block:g_null</LayoutXRef>
+            </Block>
+            <Block maxElementCount="0">
+              <LayoutXRef>block:g_null</LayoutXRef>
+            </Block>
+            <TagReference CStyleName="default_item_collection_1" pascalStyleName="DefaultItemCollection1" name="default item collection 1">
+              <tag>itmc</tag>
+            </TagReference>
+            <TagReference CStyleName="default_item_collection_2" pascalStyleName="DefaultItemCollection2" name="default item collection 2">
+              <tag>itmc</tag>
+            </TagReference>
+            <LongInteger CStyleName="default_frag_grenade_count" pascalStyleName="DefaultFragGrenadeCount" name="default frag grenade count" />
+            <LongInteger CStyleName="default_plasma_grenade_count" pascalStyleName="DefaultPlasmaGrenadeCount" name="default plasma grenade count" />
+            <Pad sizeOfSource="sizeof(long)*10" length="40" />
+            <Explanation name="dynamic spawn zones" />
+            <Real CStyleName="dynamic_zone_upper_height" pascalStyleName="DynamicZoneUpperHeight" name="dynamic zone upper height" />
+            <Real CStyleName="dynamic_zone_lower_height" pascalStyleName="DynamicZoneLowerHeight" name="dynamic zone lower height" />
+            <Pad sizeOfSource="sizeof(long)*10" length="40" />
+            <Explanation name="enemy" />
+            <Real CStyleName="enemy_inner_radius" pascalStyleName="EnemyInnerRadius" name="enemy inner radius" />
+            <Real CStyleName="enemy_outer_radius" pascalStyleName="EnemyOuterRadius" name="enemy outer radius" />
+            <Real CStyleName="enemy_weight" pascalStyleName="EnemyWeight" name="enemy weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="friend" />
+            <Real CStyleName="friend_inner_radius" pascalStyleName="FriendInnerRadius" name="friend inner radius" />
+            <Real CStyleName="friend_outer_radius" pascalStyleName="FriendOuterRadius" name="friend outer radius" />
+            <Real CStyleName="friend_weight" pascalStyleName="FriendWeight" name="friend weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="enemy vehicle" />
+            <Real CStyleName="enemy_vehicle_inner_radius" pascalStyleName="EnemyVehicleInnerRadius" name="enemy vehicle inner radius" />
+            <Real CStyleName="enemy_vehicle_outer_radius" pascalStyleName="EnemyVehicleOuterRadius" name="enemy vehicle outer radius" />
+            <Real CStyleName="enemy_vehicle_weight" pascalStyleName="EnemyVehicleWeight" name="enemy vehicle weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="friendly vehicle" />
+            <Real CStyleName="friendly_vehicle_inner_radius" pascalStyleName="FriendlyVehicleInnerRadius" name="friendly vehicle inner radius" />
+            <Real CStyleName="friendly_vehicle_outer_radius" pascalStyleName="FriendlyVehicleOuterRadius" name="friendly vehicle outer radius" />
+            <Real CStyleName="friendly_vehicle_weight" pascalStyleName="FriendlyVehicleWeight" name="friendly vehicle weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="empty vehicle" />
+            <Real CStyleName="empty_vehicle_inner_radius" pascalStyleName="EmptyVehicleInnerRadius" name="empty vehicle inner radius" />
+            <Real CStyleName="empty_vehicle_outer_radius" pascalStyleName="EmptyVehicleOuterRadius" name="empty vehicle outer radius" />
+            <Real CStyleName="empty_vehicle_weight" pascalStyleName="EmptyVehicleWeight" name="empty vehicle weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="oddball inclusion" />
+            <Real CStyleName="oddball_inclusion_inner_radius" pascalStyleName="OddballInclusionInnerRadius" name="oddball inclusion inner radius" />
+            <Real CStyleName="oddball_inclusion_outer_radius" pascalStyleName="OddballInclusionOuterRadius" name="oddball inclusion outer radius" />
+            <Real CStyleName="oddball_inclusion_weight" pascalStyleName="OddballInclusionWeight" name="oddball inclusion weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="oddball exclusion" />
+            <Real CStyleName="oddball_exclusion_inner_radius" pascalStyleName="OddballExclusionInnerRadius" name="oddball exclusion inner radius" />
+            <Real CStyleName="oddball_exclusion_outer_radius" pascalStyleName="OddballExclusionOuterRadius" name="oddball exclusion outer radius" />
+            <Real CStyleName="oddball_exclusion_weight" pascalStyleName="OddballExclusionWeight" name="oddball exclusion weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="hill inclusion" />
+            <Real CStyleName="hill_inclusion_inner_radius" pascalStyleName="HillInclusionInnerRadius" name="hill inclusion inner radius" />
+            <Real CStyleName="hill_inclusion_outer_radius" pascalStyleName="HillInclusionOuterRadius" name="hill inclusion outer radius" />
+            <Real CStyleName="hill_inclusion_weight" pascalStyleName="HillInclusionWeight" name="hill inclusion weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="hill exclusion" />
+            <Real CStyleName="hill_exclusion_inner_radius" pascalStyleName="HillExclusionInnerRadius" name="hill exclusion inner radius" />
+            <Real CStyleName="hill_exclusion_outer_radius" pascalStyleName="HillExclusionOuterRadius" name="hill exclusion outer radius" />
+            <Real CStyleName="hill_exclusion_weight" pascalStyleName="HillExclusionWeight" name="hill exclusion weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="last race flag" />
+            <Real CStyleName="last_race_flag_inner_radius" pascalStyleName="LastRaceFlagInnerRadius" name="last race flag inner radius" />
+            <Real CStyleName="last_race_flag_outer_radius" pascalStyleName="LastRaceFlagOuterRadius" name="last race flag outer radius" />
+            <Real CStyleName="last_race_flag_weight" pascalStyleName="LastRaceFlagWeight" name="last race flag weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="dead ally" />
+            <Real CStyleName="dead_ally_inner_radius" pascalStyleName="DeadAllyInnerRadius" name="dead ally inner radius" />
+            <Real CStyleName="dead_ally_outer_radius" pascalStyleName="DeadAllyOuterRadius" name="dead ally outer radius" />
+            <Real CStyleName="dead_ally_weight" pascalStyleName="DeadAllyWeight" name="dead ally weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="controlled territory" />
+            <Real CStyleName="controlled_territory_inner_radius" pascalStyleName="ControlledTerritoryInnerRadius" name="controlled territory inner radius" />
+            <Real CStyleName="controlled_territory_outer_radius" pascalStyleName="ControlledTerritoryOuterRadius" name="controlled territory outer radius" />
+            <Real CStyleName="controlled_territory_weight" pascalStyleName="ControlledTerritoryWeight" name="controlled territory weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Explanation name="medic" />
+            <Real CStyleName="medic_inner_radius" pascalStyleName="MedicInnerRadius" name="medic inner radius" />
+            <Real CStyleName="medic_outer_radius" pascalStyleName="MedicOuterRadius" name="medic outer radius" />
+            <Real CStyleName="medic_weight" pascalStyleName="MedicWeight" name="medic weight" />
+            <Pad sizeOfSource="sizeof(long)*4" length="16" />
+            <Pad sizeOfSource="sizeof(s_dynamic_spawn_zone_definition)*(k_maximum_number_of_dynamic_spawn_zones - k_number_of_dynamic_spawn_zones)" length="532" />
+            <Pad sizeOfSource="sizeof(long)*12" length="48" />
+            <Block CStyleName="multiplayer_constants" pascalStyleName="MultiplayerConstants" name="multiplayer constants" maxElementCount="1">
+              <Layout regolithID="block:multiplayer_constants" internalName="multiplayer_constants_block" name="multiplayer_constants_block">
+                <FieldSet version="0" sizeofValue="384" sizeofSource="sizeof(struct s_multiplayer_constants)" isLatest="true">
+                  <Real CStyleName="maximum_random_spawn_bias" pascalStyleName="MaximumRandomSpawnBias" name="maximum random spawn bias" />
+                  <Real CStyleName="teleporter_recharge_time" pascalStyleName="TeleporterRechargeTime" name="teleporter recharge time" units="seconds" />
+                  <Real CStyleName="grenade_danger_weight" pascalStyleName="GrenadeDangerWeight" name="grenade danger weight" />
+                  <Real CStyleName="grenade_danger_inner_radius" pascalStyleName="GrenadeDangerInnerRadius" name="grenade danger inner radius" />
+                  <Real CStyleName="grenade_danger_outer_radius" pascalStyleName="GrenadeDangerOuterRadius" name="grenade danger outer radius" />
+                  <Real CStyleName="grenade_danger_lead_time" pascalStyleName="GrenadeDangerLeadTime" name="grenade danger lead time" units="seconds" />
+                  <Real CStyleName="vehicle_danger_min_speed" pascalStyleName="VehicleDangerMinSpeed" name="vehicle danger min speed" units="wu/sec" />
+                  <Real CStyleName="vehicle_danger_weight" pascalStyleName="VehicleDangerWeight" name="vehicle danger weight" />
+                  <Real CStyleName="vehicle_danger_radius" pascalStyleName="VehicleDangerRadius" name="vehicle danger radius" />
+                  <Real CStyleName="vehicle_danger_lead_time" pascalStyleName="VehicleDangerLeadTime" name="vehicle danger lead time" units="seconds" />
+                  <Real CStyleName="vehicle_nearby_player_dist" pascalStyleName="VehicleNearbyPlayerDist" name="vehicle nearby player dist" description="how nearby a player is to count a vehicle as 'occupied'" />
+                  <Pad sizeOfSource="sizeof(long)*21" length="84" />
+                  <Pad sizeOfSource="sizeof(long)*8" length="32" />
+                  <Pad sizeOfSource="sizeof(long)*8" length="32" />
+                  <TagReference CStyleName="hill_shader" pascalStyleName="HillShader" name="hill shader">
+                    <tag>shad</tag>
+                  </TagReference>
+                  <Pad sizeOfSource="sizeof(long)*4" length="16" />
+                  <Real CStyleName="flag_reset_stop_distance" pascalStyleName="FlagResetStopDistance" name="flag reset stop distance" />
+                  <TagReference CStyleName="bomb_explode_effect" pascalStyleName="BombExplodeEffect" name="bomb explode effect">
+                    <tag>effe</tag>
+                  </TagReference>
+                  <TagReference CStyleName="bomb_explode_dmg_effect" pascalStyleName="BombExplodeDmgEffect" name="bomb explode dmg effect">
+                    <tag>jpt!</tag>
+                  </TagReference>
+                  <TagReference CStyleName="bomb_defuse_effect" pascalStyleName="BombDefuseEffect" name="bomb defuse effect">
+                    <tag>effe</tag>
+                  </TagReference>
+                  <StringId CStyleName="bomb_defusal_string" pascalStyleName="BombDefusalString" name="bomb defusal string" />
+                  <StringId CStyleName="blocked_teleporter_string" pascalStyleName="BlockedTeleporterString" name="blocked teleporter string" />
+                  <Pad sizeOfSource="sizeof(long)*1" length="4" />
+                  <Pad sizeOfSource="sizeof(long)*8" length="32" />
+                  <Pad sizeOfSource="sizeof(long)*8" length="32" />
+                  <Pad sizeOfSource="sizeof(long)*8" length="32" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="state_responses" pascalStyleName="StateResponses" name="state responses" maxElementCount="32" maxElementCountSource="k_maximum_status_response_count">
+              <Layout regolithID="block:game_engine_status_response" internalName="game_engine_status_response_block" name="game_engine_status_response_block">
+                <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(struct s_game_engine_status_response)" isLatest="true">
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:game_engine_status_flags" CStyleName="game_engine_status_flags" pascalStyleName="GameEngineStatusFlags">
+                      <Bit name="unused" CStyleName="unused0_bit" pascalStyleName="Unused0Bit" />
+                    </Options>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <ShortEnum CStyleName="state" pascalStyleName="State" name="state" blockNameSource="true">
+                    <Options regolithID="enum:game_engine_status_state" CStyleName="game_engine_status_state" pascalStyleName="GameEngineStatusState">
+                      <Enum name="waiting for space to clear" CStyleName="waiting_for_space_to_clear" pascalStyleName="WaitingForSpaceToClear" />
+                      <Enum name="observing" CStyleName="observing" pascalStyleName="Observing" />
+                      <Enum name="respawning soon" CStyleName="respawning_soon" pascalStyleName="RespawningSoon" />
+                      <Enum name="sitting out" CStyleName="sitting_out" pascalStyleName="SittingOut" />
+                      <Enum name="out of lives" CStyleName="out_of_lives" pascalStyleName="OutOfLives" />
+                      <Enum name="playing (winning)" CStyleName="playing_winning" pascalStyleName="PlayingWinning" />
+                      <Enum name="playing (tied)" CStyleName="playing_tied" pascalStyleName="PlayingTied" />
+                      <Enum name="playing (losing)" CStyleName="playing_losing" pascalStyleName="PlayingLosing" />
+                      <Enum name="game over (won)" CStyleName="game_over_won" pascalStyleName="GameOverWon" />
+                      <Enum name="game over (tied)" CStyleName="game_over_tied" pascalStyleName="GameOverTied" />
+                      <Enum name="game over (lost)" CStyleName="game_over_lost" pascalStyleName="GameOverLost" />
+                      <Enum name="you have flag" CStyleName="you_have_flag" pascalStyleName="YouHaveFlag" />
+                      <Enum name="enemy has flag" CStyleName="enemy_has_flag" pascalStyleName="EnemyHasFlag" />
+                      <Enum name="flag not home" CStyleName="flag_not_home" pascalStyleName="FlagNotHome" />
+                      <Enum name="carrying oddball" CStyleName="carrying_oddball" pascalStyleName="CarryingOddball" />
+                      <Enum name="you are juggy" CStyleName="you_are_juggy" pascalStyleName="YouAreJuggy" />
+                      <Enum name="you control hill" CStyleName="you_control_hill" pascalStyleName="YouControlHill" />
+                      <Enum name="switching sides soon" CStyleName="switching_sides_soon" pascalStyleName="SwitchingSidesSoon" />
+                      <Enum name="player recently started" CStyleName="player_recently_started" pascalStyleName="PlayerRecentlyStarted" />
+                      <Enum name="you have bomb" CStyleName="you_have_bomb" pascalStyleName="YouHaveBomb" />
+                      <Enum name="flag contested" CStyleName="flag_contested" pascalStyleName="FlagContested" />
+                      <Enum name="bomb contested" CStyleName="bomb_contested" pascalStyleName="BombContested" />
+                      <Enum name="limited lives left (multiple)" CStyleName="limited_lives_left_multiple" pascalStyleName="LimitedLivesLeftMultiple" />
+                      <Enum name="limited lives left (single)" CStyleName="limited_lives_left_single" pascalStyleName="LimitedLivesLeftSingle" />
+                      <Enum name="limited lives left (final)" CStyleName="limited_lives_left_final" pascalStyleName="LimitedLivesLeftFinal" />
+                      <Enum name="playing (winning, unlimited)" CStyleName="playing_winning_unlimited" pascalStyleName="PlayingWinningUnlimited" />
+                      <Enum name="playing (tied, unlimited)" CStyleName="playing_tied_unlimited" pascalStyleName="PlayingTiedUnlimited" />
+                      <Enum name="playing (losing, unlimited)" CStyleName="playing_losing_unlimited" pascalStyleName="PlayingLosingUnlimited" />
+                      <Enum name="you are medic" CStyleName="you_are_medic" pascalStyleName="YouAreMedic" />
+                      <Enum name="medic is dead" CStyleName="medic_is_dead" pascalStyleName="MedicIsDead" />
+                      <Enum name="medics are dead" CStyleName="medics_are_dead" pascalStyleName="MedicsAreDead" />
+                      <Enum name="you are vip" CStyleName="you_are_vip" pascalStyleName="YouAreVip" />
+                      <Enum name="you are infected" CStyleName="you_are_infected" pascalStyleName="YouAreInfected" />
+                    </Options>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <StringId CStyleName="ffa_message" pascalStyleName="FfaMessage" name="ffa message" />
+                  <StringId CStyleName="team_message" pascalStyleName="TeamMessage" name="team message" />
+                  <TagReference>
+                    <tag />
+                  </TagReference>
+                  <Pad sizeOfSource="sizeof(long)" length="4" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <TagReference CStyleName="scoreboard_hud_definition" pascalStyleName="ScoreboardHudDefinition" name="scoreboard hud definition">
+              <tag>nhdt</tag>
+            </TagReference>
+            <TagReference CStyleName="scoreboard_emblem_shader" pascalStyleName="ScoreboardEmblemShader" name="scoreboard emblem shader">
+              <tag>shad</tag>
+            </TagReference>
+            <TagReference CStyleName="scoreboard_emblem_bitmap" pascalStyleName="ScoreboardEmblemBitmap" name="scoreboard emblem bitmap">
+              <tag>bitm</tag>
+            </TagReference>
+            <TagReference CStyleName="scoreboard_dead_emblem_shader" pascalStyleName="ScoreboardDeadEmblemShader" name="scoreboard dead emblem shader">
+              <tag>shad</tag>
+            </TagReference>
+            <TagReference CStyleName="scoreboard_dead_emblem_bitmap" pascalStyleName="ScoreboardDeadEmblemBitmap" name="scoreboard dead emblem bitmap">
+              <tag>bitm</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

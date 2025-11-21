@@ -27,9 +27,9 @@
 from .generate_h1_scenario import generate_scenario_scene as generate_h1_scenerio_retail
 from .generate_h2_scenario import generate_scenario_scene as generate_h2_scenerio_retail
 
-def build_scene(context, ASSET, game_version, game_title, version, fix_rotations, empty_markers, report):
+def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, report):
     if game_title == "halo1":
-        generate_h1_scenerio_retail(context, ASSET, game_version, game_title, version, fix_rotations, empty_markers, report)
+        generate_h1_scenerio_retail(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, report)
 
     else:
-        generate_h2_scenerio_retail(context, ASSET, game_version, game_title, version, fix_rotations, empty_markers, report)
+        generate_h2_scenerio_retail(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, report)

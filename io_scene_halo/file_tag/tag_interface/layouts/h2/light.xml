@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="ligh" name="light" version="4">
+  <Layout regolithID="block:light" internalName="light_block" name="light">
+    <FieldSet version="0" sizeofValue="272" sizeofSource="sizeof(struct light_definition)" isLatest="true">
+      <LongFlags name="flags">
+        <Options regolithID="enum:light_flags" CStyleName="light_flags" pascalStyleName="LightFlags">
+          <Bit name="no illumination" description="don't cast any per-pixel dynamic light" CStyleName="no_illumination_bit" pascalStyleName="NoIlluminationBit" />
+          <Bit name="no specular" description="don't cast any specular highlights" CStyleName="no_specular_bit" pascalStyleName="NoSpecularBit" />
+          <Bit name="force cast environment shadows through portals" CStyleName="force_cast_environment_shadows_through_portals_bit" pascalStyleName="ForceCastEnvironmentShadowsThroughPortalsBit" />
+          <Bit name="no shadow" description="don't cast any stencil shadows" CStyleName="no_shadow_bit" pascalStyleName="NoShadowBit" />
+          <Bit name="force frustum visibility on small light" description="nobody here but us chickens..." CStyleName="force_frustum_visibility_on_small_light_bit" pascalStyleName="ForceFrustumVisibilityOnSmallLightBit" />
+          <Bit name="only render in first person" CStyleName="only_render_in_first_person_bit" pascalStyleName="OnlyRenderInFirstPersonBit" />
+          <Bit name="only render in third person" CStyleName="only_render_in_third_person_bit" pascalStyleName="OnlyRenderInThirdPersonBit" />
+          <Bit name="don't fade when invisible?" description="don't fade out this light when under active-camouflage" CStyleName="dont_fade_when_invisible_bit" pascalStyleName="DontFadeWhenInvisibleBit" />
+          <Bit name="multiplayer override" description="don't turn off in multiplayer" CStyleName="multiplayer_override_bit" pascalStyleName="MultiplayerOverrideBit" />
+          <Bit name="animated gel" CStyleName="animated_gel_bit" pascalStyleName="AnimatedGelBit" />
+          <Bit name="only in dynamic envmap?" description="only draw this light in dynamic reflection maps" CStyleName="only_in_dynamic_envmap_bit" pascalStyleName="OnlyInDynamicEnvmapBit" />
+          <Bit name="ignore parent object" description="don't illuminate or shadow the single object we are attached to" CStyleName="ignore_parent_object_bit" pascalStyleName="IgnoreParentObjectBit" />
+          <Bit name="don't shadow parent" description="don't shadow the object we are attached to" CStyleName="dont_shadow_parent_bit" pascalStyleName="DontShadowParentBit" />
+          <Bit name="ignore all parents" description="don't illuminate or shadow all the way up to our parent object" CStyleName="ignore_all_parents_bit" pascalStyleName="IgnoreAllParentsBit" />
+          <Bit name="march milestone hack" description="don't click this unless you know what you're doing" CStyleName="march_milestone_hack_bit" pascalStyleName="MarchMilestoneHackBit" />
+          <Bit name="force light inside world" description="every update will push light back inside the world" CStyleName="force_light_inside_world_bit" pascalStyleName="ForceLightInsideWorldBit" />
+          <Bit name="environment doesnt cast stencil shadows" description="environment in this light will not cast stencil shadows" CStyleName="environment_doesnt_cast_stencil_shadows_bit" pascalStyleName="EnvironmentDoesntCastStencilShadowsBit" />
+          <Bit name="objects don't cast stencil shadows" description="objects in this light will not cast stencil shadows" CStyleName="objects_dont_cast_stencil_shadows_bit" pascalStyleName="ObjectsDontCastStencilShadowsBit" />
+          <Bit name="first person from camera" CStyleName="first_person_from_camera_bit" pascalStyleName="FirstPersonFromCameraBit" />
+          <Bit name="texture camera gel" CStyleName="texture_camera_gel_bit" pascalStyleName="TextureCameraGelBit" />
+          <Bit name="light framerate killer" CStyleName="light_framerate_killer_bit" pascalStyleName="LightFramerateKillerBit" />
+          <Bit name="allowed in split screen" CStyleName="allowed_in_split_screen_bit" pascalStyleName="AllowedInSplitScreenBit" />
+          <Bit name="only on parent bipeds" CStyleName="only_on_parent_bipeds_bit" pascalStyleName="OnlyOnParentBipedsBit" />
+        </Options>
+      </LongFlags>
+      <UselessPad length="16" />
+      <Explanation name="SHAPE" description="overall shape of the light" />
+      <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+        <OptionsXRef>enum:scenario_light_type</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <RealBounds CStyleName="size_modifer" pascalStyleName="SizeModifer" name="size modifer" description="how the light's size changes with external scale" />
+      <Real CStyleName="shadow_quality_bias" pascalStyleName="ShadowQualityBias" name="shadow quality bias" description="larger positive numbers improve quality, larger negative numbers improve speed" />
+      <ShortEnum CStyleName="shadow_tap_bias" pascalStyleName="ShadowTapBias" name="shadow tap bias" description="the less taps you use, the faster the light (but edges can look worse)">
+        <Options regolithID="enum:light_shadow_tap_bias" CStyleName="light_shadow_tap_bias" pascalStyleName="LightShadowTapBias">
+          <Enum name="3 tap" CStyleName="_3_tap" pascalStyleName="3Tap" />
+          <Enum name="UNUSED" CStyleName="unused1" pascalStyleName="Unused1" />
+          <Enum name="1 tap" CStyleName="_1_tap" pascalStyleName="1Tap" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <UselessPad length="24" />
+      <Explanation name="SPHERE LIGHT" description="default shape parameters for spherical lights" />
+      <Real CStyleName="radius" pascalStyleName="Radius" name="radius" units="world units" description="the radius at which illumination falls off to zero" />
+      <Real CStyleName="specular_radius" pascalStyleName="SpecularRadius" name="specular radius" units="world units" description="the radius at which specular highlights fall off to zero (if zero, same as maximum radius)" />
+      <UselessPad length="32" />
+      <Explanation name="FRUSTUM LIGHT" description="default shape parameters for frustum lights (orthogonal, projective or pyramid types)" />
+      <Real CStyleName="near_width" pascalStyleName="NearWidth" name="near width" units="world units" description="width of the frustum light at its near plane" />
+      <Real CStyleName="height_stretch" pascalStyleName="HeightStretch" name="height stretch" description="how much the gel is stretched vertically (0.0 or 1.0 = aspect ratio same as gel)" />
+      <Real CStyleName="field_of_view" pascalStyleName="FieldOfView" name="field of view" units="degrees" description="horizontal angle that the frustum light covers (0.0 = no spread, a parallel beam)" />
+      <Real CStyleName="falloff_distance" pascalStyleName="FalloffDistance" name="falloff distance" description="distance from near plane to where the light falloff starts" />
+      <Real CStyleName="cutoff_distance" pascalStyleName="CutoffDistance" name="cutoff distance" description="distance from near plane to where illumination falls off to zero" />
+      <UselessPad length="4" />
+      <Explanation name="COLOR" />
+      <LongFlags CStyleName="interpolation_flags" pascalStyleName="InterpolationFlags" name="interpolation flags">
+        <OptionsXRef>enum:color_interpolation_flags</OptionsXRef>
+      </LongFlags>
+      <RealBounds CStyleName="bloom_bounds" pascalStyleName="BloomBounds" name="bloom bounds" units="[0..2]" />
+      <RealRgbColor CStyleName="specular_lower_bound" pascalStyleName="SpecularLowerBound" name="specular lower bound" />
+      <RealRgbColor CStyleName="specular_upper_bound" pascalStyleName="SpecularUpperBound" name="specular upper bound" />
+      <RealRgbColor CStyleName="diffuse_lower_bound" pascalStyleName="DiffuseLowerBound" name="diffuse lower bound" />
+      <UselessPad length="4" />
+      <RealRgbColor CStyleName="diffuse_upper_bound" pascalStyleName="DiffuseUpperBound" name="diffuse upper bound" />
+      <RealBounds CStyleName="brightness_bounds" pascalStyleName="BrightnessBounds" name="brightness bounds" units="[0..2]" />
+      <UselessPad length="4" />
+      <Explanation name="GEL" description="the gel map tints the light's illumination per-pixel" />
+      <TagReference CStyleName="gel_map" pascalStyleName="GelMap" name="gel map" description="must be a cubemap for spherical light and a 2d texture for frustum light">
+        <tag>bitm</tag>
+      </TagReference>
+      <ShortEnum CStyleName="specular_mask" pascalStyleName="SpecularMask" name="specular mask">
+        <Options regolithID="enum:light_specular_mask" CStyleName="light_specular_mask" pascalStyleName="LightSpecularMask">
+          <Enum name="default" CStyleName="default_value" pascalStyleName="Default" />
+          <Enum name="none (no mask)" CStyleName="none_no_mask" pascalStyleName="NoneNoMask" />
+          <Enum name="gel alpha" CStyleName="gel_alpha" pascalStyleName="GelAlpha" />
+          <Enum name="gel color" CStyleName="gel_color" pascalStyleName="GelColor" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <UselessPad length="12" />
+      <Pad sizeOfSource="sizeof(real)" length="4" />
+      <UselessPad length="80" />
+      <UselessPad length="12" />
+      <UselessPad length="12" />
+      <UselessPad length="12" />
+      <UselessPad length="16" />
+      <Explanation name="FALLOFF" />
+      <ShortEnum name="falloff function">
+        <Options regolithID="enum:light_falloff_function" CStyleName="light_falloff_function" pascalStyleName="LightFalloffFunction">
+          <Enum name="default" CStyleName="default_value" pascalStyleName="Default" />
+          <Enum name="narrow" CStyleName="narrow" pascalStyleName="Narrow" />
+          <Enum name="broad" CStyleName="broad" pascalStyleName="Broad" />
+          <Enum name="very broad" CStyleName="very_broad" pascalStyleName="VeryBroad" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="diffuse_contrast" pascalStyleName="DiffuseContrast" name="diffuse contrast">
+        <Options regolithID="enum:light_diffuse_contrast" CStyleName="light_diffuse_contrast" pascalStyleName="LightDiffuseContrast">
+          <Enum name="default (linear)" CStyleName="default_linear" pascalStyleName="DefaultLinear" />
+          <Enum name="high" CStyleName="high" pascalStyleName="High" />
+          <Enum name="low" CStyleName="low" pascalStyleName="Low" />
+          <Enum name="very low" CStyleName="very_low" pascalStyleName="VeryLow" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="specular_contrast" pascalStyleName="SpecularContrast" name="specular contrast">
+        <Options regolithID="enum:light_specular_contrast" CStyleName="light_specular_contrast" pascalStyleName="LightSpecularContrast">
+          <Enum name="default (one)" CStyleName="default_one" pascalStyleName="DefaultOne" />
+          <Enum name="high (linear)" CStyleName="high_linear" pascalStyleName="HighLinear" />
+          <Enum name="low" CStyleName="low" pascalStyleName="Low" />
+          <Enum name="very low" CStyleName="very_low" pascalStyleName="VeryLow" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="falloff_geometry" pascalStyleName="FalloffGeometry" name="falloff geometry">
+        <Options regolithID="enum:light_falloff_geometry" CStyleName="light_falloff_geometry" pascalStyleName="LightFalloffGeometry">
+          <Enum name="default" CStyleName="default_value" pascalStyleName="Default" />
+          <Enum name="directional" CStyleName="directional" pascalStyleName="Directional" />
+          <Enum name="spherical" CStyleName="spherical" pascalStyleName="Spherical" />
+        </Options>
+      </ShortEnum>
+      <UselessPad length="8" />
+      <Explanation name="LENS FLARE" description="optional lens flare and light volume associated with this light" />
+      <TagReference CStyleName="lens_flare" pascalStyleName="LensFlare" name="lens flare">
+        <tag>lens</tag>
+      </TagReference>
+      <Real CStyleName="bounding_radius" pascalStyleName="BoundingRadius" name="bounding radius" units="world units" description="used to generate a bounding radius for lensflare-only lights" />
+      <TagReference CStyleName="light_volume" pascalStyleName="LightVolume" name="light volume">
+        <tag>MGS2</tag>
+      </TagReference>
+      <UselessPad length="8" />
+      <Explanation name="RADIOSITY" description="how the light affects the lightmaps (ignored for dynamic lights)" />
+      <ShortEnum CStyleName="default_lightmap_setting" pascalStyleName="DefaultLightmapSetting" name="default lightmap setting">
+        <Options regolithID="enum:light_default_setting" CStyleName="light_default_setting" pascalStyleName="LightDefaultSetting">
+          <Enum name="dynamic only" CStyleName="dynamic_only" pascalStyleName="DynamicOnly" />
+          <Enum name="dynamic with lightmaps" CStyleName="dynamic_with_lightmaps" pascalStyleName="DynamicWithLightmaps" />
+          <Enum name="lightmaps only" CStyleName="lightmaps_only" pascalStyleName="LightmapsOnly" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="1*sizeof(word)" length="2" />
+      <Real CStyleName="lightmap_half_life" pascalStyleName="LightmapHalfLife" name="lightmap half life" />
+      <Real CStyleName="lightmap_light_scale" pascalStyleName="LightmapLightScale" name="lightmap light scale" />
+      <UselessPad length="20" />
+      <Explanation name="EFFECT PARAMETERS" description="if the light is created by an effect, it will animate itself as follows" />
+      <Real CStyleName="duration" pascalStyleName="Duration" name="duration" units="seconds" description="the light will last this long when created by an effect" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <ShortEnum name="falloff function" description="the scale of the light will diminish over time according to this function">
+        <OptionsXRef>enum:falloff_function</OptionsXRef>
+      </ShortEnum>
+      <UselessPad length="8" />
+      <Explanation name="DISTANCE FADING PARAMETERS" description="To fade the light's illumination and shadow casting abilities" />
+      <ShortEnum CStyleName="illumination_fade" pascalStyleName="IlluminationFade" name="illumination fade">
+        <Options regolithID="enum:light_fade" CStyleName="light_fade" pascalStyleName="LightFade">
+          <Enum name="fade very far" CStyleName="fade_very_far" pascalStyleName="FadeVeryFar" />
+          <Enum name="fade far" CStyleName="fade_far" pascalStyleName="FadeFar" />
+          <Enum name="fade medium" CStyleName="fade_medium" pascalStyleName="FadeMedium" />
+          <Enum name="fade close" CStyleName="fade_close" pascalStyleName="FadeClose" />
+          <Enum name="fade very close" CStyleName="fade_very_close" pascalStyleName="FadeVeryClose" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="shadow_fade" pascalStyleName="ShadowFade" name="shadow fade">
+        <OptionsXRef>enum:light_fade</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="specular_fade" pascalStyleName="SpecularFade" name="specular fade">
+        <OptionsXRef>enum:light_fade</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <UselessPad length="8" />
+      <Explanation name="ANIMATION PARAMETERS" />
+      <LongFlags name="flags">
+        <Options regolithID="enum:light_animation_flags" CStyleName="light_animation_flags" pascalStyleName="LightAnimationFlags">
+          <Bit name="synchronized" CStyleName="_synchronized_bit" pascalStyleName="SynchronizedBit" />
+        </Options>
+      </LongFlags>
+      <Block CStyleName="brightness_animation" pascalStyleName="BrightnessAnimation" name="brightness animation" maxElementCount="1">
+        <Layout regolithID="block:light_brightness_animation" internalName="light_brightness_animation_block" name="brightness animation">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct light_brightness_animation_parameters)" isLatest="true">
+            <Custom name="function" tag="fned" />
+            <Struct CStyleName="function" pascalStyleName="Function" name="function">
+              <LayoutXRef>structure:mapping_function</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="color_animation" pascalStyleName="ColorAnimation" name="color animation" maxElementCount="1">
+        <Layout regolithID="block:light_color_animation" internalName="light_color_animation_block" name="color animation">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct light_color_animation_parameters)" isLatest="true">
+            <Custom name="function" tag="fned" />
+            <Struct CStyleName="function" pascalStyleName="Function" name="function">
+              <LayoutXRef>structure:mapping_function</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="gel_animation" pascalStyleName="GelAnimation" name="gel animation" maxElementCount="1">
+        <Layout regolithID="block:light_gel_animation" internalName="light_gel_animation_block" name="gel animation">
+          <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(struct light_gel_animation_parameters)" isLatest="true">
+            <Custom name="dx" tag="fned" />
+            <Struct CStyleName="dx" pascalStyleName="Dx" name="dx">
+              <LayoutXRef>structure:mapping_function</LayoutXRef>
+            </Struct>
+            <Custom name="dy" tag="fned" />
+            <Struct CStyleName="dy" pascalStyleName="Dy" name="dy">
+              <LayoutXRef>structure:mapping_function</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <UselessPad length="72" />
+      <Explanation name="SHADER" />
+      <TagReference CStyleName="shader" pascalStyleName="Shader" name="shader">
+        <tag>shad</tag>
+      </TagReference>
+    </FieldSet>
+  </Layout>
+</TagGroup>

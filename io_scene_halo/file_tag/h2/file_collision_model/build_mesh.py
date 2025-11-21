@@ -28,25 +28,37 @@ import re
 import bpy
 import bmesh
 
+from math import radians
+from enum import Flag, Enum, auto
+from mathutils import Matrix, Vector
 from ....global_functions import global_functions
-from .format import SurfaceFlags
 
-def build_collision(context, armature, COLLISION, game_version):
+class SurfaceFlags(Flag):
+    two_sided = auto()
+    invisible = auto()
+    climbable = auto()
+    breakable = auto()
+    invalid = auto()
+    conveyor = auto()
+
+def build_collision(context, armature, COLLISION, fix_rotations):
+    collision_root = COLLISION["Data"]
+
     node_prefix_tuple = ('b ', 'b_', 'bone ', 'bone_', 'frame ', 'frame_', 'bip01 ', 'bip01_')
     collection = context.collection
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
-    for region_idx, region in enumerate(COLLISION.regions):
-        for permutation_idx, permutation in enumerate(region.permutations):
-            for bsp_idx, bsp in enumerate(permutation.bsps):
-                parent_name = COLLISION.nodes[bsp.node_index].name
+    for region_idx, region in enumerate(collision_root["regions"]):
+        for permutation_idx, permutation in enumerate(region["permutations"]):
+            for bsp_idx, bsp in enumerate(permutation["bsps"]):
+                parent_name = collision_root["nodes"][bsp["node index"]]["name"]
                 for node_prefix in node_prefix_tuple:
                     if parent_name.lower().startswith(node_prefix):
                         parent_name = re.split(node_prefix, parent_name, maxsplit=1, flags=re.IGNORECASE)[1]
 
                 active_region_permutations = []
 
-                region_name = region.name
-                permutation_name = permutation.name
+                region_name = region["name"]
+                permutation_name = permutation["name"]
 
                 if region_name == "__unnamed":
                     region_name = "unnamed"
@@ -59,40 +71,41 @@ def build_collision(context, armature, COLLISION, game_version):
 
                 mesh = bpy.data.meshes.new(object_name)
                 object_mesh = bpy.data.objects.new(object_name, mesh)
+                object_mesh.color = (1, 1, 1, 0)
                 collection.objects.link(object_mesh)
 
-                for surface_idx, surface in enumerate(bsp.surfaces):
-                    edge_index = surface.first_edge
+                for surface_idx, surface in enumerate(bsp["surfaces"]):
+                    edge_index = surface["first edge"]
                     surface_edges = []
                     vert_indices = []
                     while edge_index not in surface_edges:
                         surface_edges.append(edge_index)
-                        edge = bsp.edges[edge_index]
-                        if edge.left_surface == surface_idx:
-                            vert_indices.append(bm.verts.new(bsp.vertices[edge.start_vertex].translation))
-                            edge_index = edge.forward_edge
+                        edge = bsp["edges"][edge_index]
+                        if edge["left surface"] == surface_idx:
+                            vert_indices.append(bm.verts.new(Vector(bsp["vertices"][edge["start vertex"]]["point"]) * 100))
+                            edge_index = edge["forward edge"]
 
                         else:
-                            vert_indices.append(bm.verts.new(bsp.vertices[edge.end_vertex].translation))
-                            edge_index = edge.reverse_edge
+                            vert_indices.append(bm.verts.new(Vector(bsp["vertices"][edge["end vertex"]]["point"]) * 100))
+                            edge_index = edge["reverse edge"]
 
                     is_invalid = False
-                    if SurfaceFlags.invalid in SurfaceFlags(surface.flags):
+                    if SurfaceFlags.invalid in SurfaceFlags(surface["flags"]):
                         is_invalid = True
 
                     if not is_invalid and len(vert_indices) >= 3:
                         bm.faces.new(vert_indices)
 
                 bm.faces.ensure_lookup_table()
-                for surface_idx, surface in enumerate(bsp.surfaces):
+                for surface_idx, surface in enumerate(bsp["surfaces"]):
                     is_invalid = False
-                    if SurfaceFlags.invalid in SurfaceFlags(surface.flags):
+                    if SurfaceFlags.invalid in SurfaceFlags(surface["flags"]):
                         is_invalid = True
 
                     if not is_invalid:
-                        ngon_material_index = surface.material
+                        ngon_material_index = surface["material"]
                         if not ngon_material_index == -1:
-                            mat = COLLISION.materials[ngon_material_index]
+                            mat = collision_root["materials"][ngon_material_index]
 
                         current_region_permutation = "%s %s" % (permutation_name, region_name)
 
@@ -101,21 +114,22 @@ def build_collision(context, armature, COLLISION, game_version):
                             object_mesh.data.region_add(current_region_permutation)
 
                         if not ngon_material_index == -1:
-                            material_name = mat.name
+                            material_name = mat["name"]
 
-                            if SurfaceFlags.two_sided in SurfaceFlags(surface.flags):
+                            surface_flags = SurfaceFlags(surface["flags"])
+                            if SurfaceFlags.two_sided in surface_flags:
                                 material_name += "%"
 
-                            if SurfaceFlags.invisible in SurfaceFlags(surface.flags):
+                            if SurfaceFlags.invisible in surface_flags:
                                 material_name += "*"
 
-                            if SurfaceFlags.climbable in SurfaceFlags(surface.flags):
+                            if SurfaceFlags.climbable in surface_flags:
                                 material_name += "^"
 
-                            if SurfaceFlags.breakable in SurfaceFlags(surface.flags):
+                            if SurfaceFlags.breakable in surface_flags:
                                 material_name += "-"
 
-                            if SurfaceFlags.conveyor in SurfaceFlags(surface.flags):
+                            if SurfaceFlags.conveyor in surface_flags:
                                 material_name += ">"
 
                             mat = bpy.data.materials.get(material_name)
@@ -142,4 +156,9 @@ def build_collision(context, armature, COLLISION, game_version):
                 object_mesh.parent = armature
                 object_mesh.parent_type = "BONE"
                 object_mesh.parent_bone = parent_name
-                object_mesh.matrix_world = armature.pose.bones[parent_name].matrix
+
+                transform_matrix = armature.pose.bones[parent_name].matrix
+                if fix_rotations:
+                    transform_matrix = armature.pose.bones[parent_name].matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')
+
+                object_mesh.matrix_world = transform_matrix

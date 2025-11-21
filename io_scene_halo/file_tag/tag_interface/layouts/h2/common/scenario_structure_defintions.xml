@@ -1,0 +1,545 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedLayouts>
+  <Layout regolithID="block:structure_bsp_background_sound_palette" internalName="structure_bsp_background_sound_palette_block" name="structure_bsp_background_sound_palette_block">
+    <FieldSet version="0" sizeofValue="116" sizeofSource="sizeof(struct structure_background_sound_palette_entry)" isLatest="true">
+      <String CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+      <TagReference CStyleName="background_sound" pascalStyleName="BackgroundSound" name="background sound">
+        <tag>lsnd</tag>
+      </TagReference>
+      <TagReference CStyleName="inside_cluster_sound" pascalStyleName="InsideClusterSound" name="inside cluster sound" description="play this only when the player is inside the cluster">
+        <tag>lsnd</tag>
+      </TagReference>
+      <Pad sizeOfSource="5*sizeof(long)" length="20" />
+      <Real CStyleName="cutoff_distance" pascalStyleName="CutoffDistance" name="cutoff distance" />
+      <LongFlags CStyleName="scale_flags" pascalStyleName="ScaleFlags" name="scale flags">
+        <Options regolithID="enum:bsp_background_sound_scale_flags" CStyleName="bsp_background_sound_scale_flags" pascalStyleName="BspBackgroundSoundScaleFlags">
+          <Bit name="override default scale" CStyleName="override_default_scale_bit" pascalStyleName="OverrideDefaultScaleBit" />
+          <Bit name="use adjacent cluster as portal scale" CStyleName="use_adjacent_cluster_as_portal_scale_bit" pascalStyleName="UseAdjacentClusterAsPortalScaleBit" />
+          <Bit name="use adjacent cluster as exterior scale" CStyleName="use_adjacent_cluster_as_exterior_scale_bit" pascalStyleName="UseAdjacentClusterAsExteriorScaleBit" />
+          <Bit name="scale with weather intensity" CStyleName="scale_with_weather_intensity_bit" pascalStyleName="ScaleWithWeatherIntensityBit" />
+        </Options>
+      </LongFlags>
+      <RealFraction CStyleName="interior_scale" pascalStyleName="InteriorScale" name="interior scale" />
+      <RealFraction CStyleName="portal_scale" pascalStyleName="PortalScale" name="portal scale" />
+      <RealFraction CStyleName="exterior_scale" pascalStyleName="ExteriorScale" name="exterior scale" />
+      <Real CStyleName="interpolation_speed" pascalStyleName="InterpolationSpeed" name="interpolation speed" units="1/sec" />
+      <Pad sizeOfSource="2*sizeof(long)" length="8" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:structure_bsp_sound_environment_palette" internalName="structure_bsp_sound_environment_palette_block" name="structure_bsp_sound_environment_palette_block">
+    <FieldSet version="0" sizeofValue="80" sizeofSource="sizeof(struct structure_sound_environment_palette_entry)" isLatest="true">
+      <String CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+      <TagReference CStyleName="sound_environment" pascalStyleName="SoundEnvironment" name="sound environment">
+        <tag>snde</tag>
+      </TagReference>
+      <Real CStyleName="cutoff_distance" pascalStyleName="CutoffDistance" name="cutoff distance" />
+      <Real CStyleName="interpolation_speed" pascalStyleName="InterpolationSpeed" name="interpolation speed" units="1/sec" />
+      <Pad sizeOfSource="6*sizeof(long)" length="24" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:structure_bsp_weather_palette" internalName="structure_bsp_weather_palette_block" name="structure_bsp_weather_palette_block">
+    <FieldSet version="0" sizeofValue="152" sizeofSource="sizeof(struct structure_weather_palette_entry)" isLatest="true">
+      <String CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+      <TagReference CStyleName="weather_system" pascalStyleName="WeatherSystem" name="weather system">
+        <tag>weat</tag>
+      </TagReference>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="k_tag_string_length" length="32" />
+      <TagReference CStyleName="wind" pascalStyleName="Wind" name="wind">
+        <tag>wind</tag>
+      </TagReference>
+      <RealVector3D CStyleName="wind_direction" pascalStyleName="WindDirection" name="wind direction" />
+      <Real CStyleName="wind_magnitude" pascalStyleName="WindMagnitude" name="wind magnitude" />
+      <Pad sizeOfSource="2*sizeof(word)" length="4" />
+      <String CStyleName="wind_scale_function" pascalStyleName="WindScaleFunction" name="wind scale function" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:decorator_placement_definition" internalName="decorator_placement_definition_block" name="decorator_placement_definition_block">
+    <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(c_decorator_placement_definition)" isLatest="true">
+      <RealPoint3D CStyleName="grid_origin" pascalStyleName="GridOrigin" name="grid origin" />
+      <LongInteger CStyleName="cell_count_per_dimension" pascalStyleName="CellCountPerDimension" name="cell count per dimension" />
+      <Block CStyleName="cache_blocks" pascalStyleName="CacheBlocks" name="cache blocks" maxElementCount="4096" maxElementCountSource="c_decorator_placement_definition::k_maximum_cache_block_count">
+        <LayoutXRef>block:decorator_cache_block</LayoutXRef>
+      </Block>
+      <Block CStyleName="groups" pascalStyleName="Groups" name="groups" maxElementCount="131072" maxElementCountSource="c_decorator_placement_definition::k_maximum_group_count">
+        <LayoutXRef>block:decorator_group</LayoutXRef>
+      </Block>
+      <Block CStyleName="cells" pascalStyleName="Cells" name="cells" maxElementCount="65535" maxElementCountSource="c_decorator_placement_definition::k_maximum_cell_collection_count">
+        <LayoutXRef>block:decorator_cell_collection</LayoutXRef>
+      </Block>
+      <Block CStyleName="decals" pascalStyleName="Decals" name="decals" maxElementCount="32768" maxElementCountSource="c_decorator_placement_definition::k_maximum_projected_decal_count">
+        <LayoutXRef>block:decorator_projected_decal</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:pathfinding_data" internalName="pathfinding_data_block" name="pathfinding_data_block">
+    <FieldSet version="0" sizeofValue="156" sizeofSource="sizeof(struct pathfinding_data)" isLatest="true">
+      <Block CStyleName="sectors" pascalStyleName="Sectors" name="sectors" maxElementCount="65534" maxElementCountSource="UNSIGNED_SHORT_MAX-1">
+        <Layout regolithID="block:sector" internalName="sector_block" name="sector_block">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(sector_v1)">
+            <WordFlags CStyleName="path_finding_sector_flags" pascalStyleName="PathFindingSectorFlags" name="Path-finding sector flags">
+              <Options regolithID="enum:sector_flags" CStyleName="sector_flags" pascalStyleName="SectorFlags">
+                <Bit name="sector walkable" CStyleName="sector_walkable_bit" pascalStyleName="SectorWalkableBit" />
+                <Bit name="sector breakable" CStyleName="sector_breakable_bit" pascalStyleName="SectorBreakableBit" />
+                <Bit name="sector mobile" CStyleName="sector_mobile_bit" pascalStyleName="SectorMobileBit" />
+                <Bit name="sector bsp source" CStyleName="sector_bsp_source_bit" pascalStyleName="SectorBspSourceBit" />
+                <Bit name="floor" CStyleName="floor_bit" pascalStyleName="FloorBit" />
+                <Bit name="ceiling" CStyleName="ceiling_bit" pascalStyleName="CeilingBit" />
+                <Bit name="wall north" CStyleName="wall_north_bit" pascalStyleName="WallNorthBit" />
+                <Bit name="wall south" CStyleName="wall_south_bit" pascalStyleName="WallSouthBit" />
+                <Bit name="wall east" CStyleName="wall_east_bit" pascalStyleName="WallEastBit" />
+                <Bit name="wall west" CStyleName="wall_west_bit" pascalStyleName="WallWestBit" />
+                <Bit name="crouchable" CStyleName="crouchable_bit" pascalStyleName="CrouchableBit" />
+                <Bit name="aligned" CStyleName="aligned_bit" pascalStyleName="AlignedBit" />
+                <Bit name="sector step" CStyleName="sector_step_bit" pascalStyleName="SectorStepBit" />
+                <Bit name="sector interior" CStyleName="sector_interior_bit" pascalStyleName="SectorInteriorBit" />
+              </Options>
+            </WordFlags>
+            <ShortInteger CStyleName="hint_index" pascalStyleName="HintIndex" name="hint index" />
+            <LongInteger CStyleName="source_object_do_not_set_manually" pascalStyleName="SourceObjectDoNotSetManually" name="source object (do not set manually)" />
+            <LongInteger CStyleName="first_link_do_not_set_manually" pascalStyleName="FirstLinkDoNotSetManually" name="first link (do not set manually)" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="8" sizeofSource="sizeof(sector_v2)">
+            <WordFlags CStyleName="path_finding_sector_flags" pascalStyleName="PathFindingSectorFlags" name="Path-finding sector flags">
+              <OptionsXRef>enum:sector_flags</OptionsXRef>
+            </WordFlags>
+            <ShortInteger CStyleName="hint_index" pascalStyleName="HintIndex" name="hint index" />
+            <ShortInteger CStyleName="first_link_do_not_set_manually" pascalStyleName="FirstLinkDoNotSetManually" name="first link (do not set manually)" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+          </FieldSet>
+          <FieldSet version="2" sizeofValue="8" sizeofSource="sizeof(struct sector)" isLatest="true">
+            <WordFlags CStyleName="path_finding_sector_flags" pascalStyleName="PathFindingSectorFlags" name="Path-finding sector flags">
+              <OptionsXRef>enum:sector_flags</OptionsXRef>
+            </WordFlags>
+            <ShortInteger CStyleName="hint_index" pascalStyleName="HintIndex" name="hint index" />
+            <LongInteger CStyleName="first_link_do_not_set_manually" pascalStyleName="FirstLinkDoNotSetManually" name="first link (do not set manually)" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="links" pascalStyleName="Links" name="links" maxElementCount="262144" maxElementCountSource="MAXIMUM_EDGES_PER_COLLISION_BSP">
+        <Layout regolithID="block:sector_link" internalName="sector_link_block" name="sector_link_block">
+          <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(sector_link_v1)">
+            <LongInteger CStyleName="index" pascalStyleName="Index" name="Index" />
+            <LongInteger CStyleName="index2_for_vertex_indices" pascalStyleName="Index2ForVertexIndices" name="Index2 (for vertex-indices)" />
+            <WordFlags CStyleName="link_flags" pascalStyleName="LinkFlags" name="link flags">
+              <Options regolithID="enum:sector_link_flags" CStyleName="sector_link_flags" pascalStyleName="SectorLinkFlags">
+                <Bit name="sector link from collision edge" CStyleName="sector_link_from_collision_edge_bit" pascalStyleName="SectorLinkFromCollisionEdgeBit" />
+                <Bit name="sector intersection link" CStyleName="sector_intersection_link_bit" pascalStyleName="SectorIntersectionLinkBit" />
+                <Bit name="sector link bsp2d creation error" CStyleName="sector_link_bsp2d_creation_error_bit" pascalStyleName="SectorLinkBsp2dCreationErrorBit" />
+                <Bit name="sector link topology error" CStyleName="sector_link_topology_error_bit" pascalStyleName="SectorLinkTopologyErrorBit" />
+                <Bit name="sector link chain error" CStyleName="sector_link_chain_error_bit" pascalStyleName="SectorLinkChainErrorBit" />
+                <Bit name="sector link both sectors walkable" CStyleName="sector_link_both_sectors_walkable_bit" pascalStyleName="SectorLinkBothSectorsWalkableBit" />
+                <Bit name="sector link magic hanging link" CStyleName="sector_link_magic_hanging_link_bit" pascalStyleName="SectorLinkMagicHangingLinkBit" />
+                <Bit name="sector link threshold" CStyleName="sector_link_threshold_bit" pascalStyleName="SectorLinkThresholdBit" />
+                <Bit name="sector link crouchable" CStyleName="sector_link_crouchable_bit" pascalStyleName="SectorLinkCrouchableBit" />
+                <Bit name="sector link wall base" CStyleName="sector_link_wall_base_bit" pascalStyleName="SectorLinkWallBaseBit" />
+                <Bit name="sector link ledge" CStyleName="sector_link_ledge_bit" pascalStyleName="SectorLinkLedgeBit" />
+                <Bit name="sector link leanable" CStyleName="sector_link_leanable_bit" pascalStyleName="SectorLinkLeanableBit" />
+                <Bit name="sector link start corner" CStyleName="sector_link_start_corner_bit" pascalStyleName="SectorLinkStartCornerBit" />
+                <Bit name="sector link end corner" CStyleName="sector_link_end_corner_bit" pascalStyleName="SectorLinkEndCornerBit" />
+              </Options>
+            </WordFlags>
+            <ShortInteger CStyleName="hint_index" pascalStyleName="HintIndex" name="hint index" />
+            <LongInteger CStyleName="forward_link" pascalStyleName="ForwardLink" name="forward link" />
+            <LongInteger CStyleName="reverse_link" pascalStyleName="ReverseLink" name="reverse link" />
+            <LongInteger CStyleName="left_sector" pascalStyleName="LeftSector" name="left sector" />
+            <LongInteger CStyleName="right_sector" pascalStyleName="RightSector" name="right sector" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="16" sizeofSource="sizeof(sector_link_v2)">
+            <ShortInteger CStyleName="vertex_1" pascalStyleName="Vertex1" name="vertex 1" />
+            <ShortInteger CStyleName="vertex_2" pascalStyleName="Vertex2" name="vertex 2" />
+            <WordFlags CStyleName="link_flags" pascalStyleName="LinkFlags" name="link flags">
+              <OptionsXRef>enum:sector_link_flags</OptionsXRef>
+            </WordFlags>
+            <ShortInteger CStyleName="hint_index" pascalStyleName="HintIndex" name="hint index" />
+            <ShortInteger CStyleName="forward_link" pascalStyleName="ForwardLink" name="forward link" />
+            <ShortInteger CStyleName="reverse_link" pascalStyleName="ReverseLink" name="reverse link" />
+            <ShortInteger CStyleName="left_sector" pascalStyleName="LeftSector" name="left sector" />
+            <ShortInteger CStyleName="right_sector" pascalStyleName="RightSector" name="right sector" />
+          </FieldSet>
+          <FieldSet version="2" sizeofValue="20" sizeofSource="sizeof(sector_link_v3)">
+            <ShortInteger CStyleName="vertex_1" pascalStyleName="Vertex1" name="vertex 1" />
+            <ShortInteger CStyleName="vertex_2" pascalStyleName="Vertex2" name="vertex 2" />
+            <WordFlags CStyleName="link_flags" pascalStyleName="LinkFlags" name="link flags">
+              <OptionsXRef>enum:sector_link_flags</OptionsXRef>
+            </WordFlags>
+            <ShortInteger CStyleName="hint_index" pascalStyleName="HintIndex" name="hint index" />
+            <LongInteger CStyleName="forward_link" pascalStyleName="ForwardLink" name="forward link" />
+            <LongInteger CStyleName="reverse_link" pascalStyleName="ReverseLink" name="reverse link" />
+            <ShortInteger CStyleName="left_sector" pascalStyleName="LeftSector" name="left sector" />
+            <ShortInteger CStyleName="right_sector" pascalStyleName="RightSector" name="right sector" />
+          </FieldSet>
+          <FieldSet version="3" sizeofValue="16" sizeofSource="sizeof(struct sector_link)" isLatest="true">
+            <ShortInteger CStyleName="vertex_1" pascalStyleName="Vertex1" name="vertex 1" />
+            <ShortInteger CStyleName="vertex_2" pascalStyleName="Vertex2" name="vertex 2" />
+            <WordFlags CStyleName="link_flags" pascalStyleName="LinkFlags" name="link flags">
+              <OptionsXRef>enum:sector_link_flags</OptionsXRef>
+            </WordFlags>
+            <ShortInteger CStyleName="hint_index" pascalStyleName="HintIndex" name="hint index" />
+            <ShortInteger CStyleName="forward_link" pascalStyleName="ForwardLink" name="forward link" />
+            <ShortInteger CStyleName="reverse_link" pascalStyleName="ReverseLink" name="reverse link" />
+            <ShortInteger CStyleName="left_sector" pascalStyleName="LeftSector" name="left sector" />
+            <ShortInteger CStyleName="right_sector" pascalStyleName="RightSector" name="right sector" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="refs" pascalStyleName="Refs" name="refs" maxElementCount="131072" maxElementCountSource="MAXIMUM_SURFACES_PER_COLLISION_BSP">
+        <Layout regolithID="block:ref" internalName="ref_block" name="ref_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(struct bsp2d_ref)" isLatest="true">
+            <LongInteger CStyleName="node_ref_or_sector_ref" pascalStyleName="NodeRefOrSectorRef" name="node ref or sector ref" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="bsp2d_nodes" pascalStyleName="Bsp2dNodes" name="bsp2d nodes" maxElementCount="131072" maxElementCountSource="MAXIMUM_NODES_PER_BSP2D">
+        <Layout regolithID="block:sector_bsp2d_nodes" internalName="sector_bsp2d_nodes_block" name="sector_bsp2d_nodes_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(struct large_bsp2d_node)" isLatest="true">
+            <RealPlane2D CStyleName="plane" pascalStyleName="Plane" name="plane" readOnly="true" />
+            <LongInteger CStyleName="left_child" pascalStyleName="LeftChild" name="left child" readOnly="true" />
+            <LongInteger CStyleName="right_child" pascalStyleName="RightChild" name="right child" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="surface_flags" pascalStyleName="SurfaceFlags" name="surface flags" maxElementCount="4096" maxElementCountSource="((((MAXIMUM_SURFACES_PER_COLLISION_BSP)+(LONG_BITS-1))&gt;&gt;LONG_BITS_BITS))">
+        <Layout regolithID="block:surface_flags" internalName="surface_flags_block" name="surface_flags_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(struct long_surface_flags)" isLatest="true">
+            <LongInteger CStyleName="flags" pascalStyleName="Flags" name="flags" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" maxElementCount="65535" maxElementCountSource="UNSIGNED_SHORT_MAX">
+        <Layout regolithID="block:sector_vertex" internalName="sector_vertex_block" name="sector_vertex_block">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct sector_vertex)" isLatest="true">
+            <RealPoint3D CStyleName="point" pascalStyleName="Point" name="point" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="object_refs" pascalStyleName="ObjectRefs" name="object refs" maxElementCount="2000" maxElementCountSource="k_maximum_environment_objects_per_scenario">
+        <Layout regolithID="block:environment_object_refs" internalName="environment_object_refs" name="environment_object_refs">
+          <FieldSet version="0" sizeofValue="132" sizeofSource="sizeof(environment_object_reference_v1)">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:environment_object_flags" CStyleName="environment_object_flags" pascalStyleName="EnvironmentObjectFlags">
+                <Bit name="mobile" CStyleName="mobile_bit" pascalStyleName="MobileBit" />
+              </Options>
+            </WordFlags>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <LongInteger CStyleName="first_sector" pascalStyleName="FirstSector" name="first sector" readOnly="true" />
+            <LongInteger CStyleName="last_sector" pascalStyleName="LastSector" name="last sector" readOnly="true" />
+            <Pad sizeOfSource="12*sizeof(long)" length="48" />
+            <Block CStyleName="bsps" pascalStyleName="Bsps" name="bsps" readOnly="true" maxElementCount="1024" maxElementCountSource="MAXIMUM_BSPS_PER_COLLISION_REGION*MAXIMUM_REGIONS_PER_MODEL">
+              <Layout regolithID="block:environment_object_bsp_refs" internalName="environment_object_bsp_refs" name="environment_object_bsp_refs">
+                <FieldSet version="0" sizeofValue="72" sizeofSource="sizeof(environment_object_bsp_reference_v1)">
+                  <LongInteger CStyleName="bsp_reference" pascalStyleName="BspReference" name="bsp reference" readOnly="true" />
+                  <LongInteger CStyleName="first_sector" pascalStyleName="FirstSector" name="first sector" readOnly="true" />
+                  <LongInteger CStyleName="last_sector" pascalStyleName="LastSector" name="last sector" readOnly="true" />
+                  <ShortInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node_index" readOnly="true" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <Pad sizeOfSource="11*sizeof(long)" length="44" />
+                  <Block CStyleName="bsp2d_refs" pascalStyleName="Bsp2dRefs" name="bsp2d refs" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_SURFACES_PER_COLLISION_BSP">
+                    <LayoutXRef>block:ref</LayoutXRef>
+                  </Block>
+                </FieldSet>
+                <FieldSet version="1" sizeofValue="16" sizeofSource="sizeof(struct environment_object_bsp_reference)" isLatest="true">
+                  <LongInteger CStyleName="bsp_reference" pascalStyleName="BspReference" name="bsp reference" readOnly="true" />
+                  <LongInteger CStyleName="first_sector" pascalStyleName="FirstSector" name="first sector" readOnly="true" />
+                  <LongInteger CStyleName="last_sector" pascalStyleName="LastSector" name="last sector" readOnly="true" />
+                  <ShortInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node_index" readOnly="true" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes" readOnly="true" maxElementCount="255" maxElementCountSource="MAXIMUM_NODES_PER_MODEL">
+              <Layout regolithID="block:environment_object_nodes" internalName="environment_object_nodes" name="environment_object_nodes">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(environment_object_node_reference_v1)">
+                  <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                  <ShortInteger CStyleName="reference_frame_index" pascalStyleName="ReferenceFrameIndex" name="reference frame index" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                </FieldSet>
+                <FieldSet version="1" sizeofValue="4" sizeofSource="sizeof(struct environment_object_node_reference)" isLatest="true">
+                  <ShortInteger CStyleName="reference_frame_index" pascalStyleName="ReferenceFrameIndex" name="reference frame index" />
+                  <CharInteger CStyleName="projection_axis" pascalStyleName="ProjectionAxis" name="projection axis" />
+                  <ByteFlags CStyleName="projection_sign" pascalStyleName="ProjectionSign" name="projection sign">
+                    <Options regolithID="enum:environment_object_nodes_projection_sign" CStyleName="environment_object_nodes_projection_sign" pascalStyleName="EnvironmentObjectNodesProjectionSign">
+                      <Bit name="projection sign" CStyleName="projection_sign_bit" pascalStyleName="ProjectionSignBit" />
+                    </Options>
+                  </ByteFlags>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Pad sizeOfSource="12*sizeof(long)" length="48" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="36" sizeofSource="sizeof(struct environment_object_reference)" isLatest="true">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:environment_object_flags</OptionsXRef>
+            </WordFlags>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <LongInteger CStyleName="first_sector" pascalStyleName="FirstSector" name="first sector" readOnly="true" />
+            <LongInteger CStyleName="last_sector" pascalStyleName="LastSector" name="last sector" readOnly="true" />
+            <Block CStyleName="bsps" pascalStyleName="Bsps" name="bsps" readOnly="true" maxElementCount="1024" maxElementCountSource="MAXIMUM_BSPS_PER_COLLISION_REGION*MAXIMUM_REGIONS_PER_MODEL">
+              <LayoutXRef>block:environment_object_bsp_refs</LayoutXRef>
+            </Block>
+            <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes" readOnly="true" maxElementCount="255" maxElementCountSource="MAXIMUM_NODES_PER_MODEL">
+              <LayoutXRef>block:environment_object_nodes</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="pathfinding_hints" pascalStyleName="PathfindingHints" name="pathfinding hints" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+        <Layout regolithID="block:pathfinding_hints" internalName="pathfinding_hints_block" name="pathfinding_hints_block">
+          <FieldSet version="0" sizeofValue="92" sizeofSource="sizeof(pathfinding_hint_data_v1)">
+            <ShortEnum CStyleName="hint_type" pascalStyleName="HintType" name="hint type">
+              <Options regolithID="enum:pathfinding_hint_type" CStyleName="pathfinding_hint_type" pascalStyleName="PathfindingHintType">
+                <Enum name="intersection link" CStyleName="intersection_link" pascalStyleName="IntersectionLink" />
+                <Enum name="jump link" CStyleName="jump_link" pascalStyleName="JumpLink" />
+                <Enum name="climb link" CStyleName="climb_link" pascalStyleName="ClimbLink" />
+                <Enum name="vault link" CStyleName="vault_link" pascalStyleName="VaultLink" />
+                <Enum name="mount link" CStyleName="mount_link" pascalStyleName="MountLink" />
+                <Enum name="hoist link" CStyleName="hoist_link" pascalStyleName="HoistLink" />
+                <Enum name="wall jump link" CStyleName="wall_jump_link" pascalStyleName="WallJumpLink" />
+                <Enum name="breakable floor" CStyleName="breakable_floor" pascalStyleName="BreakableFloor" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="21*sizeof(long)" length="84" />
+            <ShortInteger CStyleName="next_hint_index" pascalStyleName="NextHintIndex" name="Next hint index" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="20" sizeofSource="sizeof(pathfinding_hint_data)">
+            <ShortEnum CStyleName="hint_type" pascalStyleName="HintType" name="hint type">
+              <OptionsXRef>enum:pathfinding_hint_type</OptionsXRef>
+            </ShortEnum>
+            <ShortInteger CStyleName="next_hint_index" pascalStyleName="NextHintIndex" name="Next hint index" />
+            <ShortInteger CStyleName="hint_data_0" pascalStyleName="HintData0" name="hint data 0" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_1" pascalStyleName="HintData1" name="hint data 1" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_2" pascalStyleName="HintData2" name="hint data 2" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_3" pascalStyleName="HintData3" name="hint data 3" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_4" pascalStyleName="HintData4" name="hint data 4" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_5" pascalStyleName="HintData5" name="hint data 5" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_6" pascalStyleName="HintData6" name="hint data 6" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_7" pascalStyleName="HintData7" name="hint data 7" readOnly="true" />
+          </FieldSet>
+          <FieldSet version="2" sizeofValue="20" sizeofSource="sizeof(pathfinding_hint_data)">
+            <ShortEnum CStyleName="hint_type" pascalStyleName="HintType" name="hint type">
+              <OptionsXRef>enum:pathfinding_hint_type</OptionsXRef>
+            </ShortEnum>
+            <ShortInteger CStyleName="next_hint_index" pascalStyleName="NextHintIndex" name="Next hint index" />
+            <ShortInteger CStyleName="hint_data_0" pascalStyleName="HintData0" name="hint data 0" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_1" pascalStyleName="HintData1" name="hint data 1" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_2" pascalStyleName="HintData2" name="hint data 2" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_3" pascalStyleName="HintData3" name="hint data 3" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_4" pascalStyleName="HintData4" name="hint data 4" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_5" pascalStyleName="HintData5" name="hint data 5" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_6" pascalStyleName="HintData6" name="hint data 6" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_7" pascalStyleName="HintData7" name="hint data 7" readOnly="true" />
+          </FieldSet>
+          <FieldSet version="3" sizeofValue="20" sizeofSource="sizeof(struct pathfinding_hint_data)" isLatest="true">
+            <ShortEnum CStyleName="hint_type" pascalStyleName="HintType" name="hint type">
+              <OptionsXRef>enum:pathfinding_hint_type</OptionsXRef>
+            </ShortEnum>
+            <ShortInteger CStyleName="next_hint_index" pascalStyleName="NextHintIndex" name="Next hint index" />
+            <ShortInteger CStyleName="hint_data_0" pascalStyleName="HintData0" name="hint data 0" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_1" pascalStyleName="HintData1" name="hint data 1" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_2" pascalStyleName="HintData2" name="hint data 2" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_3" pascalStyleName="HintData3" name="hint data 3" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_4" pascalStyleName="HintData4" name="hint data 4" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_5" pascalStyleName="HintData5" name="hint data 5" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_6" pascalStyleName="HintData6" name="hint data 6" readOnly="true" />
+            <ShortInteger CStyleName="hint_data_7" pascalStyleName="HintData7" name="hint data 7" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="instanced_geometry_refs" pascalStyleName="InstancedGeometryRefs" name="instanced geometry refs" maxElementCount="1024" maxElementCountSource="k_maximum_instance_geometry_instances_per_structure_bsp">
+        <Layout regolithID="block:instanced_geometry_reference" internalName="instanced_geometry_reference_block" name="instanced_geometry_reference_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(struct instanced_geometry_reference)" isLatest="true">
+            <ShortInteger CStyleName="pathfinding_object_index" pascalStyleName="PathfindingObjectIndex" name="pathfinding object_index" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <LongInteger CStyleName="structure_checksum" pascalStyleName="StructureChecksum" name="structure checksum" readOnly="true" />
+      <Pad sizeOfSource="8*sizeof(long)" length="32" />
+      <Block CStyleName="user_placed_hints" pascalStyleName="UserPlacedHints" name="user-placed hints" maxElementCount="1">
+        <Layout regolithID="block:user_hint" internalName="user_hint_block" name="user_hint_block">
+          <FieldSet version="0" sizeofValue="108" sizeofSource="sizeof(struct user_hint_data)" isLatest="true">
+            <UselessPad length="48" />
+            <Block CStyleName="point_geometry" pascalStyleName="PointGeometry" name="point geometry" maxElementCount="200">
+              <Layout regolithID="block:user_hint_point" internalName="user_hint_point_block" name="user_hint_point_block">
+                <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(user_hint_point_v1)">
+                  <RealPoint3D CStyleName="point" pascalStyleName="Point" name="Point" />
+                </FieldSet>
+                <FieldSet version="1" sizeofValue="16" sizeofSource="sizeof(struct user_hint_point)" isLatest="true">
+                  <RealPoint3D CStyleName="point" pascalStyleName="Point" name="Point" />
+                  <ShortInteger CStyleName="reference_frame" pascalStyleName="ReferenceFrame" name="reference frame" readOnly="true" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="ray_geometry" pascalStyleName="RayGeometry" name="ray geometry" maxElementCount="200">
+              <Layout regolithID="block:user_hint_ray" internalName="user_hint_ray_block" name="user_hint_ray_block">
+                <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(user_hint_ray_v1)">
+                  <RealPoint3D CStyleName="point" pascalStyleName="Point" name="Point" />
+                  <RealVector3D CStyleName="vector" pascalStyleName="Vector" name="Vector" />
+                </FieldSet>
+                <FieldSet version="1" sizeofValue="28" sizeofSource="sizeof(struct user_hint_ray)" isLatest="true">
+                  <RealPoint3D CStyleName="point" pascalStyleName="Point" name="Point" />
+                  <ShortInteger CStyleName="reference_frame" pascalStyleName="ReferenceFrame" name="reference frame" readOnly="true" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <RealVector3D CStyleName="vector" pascalStyleName="Vector" name="Vector" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="line_segment_geometry" pascalStyleName="LineSegmentGeometry" name="line segment geometry" maxElementCount="200">
+              <Layout regolithID="block:user_hint_line_segment" internalName="user_hint_line_segment_block" name="user_hint_line_segment_block">
+                <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(user_hint_line_segment_v1)">
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="Flags">
+                    <Options regolithID="enum:user_hint_flags" CStyleName="user_hint_flags" pascalStyleName="UserHintFlags">
+                      <Bit name="bidirectional" CStyleName="bidirectional_bit" pascalStyleName="BidirectionalBit" />
+                      <Bit name="closed" CStyleName="closed_bit" pascalStyleName="ClosedBit" />
+                    </Options>
+                  </LongFlags>
+                  <RealPoint3D CStyleName="point_0" pascalStyleName="Point0" name="Point 0" />
+                  <RealPoint3D CStyleName="point_1" pascalStyleName="Point1" name="Point 1" />
+                </FieldSet>
+                <FieldSet version="1" sizeofValue="36" sizeofSource="sizeof(struct user_hint_line_segment)" isLatest="true">
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="Flags">
+                    <OptionsXRef>enum:user_hint_flags</OptionsXRef>
+                  </LongFlags>
+                  <RealPoint3D CStyleName="point_0" pascalStyleName="Point0" name="Point 0" />
+                  <ShortInteger name="reference frame" readOnly="true" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <RealPoint3D CStyleName="point_1" pascalStyleName="Point1" name="Point 1" />
+                  <ShortInteger name="reference frame" readOnly="true" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="parallelogram_geometry" pascalStyleName="ParallelogramGeometry" name="parallelogram geometry" maxElementCount="200">
+              <Layout regolithID="block:user_hint_parallelogram" internalName="user_hint_parallelogram_block" name="user_hint_parallelogram_block">
+                <FieldSet version="0" sizeofValue="52" sizeofSource="sizeof(user_hint_parallelogram_v1)">
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="Flags">
+                    <OptionsXRef>enum:user_hint_flags</OptionsXRef>
+                  </LongFlags>
+                  <RealPoint3D CStyleName="point_0" pascalStyleName="Point0" name="Point 0" />
+                  <RealPoint3D CStyleName="point_1" pascalStyleName="Point1" name="Point 1" />
+                  <RealPoint3D CStyleName="point_2" pascalStyleName="Point2" name="Point 2" />
+                  <RealPoint3D CStyleName="point_3" pascalStyleName="Point3" name="Point 3" />
+                </FieldSet>
+                <FieldSet version="1" sizeofValue="68" sizeofSource="sizeof(struct user_hint_parallelogram)" isLatest="true">
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="Flags">
+                    <OptionsXRef>enum:user_hint_flags</OptionsXRef>
+                  </LongFlags>
+                  <RealPoint3D CStyleName="point_0" pascalStyleName="Point0" name="Point 0" />
+                  <ShortInteger name="reference frame" readOnly="true" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <RealPoint3D CStyleName="point_1" pascalStyleName="Point1" name="Point 1" />
+                  <ShortInteger name="reference frame" readOnly="true" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <RealPoint3D CStyleName="point_2" pascalStyleName="Point2" name="Point 2" />
+                  <ShortInteger name="reference frame" readOnly="true" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <RealPoint3D CStyleName="point_3" pascalStyleName="Point3" name="Point 3" />
+                  <ShortInteger name="reference frame" readOnly="true" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="polygon_geometry" pascalStyleName="PolygonGeometry" name="polygon geometry" maxElementCount="200">
+              <Layout regolithID="block:user_hint_polygon" internalName="user_hint_polygon_block" name="user_hint_polygon_block">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct user_hint_polygon)" isLatest="true">
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="Flags">
+                    <OptionsXRef>enum:user_hint_flags</OptionsXRef>
+                  </LongFlags>
+                  <Block CStyleName="points" pascalStyleName="Points" name="Points" maxElementCount="200">
+                    <LayoutXRef>block:user_hint_point</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <UselessPad length="48" />
+            <Block CStyleName="jump_hints" pascalStyleName="JumpHints" name="jump hints" maxElementCount="200">
+              <Layout regolithID="block:user_hint_jump" internalName="user_hint_jump_block" name="user_hint_jump_block">
+                <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct user_hint_jump)" isLatest="true">
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="Flags">
+                    <OptionsXRef>enum:user_hint_flags</OptionsXRef>
+                  </WordFlags>
+                  <ShortBlockIndex CStyleName="geometry_index" pascalStyleName="GeometryIndex" name="geometry index" readOnly="true" blockReference="block:user_hint_parallelogram" />
+                  <ShortEnum CStyleName="force_jump_height" pascalStyleName="ForceJumpHeight" name="force jump height">
+                    <Options regolithID="enum:character_jump_mode" CStyleName="character_jump_mode" pascalStyleName="CharacterJumpMode">
+                      <Enum name="NONE" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="down" CStyleName="down" pascalStyleName="Down" />
+                      <Enum name="step" CStyleName="step" pascalStyleName="Step" />
+                      <Enum name="crouch" CStyleName="crouch" pascalStyleName="Crouch" />
+                      <Enum name="stand" CStyleName="stand" pascalStyleName="Stand" />
+                      <Enum name="storey" CStyleName="storey" pascalStyleName="Storey" />
+                      <Enum name="tower" CStyleName="tower" pascalStyleName="Tower" />
+                      <Enum name="infinite" CStyleName="infinite" pascalStyleName="Infinite" />
+                    </Options>
+                  </ShortEnum>
+                  <WordFlags CStyleName="control_flags" pascalStyleName="ControlFlags" name="control flags">
+                    <Options regolithID="enum:user_hint_jump_control_flags" CStyleName="user_hint_jump_control_flags" pascalStyleName="UserHintJumpControlFlags">
+                      <Bit name="magic lift" CStyleName="magic_lift_bit" pascalStyleName="MagicLiftBit" />
+                    </Options>
+                  </WordFlags>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="climb_hints" pascalStyleName="ClimbHints" name="climb hints" maxElementCount="200">
+              <Layout regolithID="block:user_hint_climb" internalName="user_hint_climb_block" name="user_hint_climb_block">
+                <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(struct user_hint_climb)" isLatest="true">
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="Flags">
+                    <OptionsXRef>enum:user_hint_flags</OptionsXRef>
+                  </WordFlags>
+                  <ShortBlockIndex CStyleName="geometry_index" pascalStyleName="GeometryIndex" name="geometry index" readOnly="true" blockReference="block:user_hint_line_segment" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="well_hints" pascalStyleName="WellHints" name="well hints" maxElementCount="200">
+              <Layout regolithID="block:user_hint_well" internalName="user_hint_well_block" name="user_hint_well_block">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct user_hint_well)" isLatest="true">
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:user_hint_well_flags" CStyleName="user_hint_well_flags" pascalStyleName="UserHintWellFlags">
+                      <Bit name="bidirectional" CStyleName="bidirectional_bit" pascalStyleName="BidirectionalBit" />
+                    </Options>
+                  </LongFlags>
+                  <Block CStyleName="points" pascalStyleName="Points" name="points" maxElementCount="200">
+                    <Layout regolithID="block:user_hint_well_point" internalName="user_hint_well_point_block" name="user_hint_well_point_block">
+                      <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(struct user_hint_well_point)" isLatest="true">
+                        <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+                          <Options regolithID="enum:user_hint_well_point_type" CStyleName="user_hint_well_point_type" pascalStyleName="UserHintWellPointType">
+                            <Enum name="jump" CStyleName="jump" pascalStyleName="Jump" />
+                            <Enum name="climb" CStyleName="climb" pascalStyleName="Climb" />
+                            <Enum name="hoist" CStyleName="hoist" pascalStyleName="Hoist" />
+                          </Options>
+                        </ShortEnum>
+                        <Pad sizeOfSource="sizeof(short)" length="2" />
+                        <RealVector3D CStyleName="point" pascalStyleName="Point" name="point" />
+                        <ShortInteger CStyleName="reference_frame" pascalStyleName="ReferenceFrame" name="reference frame" />
+                        <Pad sizeOfSource="sizeof(short)" length="2" />
+                        <LongInteger CStyleName="sector_index" pascalStyleName="SectorIndex" name="sector index" />
+                        <RealEulerAngles2D CStyleName="normal" pascalStyleName="Normal" name="normal" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="flight_hints" pascalStyleName="FlightHints" name="flight hints" maxElementCount="50" maxElementCountSource="k_max_flight_hints_per_bsp">
+              <Layout regolithID="block:user_hint_flight" internalName="user_hint_flight_block" name="user_hint_flight_block">
+                <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct user_flight_hint)" isLatest="true">
+                  <UselessPad length="4" />
+                  <Block CStyleName="points" pascalStyleName="Points" name="points" maxElementCount="10" maxElementCountSource="k_max_points_per_flight_hint">
+                    <Layout regolithID="block:user_hint_flight_point" internalName="user_hint_flight_point_block" name="user_hint_flight_point_block">
+                      <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct user_hint_flight_point)" isLatest="true">
+                        <RealVector3D CStyleName="point" pascalStyleName="Point" name="point" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</SharedLayouts>

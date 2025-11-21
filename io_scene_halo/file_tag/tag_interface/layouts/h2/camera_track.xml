@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="trak" name="camera_track" version="2">
+  <Layout regolithID="block:camera_track" internalName="camera_track_block" name="camera_track">
+    <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_camera_track_definition)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:camera_track_flags" CStyleName="camera_track_flags" pascalStyleName="CameraTrackFlags" />
+      </LongFlags>
+      <Block CStyleName="control_points" pascalStyleName="ControlPoints" name="control points" maxElementCount="16" maxElementCountSource="k_maximum_number_of_camera_track_control_points">
+        <Layout regolithID="block:camera_track_control_point" internalName="camera_track_control_point_block" name="camera_track_control_point_block">
+          <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(s_camera_track_control_point)" isLatest="true">
+            <RealVector3D CStyleName="position" pascalStyleName="Position" name="position" />
+            <RealQuaternion CStyleName="orientation" pascalStyleName="Orientation" name="orientation" />
+            <UselessPad length="32" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <UselessPad length="32" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

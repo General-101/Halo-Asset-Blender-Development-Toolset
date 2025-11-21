@@ -1,0 +1,169 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="glw!" name="glow" version="1">
+  <Layout regolithID="block:glow" internalName="glow_block" name="glow">
+    <FieldSet version="0" sizeofValue="340" sizeofSource="sizeof(struct glow_group)" isLatest="true">
+      <String CStyleName="attachment_marker" pascalStyleName="AttachmentMarker" name="attachment marker" />
+      <ShortInteger CStyleName="number_of_particles" pascalStyleName="NumberOfParticles" name="number of particles" />
+      <ShortEnum CStyleName="boundary_effect" pascalStyleName="BoundaryEffect" name="boundary effect">
+        <Options regolithID="enum:boundary_effect" CStyleName="boundary_effect" pascalStyleName="BoundaryEffect">
+          <Enum name="bounce" CStyleName="bounce" pascalStyleName="Bounce" />
+          <Enum name="wrap" CStyleName="wrap" pascalStyleName="Wrap" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="normal_particle_distribution" pascalStyleName="NormalParticleDistribution" name="normal particle distribution">
+        <Options regolithID="enum:normal_particle_distribution" CStyleName="normal_particle_distribution" pascalStyleName="NormalParticleDistribution">
+          <Enum name="distributed randomly" CStyleName="distributed_randomly" pascalStyleName="DistributedRandomly" />
+          <Enum name="distributed uniformly" CStyleName="distributed_uniformly" pascalStyleName="DistributedUniformly" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="trailing_particle_distribution" pascalStyleName="TrailingParticleDistribution" name="trailing particle distribution">
+        <Options regolithID="enum:trailing_particle_distribution" CStyleName="trailing_particle_distribution" pascalStyleName="TrailingParticleDistribution">
+          <Enum name="emit vertically" CStyleName="emit_vertically" pascalStyleName="EmitVertically" />
+          <Enum name="emit normal up" CStyleName="emit_normal_up" pascalStyleName="EmitNormalUp" />
+          <Enum name="emit randomly" CStyleName="emit_randomly" pascalStyleName="EmitRandomly" />
+        </Options>
+      </ShortEnum>
+      <LongFlags CStyleName="glow_flags" pascalStyleName="GlowFlags" name="glow flags">
+        <Options regolithID="enum:glow_flags" CStyleName="glow_flags" pascalStyleName="GlowFlags">
+          <Bit name="modify particle color in range" CStyleName="modify_particle_color_in_range_bit" pascalStyleName="ModifyParticleColorInRangeBit" />
+          <Bit name="particles move backwards" CStyleName="particles_move_backwards_bit" pascalStyleName="ParticlesMoveBackwardsBit" />
+          <Bit name="partices move in both directions" CStyleName="partices_move_in_both_directions_bit" pascalStyleName="ParticesMoveInBothDirectionsBit" />
+          <Bit name="trailing particles fade over time" CStyleName="trailing_particles_fade_over_time_bit" pascalStyleName="TrailingParticlesFadeOverTimeBit" />
+          <Bit name="trailing particles shrink over time" CStyleName="trailing_particles_shrink_over_time_bit" pascalStyleName="TrailingParticlesShrinkOverTimeBit" />
+          <Bit name="trailing particles slow over time" CStyleName="trailing_particles_slow_over_time_bit" pascalStyleName="TrailingParticlesSlowOverTimeBit" />
+        </Options>
+      </LongFlags>
+      <Pad name="pad" length="28" />
+      <Pad name="pad" length="2" />
+      <Pad name="pad" length="2" />
+      <Pad name="pad" length="4" />
+      <Explanation name="Particle Rotational Velocity" />
+      <Struct CStyleName="particle_rotational_velocity" pascalStyleName="ParticleRotationalVelocity" name="particle rotational velocity">
+        <Layout regolithID="structure:glow_rotational_velocity" internalName="glow_rotational_velocity_struct" backingBlockInternalName="glow_rotational_velocity_struct_block" name="glow rotational velocity">
+          <FieldSet version="0" sizeofValue="16" isLatest="true">
+            <ShortEnum CStyleName="attachment" pascalStyleName="Attachment" name="attachment">
+              <Options regolithID="enum:attachment" CStyleName="attachment" pascalStyleName="Attachment">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Angle CStyleName="velocity" pascalStyleName="Velocity" name="velocity" />
+            <RealBounds CStyleName="multiplier" pascalStyleName="Multiplier" name="multiplier" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Effect Rotational Velocity" />
+      <Struct CStyleName="effect_rotational_velocity" pascalStyleName="EffectRotationalVelocity" name="effect rotational velocity">
+        <Layout regolithID="structure:glow_rotational_velocity" internalName="glow_rotational_velocity_struct" backingBlockInternalName="glow_rotational_velocity_struct_block" name="glow rotational velocity">
+          <FieldSet version="0" sizeofValue="16" isLatest="true">
+            <ShortEnum CStyleName="attachment" pascalStyleName="Attachment" name="attachment">
+              <Options regolithID="enum:attachment" CStyleName="attachment" pascalStyleName="Attachment">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Angle CStyleName="velocity" pascalStyleName="Velocity" name="velocity" />
+            <RealBounds CStyleName="multiplier" pascalStyleName="Multiplier" name="multiplier" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Effect Translational Velocity" />
+      <Struct CStyleName="effect_translational_velocity" pascalStyleName="EffectTranslationalVelocity" name="effect translational velocity">
+        <Layout regolithID="structure:glow_translational_velocity" internalName="glow_translational_velocity_struct" backingBlockInternalName="glow_translational_velocity_struct_block" name="glow translational velocity">
+          <FieldSet version="0" sizeofValue="16" isLatest="true">
+            <ShortEnum CStyleName="attachment" pascalStyleName="Attachment" name="attachment">
+              <Options regolithID="enum:attachment" CStyleName="attachment" pascalStyleName="Attachment">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Real CStyleName="velocity" pascalStyleName="Velocity" name="velocity" />
+            <RealBounds CStyleName="multiplier" pascalStyleName="Multiplier" name="multiplier" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Particle Distance To Object" />
+      <Struct CStyleName="particle_distance_to_object" pascalStyleName="ParticleDistanceToObject" name="particle distance to object">
+        <Layout regolithID="structure:glow_distance_to_object" internalName="glow_distance_to_object_struct" backingBlockInternalName="glow_distance_to_object_struct_block" name="glow distance to object">
+          <FieldSet version="0" sizeofValue="20" isLatest="true">
+            <ShortEnum CStyleName="attachment" pascalStyleName="Attachment" name="attachment">
+              <Options regolithID="enum:attachment" CStyleName="attachment" pascalStyleName="Attachment">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <RealBounds CStyleName="distance" pascalStyleName="Distance" name="distance" />
+            <RealBounds CStyleName="multiplier" pascalStyleName="Multiplier" name="multiplier" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Pad name="pad" length="8" />
+      <Explanation name="Particle Size" />
+      <Struct CStyleName="particle_size" pascalStyleName="ParticleSize" name="particle size">
+        <Layout regolithID="structure:glow_particle_size" internalName="glow_particle_size_struct" backingBlockInternalName="glow_particle_size_struct_block" name="glow particle size">
+          <FieldSet version="0" sizeofValue="20" isLatest="true">
+            <ShortEnum CStyleName="attachment" pascalStyleName="Attachment" name="attachment">
+              <Options regolithID="enum:attachment" CStyleName="attachment" pascalStyleName="Attachment">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <RealBounds CStyleName="bounds" pascalStyleName="Bounds" name="bounds" />
+            <RealBounds CStyleName="multiplier" pascalStyleName="Multiplier" name="multiplier" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Color" />
+      <Struct CStyleName="color" pascalStyleName="Color" name="color">
+        <Layout regolithID="structure:glow_color" internalName="glow_color_struct" backingBlockInternalName="glow_color_struct_block" name="glow color">
+          <FieldSet version="0" sizeofValue="72" isLatest="true">
+            <ShortEnum CStyleName="attachment" pascalStyleName="Attachment" name="attachment">
+              <Options regolithID="enum:attachment" CStyleName="attachment" pascalStyleName="Attachment">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <RealArgbColor CStyleName="color_bound" pascalStyleName="ColorBound" name="color bound lower bound" />
+            <RealArgbColor CStyleName="color_bound" pascalStyleName="ColorBound" name="color bound upper bound" />
+            <RealArgbColor CStyleName="scale_color" pascalStyleName="ScaleColor" name="scale color lower bound" />
+            <RealArgbColor CStyleName="scale_color" pascalStyleName="ScaleColor" name="scale color upper bound" />
+            <Real CStyleName="color_rate_of_change" pascalStyleName="ColorRateOfChange" name="color rate of change" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Real CStyleName="fading_percentage_of_glow" pascalStyleName="FadingPercentageOfGlow" name="fading percentage of glow" />
+      <Real CStyleName="particle_generation_rate" pascalStyleName="ParticleGenerationRate" name="particle generation rate" />
+      <Real CStyleName="lifetime_of_trailing_particles" pascalStyleName="LifetimeOfTrailingParticles" name="lifetime of trailing particles" />
+      <Real CStyleName="velocity_of_trailing_particles" pascalStyleName="VelocityOfTrailingParticles" name="velocity of trailing particles" />
+      <RealBounds CStyleName="trailing_particle_t" pascalStyleName="TrailingParticleT" name="trailing particle t" />
+      <Pad name="pad" length="52" />
+      <TagReference CStyleName="texture" pascalStyleName="Texture" name="texture">
+        <tag>bitmap</tag>
+      </TagReference>
+    </FieldSet>
+  </Layout>
+</TagGroup>

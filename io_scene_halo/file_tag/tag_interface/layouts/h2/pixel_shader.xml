@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="pixl" name="pixel_shader" version="1">
+  <Layout regolithID="block:pixel_shader" internalName="pixel_shader_block" name="pixel_shader">
+    <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(c_pixel_shader_definition)" isLatest="true">
+      <Ptr length="4" />
+      <Data CStyleName="compiled_shader" pascalStyleName="CompiledShader" name="compiled_shader" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

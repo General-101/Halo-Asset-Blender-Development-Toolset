@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="bipd" parent="unit" name="biped" version="3">
+  <Layout regolithID="block:biped" internalName="biped_block" name="biped">
+    <FieldSet version="0" sizeofValue="1180" sizeofSource="sizeof(struct _biped_definition_v1)" parentVersion="0">
+      <Explanation name="$$$ BIPED $$$" />
+      <Angle CStyleName="moving_turning_speed" pascalStyleName="MovingTurningSpeed" name="moving turning speed" units="degrees per second" />
+      <Skip sizeOfSource="sizeof(unsigned long)" length="4" />
+      <Angle CStyleName="stationary_turning_threshold" pascalStyleName="StationaryTurningThreshold" name="stationary turning threshold" />
+      <Pad sizeOfSource="4*sizeof(real)" length="16" />
+      <ShortEnum CStyleName="old_obsolete_a_in" pascalStyleName="OldObsoleteAIn" name="old obsolete A in">
+        <Options regolithID="enum:biped_input_flags" CStyleName="biped_input_flags" pascalStyleName="BipedInputFlags">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="flying velocity" CStyleName="flying_velocity" pascalStyleName="FlyingVelocity" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="old_obsolete_b_in" pascalStyleName="OldObsoleteBIn" name="old obsolete B in">
+        <OptionsXRef>enum:biped_input_flags</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="old_obsolete_c_in" pascalStyleName="OldObsoleteCIn" name="old obsolete C in">
+        <OptionsXRef>enum:biped_input_flags</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="old_obsolete_d_in" pascalStyleName="OldObsoleteDIn" name="old obsolete D in">
+        <OptionsXRef>enum:biped_input_flags</OptionsXRef>
+      </ShortEnum>
+      <TagReference CStyleName="dont_use" pascalStyleName="DontUse" name="DON'T USE">
+        <tag>jpt!</tag>
+      </TagReference>
+      <Explanation name="flying" />
+      <Angle CStyleName="bank_angle" pascalStyleName="BankAngle" name="bank angle" units="degrees" description="angle at which we bank left/right when sidestepping or turning while moving forwards" />
+      <Real CStyleName="bank_apply_time" pascalStyleName="BankApplyTime" name="bank apply time" units="seconds" description="time it takes us to apply a bank" />
+      <Real CStyleName="bank_decay_time" pascalStyleName="BankDecayTime" name="bank decay time" units="seconds" description="time it takes us to recover from a bank" />
+      <Real CStyleName="pitch_ratio" pascalStyleName="PitchRatio" name="pitch ratio" description="amount that we pitch up/down when moving up or down" />
+      <Real CStyleName="max_velocity" pascalStyleName="MaxVelocity" name="max velocity" units="world units per second" description="max velocity when not crouching" />
+      <Real CStyleName="max_sidestep_velocity" pascalStyleName="MaxSidestepVelocity" name="max sidestep velocity" units="world units per second" description="max sideways or up/down velocity when not crouching" />
+      <Real CStyleName="flying_acceleration" pascalStyleName="FlyingAcceleration" name="acceleration" units="world units per second squared" />
+      <Real CStyleName="flying_deceleration" pascalStyleName="FlyingDeceleration" name="deceleration" units="world units per second squared" />
+      <Angle CStyleName="angular_velocity_maximum" pascalStyleName="AngularVelocityMaximum" name="angular velocity maximum" units="degrees per second" description="turn rate" />
+      <Angle CStyleName="angular_acceleration_maximum" pascalStyleName="AngularAccelerationMaximum" name="angular acceleration maximum" units="degrees per second squared" description="turn acceleration rate" />
+      <Real CStyleName="crouch_velocity_modifier" pascalStyleName="CrouchVelocityModifier" name="crouch velocity modifier" units="[0,1]" description="how much slower we fly if crouching (zero = same speed)" />
+      <Pad sizeOfSource="2*sizeof(long)" length="8" />
+      <Explanation name="movement" />
+      <Angle CStyleName="maximum_slope_angle" pascalStyleName="MaximumSlopeAngle" name="maximum slope angle" units="degrees" />
+      <Angle CStyleName="downhill_falloff_angle" pascalStyleName="DownhillFalloffAngle" name="downhill falloff angle" units="degrees" />
+      <Angle CStyleName="downhill_cutoff_angle" pascalStyleName="DownhillCutoffAngle" name="downhill cutoff angle" units="degrees" />
+      <Real CStyleName="downhill_velocity_scale" pascalStyleName="DownhillVelocityScale" name="downhill velocity scale" />
+      <Angle CStyleName="uphill_falloff_angle" pascalStyleName="UphillFalloffAngle" name="uphill falloff angle" units="degrees" />
+      <Angle CStyleName="uphill_cutoff_angle" pascalStyleName="UphillCutoffAngle" name="uphill cutoff angle" units="degrees" />
+      <Real CStyleName="uphill_velocity_scale" pascalStyleName="UphillVelocityScale" name="uphill velocity scale" />
+      <Pad sizeOfSource="6*sizeof(real)" length="24" />
+      <TagReference CStyleName="unused" pascalStyleName="Unused" name="UNUSED" readOnly="true">
+        <tag>foot</tag>
+      </TagReference>
+      <Pad sizeOfSource="6*sizeof(real)" length="24" />
+      <Explanation name="jumping and landing" />
+      <Real CStyleName="jump_velocity" pascalStyleName="JumpVelocity" name="jump velocity" units="world units per second" />
+      <Pad sizeOfSource="7*sizeof(real)" length="28" />
+      <Real CStyleName="maximum_soft_landing_time" pascalStyleName="MaximumSoftLandingTime" name="maximum soft landing time" units="seconds" description="the longest amount of time the biped can take to recover from a soft landing" />
+      <Real CStyleName="maximum_hard_landing_time" pascalStyleName="MaximumHardLandingTime" name="maximum hard landing time" units="seconds" description="the longest amount of time the biped can take to recover from a hard landing" />
+      <Real CStyleName="minimum_soft_landing_velocity" pascalStyleName="MinimumSoftLandingVelocity" name="minimum soft landing velocity" units="world units per second" description="below this velocity the biped does not react when landing" />
+      <Real CStyleName="minimum_hard_landing_velocity" pascalStyleName="MinimumHardLandingVelocity" name="minimum hard landing velocity" units="world units per second" description="below this velocity the biped will not do a soft landing when returning to the ground" />
+      <Real CStyleName="maximum_hard_landing_velocity" pascalStyleName="MaximumHardLandingVelocity" name="maximum hard landing velocity" units="world units per second" description="the velocity corresponding to the maximum landing time" />
+      <Real CStyleName="death_hard_landing_velocity" pascalStyleName="DeathHardLandingVelocity" name="death hard landing velocity" units="world units per second" description="the maximum velocity with which a character can strike the ground and live" />
+      <Pad sizeOfSource="5*sizeof(real)" length="20" />
+      <Explanation name="camera, collision, and autoaim" />
+      <Real CStyleName="standing_camera_height" pascalStyleName="StandingCameraHeight" name="standing camera height" units="world units" />
+      <Real CStyleName="crouching_camera_height" pascalStyleName="CrouchingCameraHeight" name="crouching camera height" units="world units" />
+      <Real CStyleName="crouch_transition_time" pascalStyleName="CrouchTransitionTime" name="crouch transition time" units="seconds" />
+      <Angle CStyleName="camera_interpolation_start" pascalStyleName="CameraInterpolationStart" name="camera interpolation start" units="degrees" description="looking-downward angle that starts camera interpolation to fp position" />
+      <Angle CStyleName="camera_interpolation_end" pascalStyleName="CameraInterpolationEnd" name="camera interpolation end" units="degrees" description="looking-downward angle at which camera interpolation to fp position is complete" />
+      <Real CStyleName="camera_forward_movement_scale" pascalStyleName="CameraForwardMovementScale" name="camera forward movement scale" description="amount of fp camera movement forward and back (1.0 is full)" />
+      <Real CStyleName="camera_side_movement_scale" pascalStyleName="CameraSideMovementScale" name="camera side movement scale" description="amount of fp camera movement side-to-side (1.0 is full)" />
+      <Real CStyleName="camera_vertical_movement_scale" pascalStyleName="CameraVerticalMovementScale" name="camera vertical movement scale" description="amount of fp camera movement vertically (1.0 is full)" />
+      <Real CStyleName="camera_exclusion_distance" pascalStyleName="CameraExclusionDistance" name="camera exclusion distance" units="world units" description="fp camera must always be at least this far out from root node" />
+      <Real CStyleName="standing_collision_height" pascalStyleName="StandingCollisionHeight" name="standing collision height" units="world units" />
+      <Real CStyleName="crouching_collision_height" pascalStyleName="CrouchingCollisionHeight" name="crouching collision height" units="world units" />
+      <Real CStyleName="collision_radius" pascalStyleName="CollisionRadius" name="collision radius" units="world units" />
+      <Real CStyleName="collision_mass" pascalStyleName="CollisionMass" name="collision mass" units="world mass units" />
+      <StringId CStyleName="collision_global_material_name" pascalStyleName="CollisionGlobalMaterialName" name="collision global material name" description="collision material used when biped is alive" />
+      <Pad sizeOfSource="sizeof(c_global_material_type)" length="2" />
+      <Pad sizeOfSource="sizeof(c_global_material_type)" length="2" />
+      <StringId CStyleName="dead_collision_global_material_name" pascalStyleName="DeadCollisionGlobalMaterialName" name="dead collision global material name" description="collision material used when biped is dead" />
+      <Pad sizeOfSource="6*sizeof(real)" length="24" />
+      <Real CStyleName="autoaim_width" pascalStyleName="AutoaimWidth" name="autoaim width" units="world units" />
+      <Pad sizeOfSource="35*sizeof(real)" length="140" />
+      <Block CStyleName="contact_points" pascalStyleName="ContactPoints" name="contact points" description="these are the points where the biped touches the ground" maxElementCount="3">
+        <Layout regolithID="block:contact_point_block_v1" internalName="contact_point_block_v1" name="contact_point_block_v1">
+          <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(struct biped_contact_point_v1)" isLatest="true">
+            <Pad sizeOfSource="8*sizeof(long)" length="32" />
+            <OldStringId CStyleName="marker_name" pascalStyleName="MarkerName" name="marker name" blockNameSource="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="pill_shapes" pascalStyleName="PillShapes" name="pill shapes" description="No point editing these.  They get filled out at map load." maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <LayoutXRef>block:pills</LayoutXRef>
+      </Block>
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="988" sizeofSource="sizeof(struct _biped_definition)" parentVersion="0" isLatest="true">
+      <Explanation name="$$$ BIPED $$$" />
+      <Angle CStyleName="moving_turning_speed" pascalStyleName="MovingTurningSpeed" name="moving turning speed" units="degrees per second" />
+      <LongFlags CStyleName="biped_flags" pascalStyleName="BipedFlags" name="flags">
+        <Options regolithID="enum:biped_flags" CStyleName="biped_flags" pascalStyleName="BipedFlags">
+          <Bit name="turns without animating" CStyleName="turns_without_animating_bit" pascalStyleName="TurnsWithoutAnimatingBit" />
+          <Bit name="passes through other bipeds" CStyleName="passes_through_other_bipeds_bit" pascalStyleName="PassesThroughOtherBipedsBit" />
+          <Bit name="immune to falling damage" CStyleName="immune_to_falling_damage_bit" pascalStyleName="ImmuneToFallingDamageBit" />
+          <Bit name="rotate while airborne" CStyleName="rotate_while_airborne_bit" pascalStyleName="RotateWhileAirborneBit" />
+          <Bit name="uses limp body physics" CStyleName="uses_limp_body_physics_bit" pascalStyleName="UsesLimpBodyPhysicsBit" />
+          <Bit name="unused" CStyleName="unused5_bit" pascalStyleName="Unused5Bit" />
+          <Bit name="random speed increase" CStyleName="random_speed_increase_bit" pascalStyleName="RandomSpeedIncreaseBit" />
+          <Bit name="unused" CStyleName="unused7_bit" pascalStyleName="Unused7Bit" />
+          <Bit name="spawn death children on destroy" CStyleName="spawn_death_children_on_destroy_bit" pascalStyleName="SpawnDeathChildrenOnDestroyBit" />
+          <Bit name="stunned by emp damage" CStyleName="stunned_by_emp_damage_bit" pascalStyleName="StunnedByEmpDamageBit" />
+          <Bit name="dead physics when stunned" CStyleName="dead_physics_when_stunned_bit" pascalStyleName="DeadPhysicsWhenStunnedBit" />
+          <Bit name="always ragdoll when dead" CStyleName="always_ragdoll_when_dead_bit" pascalStyleName="AlwaysRagdollWhenDeadBit" />
+        </Options>
+      </LongFlags>
+      <Angle CStyleName="stationary_turning_threshold" pascalStyleName="StationaryTurningThreshold" name="stationary turning threshold" />
+      <UselessPad length="16" />
+      <UselessPad length="32" />
+      <Explanation name="jumping and landing" />
+      <Real CStyleName="jump_velocity" pascalStyleName="JumpVelocity" name="jump velocity" units="world units per second" />
+      <UselessPad length="28" />
+      <Real CStyleName="maximum_soft_landing_time" pascalStyleName="MaximumSoftLandingTime" name="maximum soft landing time" units="seconds" description="the longest amount of time the biped can take to recover from a soft landing" />
+      <Real CStyleName="maximum_hard_landing_time" pascalStyleName="MaximumHardLandingTime" name="maximum hard landing time" units="seconds" description="the longest amount of time the biped can take to recover from a hard landing" />
+      <Real CStyleName="minimum_soft_landing_velocity" pascalStyleName="MinimumSoftLandingVelocity" name="minimum soft landing velocity" units="world units per second" description="below this velocity the biped does not react when landing" />
+      <Real CStyleName="minimum_hard_landing_velocity" pascalStyleName="MinimumHardLandingVelocity" name="minimum hard landing velocity" units="world units per second" description="below this velocity the biped will not do a soft landing when returning to the ground" />
+      <Real CStyleName="maximum_hard_landing_velocity" pascalStyleName="MaximumHardLandingVelocity" name="maximum hard landing velocity" units="world units per second" description="the velocity corresponding to the maximum landing time" />
+      <Real CStyleName="death_hard_landing_velocity" pascalStyleName="DeathHardLandingVelocity" name="death hard landing velocity" units="world units per second" description="the maximum velocity with which a character can strike the ground and live" />
+      <UselessPad length="16" />
+      <Real CStyleName="stun_duration" pascalStyleName="StunDuration" name="stun duration" description="0 is the default.  Bipeds are stuned when damaged by vehicle collisions, also some are when they take emp damage" />
+      <Explanation name="camera, collision, and autoaim" />
+      <Real CStyleName="standing_camera_height" pascalStyleName="StandingCameraHeight" name="standing camera height" units="world units" />
+      <Real CStyleName="crouching_camera_height" pascalStyleName="CrouchingCameraHeight" name="crouching camera height" units="world units" />
+      <Real CStyleName="crouch_transition_time" pascalStyleName="CrouchTransitionTime" name="crouch transition time" units="seconds" />
+      <Angle CStyleName="camera_interpolation_start" pascalStyleName="CameraInterpolationStart" name="camera interpolation start" units="degrees" description="looking-downward angle that starts camera interpolation to fp position" />
+      <Angle CStyleName="camera_interpolation_end" pascalStyleName="CameraInterpolationEnd" name="camera interpolation end" units="degrees" description="looking-downward angle at which camera interpolation to fp position is complete" />
+      <Real CStyleName="camera_forward_movement_scale" pascalStyleName="CameraForwardMovementScale" name="camera forward movement scale" description="amount of fp camera movement forward and back (1.0 is full)" />
+      <Real CStyleName="camera_side_movement_scale" pascalStyleName="CameraSideMovementScale" name="camera side movement scale" description="amount of fp camera movement side-to-side (1.0 is full)" />
+      <Real CStyleName="camera_vertical_movement_scale" pascalStyleName="CameraVerticalMovementScale" name="camera vertical movement scale" description="amount of fp camera movement vertically (1.0 is full)" />
+      <Real CStyleName="camera_exclusion_distance" pascalStyleName="CameraExclusionDistance" name="camera exclusion distance" units="world units" description="fp camera must always be at least this far out from root node" />
+      <Real CStyleName="autoaim_width" pascalStyleName="AutoaimWidth" name="autoaim width" units="world units" />
+      <Struct CStyleName="lock_on_data" pascalStyleName="LockOnData" name="lock-on data">
+        <Layout regolithID="structure:biped_lock_on_data" tag="blod" internalName="biped_lock_on_data_struct" backingBlockInternalName="biped_lock_on_data_struct_block" name="biped_lock_on_data_struct">
+          <FieldSet version="0" sizeofValue="0" sizeofSource="0" />
+          <FieldSet version="1" sizeofValue="8" sizeofSource="sizeof(s_biped_lock_on_data)" isLatest="true">
+            <Explanation name="lock-on fields" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:biped_lock_on_flags" CStyleName="biped_lock_on_flags" pascalStyleName="BipedLockOnFlags">
+                <Bit name="locked by human targeting" CStyleName="locked_by_human_targeting_bit" pascalStyleName="LockedByHumanTargetingBit" />
+                <Bit name="locked by plasma targeting" CStyleName="locked_by_plasma_targeting_bit" pascalStyleName="LockedByPlasmaTargetingBit" />
+                <Bit name="always locked by plasma targeting" CStyleName="always_locked_by_plasma_targeting_bit" pascalStyleName="AlwaysLockedByPlasmaTargetingBit" />
+              </Options>
+            </LongFlags>
+            <Real CStyleName="lock_on_distance" pascalStyleName="LockOnDistance" name="lock on distance" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Pad sizeOfSource="4*sizeof(long)" length="16" />
+      <UselessPad length="12" />
+      <Real CStyleName="head_shot_acc_scale" pascalStyleName="HeadShotAccScale" name="head shot acc scale" description="when the biped ragdolls from a head shot it acceleartes based on this value.  0 defaults to the standard acceleration scale" />
+      <TagReference CStyleName="area_damage_effect" pascalStyleName="AreaDamageEffect" name="area damage effect">
+        <tag>effe</tag>
+      </TagReference>
+      <Struct CStyleName="physics" pascalStyleName="Physics" name="physics">
+        <LayoutXRef>structure:character_physics</LayoutXRef>
+      </Struct>
+      <Block CStyleName="contact_points" pascalStyleName="ContactPoints" name="contact points" description="these are the points where the biped touches the ground" maxElementCount="3" maxElementCountSource="k_contact_point_count">
+        <Layout regolithID="block:contact_point" internalName="contact_point_block" name="contact_point_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(struct biped_contact_point)" isLatest="true">
+            <UselessPad length="32" />
+            <OldStringId CStyleName="marker_name" pascalStyleName="MarkerName" name="marker name" blockNameSource="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <TagReference CStyleName="reanimation_character" pascalStyleName="ReanimationCharacter" name="reanimation character" description="when the flood reanimate this guy, he turns into a ...">
+        <tag>char</tag>
+      </TagReference>
+      <TagReference CStyleName="death_spawn_character" pascalStyleName="DeathSpawnCharacter" name="death spawn character" description="when I die, out of the ashes of my death crawls a ...">
+        <tag>char</tag>
+      </TagReference>
+      <ShortInteger CStyleName="death_spawn_count" pascalStyleName="DeathSpawnCount" name="death spawn count" />
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -124,6 +124,8 @@ from .tag_view import (
     Halo_CollectionTagView,
     HaloSkyPropertiesGroup,
     HaloObjectPropertiesGroup,
+    HaloPermutationPropertiesGroup,
+    HaloSceneryPropertiesGroup,
     HaloUnitPropertiesGroup,
     HaloItemPropertiesGroup,
     HaloWeaponPropertiesGroup,
@@ -131,6 +133,8 @@ from .tag_view import (
     HaloMachinePropertiesGroup,
     HaloControlPropertiesGroup,
     HaloLightFixturePropertiesGroup,
+    HaloSoundSceneryPropertiesGroup,
+    HaloLightVolumePropertiesGroup,
     HaloPlayerStartingLocationPropertiesGroup,
     HaloNetgameFlagsPropertiesGroup,
     HaloNetgameEquipmentPropertiesGroup,
@@ -204,6 +208,18 @@ class Halo_GlobalSettings(Panel):
         row.label(text='Expert Mode:')
         row.prop(scene_halo, "expert_mode", text='')
 
+def get_game_title(self):
+    return self.get("game_title", "")
+
+def set_game_title(self, value):
+    self["game_title"] = value
+    items=['0', '1', '2']
+    if value == "1":
+        items += ['3', '4']
+
+    if bpy.context.scene.tag_scenario.scenario_type_enum not in items:
+        bpy.context.scene.tag_scenario.scenario_type_enum = "0"
+
 class Halo_ScenePropertiesGroup(PropertyGroup):
     game_title: EnumProperty(
         name="Game:",
@@ -213,7 +229,9 @@ class Halo_ScenePropertiesGroup(PropertyGroup):
                 ('halo3', "Halo 3", "Show properties for Halo 3 MCC"),
                 ('halor', "Halo Reach", "Show properties for Halo Reach MCC"),
                 ('halo4', "Halo 4", "Show properties for Halo 4 MCC"),
-               ]
+               ],
+        get=get_game_title,
+        set=set_game_title,
         )
 
     expert_mode: BoolProperty(
@@ -267,6 +285,8 @@ classeshalo = (
     Halo_CollectionTagView,
     HaloSkyPropertiesGroup,
     HaloObjectPropertiesGroup,
+    HaloPermutationPropertiesGroup,
+    HaloSceneryPropertiesGroup,
     HaloUnitPropertiesGroup,
     HaloItemPropertiesGroup,
     HaloWeaponPropertiesGroup,
@@ -274,6 +294,8 @@ classeshalo = (
     HaloMachinePropertiesGroup,
     HaloControlPropertiesGroup,
     HaloLightFixturePropertiesGroup,
+    HaloSoundSceneryPropertiesGroup,
+    HaloLightVolumePropertiesGroup,
     HaloPlayerStartingLocationPropertiesGroup,
     HaloNetgameFlagsPropertiesGroup,
     HaloNetgameEquipmentPropertiesGroup,
@@ -325,6 +347,8 @@ def register():
     bpy.types.Object.tag_mesh = PointerProperty(type=HaloGeometryPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Object.tag_sky = PointerProperty(type=HaloSkyPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Object.tag_object = PointerProperty(type=HaloObjectPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_permutation = PointerProperty(type=HaloPermutationPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_scenery = PointerProperty(type=HaloSceneryPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Object.tag_unit = PointerProperty(type=HaloUnitPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Object.tag_item = PointerProperty(type=HaloItemPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Object.tag_weapon = PointerProperty(type=HaloWeaponPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
@@ -332,6 +356,8 @@ def register():
     bpy.types.Object.tag_machine = PointerProperty(type=HaloMachinePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Object.tag_control = PointerProperty(type=HaloControlPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Object.tag_light_fixture = PointerProperty(type=HaloLightFixturePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_sound_scenery = PointerProperty(type=HaloSoundSceneryPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Object.tag_light_volume = PointerProperty(type=HaloLightVolumePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Object.tag_player_starting_location = PointerProperty(type=HaloPlayerStartingLocationPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Object.tag_netgame_flag = PointerProperty(type=HaloNetgameFlagsPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Object.tag_netgame_equipment = PointerProperty(type=HaloNetgameEquipmentPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
@@ -349,6 +375,8 @@ def register():
     bpy.types.Light.tag_mesh = PointerProperty(type=HaloGeometryPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Light.tag_sky = PointerProperty(type=HaloSkyPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Light.tag_object = PointerProperty(type=HaloObjectPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_permutation = PointerProperty(type=HaloPermutationPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_scenery = PointerProperty(type=HaloSceneryPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Light.tag_unit = PointerProperty(type=HaloUnitPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Light.tag_item = PointerProperty(type=HaloItemPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Light.tag_weapon = PointerProperty(type=HaloWeaponPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
@@ -356,6 +384,8 @@ def register():
     bpy.types.Light.tag_machine = PointerProperty(type=HaloMachinePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Light.tag_control = PointerProperty(type=HaloControlPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Light.tag_light_fixture = PointerProperty(type=HaloLightFixturePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_sound_scenery = PointerProperty(type=HaloSoundSceneryPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Light.tag_light_volume = PointerProperty(type=HaloLightVolumePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Light.tag_player_starting_location = PointerProperty(type=HaloPlayerStartingLocationPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Light.tag_netgame_flag = PointerProperty(type=HaloNetgameFlagsPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Light.tag_netgame_equipment = PointerProperty(type=HaloNetgameEquipmentPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
@@ -374,6 +404,8 @@ def register():
     bpy.types.Collection.tag_mesh = PointerProperty(type=HaloGeometryPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Collection.tag_sky = PointerProperty(type=HaloSkyPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Collection.tag_object = PointerProperty(type=HaloObjectPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_permutation = PointerProperty(type=HaloPermutationPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_scenery = PointerProperty(type=HaloSceneryPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Collection.tag_unit = PointerProperty(type=HaloUnitPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Collection.tag_item = PointerProperty(type=HaloItemPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Collection.tag_weapon = PointerProperty(type=HaloWeaponPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
@@ -381,6 +413,8 @@ def register():
     bpy.types.Collection.tag_machine = PointerProperty(type=HaloMachinePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Collection.tag_control = PointerProperty(type=HaloControlPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Collection.tag_light_fixture = PointerProperty(type=HaloLightFixturePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_sound_scenery = PointerProperty(type=HaloSoundSceneryPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
+    bpy.types.Collection.tag_light_volume = PointerProperty(type=HaloLightVolumePropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Collection.tag_player_starting_location = PointerProperty(type=HaloPlayerStartingLocationPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Collection.tag_netgame_flag = PointerProperty(type=HaloNetgameFlagsPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
     bpy.types.Collection.tag_netgame_equipment = PointerProperty(type=HaloNetgameEquipmentPropertiesGroup, name="Tag Properties", description="Set properties for your tags")
@@ -440,6 +474,8 @@ def unregister():
     del bpy.types.Object.tag_mesh
     del bpy.types.Object.tag_sky
     del bpy.types.Object.tag_object
+    del bpy.types.Object.tag_permutation
+    del bpy.types.Object.tag_scenery
     del bpy.types.Object.tag_unit
     del bpy.types.Object.tag_item
     del bpy.types.Object.tag_weapon
@@ -459,6 +495,8 @@ def unregister():
     del bpy.types.Light.tag_mesh
     del bpy.types.Light.tag_sky
     del bpy.types.Light.tag_object
+    del bpy.types.Light.tag_permutation
+    del bpy.types.Light.tag_scenery
     del bpy.types.Light.tag_unit
     del bpy.types.Light.tag_item
     del bpy.types.Light.tag_weapon
@@ -478,6 +516,8 @@ def unregister():
     del bpy.types.Collection.tag_mesh
     del bpy.types.Collection.tag_sky
     del bpy.types.Collection.tag_object
+    del bpy.types.Collection.tag_permutation
+    del bpy.types.Collection.tag_scenery
     del bpy.types.Collection.tag_unit
     del bpy.types.Collection.tag_item
     del bpy.types.Collection.tag_weapon

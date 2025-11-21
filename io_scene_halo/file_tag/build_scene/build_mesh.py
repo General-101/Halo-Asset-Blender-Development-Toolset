@@ -25,45 +25,40 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import bpy
+import json
 
 from math import radians
 from mathutils import Matrix, Vector
 from ..h1.file_model.build_mesh import get_geometry_layout as get_retail_h1_geometry_layout
 from ..h2.file_render_model.build_mesh import get_geometry_layout as get_retail_h2_geometry_layout
 from ...global_functions import mesh_processing, global_functions
+from ...file_tag.tag_interface import tag_interface, tag_common
 
-def generate_jms_skeleton(MODEL, game_version, game_title, file_version, armature, fix_rotations):
-    first_frame = MODEL.transforms[0]
-
+def generate_tag_skeleton(model_data, game_title, armature, fix_rotations):
     bpy.ops.object.mode_set(mode = 'EDIT')
-    for idx, asset_node in enumerate(MODEL.nodes):
-        bone_name = asset_node.name
-        if len(bone_name) == 0:
-            bone_name = str(idx)
+    for node_idx, node in enumerate(model_data["nodes"]):
+        bone_name = node["name"]
+        if global_functions.string_empty_check(bone_name):
+            bone_name = "bone_%s" % node_idx
 
         current_bone = armature.data.edit_bones.new(bone_name)
-        current_bone.tail[2] = mesh_processing.get_bone_distance(None, MODEL, idx, "JMS")
-        parent_idx = asset_node.parent
+        current_bone.tail[2] = mesh_processing.get_bone_distance_from_tags(model_data["nodes"], node_idx, "JMS", 8200)
+        parent_idx = node["parent node"]
 
         if not parent_idx == -1 and not parent_idx == None:
-            parent_name = MODEL.nodes[parent_idx].name
-            if len(parent_name) == 0:
-                parent_name = str(parent_idx)
+            parent_name = model_data["nodes"][parent_idx]["name"]
+            if global_functions.string_empty_check(parent_name):
+                parent_name = "bone_%s" % parent_idx
 
             current_bone.parent = armature.data.edit_bones[parent_name]
 
+        matrix_translate = Matrix.Translation(Vector(node["default translation"]) * 100)
         if game_title == "halo1":
-            matrix_translate = Matrix.Translation(first_frame[idx].translation)
-            matrix_rotation = first_frame[idx].rotation.to_matrix().to_4x4()
-            transform_matrix = matrix_translate @ matrix_rotation
+            matrix_rotation = global_functions.convert_quaternion(node["default rotation"]).inverted().to_matrix().to_4x4()
         elif game_title == "halo2":
-            #loc = (first_frame[idx].inverse_position)
-            #rot = Matrix((first_frame[idx].inverse_forward,first_frame[idx].inverse_left,first_frame[idx].inverse_up))
-            #scale = (first_frame[idx].inverse_scale,first_frame[idx].inverse_scale,first_frame[idx].inverse_scale)
-            #transform_matrix = Matrix.LocRotScale(loc, rot, scale).inverted()
-            matrix_translate = Matrix.Translation(first_frame[idx].translation)
-            matrix_rotation = first_frame[idx].rotation.inverted().to_matrix().to_4x4()
-            transform_matrix = matrix_translate @ matrix_rotation
+            matrix_rotation = global_functions.convert_quaternion(node["default rotation"]).to_matrix().to_4x4()
+
+        transform_matrix = matrix_translate @ matrix_rotation
 
         if fix_rotations:
             if current_bone.parent:
@@ -79,28 +74,36 @@ def generate_jms_skeleton(MODEL, game_version, game_title, file_version, armatur
 
     bpy.ops.object.mode_set(mode = 'OBJECT')
 
-def build_scene(context, MODEL, game_version, game_title, file_version, fix_rotations, empty_markers, report):
-    collection = context.collection
-    random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
+def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, report):
+    if game_title == "halo1":
+        tag_groups = tag_common.h1_tag_groups
+    elif game_title == "halo2":
+        tag_groups = tag_common.h2_tag_groups
+    else:
+        print("%s is not supported." % game_title)
 
+    model_data = tag_interface.get_disk_asset(tag_ref["path"], tag_groups.get(tag_ref["group name"]))["Data"]
+
+    collection = context.collection
     armdata = bpy.data.armatures.new('Armature')
     armature = bpy.data.objects.new('Armature', armdata)
+    armature.color = (1, 1, 1, 0)
     collection.objects.link(armature)
 
     mesh_processing.select_object(context, armature)
 
-    generate_jms_skeleton(MODEL, game_version, game_title, file_version, armature, fix_rotations)
+    generate_tag_skeleton(model_data, game_title, armature, fix_rotations)
 
     if game_title == "halo1":
         is_triangle_list = False
-        get_retail_h1_geometry_layout(context, collection, MODEL, armature, game_version, game_title, file_version, fix_rotations, is_triangle_list, report)
-        for region in MODEL.regions:
-            for permutation in region.permutations:
-                for local_marker in permutation.local_markers:
-                    mesh_processing.generate_marker(context, collection, game_version, game_title, file_version, None, MODEL, region.name, "", armature, local_marker, fix_rotations, empty_markers, False)
+        get_retail_h1_geometry_layout(tag_ref, asset_cache, armature, is_triangle_list, report)
+        for region in model_data["regions"]:
+            for permutation in region["permutations"]:
+                for local_marker in permutation["markers"]:
+                    mesh_processing.generate_marker(context, collection, game_title, None, model_data, region["name"], "", armature, local_marker, fix_rotations, empty_markers, False)
 
     else:
-        get_retail_h2_geometry_layout(context, collection, MODEL, armature, report)
-        for marker_group in MODEL.marker_groups:
-            for marker in marker_group.markers:
-                mesh_processing.generate_marker(context, collection, game_version, game_title, file_version, None, MODEL, "", marker_group.name, armature, marker, fix_rotations, empty_markers, False)
+        get_retail_h2_geometry_layout(tag_ref, asset_cache, armature, report)
+        for marker_group in model_data["marker groups"]:
+            for marker in marker_group["markers"]:
+                mesh_processing.generate_marker(context, collection, game_title, None, model_data, "", marker_group["name"], armature, marker, fix_rotations, empty_markers, False)

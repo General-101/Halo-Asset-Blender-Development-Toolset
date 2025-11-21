@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="dc*s" name="scenario_decorators_resource" version="1">
+  <Layout regolithID="block:scenario_decorators_resource" internalName="scenario_decorators_resource_block" name="scenario_decorators_resource">
+    <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(s_scenario_decorators_resource)" isLatest="true">
+      <Block CStyleName="decorator" pascalStyleName="Decorator" name="decorator" maxElementCount="1">
+        <LayoutXRef>block:decorator_placement_definition</LayoutXRef>
+      </Block>
+      <Block CStyleName="decorator_palette" pascalStyleName="DecoratorPalette" name="decorator palette" maxElementCount="32" maxElementCountSource="c_decorator_set_definition::k_maximum_decorator_sets_per_scenario">
+        <LayoutXRef>block:scenario_decorator_set_palette_entry</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

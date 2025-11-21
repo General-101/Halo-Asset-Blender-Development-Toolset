@@ -38,7 +38,7 @@ def generate_jms_skeleton(JMS, armature, parent_id_class, fix_rotations):
     bpy.ops.object.mode_set(mode = 'EDIT')
     for idx, jms_node in enumerate(JMS.nodes):
         current_bone = armature.data.edit_bones.new(jms_node.name)
-        current_bone.tail[2] = mesh_processing.get_bone_distance(None, JMS, idx, "JMS")
+        current_bone.tail[2] = mesh_processing.get_bone_distance(JMS, idx, "JMS")
         parent_idx = jms_node.parent
 
         if not parent_idx == -1 and not parent_idx == None:
@@ -142,6 +142,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
 
         armdata = bpy.data.armatures.new('Armature')
         armature = bpy.data.objects.new('Armature', armdata)
+        armature.color = (1, 1, 1, 0)
         collection.objects.link(armature)
 
         mesh_processing.select_object(context, armature)
@@ -172,13 +173,14 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
                 region_permutation_list.append([permutation, region])
 
     for marker_obj in JMS.markers:
-        mesh_processing.generate_marker(context, collection, "retail", "halo1", 20011115, filepath, JMS, None, "", armature, marker_obj, fix_rotations, empty_markers, True)
+        mesh_processing.generate_marker(context, collection, "halo1", filepath, JMS, None, "", armature, marker_obj, fix_rotations, empty_markers, True)
 
     for xref_marker in JMS.xref_markers:
         xref_name = xref_marker.name
 
         mesh = bpy.data.meshes.new(xref_name)
         object_mesh = bpy.data.objects.new(xref_name, mesh)
+        object_mesh.color = (1, 1, 1, 0)
         collection.objects.link(object_mesh)
 
         bm = bmesh.new()
@@ -214,7 +216,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
             if 'collision' in filepath:
                 object_name = '@%s' % object_name
 
-        mesh_processing.generate_mesh_object_retail(JMS, JMS.vertices, JMS.triangles, object_name, collection, game_version, random_color_gen, armature, context)
+        mesh_processing.generate_mesh_object_retail(JMS, JMS.vertices, JMS.triangles, object_name, collection, game_version, random_color_gen, armature, context, report)
 
     primitive_shapes = []
     for sphere in JMS.spheres:
@@ -227,6 +229,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
 
         mesh = bpy.data.meshes.new(object_name_prefix)
         object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+        object_mesh.color = (1, 1, 1, 0)
         collection.objects.link(object_mesh)
 
         bm = bmesh.new()
@@ -294,6 +297,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
 
         mesh = bpy.data.meshes.new(object_name_prefix)
         object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+        object_mesh.color = (1, 1, 1, 0)
         collection.objects.link(object_mesh)
 
         bm = bmesh.new()
@@ -360,6 +364,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
 
         mesh = bpy.data.meshes.new(object_name_prefix)
         object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+        object_mesh.color = (1, 1, 1, 0)
         collection.objects.link(object_mesh)
 
         bm = bmesh.new()
@@ -428,6 +433,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
 
         mesh = bpy.data.meshes.new(object_name_prefix)
         object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+        object_mesh.color = (1, 1, 1, 0)
         collection.objects.link(object_mesh)
 
         bm = bmesh.new()
@@ -526,6 +532,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         object_name_prefix = '$%s' % name
 
         object_empty = bpy.data.objects.new(object_name_prefix, None)
+        object_empty.color = (1, 1, 1, 0)
         collection.objects.link(object_empty)
 
         object_empty.empty_display_size = 2
@@ -632,6 +639,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         object_name_prefix = '$%s' % name
 
         object_empty = bpy.data.objects.new(object_name_prefix, None)
+        object_empty.color = (1, 1, 1, 0)
         collection.objects.link(object_empty)
 
         object_empty.empty_display_size = 2
@@ -721,6 +729,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         object_name_prefix = '$%s' % name
 
         object_empty = bpy.data.objects.new(object_name_prefix, None)
+        object_empty.color = (1, 1, 1, 0)
         collection.objects.link(object_empty)
 
         object_empty.empty_display_size = 2
@@ -796,6 +805,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         object_name_prefix = '$%s' % name
 
         object_empty = bpy.data.objects.new(object_name_prefix, None)
+        object_empty.color = (1, 1, 1, 0)
         collection.objects.link(object_empty)
 
         object_empty.empty_display_size = 2
@@ -856,6 +866,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
         object_name_prefix = '$%s' % name
 
         object_empty = bpy.data.objects.new(object_name_prefix, None)
+        object_empty.color = (1, 1, 1, 0)
         collection.objects.link(object_empty)
 
         object_empty.empty_display_size = 2
@@ -884,6 +895,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
 
         mesh = bpy.data.meshes.new(name)
         object_mesh = bpy.data.objects.new(name, mesh)
+        object_mesh.color = (1, 1, 1, 0)
         collection.objects.link(object_mesh)
 
         bm = bmesh.new()
@@ -909,6 +921,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
 
         light_data = bpy.data.lights.new(name, "SUN")
         object_mesh = bpy.data.objects.new(name, light_data)
+        object_mesh.color = (1, 1, 1, 0)
         collection.objects.link(object_mesh)
         object_mesh.rotation_euler = down_vector.rotation_difference(skylight.direction).to_euler()
         object_mesh.data.color = (skylight.radiant_intensity)

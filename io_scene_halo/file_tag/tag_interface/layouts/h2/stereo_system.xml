@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="BooM" name="stereo_system" version="1">
+  <Layout regolithID="block:stereo_system" internalName="stereo_system_block" name="stereo_system">
+    <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(struct stereo_system_definition)" isLatest="true">
+      <LongInteger CStyleName="unused" pascalStyleName="Unused" name="unused" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

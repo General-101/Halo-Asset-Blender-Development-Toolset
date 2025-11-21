@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="deca" name="decal" version="1">
+  <Layout regolithID="block:decal" internalName="decal_block" name="decal">
+    <FieldSet version="0" sizeofValue="188" sizeofSource="sizeof(struct decal_definition)" isLatest="true">
+      <Explanation name="DECAL" description="There are several &quot;layers&quot; which decals can be placed into, these layers are drawn in a specific order relative to the shader layers and each layer has its own specific blending mode. In general, the decal bitmap's alpha channel will be used as an opacity mask if it exists.&#xA;&#xA;* LIT ALPHA-BLEND PRELIGHT: Decals in this layer are lit by the lightmap but are &quot;faded out&quot; by dynamic lights. What this means is that dynamic lights hitting them will cause them to disappear, sort of. This layer is rendered immediately before lightmap shadows (and before dynamic lights).&#xA;&#xA;* LIT ALPHA-BLEND: Decals in this layer are lit by the lightmap but are NOT lit by dynamic lights. What this means is that if the decal exists in an area that has dark lightmapping but bright dynamic lighting, the decal will appear dark. This layer is rendered immediately after dynamic lights, and all subsequent decal layers are rendered after this one in order.&#xA;&#xA;* DOUBLE MULTIPLY: Decals in this layer will double-multiply the color in the framebuffer. Gray pixels in the decal bitmap will be transparent (black darkens, white brightens). The decal color in the tag does NOT do anything!!&#xA;&#xA;* MULTIPLY: Decals in this layer will multiply the color in the framebuffer. White pixels in the decal bitmap will be transparent. The decal color (in the decal tag) does NOT do anything!!&#xA;&#xA;* MAX: Decals in this layer will perform a component-wise max operation on the framebuffer, replacing color values with whichever is higher. Black pixels in the decal bitmap will be transparent.&#xA;&#xA;* ADD: Decals in this layer will perform an addition operation on the framebuffer, replacing color values with the sum of the two. Black pixels in the decal bitmap will be transparent.&#xA;&#xA;* ERROR: Decals in this layer will render bright red and show through geometry!&#xA;&#xA;A compound decal is a chain of decals which are instantiated simultaneously. Compound decals are created by referencing another decal tag in the 'next_decal_in_chain' field below. Do not attempt to create a circularly linked decal chain, i.e. A-&gt;B-&gt;C-&gt;A! This will cause problems and probably hang the game. Also, do not reference a decal from an effect if it is not the head of the chain; for example an effect should not instantiate decal B if the chain was A-&gt;B-&gt;C. Compound decals can have seperate bitmaps, etc., and can be drawn in seperate layers. In addition, we used to have the ability for each decal in the chain can either inherit its parent's radius, rotation, color, etc. - or it can randomly choose its own. This behavior was controlled by the 'geometry_inherited_by_next_decal_in_chain' flag, below but it's currently broken." />
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:decal_flags" CStyleName="decal_flags" pascalStyleName="DecalFlags">
+          <Bit name="geometry inherited by next decal in chain" CStyleName="geometry_inherited_by_next_decal_in_chain_bit" pascalStyleName="GeometryInheritedByNextDecalInChainBit" />
+          <Bit name="interpolate color in hsv" CStyleName="interpolate_color_in_hsv_bit" pascalStyleName="InterpolateColorInHsvBit" />
+          <Bit name="...more colors" CStyleName="more_colors_bit" pascalStyleName="MoreColorsBit" />
+          <Bit name="no random rotation" CStyleName="no_random_rotation_bit" pascalStyleName="NoRandomRotationBit" />
+          <Bit name="UNUSED" CStyleName="unused4_bit" pascalStyleName="Unused4Bit" />
+          <Bit name="SAPIEN- snap to axis" CStyleName="sapien__snap_to_axis_bit" pascalStyleName="SapienSnapToAxisBit" />
+          <Bit name="SAPIEN- incremental counter" CStyleName="sapien__incremental_counter_bit" pascalStyleName="SapienIncrementalCounterBit" />
+          <Bit name="UNUSED" CStyleName="unused7_bit" pascalStyleName="Unused7Bit" />
+          <Bit name="preserve aspect" CStyleName="preserve_aspect_bit" pascalStyleName="PreserveAspectBit" />
+          <Bit name="UNUSED" CStyleName="unused9_bit" pascalStyleName="Unused9Bit" />
+        </Options>
+      </WordFlags>
+      <ShortEnum CStyleName="type" pascalStyleName="Type" name="type" description="controls how the decal wraps onto surface geometry">
+        <Options regolithID="enum:decal_type" CStyleName="decal_type" pascalStyleName="DecalType">
+          <Enum name="scratch" CStyleName="scratch" pascalStyleName="Scratch" />
+          <Enum name="splatter" CStyleName="splatter" pascalStyleName="Splatter" />
+          <Enum name="burn" CStyleName="burn" pascalStyleName="Burn" />
+          <Enum name="painted sign" CStyleName="painted_sign" pascalStyleName="PaintedSign" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="layer" pascalStyleName="Layer" name="layer">
+        <Options regolithID="enum:decal_layer_blend_mode" CStyleName="decal_layer_blend_mode" pascalStyleName="DecalLayerBlendMode">
+          <Enum name="lit alpha-blend prelight" CStyleName="lit_alpha_blend_prelight" pascalStyleName="LitAlphaBlendPrelight" />
+          <Enum name="lit alpha-blend" CStyleName="lit_alpha_blend" pascalStyleName="LitAlphaBlend" />
+          <Enum name="double multiply" CStyleName="double_multiply" pascalStyleName="DoubleMultiply" />
+          <Enum name="multiply" CStyleName="multiply" pascalStyleName="Multiply" />
+          <Enum name="max" CStyleName="max" pascalStyleName="Max" />
+          <Enum name="add" CStyleName="add" pascalStyleName="Add" />
+          <Enum name="error" CStyleName="error" pascalStyleName="Error" />
+        </Options>
+      </ShortEnum>
+      <ShortInteger CStyleName="max_overlapping_count" pascalStyleName="MaxOverlappingCount" name="max overlapping count" />
+      <TagReference CStyleName="next_decal_in_chain" pascalStyleName="NextDecalInChain" name="next decal in chain">
+        <tag>deca</tag>
+      </TagReference>
+      <RealBounds CStyleName="radius" pascalStyleName="Radius" name="radius" units="world units" description="0 defaults to 0.125" />
+      <Real CStyleName="radius_overlap_rejection" pascalStyleName="RadiusOverlapRejection" name="radius overlap rejection" units="muliplier" />
+      <UselessPad length="16" />
+      <RealRgbColor CStyleName="color_lower_bounds" pascalStyleName="ColorLowerBounds" name="color lower bounds" />
+      <RealRgbColor CStyleName="color_upper_bounds" pascalStyleName="ColorUpperBounds" name="color upper bounds" />
+      <UselessPad length="12" />
+      <UselessPad length="4" />
+      <UselessPad length="28" />
+      <RealBounds CStyleName="lifetime" pascalStyleName="Lifetime" name="lifetime" units="seconds" />
+      <RealBounds CStyleName="decay_time" pascalStyleName="DecayTime" name="decay time" units="seconds" />
+      <UselessPad length="12" />
+      <Pad sizeOfSource="sizeof(struct _shader)" length="40" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Pad sizeOfSource="5*sizeof(long)" length="20" />
+      <TagReference CStyleName="bitmap" pascalStyleName="Bitmap" name="bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <Pad sizeOfSource="5*sizeof(long)" length="20" />
+      <Real CStyleName="maximum_sprite_extent" pascalStyleName="MaximumSpriteExtent" name="maximum sprite extent" units="pixels*" />
+      <Pad sizeOfSource="2*sizeof(word)" length="4" />
+      <UselessPad length="8" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

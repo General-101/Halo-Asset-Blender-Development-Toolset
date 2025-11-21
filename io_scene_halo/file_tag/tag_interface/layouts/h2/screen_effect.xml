@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="egor" name="screen_effect" version="4">
+  <Layout regolithID="block:screen_effect" internalName="screen_effect_block" name="screen_effect">
+    <FieldSet version="0" sizeofValue="156" sizeofSource="sizeof(s_rasterizer_screen_effect_definition)" isLatest="true">
+      <Explanation name="SCREEN EFFECT" description="A screen effect is essentially a collection of pass references, each one corresponding to a shader pass reference from the template. Note that only shader passes in the TRANSPARENT layer are considered during screen effect rendering." />
+      <Pad sizeOfSource="16*sizeof(long)" length="64" />
+      <TagReference CStyleName="shader" pascalStyleName="Shader" name="shader">
+        <tag>shad</tag>
+      </TagReference>
+      <Pad sizeOfSource="16*sizeof(long)" length="64" />
+      <Block CStyleName="pass_references" pascalStyleName="PassReferences" name="pass references" maxElementCount="8" maxElementCountSource="k_maximum_pass_references_per_rasterizer_screen_effect">
+        <Layout regolithID="block:rasterizer_screen_effect_pass_reference" internalName="rasterizer_screen_effect_pass_reference_block" name="pass reference">
+          <FieldSet version="0" sizeofValue="192" sizeofSource="sizeof(s_rasterizer_screen_effect_pass_reference)" isLatest="true">
+            <Data CStyleName="explanation" pascalStyleName="Explanation" name="explanation" />
+            <Explanation name="IMPLEMENTATIONS" description="Used to control which shader pass implementations are used depending on whether the primary and/or secondary external inputs are greater than zero. An implementation of -1 will not draw anything." />
+            <ShortInteger CStyleName="layer_pass_index" pascalStyleName="LayerPassIndex" name="layer pass index" units="leave as -1 unless debugging" readOnly="true" />
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <CharInteger name="primary=0 and secondary=0" units="implementation index" />
+            <CharInteger name="primary&gt;0 and secondary=0" units="implementation index" />
+            <CharInteger name="primary=0 and secondary&gt;0" units="implementation index" />
+            <CharInteger name="primary&gt;0 and secondary&gt;0" units="implementation index" />
+            <Pad sizeOfSource="16*sizeof(long)" length="64" />
+            <Explanation name="TEXCOORD GENERATION" description="* DEFAULT: Use for mask bitmaps that are mirrored and offset through the texcoords supplied to the screen effect (e.g. through the weapon HUD interface). The shader system must handle scaling.&#xA;&#xA;* VIEWPORT NORMALIZED: Use when copying from texaccum or some other buffer or when applying a texture that is not an interface mask (e.g. another kind of mask, a noise map, etc. which is not mirrored or offset through the weapon HUD interface). Texture coordinates will range from [0,1][0,1] within the viewport, and the shader system must handle scaling if the bitmap is a linear target or an interface bitmap.&#xA;&#xA;* VIEWPORT RELATIVE: Should not be used! This mode was necessary before we had he ability for the shader system to scale by texture resolution. Texture coordinates will range from [0,viewport_size_x][0,viewport_size_y] within the viewport.&#xA;&#xA;* FRAMEBUFFER RELATIVE: Use when copying from the framebuffer. Texture coordinates will range from [viewport_bounds.x0,viewport_bounds.x1][viewport_bounds.y0,viewport_bounds.y1] within the viewport. Let the shader system assume normalized [0,1] coordinate range.&#xA;&#xA;* ZERO: Use when doing dependent-z reads. Texture coordinates will be zero before applying offset (in advanced control block). Offset should be {1/(z_max-z_min), 0, -z_min/(z_max-z_min), 0} where z_min and z_max are in world units, and the &quot;xy scaled by z_far&quot; flag should be checked." />
+            <ShortEnum CStyleName="stage_0_mode" pascalStyleName="Stage0Mode" name="stage 0 mode">
+              <Options regolithID="enum:rasterizer_screen_effect_pass_reference_mode" CStyleName="rasterizer_screen_effect_pass_reference_mode" pascalStyleName="RasterizerScreenEffectPassReferenceMode">
+                <Enum name="default" CStyleName="default_value" pascalStyleName="Default" />
+                <Enum name="viewport normalized" CStyleName="viewport_normalized" pascalStyleName="ViewportNormalized" />
+                <Enum name="viewport relative" CStyleName="viewport_relative" pascalStyleName="ViewportRelative" />
+                <Enum name="framebuffer relative" CStyleName="framebuffer_relative" pascalStyleName="FramebufferRelative" />
+                <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="stage_1_mode" pascalStyleName="Stage1Mode" name="stage 1 mode">
+              <OptionsXRef>enum:rasterizer_screen_effect_pass_reference_mode</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="stage_2_mode" pascalStyleName="Stage2Mode" name="stage 2 mode">
+              <OptionsXRef>enum:rasterizer_screen_effect_pass_reference_mode</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="stage_3_mode" pascalStyleName="Stage3Mode" name="stage 3 mode">
+              <OptionsXRef>enum:rasterizer_screen_effect_pass_reference_mode</OptionsXRef>
+            </ShortEnum>
+            <Block CStyleName="advanced_control" pascalStyleName="AdvancedControl" name="advanced control" maxElementCount="1">
+              <Layout regolithID="block:rasterizer_screen_effect_texcoord_generation_advanced_control" internalName="rasterizer_screen_effect_texcoord_generation_advanced_control_block" name="advanced control">
+                <FieldSet version="0" sizeofValue="72" sizeofSource="sizeof(s_rasterizer_screen_effect_texcoord_generation_advanced_control)" isLatest="true">
+                  <WordFlags CStyleName="stage_0_flags" pascalStyleName="Stage0Flags" name="stage 0 flags">
+                    <Options regolithID="enum:rasterizer_screen_effect_texcoord_generation_flags" CStyleName="rasterizer_screen_effect_texcoord_generation_flags" pascalStyleName="RasterizerScreenEffectTexcoordGenerationFlags">
+                      <Bit name="xy scaled by z_far" CStyleName="xy_scaled_by_z_far_bit" pascalStyleName="XyScaledByZFarBit" />
+                    </Options>
+                  </WordFlags>
+                  <WordFlags CStyleName="stage_1_flags" pascalStyleName="Stage1Flags" name="stage 1 flags">
+                    <OptionsXRef>enum:rasterizer_screen_effect_texcoord_generation_flags</OptionsXRef>
+                  </WordFlags>
+                  <WordFlags CStyleName="stage_2_flags" pascalStyleName="Stage2Flags" name="stage 2 flags">
+                    <OptionsXRef>enum:rasterizer_screen_effect_texcoord_generation_flags</OptionsXRef>
+                  </WordFlags>
+                  <WordFlags CStyleName="stage_3_flags" pascalStyleName="Stage3Flags" name="stage 3 flags">
+                    <OptionsXRef>enum:rasterizer_screen_effect_texcoord_generation_flags</OptionsXRef>
+                  </WordFlags>
+                  <RealPlane3D CStyleName="stage_0_offset" pascalStyleName="Stage0Offset" name="stage 0 offset" />
+                  <RealPlane3D CStyleName="stage_1_offset" pascalStyleName="Stage1Offset" name="stage 1 offset" />
+                  <RealPlane3D CStyleName="stage_2_offset" pascalStyleName="Stage2Offset" name="stage 2 offset" />
+                  <RealPlane3D CStyleName="stage_3_offset" pascalStyleName="Stage3Offset" name="stage 3 offset" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Explanation name="TARGET" />
+            <ShortEnum CStyleName="target" pascalStyleName="Target" name="target">
+              <Options regolithID="enum:rasterizer_screen_effect_target" CStyleName="rasterizer_screen_effect_target" pascalStyleName="RasterizerScreenEffectTarget">
+                <Enum name="framebuffer" CStyleName="framebuffer" pascalStyleName="Framebuffer" />
+                <Enum name="texaccum" CStyleName="texaccum" pascalStyleName="Texaccum" />
+                <Enum name="texaccum small" CStyleName="texaccum_small" pascalStyleName="TexaccumSmall" />
+                <Enum name="texaccum tiny" CStyleName="texaccum_tiny" pascalStyleName="TexaccumTiny" />
+                <Enum name="copy fb to texaccum" CStyleName="copy_fb_to_texaccum" pascalStyleName="CopyFbToTexaccum" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <Pad sizeOfSource="16*sizeof(long)" length="64" />
+            <Block CStyleName="convolution" pascalStyleName="Convolution" name="convolution" maxElementCount="2" maxElementCountSource="k_maximum_convolutions_per_rasterizer_screen_effect_pass_reference">
+              <Layout regolithID="block:rasterizer_screen_effect_convolution" internalName="rasterizer_screen_effect_convolution_block" name="convolution">
+                <FieldSet version="0" sizeofValue="92" sizeofSource="sizeof(s_rasterizer_screen_effect_convolution)" isLatest="true">
+                  <Explanation name="CONVOLUTION" description="Convolution blurs the target of this pass reference to the SCREEN EFFECT CONVOLUTION buffer, which is accessible in the shader system through a texture extern. It is not cheap especially for large convolution amounts, so please use it sparingly!! Note that the resolution will be clamped to 64x64 minimum and 768000 pixels total maximum." />
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:rasterizer_screen_effect_convolution_flags" CStyleName="rasterizer_screen_effect_convolution_flags" pascalStyleName="RasterizerScreenEffectConvolutionFlags">
+                      <Bit name="only when primary is active" CStyleName="only_when_primary_is_active_bit" pascalStyleName="OnlyWhenPrimaryIsActiveBit" />
+                      <Bit name="only when secondary is active" CStyleName="only_when_secondary_is_active_bit" pascalStyleName="OnlyWhenSecondaryIsActiveBit" />
+                      <Bit name="predator zoom" CStyleName="predator_zoom_bit" pascalStyleName="PredatorZoomBit" />
+                    </Options>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <Pad sizeOfSource="16*sizeof(long)" length="64" />
+                  <Real CStyleName="convolution_amount" pascalStyleName="ConvolutionAmount" name="convolution amount" units="[0,+inf)" />
+                  <Real CStyleName="filter_scale" pascalStyleName="FilterScale" name="filter scale" />
+                  <RealFraction CStyleName="filter_box_factor" pascalStyleName="FilterBoxFactor" name="filter box factor" units="[0,1] not used for zoom" />
+                  <Real CStyleName="zoom_falloff_radius" pascalStyleName="ZoomFalloffRadius" name="zoom falloff radius" />
+                  <Real CStyleName="zoom_cutoff_radius" pascalStyleName="ZoomCutoffRadius" name="zoom cutoff radius" />
+                  <RealFraction CStyleName="resolution_scale" pascalStyleName="ResolutionScale" name="resolution scale" units="[0,1]" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

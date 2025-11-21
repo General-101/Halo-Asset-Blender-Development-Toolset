@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="$#!+" name="cache_file_sound" version="2">
+  <Layout regolithID="block:cache_file_sound" internalName="cache_file_sound_block" name="cache_file_sound">
+    <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(s_cache_file_sound_definition)" isLatest="true">
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:sound_flags</OptionsXRef>
+      </WordFlags>
+      <CharEnum CStyleName="sound_class" pascalStyleName="SoundClass" name="sound class" readOnly="true">
+        <OptionsXRef>enum:sound_class</OptionsXRef>
+      </CharEnum>
+      <CharInteger CStyleName="codec_index" pascalStyleName="CodecIndex" name="codec index" />
+      <ShortInteger CStyleName="remastered_sound_reference_index" pascalStyleName="RemasteredSoundReferenceIndex" name="remastered sound reference index" />
+      <ShortInteger CStyleName="playback_index" pascalStyleName="PlaybackIndex" name="playback index" />
+      <ShortInteger CStyleName="first_pitch_range_index" pascalStyleName="FirstPitchRangeIndex" name="first pitch range index" />
+      <CharInteger CStyleName="pitch_range_count" pascalStyleName="PitchRangeCount" name="pitch range count" />
+      <CharInteger CStyleName="scale_index" pascalStyleName="ScaleIndex" name="scale index" />
+      <CharInteger CStyleName="promotion_index" pascalStyleName="PromotionIndex" name="promotion index" />
+      <CharInteger CStyleName="custom_playback_index" pascalStyleName="CustomPlaybackIndex" name="custom playback index" />
+      <ShortInteger CStyleName="extra_info_index" pascalStyleName="ExtraInfoIndex" name="extra info index" />
+      <LongInteger CStyleName="maximum_play_time" pascalStyleName="MaximumPlayTime" name="maximum play time" units="ms" />
+      <Real CStyleName="inner_silence_distance" pascalStyleName="InnerSilenceDistance" name="inner_silence_distance" description="don't play below this distance" />
+      <ShortInteger CStyleName="first_reflection_parameters_index" pascalStyleName="FirstReflectionParametersIndex" name="first reflection parameters index" />
+      <CharInteger CStyleName="reflection_parameters_count" pascalStyleName="ReflectionParametersCount" name="reflection parameters count" />
+      <CharInteger CStyleName="low_pass_cut_off_parameters_index" pascalStyleName="LowPassCutOffParametersIndex" name="low pass cut off parameters index" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

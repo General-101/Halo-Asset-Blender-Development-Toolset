@@ -1,0 +1,342 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="jpt!" name="damage_effect" version="6">
+  <Layout regolithID="block:damage_effect" internalName="damage_effect_block" name="damage_effect">
+    <FieldSet version="0" sizeofValue="248" sizeofSource="sizeof(s_damage_effect_definition_v1)">
+      <RealBounds CStyleName="radius" pascalStyleName="Radius" name="radius" units="world units" />
+      <RealFraction CStyleName="cutoff_scale" pascalStyleName="CutoffScale" name="cutoff scale" units="[0,1]" />
+      <LongFlags name="flags">
+        <Options regolithID="enum:damage_effect_distance_flags" CStyleName="damage_effect_distance_flags" pascalStyleName="DamageEffectDistanceFlags">
+          <Bit name="don't scale damage by distance" CStyleName="dont_scale_damage_by_distance_bit" pascalStyleName="DontScaleDamageByDistanceBit" />
+          <Bit name="area damage players only" description="area of effect damage only affects players" CStyleName="area_damage_players_only_bit" pascalStyleName="AreaDamagePlayersOnlyBit" />
+        </Options>
+      </LongFlags>
+      <Real CStyleName="ai_stun_radius" pascalStyleName="AiStunRadius" name="AI stun radius" units="world units" />
+      <RealBounds CStyleName="ai_stun_bounds" pascalStyleName="AiStunBounds" name="AI stun bounds" units="(0-1)" />
+      <UselessPad length="8" />
+      <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+        <Options regolithID="enum:screen_effect_type" CStyleName="screen_effect_type" pascalStyleName="ScreenEffectType">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="lighten" CStyleName="lighten" pascalStyleName="Lighten" />
+          <Enum name="darken" CStyleName="darken" pascalStyleName="Darken" />
+          <Enum name="max" CStyleName="max" pascalStyleName="Max" />
+          <Enum name="min" CStyleName="min" pascalStyleName="Min" />
+          <Enum name="invert" CStyleName="invert" pascalStyleName="Invert" />
+          <Enum name="tint" CStyleName="tint" pascalStyleName="Tint" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="priority" pascalStyleName="Priority" name="priority">
+        <Options regolithID="enum:effect_priority" CStyleName="effect_priority" pascalStyleName="EffectPriority">
+          <Enum name="low" CStyleName="low" pascalStyleName="Low" />
+          <Enum name="medium" CStyleName="medium" pascalStyleName="Medium" />
+          <Enum name="high" CStyleName="high" pascalStyleName="High" />
+        </Options>
+      </ShortEnum>
+      <UselessPad length="12" />
+      <Real name="duration" units="seconds" />
+      <ShortEnum name="fade function">
+        <Options regolithID="enum:falloff_function" CStyleName="falloff_function" pascalStyleName="FalloffFunction">
+          <Enum name="linear" CStyleName="linear" pascalStyleName="Linear" />
+          <Enum name="late" CStyleName="late" pascalStyleName="Late" />
+          <Enum name="very late" CStyleName="very_late" pascalStyleName="VeryLate" />
+          <Enum name="early" CStyleName="early" pascalStyleName="Early" />
+          <Enum name="very early" CStyleName="very_early" pascalStyleName="VeryEarly" />
+          <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+          <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+          <Enum name="one" CStyleName="one" pascalStyleName="One" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <UselessPad length="8" />
+      <RealFraction CStyleName="maximum_intensity" pascalStyleName="MaximumIntensity" name="maximum intensity" units="[0,1]" />
+      <UselessPad length="4" />
+      <RealArgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+      <RealFraction name="frequency" units="[0,1]" />
+      <Real name="duration" units="seconds" />
+      <ShortEnum name="fade function">
+        <OptionsXRef>enum:falloff_function</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <UselessPad length="8" />
+      <RealFraction name="frequency" units="[0,1]" />
+      <Real name="duration" units="seconds" />
+      <ShortEnum name="fade function">
+        <OptionsXRef>enum:falloff_function</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <UselessPad length="8" />
+      <UselessPad length="4" />
+      <UselessPad length="16" />
+      <Real name="duration" units="seconds" />
+      <ShortEnum name="fade function">
+        <OptionsXRef>enum:falloff_function</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Angle CStyleName="rotation" pascalStyleName="Rotation" name="rotation" units="degrees" />
+      <Real CStyleName="pushback" pascalStyleName="Pushback" name="pushback" units="world units" />
+      <RealBounds CStyleName="jitter" pascalStyleName="Jitter" name="jitter" units="world units" />
+      <UselessPad length="4" />
+      <UselessPad length="24" />
+      <Real name="duration" units="seconds" description="the effect will last for this duration." />
+      <ShortEnum CStyleName="falloff_function" pascalStyleName="FalloffFunction" name="falloff function" description="a function to envelope the effect's magnitude over time">
+        <OptionsXRef>enum:falloff_function</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Real CStyleName="random_translation" pascalStyleName="RandomTranslation" name="random translation" units="world units" description="random translation in all directions" />
+      <Angle CStyleName="random_rotation" pascalStyleName="RandomRotation" name="random rotation" units="degrees" description="random rotation in all directions" />
+      <UselessPad length="12" />
+      <ShortEnum CStyleName="wobble_function" pascalStyleName="WobbleFunction" name="wobble function" description="a function to perturb the effect's behavior over time">
+        <OptionsXRef>enum:scenario_function</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Real CStyleName="wobble_function_period" pascalStyleName="WobbleFunctionPeriod" name="wobble function period" units="seconds" />
+      <RealFraction CStyleName="wobble_weight" pascalStyleName="WobbleWeight" name="wobble weight" description="a value of 0.0 signifies that the wobble function has no effect; a value of 1.0 signifies that the effect will not be felt when the wobble function's value is zero." />
+      <UselessPad length="4" />
+      <UselessPad length="28" />
+      <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <UselessPad length="112" />
+      <Real CStyleName="forward_velocity" pascalStyleName="ForwardVelocity" name="forward velocity" units="world units per second" />
+      <Real CStyleName="forward_radius" pascalStyleName="ForwardRadius" name="forward radius" units="world units" />
+      <Real CStyleName="forward_exponent" pascalStyleName="ForwardExponent" name="forward exponent" />
+      <UselessPad length="12" />
+      <Real CStyleName="outward_velocity" pascalStyleName="OutwardVelocity" name="outward velocity" units="world units per second" />
+      <Real CStyleName="outward_radius" pascalStyleName="OutwardRadius" name="outward radius" units="world units" />
+      <Real CStyleName="outward_exponent" pascalStyleName="OutwardExponent" name="outward exponent" />
+      <UselessPad length="12" />
+      <Explanation name="damage" />
+      <ShortEnum CStyleName="side_effect" pascalStyleName="SideEffect" name="side effect">
+        <Options regolithID="enum:damage_effect" CStyleName="damage_effect" pascalStyleName="DamageEffect">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="harmless" CStyleName="harmless" pascalStyleName="Harmless" />
+          <Enum name="lethal to the unsuspecting" CStyleName="lethal_to_the_unsuspecting" pascalStyleName="LethalToTheUnsuspecting" />
+          <Enum name="emp" CStyleName="emp" pascalStyleName="Emp" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="category" pascalStyleName="Category" name="category">
+        <Options regolithID="enum:damage_effect_category" CStyleName="damage_effect_category" pascalStyleName="DamageEffectCategory">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="falling" CStyleName="falling" pascalStyleName="Falling" />
+          <Enum name="bullet" CStyleName="bullet" pascalStyleName="Bullet" />
+          <Enum name="grenade" CStyleName="grenade" pascalStyleName="Grenade" />
+          <Enum name="high explosive" CStyleName="high_explosive" pascalStyleName="HighExplosive" />
+          <Enum name="sniper" CStyleName="sniper" pascalStyleName="Sniper" />
+          <Enum name="melee" CStyleName="melee" pascalStyleName="Melee" />
+          <Enum name="flame" CStyleName="flame" pascalStyleName="Flame" />
+          <Enum name="mounted weapon" CStyleName="mounted_weapon" pascalStyleName="MountedWeapon" />
+          <Enum name="vehicle" CStyleName="vehicle" pascalStyleName="Vehicle" />
+          <Enum name="plasma" CStyleName="plasma" pascalStyleName="Plasma" />
+          <Enum name="needle" CStyleName="needle" pascalStyleName="Needle" />
+          <Enum name="shotgun" CStyleName="shotgun" pascalStyleName="Shotgun" />
+        </Options>
+      </ShortEnum>
+      <LongFlags name="flags">
+        <Options regolithID="enum:damage_effect_flags" CStyleName="damage_effect_flags" pascalStyleName="DamageEffectFlags">
+          <Bit name="does not hurt owner" CStyleName="does_not_hurt_owner_bit" pascalStyleName="DoesNotHurtOwnerBit" />
+          <Bit name="can cause headshots" CStyleName="can_cause_headshots_bit" pascalStyleName="CanCauseHeadshotsBit" />
+          <Bit name="pings resistant units" CStyleName="pings_resistant_units_bit" pascalStyleName="PingsResistantUnitsBit" />
+          <Bit name="does not hurt friends" CStyleName="does_not_hurt_friends_bit" pascalStyleName="DoesNotHurtFriendsBit" />
+          <Bit name="does not ping units" CStyleName="does_not_ping_units_bit" pascalStyleName="DoesNotPingUnitsBit" />
+          <Bit name="detonates explosives" CStyleName="detonates_explosives_bit" pascalStyleName="DetonatesExplosivesBit" />
+          <Bit name="only hurts shields" CStyleName="only_hurts_shields_bit" pascalStyleName="OnlyHurtsShieldsBit" />
+          <Bit name="causes flaming death" CStyleName="causes_flaming_death_bit" pascalStyleName="CausesFlamingDeathBit" />
+          <Bit name="damage indicators always point down" CStyleName="damage_indicators_always_point_down_bit" pascalStyleName="DamageIndicatorsAlwaysPointDownBit" />
+          <Bit name="skips shields" CStyleName="skips_shields_bit" pascalStyleName="SkipsShieldsBit" />
+          <Bit name="only hurts one infection form" CStyleName="only_hurts_one_infection_form_bit" pascalStyleName="OnlyHurtsOneInfectionFormBit" />
+          <Bit name="obsolete, was can cause multiplayer headshots" CStyleName="obsolete_was_can_cause_multiplayer_headshots_bit" pascalStyleName="ObsoleteWasCanCauseMultiplayerHeadshotsBit" />
+          <Bit name="infection form pop" CStyleName="infection_form_pop_bit" pascalStyleName="InfectionFormPopBit" />
+          <Bit name="ignore seat scale for dir. dmg" CStyleName="ignore_seat_scale_for_dir_dmg_bit" pascalStyleName="IgnoreSeatScaleForDirDmgBit" />
+          <Bit name="forces hard ping" CStyleName="forces_hard_ping_bit" pascalStyleName="ForcesHardPingBit" />
+          <Bit name="does not hurt players" CStyleName="does_not_hurt_players_bit" pascalStyleName="DoesNotHurtPlayersBit" />
+        </Options>
+      </LongFlags>
+      <Real CStyleName="aoe_core_radius" pascalStyleName="AoeCoreRadius" name="AOE core radius" units="world units" description="if this is area of effect damage" />
+      <Real CStyleName="damage_lower_bound" pascalStyleName="DamageLowerBound" name="damage lower bound" />
+      <RealBounds CStyleName="damage_upper_bound" pascalStyleName="DamageUpperBound" name="damage upper bound" />
+      <Angle CStyleName="dmg_inner_cone_angle" pascalStyleName="DmgInnerConeAngle" name="dmg inner cone angle" />
+      <Struct CStyleName="blah" pascalStyleName="Blah" name="blah">
+        <Layout regolithID="structure:damage_outer_cone_angle" tag="masd" internalName="damage_outer_cone_angle_struct" backingBlockInternalName="damage_outer_cone_angle_struct_block" name="damage_outer_cone_angle_struct">
+          <FieldSet version="0" sizeofValue="0" sizeofSource="0" />
+          <FieldSet version="1" sizeofValue="4" sizeofSource="sizeof(real)" isLatest="true">
+            <Angle CStyleName="dmg_outer_cone_angle" pascalStyleName="DmgOuterConeAngle" name="dmg outer cone angle" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Real CStyleName="active_camouflage_damage" pascalStyleName="ActiveCamouflageDamage" name="active camouflage damage" units="[0,1]" description="how much more visible this damage makes a player who is active camouflaged" />
+      <Real CStyleName="stun" pascalStyleName="Stun" name="stun" units="[0,1]" description="amount of stun added to damaged unit" />
+      <Real CStyleName="maximum_stun" pascalStyleName="MaximumStun" name="maximum stun" units="[0,1]" description="damaged unit's stun will never exceed this amount" />
+      <Real CStyleName="stun_time" pascalStyleName="StunTime" name="stun time" units="seconds" description="duration of stun due to this damage" />
+      <UselessPad length="4" />
+      <Real CStyleName="instantaneous_acceleration" pascalStyleName="InstantaneousAcceleration" name="instantaneous acceleration" units="[0,+inf]" />
+      <UselessPad length="4" />
+      <UselessPad length="4" />
+      <Real />
+      <Real />
+      <Real />
+      <UselessPad length="140" />
+      <StringId CStyleName="general_damage" pascalStyleName="GeneralDamage" name="general_damage" />
+      <StringId CStyleName="specific_damage" pascalStyleName="SpecificDamage" name="specific_damage" />
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="212" sizeofSource="sizeof(s_damage_effect_definition)" isLatest="true">
+      <RealBounds CStyleName="radius" pascalStyleName="Radius" name="radius" units="world units" />
+      <RealFraction CStyleName="cutoff_scale" pascalStyleName="CutoffScale" name="cutoff scale" units="[0,1]" />
+      <LongFlags name="flags">
+        <OptionsXRef>enum:damage_effect_distance_flags</OptionsXRef>
+      </LongFlags>
+      <Explanation name="damage" />
+      <ShortEnum CStyleName="side_effect" pascalStyleName="SideEffect" name="side effect">
+        <OptionsXRef>enum:damage_effect</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="category" pascalStyleName="Category" name="category">
+        <OptionsXRef>enum:damage_effect_category</OptionsXRef>
+      </ShortEnum>
+      <LongFlags name="flags">
+        <OptionsXRef>enum:damage_effect_flags</OptionsXRef>
+      </LongFlags>
+      <Real CStyleName="aoe_core_radius" pascalStyleName="AoeCoreRadius" name="AOE core radius" units="world units" description="if this is area of effect damage" />
+      <Real CStyleName="damage_lower_bound" pascalStyleName="DamageLowerBound" name="damage lower bound" />
+      <RealBounds CStyleName="damage_upper_bound" pascalStyleName="DamageUpperBound" name="damage upper bound" />
+      <Angle CStyleName="dmg_inner_cone_angle" pascalStyleName="DmgInnerConeAngle" name="dmg inner cone angle" />
+      <Struct CStyleName="blah" pascalStyleName="Blah" name="blah">
+        <LayoutXRef>structure:damage_outer_cone_angle</LayoutXRef>
+      </Struct>
+      <Real CStyleName="active_camouflage_damage" pascalStyleName="ActiveCamouflageDamage" name="active camouflage damage" units="[0,1]" description="how much more visible this damage makes a player who is active camouflaged" />
+      <Real CStyleName="stun" pascalStyleName="Stun" name="stun" units="[0,1]" description="amount of stun added to damaged unit" />
+      <Real CStyleName="maximum_stun" pascalStyleName="MaximumStun" name="maximum stun" units="[0,1]" description="damaged unit's stun will never exceed this amount" />
+      <Real CStyleName="stun_time" pascalStyleName="StunTime" name="stun time" units="seconds" description="duration of stun due to this damage" />
+      <UselessPad length="4" />
+      <Real CStyleName="instantaneous_acceleration" pascalStyleName="InstantaneousAcceleration" name="instantaneous acceleration" units="[0,+inf]" />
+      <UselessPad length="4" />
+      <UselessPad length="4" />
+      <Real CStyleName="rider_direct_damage_scale" pascalStyleName="RiderDirectDamageScale" name="rider direct damage scale" />
+      <Real CStyleName="rider_maximum_transfer_damage_scale" pascalStyleName="RiderMaximumTransferDamageScale" name="rider maximum transfer damage scale" />
+      <Real CStyleName="rider_minimum_transfer_damage_scale" pascalStyleName="RiderMinimumTransferDamageScale" name="rider minimum transfer damage scale" />
+      <UselessPad length="140" />
+      <StringId CStyleName="general_damage" pascalStyleName="GeneralDamage" name="general_damage" />
+      <StringId CStyleName="specific_damage" pascalStyleName="SpecificDamage" name="specific_damage" />
+      <Real CStyleName="ai_stun_radius" pascalStyleName="AiStunRadius" name="AI stun radius" units="world units" />
+      <RealBounds CStyleName="ai_stun_bounds" pascalStyleName="AiStunBounds" name="AI stun bounds" units="(0-1)" />
+      <Real CStyleName="shake_radius" pascalStyleName="ShakeRadius" name="shake radius" />
+      <Real CStyleName="emp_radius" pascalStyleName="EmpRadius" name="EMP radius" />
+      <Block CStyleName="player_responses" pascalStyleName="PlayerResponses" name="player responses" maxElementCount="2">
+        <Layout regolithID="block:damage_effect_player_response" internalName="damage_effect_player_response_block" name="damage_effect_player_response_block">
+          <FieldSet version="0" sizeofValue="88" sizeofSource="sizeof(s_damage_effect_player_response_definition)" isLatest="true">
+            <ShortEnum CStyleName="response_type" pascalStyleName="ResponseType" name="response type">
+              <Options regolithID="enum:player_damage_effect_response_type" CStyleName="player_damage_effect_response_type" pascalStyleName="PlayerDamageEffectResponseType">
+                <Enum name="shielded" CStyleName="shielded" pascalStyleName="Shielded" />
+                <Enum name="unshielded" CStyleName="unshielded" pascalStyleName="Unshielded" />
+                <Enum name="all" CStyleName="all" pascalStyleName="All" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <Explanation name="screen flash" description="There are seven screen flash types:&#xA;&#xA;NONE: DST'= DST&#xA;LIGHTEN: DST'= DST(1 - A) + C&#xA;DARKEN: DST'= DST(1 - A) - C&#xA;MAX: DST'= MAX[DST(1 - C), (C - A)(1-DST)]&#xA;MIN: DST'= MIN[DST(1 - C), (C + A)(1-DST)]&#xA;TINT: DST'= DST(1 - C) + (A*PIN[2C - 1, 0, 1] + A)(1-DST)&#xA;INVERT: DST'= DST(1 - C) + A)&#xA;&#xA;In the above equations C and A represent the color and alpha of the screen flash, DST represents the color in the framebuffer before the screen flash is applied, and DST' represents the color after the screen flash is applied." />
+            <Struct CStyleName="screen_flash" pascalStyleName="ScreenFlash" name="screen flash" readOnly="true">
+              <Layout regolithID="structure:screen_flash_definition" tag="SFDS" internalName="screen_flash_definition_struct" backingBlockInternalName="screen_flash_definition_struct_block" name="screen_flash_definition_struct">
+                <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(struct screen_flash_definition)" isLatest="true">
+                  <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+                    <OptionsXRef>enum:screen_effect_type</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="priority" pascalStyleName="Priority" name="priority">
+                    <OptionsXRef>enum:effect_priority</OptionsXRef>
+                  </ShortEnum>
+                  <UselessPad length="12" />
+                  <Real CStyleName="duration" pascalStyleName="Duration" name="duration" units="seconds" />
+                  <ShortEnum CStyleName="fade_function" pascalStyleName="FadeFunction" name="fade function">
+                    <OptionsXRef>enum:falloff_function</OptionsXRef>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <UselessPad length="8" />
+                  <RealFraction CStyleName="maximum_intensity" pascalStyleName="MaximumIntensity" name="maximum intensity" units="[0,1]" />
+                  <UselessPad length="4" />
+                  <RealArgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Explanation name="vibration" />
+            <Struct CStyleName="vibration" pascalStyleName="Vibration" name="vibration" readOnly="true">
+              <Layout regolithID="structure:vibration_definition" tag="RBDS" internalName="vibration_definition_struct" backingBlockInternalName="vibration_definition_struct_block" name="vibration_definition_struct">
+                <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(struct s_vibration_definition)" isLatest="true">
+                  <Explanation name="low frequency vibration" />
+                  <Struct CStyleName="low_frequency_vibration" pascalStyleName="LowFrequencyVibration" name="low frequency vibration">
+                    <Layout regolithID="structure:vibration_frequency_definition" tag="RFDS" internalName="vibration_frequency_definition_struct" backingBlockInternalName="vibration_frequency_definition_struct_block" name="vibration_frequency_definition_struct">
+                      <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_vibration_frequency_definition)" isLatest="true">
+                        <Real CStyleName="duration" pascalStyleName="Duration" name="duration" units="seconds" />
+                        <Custom name="whore function" tag="fned" />
+                        <Struct CStyleName="dirty_whore" pascalStyleName="DirtyWhore" name="dirty whore">
+                          <LayoutXRef>structure:mapping_function</LayoutXRef>
+                        </Struct>
+                        <UselessPad length="16" />
+                      </FieldSet>
+                    </Layout>
+                  </Struct>
+                  <Explanation name="high frequency vibration" />
+                  <Struct CStyleName="high_frequency_vibration" pascalStyleName="HighFrequencyVibration" name="high frequency vibration">
+                    <LayoutXRef>structure:vibration_frequency_definition</LayoutXRef>
+                  </Struct>
+                  <UselessPad length="16" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Explanation name="sound effect" />
+            <Struct CStyleName="sound_effect" pascalStyleName="SoundEffect" name="sound effect">
+              <Layout regolithID="structure:damage_effect_sound_effect_definition" tag="dsfx" internalName="damage_effect_sound_effect_definition" backingBlockInternalName="damage_effect_sound_effect_definition_block" name="damage_effect_sound_effect_definition">
+                <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_damage_effect_sound_effect_definition)" isLatest="true">
+                  <StringId CStyleName="effect_name" pascalStyleName="EffectName" name="effect name" />
+                  <Real CStyleName="duration" pascalStyleName="Duration" name="duration" units="seconds" />
+                  <Custom name="effect scale function" tag="fned" />
+                  <Struct CStyleName="effect_scale_function" pascalStyleName="EffectScaleFunction" name="effect scale function">
+                    <LayoutXRef>structure:mapping_function</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <UselessPad length="24" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="temporary camera impulse" />
+      <Real name="duration" units="seconds" />
+      <ShortEnum CStyleName="fade_function" pascalStyleName="FadeFunction" name="fade function">
+        <OptionsXRef>enum:falloff_function</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Angle CStyleName="rotation" pascalStyleName="Rotation" name="rotation" units="degrees" />
+      <Real CStyleName="pushback" pascalStyleName="Pushback" name="pushback" units="world units" />
+      <RealBounds CStyleName="jitter" pascalStyleName="Jitter" name="jitter" units="world units" />
+      <UselessPad length="4" />
+      <UselessPad length="24" />
+      <Explanation name="camera shaking" description="The wobble function and weight affects how the camera shake oscilates over time.&#xA;If the weight is one, then the wobble function completely scales the translational&#xA;and rotational magnitudes.  The less the weight, the less the effect wobble has.&#xA;If the wobble weight is 0 then wobble is completely ignored." />
+      <Real name="duration" units="seconds" description="the effect will last for this duration." />
+      <ShortEnum CStyleName="falloff_function" pascalStyleName="FalloffFunction" name="falloff function" description="a function to envelope the effect's magnitude over time">
+        <OptionsXRef>enum:falloff_function</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Real CStyleName="random_translation" pascalStyleName="RandomTranslation" name="random translation" units="world units" description="random translation in all directions" />
+      <Angle CStyleName="random_rotation" pascalStyleName="RandomRotation" name="random rotation" units="degrees" description="random rotation in all directions" />
+      <UselessPad length="12" />
+      <ShortEnum CStyleName="wobble_function" pascalStyleName="WobbleFunction" name="wobble function" description="a function to perturb the effect's behavior over time">
+        <OptionsXRef>enum:scenario_function</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Real CStyleName="wobble_function_period" pascalStyleName="WobbleFunctionPeriod" name="wobble function period" units="seconds" />
+      <RealFraction CStyleName="wobble_weight" pascalStyleName="WobbleWeight" name="wobble weight" description="a value of 0.0 signifies that the wobble function has no effect; a value of 1.0 signifies that the effect will not be felt when the wobble function's value is zero." />
+      <UselessPad length="4" />
+      <UselessPad length="20" />
+      <UselessPad length="8" />
+      <Explanation name="sound" />
+      <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <UselessPad length="112" />
+      <Explanation name="breaking effect" description="Controls particle velocities when a damage effect shatters a materal.&#xA;&#xA;All particles created within 'forward radius' will be kicked along the&#xA;damage direction with a speed equivalent to 'forward velocity' at the&#xA;epicenter of the damage and 0 at the outer radius.  'Forward exponent'&#xA;is used to modify the velocity scale.  A low exponent (like 0.5) means that&#xA;particles between the epicenter and the radius will be kicked out with a speed&#xA;closer to 'forward velocity' than if a higher exponent (like 2.0) was used&#xA;&#xA;The outward fields work in a similar way, except instead of kicking along the&#xA;damage direction, they get kick away from the damage epicenter." />
+      <Real CStyleName="forward_velocity" pascalStyleName="ForwardVelocity" name="forward velocity" units="world units per second" />
+      <Real CStyleName="forward_radius" pascalStyleName="ForwardRadius" name="forward radius" units="world units" />
+      <Real CStyleName="forward_exponent" pascalStyleName="ForwardExponent" name="forward exponent" />
+      <UselessPad length="12" />
+      <Real CStyleName="outward_velocity" pascalStyleName="OutwardVelocity" name="outward velocity" units="world units per second" />
+      <Real CStyleName="outward_radius" pascalStyleName="OutwardRadius" name="outward radius" units="world units" />
+      <Real CStyleName="outward_exponent" pascalStyleName="OutwardExponent" name="outward exponent" />
+      <UselessPad length="12" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

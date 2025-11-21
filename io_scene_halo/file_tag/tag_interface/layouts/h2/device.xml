@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="devi" parent="obje" name="device" version="1">
+  <Layout regolithID="block:device" internalName="device_block" name="device">
+    <FieldSet version="0" sizeofValue="152" sizeofSource="sizeof(struct _device_definition)" parentVersion="0" isLatest="true">
+      <Explanation name="$$$ DEVICE $$$" />
+      <LongFlags CStyleName="device_flags" pascalStyleName="DeviceFlags" name="flags">
+        <Options regolithID="enum:device_flags" CStyleName="device_flags" pascalStyleName="DeviceFlags">
+          <Bit name="position loops" CStyleName="position_loops_bit" pascalStyleName="PositionLoopsBit" />
+          <Bit name="(unused)" CStyleName="unused1_bit" pascalStyleName="Unused1Bit" />
+          <Bit name="allow interpolation" CStyleName="allow_interpolation_bit" pascalStyleName="AllowInterpolationBit" />
+        </Options>
+      </LongFlags>
+      <Real CStyleName="power_transition_time" pascalStyleName="PowerTransitionTime" name="power transition time" units="seconds" />
+      <Real CStyleName="power_acceleration_time" pascalStyleName="PowerAccelerationTime" name="power acceleration time" units="seconds" />
+      <Real CStyleName="position_transition_time" pascalStyleName="PositionTransitionTime" name="position transition time" units="seconds" />
+      <Real CStyleName="position_acceleration_time" pascalStyleName="PositionAccelerationTime" name="position acceleration time" units="seconds" />
+      <Real CStyleName="depowered_position_transition_time" pascalStyleName="DepoweredPositionTransitionTime" name="depowered position transition time" units="seconds" />
+      <Real CStyleName="depowered_position_acceleration_time" pascalStyleName="DepoweredPositionAccelerationTime" name="depowered position acceleration time" units="seconds" />
+      <WordFlags CStyleName="lightmap_flags" pascalStyleName="LightmapFlags" name="lightmap flags">
+        <Options regolithID="enum:device_lightmap_flags" CStyleName="device_lightmap_flags" pascalStyleName="DeviceLightmapFlags">
+          <Bit name="don't use in lightmap" CStyleName="dont_use_in_lightmap_bit" pascalStyleName="DontUseInLightmapBit" />
+          <Bit name="don't use in lightprobe" CStyleName="dont_use_in_lightprobe_bit" pascalStyleName="DontUseInLightprobeBit" />
+        </Options>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <UselessPad length="4" />
+      <TagReference CStyleName="open_up" pascalStyleName="OpenUp" name="open (up)">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="close_down" pascalStyleName="CloseDown" name="close (down)">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="opened" pascalStyleName="Opened" name="opened">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="closed" pascalStyleName="Closed" name="closed">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="depowered" pascalStyleName="Depowered" name="depowered">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="repowered" pascalStyleName="Repowered" name="repowered">
+        <tag />
+      </TagReference>
+      <Real CStyleName="delay_time" pascalStyleName="DelayTime" name="delay time" units="seconds" />
+      <UselessPad length="8" />
+      <TagReference CStyleName="delay_effect" pascalStyleName="DelayEffect" name="delay effect">
+        <tag />
+      </TagReference>
+      <Real CStyleName="automatic_activation_radius" pascalStyleName="AutomaticActivationRadius" name="automatic activation radius" units="world units" />
+      <UselessPad length="112" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -157,7 +157,7 @@ def parse_legacy_extra_cameras(QUA):
 
         QUA.extra_cameras.append(extra_camera)
 
-def parse_legacy_file(QUA):
+def parse_legacy_file(QUA, report):
     QUA.units = []
     QUA.scenery = []
     QUA.effects_scenery = []
@@ -377,7 +377,7 @@ def parse_type_segment_file(QUA):
 
         QUA.shots.append(shot)
 
-def parse_new_file(QUA):
+def parse_new_file(QUA, report):
     QUA.units = []
     QUA.scenery = []
     QUA.effects_scenery = []
@@ -395,7 +395,7 @@ def parse_new_file(QUA):
             parse_type_segment_file(QUA)
 
     elif QUA.version >= 3:
-        print("Not Implemented")
+        report({'WARNING'}, "QUA version 3 is not supported. Let General_101 know you found a file to look at.")
 
     if QUA.version >= 2:
         QUA.scene_name = QUA.next()
@@ -516,9 +516,9 @@ def parse_new_file(QUA):
             QUA.extra_cameras.append(extra_camera)
 
     elif QUA.version == 1:
-        print("Not Implemented")
+        report({'WARNING'}, "QUA version 1 is not supported. Let General_101 know you found a file to look at.")
 
-def parse_hr_file(QUA):
+def parse_hr_file(QUA, report):
     QUA.units = []
     QUA.scenery = []
     QUA.effects_scenery = []
@@ -649,16 +649,14 @@ def parse_hr_file(QUA):
             QUA.extra_cameras.append(extra_camera)
 
     elif QUA.version == 1:
-        print("Not Implemented")
+        report({'WARNING'}, "QUA version 1 is not supported. Let General_101 know you found a file to look at.")
 
 def process_file(game_title, QUA, report):
     if game_title == "halo3":
-        parse_legacy_file(QUA)
+        parse_legacy_file(QUA, report)
 
     elif game_title == "halor" or game_title == "halo4":
-        parse_new_file(QUA)
-
-
+        parse_new_file(QUA, report)
 
     if QUA.left() != 0: # is something wrong with the parser?
         report({'WARNING'}, "%s elements left after parse end" % QUA.left())

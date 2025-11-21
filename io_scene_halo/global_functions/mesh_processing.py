@@ -24,16 +24,30 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import io
+import os
 import bpy
 import bmesh
-import struct
+import copy
 
 from math import radians
+from enum import Flag, Enum, auto
 from mathutils import Vector, Matrix
 from ..global_functions import global_functions, shader_processing, mesh_processing
-from ..file_tag.h2.file_render_model.format import DetailLevelsFlags
+from ..file_tag.tag_interface import tag_interface, tag_common
+from ..file_tag.tag_interface.tag_definitions import h1, h2
 
+class PartFlags(Flag):
+    decalable = auto()
+    new_part_type = auto()
+    dislikes_photons = auto()
+    override_triangle_list = auto()
+    ignored_by_lightmapper = auto()
+
+class PropertyTypeEnum(Enum):
+    lightmap_resolution = 0
+    lightmap_power = auto()
+    lightmap_half_life = auto()
+    lightmap_diffuse_scale = auto()
 
 class Surface:
     def __init__(self, material_index=0, surface_normal=Vector(), vertices=None):
@@ -100,6 +114,11 @@ def get_shader_permutation(processed_name):
 
         else:
             break # We've hit a non number
+
+    if len(permutation_index) > 0:
+        permutation_index = int(permutation_index)
+    else:
+        permutation_index = 0
 
     return processed_name, permutation_index
 
@@ -347,10 +366,8 @@ def add_modifier(context, obj, triangulate_faces, edge_split_class, armature):
     if triangulate_faces:
         if not 'TRIANGULATE' in modifier_list:
             triangulate = obj.modifiers.new("Triangulate", type='TRIANGULATE')
-            try:
+            if bpy.app.version < (4, 1, 0):
                 triangulate.keep_custom_normals = True
-            except AttributeError:
-                print("Can't set keep custom normals for triangulate modifier. Blender version is newer or something went very wrong.")
 
     if edge_split_class and edge_split_class.is_enabled:
         if not 'EDGE_SPLIT' in modifier_list:
@@ -383,25 +400,38 @@ def get_color_version_check(file_type):
 
     return version
 
-def generate_marker(context, collection, game_version, game_title, file_version, filepath, ASSET, region_element_name, marker_group, armature, marker_obj, fix_rotations, empty_markers, is_intermediate):
+def generate_marker(context, collection, game_title, filepath, ASSET, region_element_name, marker_group, armature, marker_obj, fix_rotations, empty_markers, is_intermediate):
     parent_idx = -1
+    marker_region_index = -1
     if is_intermediate:
         parent_idx = marker_obj.parent
         marker_region_index = marker_obj.region
         radius = marker_obj.radius
 
     else:
-        parent_idx = marker_obj.node_index
+        parent_idx = marker_obj["node index"]
 
     marker_name = ""
     if game_title == 'halo1':
-        marker_name = marker_obj.name
+        if is_intermediate:
+            marker_name = marker_obj.name
+
+        else:
+            marker_name = marker_obj["name"]
+
     else:
         marker_name = marker_group
-        if not marker_obj.region_index == -1:
-            region_element = ASSET.regions[marker_obj.region_index]
-            permutation_element = region_element.permutations[marker_obj.permutation_index]
-            marker_name = "(%s %s)%s" % (permutation_element.name, region_element.name, marker_group)
+        if is_intermediate:
+            if not marker_obj.region_index == -1:
+                region_element = ASSET.regions[marker_obj.region_index]
+                permutation_element = region_element.permutations[marker_obj.permutation_index]
+                marker_name = "(%s %s)%s" % (permutation_element.name, region_element.name, marker_group)
+
+        else:
+            if not marker_obj["region index"] == -1:
+                region_element = ASSET["regions"][marker_obj["region index"]]
+                permutation_element = region_element["permutations"][marker_obj["permutation index"]]
+                marker_name = "(%s %s)%s" % (permutation_element["name"], region_element["name"], marker_group)
 
     object_name_prefix = '#%s' % marker_name
     marker_name_override = ""
@@ -410,10 +440,12 @@ def generate_marker(context, collection, game_version, game_title, file_version,
 
     if empty_markers:
         object_mesh = bpy.data.objects.new(object_name_prefix, None)
+        object_mesh.color = (1, 1, 1, 0)
 
     else:
         mesh = bpy.data.meshes.new(object_name_prefix)
         object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+        object_mesh.color = (1, 1, 1, 0)
 
     collection.objects.link(object_mesh)
 
@@ -438,24 +470,30 @@ def generate_marker(context, collection, game_version, game_title, file_version,
         bm.free()
 
     if game_title == "halo1":
-        region_name = None
+        region_name = ""
         if is_intermediate:
-            if not marker_region_index == -1:
+            if marker_region_index >= 0:
                 region_name = ASSET.regions[marker_region_index].name
+        else:
+            print(marker_region_index)
+            if marker_region_index >= 0:
+                region_name = ASSET["regions"][marker_region_index]["name"]
 
-        region_name = region_element_name
         if region_name == "__unnamed":
             region_name = "unnamed"
 
-        if not region_name == None:
-            if empty_markers:
-                object_mesh.ass_jms.marker_region = region_name
+        if empty_markers:
+            object_mesh.ass_jms.marker_region = region_name
 
-            else:
-                object_mesh.data.region_add(region_name)
+        else:
+            object_mesh.data.region_add(region_name)
 
+    bone_name = ""
     if not parent_idx == -1:
-        bone_name = ASSET.nodes[parent_idx].name
+        if is_intermediate:
+            bone_name = ASSET.nodes[parent_idx].name
+        else:
+            bone_name = ASSET["nodes"][parent_idx]["name"]
 
         object_mesh.parent = armature
         object_mesh.parent_type = "BONE"
@@ -464,12 +502,15 @@ def generate_marker(context, collection, game_version, game_title, file_version,
     else:
         object_mesh.parent = armature
 
-    matrix_translate = Matrix.Translation(marker_obj.translation)
-    matrix_rotation = marker_obj.rotation.to_matrix().to_4x4()
-
+    if is_intermediate:
+        matrix_translate = Matrix.Translation(marker_obj.translation)
+        matrix_rotation = marker_obj.rotation.to_matrix().to_4x4()
+    else:
+        matrix_translate = Matrix.Translation(Vector(marker_obj["translation"]) * 100)
+        matrix_rotation = global_functions.convert_quaternion(marker_obj["rotation"]).to_matrix().to_4x4()
     transform_matrix = matrix_translate @ matrix_rotation
     if not parent_idx == -1:
-        pose_bone = armature.pose.bones[ASSET.nodes[parent_idx].name]
+        pose_bone = armature.pose.bones[bone_name]
 
         if fix_rotations:
             transform_matrix = (pose_bone.matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')) @ transform_matrix
@@ -491,7 +532,8 @@ def generate_marker(context, collection, game_version, game_title, file_version,
     object_mesh.select_set(False)
     armature.select_set(False)
 
-def generate_mesh_object_retail(asset, object_vertices, object_triangles, object_name, collection, game_title, random_color_gen, armature, context):
+def generate_mesh_object_retail(asset, object_vertices, object_triangles, object_name, collection, game_title, random_color_gen, armature, context, report):
+    material_count = len(asset.materials)
     group_list = []
     ob_list = []
     if game_title == "halo1":
@@ -500,13 +542,58 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
                 group_list.append(region.name)
 
     else:
-        for mat in asset.materials:
-            current_region_permutation = global_functions.material_definition_helper(0, mat)
-            if not current_region_permutation in group_list:
-                group_list.append(current_region_permutation)
+        mat_indices = set()
+        for triangle in asset.triangles:
+            mat_index = triangle.material_index
+            group_name = "default default"
+            if mat_index >= 0 and mat_index not in mat_indices:
+                mat_indices.add(mat_index)
+                group_name = global_functions.material_definition_helper(0, asset.materials[mat_index])
 
-            if not "default default" in group_list:
-                group_list.append("default default")
+            if not group_name in group_list:
+                group_list.append(group_name)
+
+
+    shader_refs = []
+    for mat in asset.materials:
+        shader_tag_ref = None
+        if game_title == "halo1":
+            shader_tag_ref = shader_processing.find_h1_shader_tag(asset.filepath, mat.name)
+
+        elif game_title == "halo2":
+            shader_tag_ref = shader_processing.find_h2_shader_tag(asset.filepath, mat.name)
+
+        elif game_title == "halo3":
+            shader_tag_ref = shader_processing.find_h3_shader_tag(asset.filepath, mat.name)
+
+        shader_refs.append(shader_tag_ref)
+
+    asset_cache = None
+    if not game_title == "halo3":
+        asset_cache = {}
+
+        tag_groups = None
+        engine_tag = None
+        merged_defs = None
+        if game_title == "halo1":
+            output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h1_merged_output")
+            tag_groups = tag_common.h1_tag_groups
+            engine_tag = tag_interface.EngineTag.H1Latest.value
+            merged_defs = h1.generate_defs(tag_common.h1_defs_directory, output_dir)
+            tag_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path
+            
+        elif game_title == "halo2":
+            output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h2_merged_output")
+            tag_groups = tag_common.h2_tag_groups
+            engine_tag = tag_interface.EngineTag.H2Latest.value
+            merged_defs = h2.generate_defs(tag_common.h2_defs_directory, output_dir)
+            tag_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path
+        else:
+            print("%s is not supported." % game_title)
+
+        for shader_ref in shader_refs:
+            if shader_ref is not None:
+                tag_interface.generate_tag_dictionary(game_title, shader_ref, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache)
 
     for group_element in group_list:
         vertex_groups = []
@@ -553,6 +640,7 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
             mesh = bpy.data.meshes.new(object_region_name)
             mesh.from_pydata(verts, [], tris)
             object_mesh = bpy.data.objects.new(object_region_name, mesh)
+            object_mesh.color = (1, 1, 1, 0)
             ob_list.append(object_mesh)
             for tri_idx, poly in enumerate(mesh.polygons):
                 poly.use_smooth = True
@@ -597,53 +685,52 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
             for triangle_idx, triangle in enumerate(region_tris):
                 triangle_material_index = triangle.material_index
                 mat = None
-                if not triangle_material_index == -1:
-                    mat = asset.materials[triangle_material_index]
+                if 0 <= triangle_material_index < material_count:
+                    if game_title == "halo3":
+                        asset_mat = asset.materials[triangle_material_index]
+                        material_name = asset_mat.name
 
-                if game_title == "halo1":
-                    if asset.version >= 8198:
-                        region = triangle.region
-                        current_region_permutation = asset.regions[region].name
+                        mat = bpy.data.materials.get(material_name)
+                        if mat is None:
+                            mat = bpy.data.materials.new(name=material_name)
 
-                    else:
-                        region = asset.vertices[triangle.v0].region
-                        current_region_permutation = asset.regions[region].name
-
-                elif game_title == "halo2" or game_title == "halo3":
-                    current_region_permutation = global_functions.material_definition_helper(triangle_material_index, mat)
-
-                if not current_region_permutation in active_region_permutations:
-                    active_region_permutations.append(current_region_permutation)
-                    object_mesh.data.region_add(current_region_permutation)
-
-                if not triangle_material_index == -1:
-                    material_name = mat.name
-                    mat = bpy.data.materials.get(material_name)
-                    if mat is None:
-                        mat = bpy.data.materials.new(name=material_name)
-                        if game_title == "halo1":
-                            shader = shader_processing.find_h1_shader_tag(asset.filepath, material_name)
-                            if not shader == None:
-                                shader_processing.generate_h1_shader(mat, shader, 0, print)
-                            else:
-                                print("Halo 1 Shader tag returned as None. Something went terribly wrong")
-
-                        elif game_title == "halo2":
-                            shader = shader_processing.find_h2_shader_tag(asset.filepath, material_name)
-                            if not shader == None:
-                                shader_processing.generate_h2_shader(mat, shader, print)
-                            else:
-                                print("Halo 2 Shader tag returned as None. Something went terribly wrong")
-
-                        elif game_title == "halo3":
                             shader_path = shader_processing.find_h3_shader_tag(asset.filepath, material_name)
                             if not shader_path == None:
-                                shader_processing.generate_h3_shader(mat, shader_path, print)
-                            else:
-                                print("Halo 3 Shader path returned as None. Something went terribly wrong")
+                                shader_processing.generate_h3_shader(mat, shader_path, asset_cache, report)
 
-                        else:
-                            print("Game title is unsupported: %s" % game_title)
+                    else:
+                        shader_element = shader_refs[triangle_material_index]
+                        material_element = asset.materials[triangle_material_index]
+                        shader_group = ""
+                        shader_name = ""
+                        if shader_element:
+                            shader_group = shader_element["group name"]
+                            shader_name = shader_element["path"]
+
+                        permutation = 0
+                        material_name = material_element.name
+                        if game_title == "halo1":
+                            material_name, permutation = get_shader_permutation(material_element.name)
+
+                        SHAD_ASSET = asset_cache.get(shader_group, {}).get(shader_name)
+                        if SHAD_ASSET:
+                            material_name = material_element.name
+                            mat = SHAD_ASSET["blender_assets"].get(material_name)
+                            if not mat:
+                                mat = bpy.data.materials.new(name=material_name)
+                                SHAD_ASSET["blender_assets"][material_name] = mat
+                                if game_title == "halo1":
+                                    shader_processing.generate_h1_shader(mat, shader_element, permutation, asset_cache, report)
+
+                                elif game_title == "halo2":
+                                    shader_processing.generate_h2_shader(mat, shader_element, asset_cache, report)
+
+                        if not mat:
+                            material_name = material_element.name
+
+                            mat = bpy.data.materials.get(material_name)
+                            if not mat:
+                                mat = bpy.data.materials.new(name=material_name)
 
                     if not material_name in object_mesh.data.materials.keys():
                         object_mesh.data.materials.append(mat)
@@ -651,6 +738,28 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
                     mat.diffuse_color = random_color_gen.next()
                     material_index = object_mesh.data.materials.keys().index(material_name)
                     object_mesh.data.polygons[triangle_idx].material_index = material_index
+
+                if game_title == "halo1":
+                    if asset.version >= 8198:
+                        region = triangle.region
+
+                    else:
+                        region = asset.vertices[triangle.v0].region
+                    if region >= 0:
+                        current_region_permutation = asset.regions[region].name
+                    else:
+                        current_region_permutation = "unnamed"
+
+                elif game_title == "halo2" or game_title == "halo3":
+                    if triangle_material_index >= 0:
+                        material_element = asset.materials[triangle_material_index]
+                        current_region_permutation = global_functions.material_definition_helper(triangle_material_index, material_element)
+                    else:
+                        current_region_permutation = "default default"
+
+                if not current_region_permutation in active_region_permutations:
+                    active_region_permutations.append(current_region_permutation)
+                    object_mesh.data.region_add(current_region_permutation)
 
                 region_index = active_region_permutations.index(current_region_permutation)
                 region_attribute.data[triangle_idx].value = region_index + 1
@@ -677,7 +786,7 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
 
     return ob_list
 
-def generate_mesh_retail(context, asset, object_vertices, object_triangles, object_data, game_title, random_color_gen):
+def generate_mesh_retail(context, asset, object_vertices, object_triangles, object_data, game_title, random_color_gen, blender_mats, asset_cache, material_count, report):
     vertices = []
     triangles = []
     for tri_idx, triangle in enumerate(object_triangles):
@@ -694,8 +803,6 @@ def generate_mesh_retail(context, asset, object_vertices, object_triangles, obje
     vertex_normals = [vertex.normal for vertex in vertices]
 
     vertex_weights_sets = []
-    region_list = []
-
     object_data.from_pydata(positions, [], triangles)
     for poly in object_data.polygons:
         poly.use_smooth = True
@@ -715,6 +822,7 @@ def generate_mesh_retail(context, asset, object_vertices, object_triangles, obje
     for triangle_idx, triangle in enumerate(object_triangles):
         triangle_material_index = triangle.material_index
         ass_mat = None
+        mat = None
         if not triangle_material_index == -1:
             ass_mat = asset.materials[triangle_material_index]
 
@@ -728,55 +836,23 @@ def generate_mesh_retail(context, asset, object_vertices, object_triangles, obje
                 current_region_permutation = asset.regions[region].name
 
         elif game_title == "halo2" or game_title == "halo3":
-            current_region_permutation = global_functions.material_definition_helper(triangle_material_index, ass_mat)
+            if 0 <= triangle_material_index < material_count:
+                current_variant = ass_mat.variant
+                if not global_functions.string_empty_check(current_variant):
+                    if not current_variant in object_data.region_list.keys():
+                        object_data.region_add(current_variant)
 
-        if not current_region_permutation in region_list:
-            region_list.append(current_region_permutation)
+                    region_index = object_data.region_list.keys().index(current_variant) + 1
+                    region_attribute.data[triangle_idx].value = region_index
 
-        if not triangle_material_index == -1:
-            material_name = ass_mat.name
-
-            mat = bpy.data.materials.get(material_name)
-            if mat is None:
-                mat = bpy.data.materials.new(name=material_name)
-
-                ass_mat_name = ass_mat.name
-                if not global_functions.string_empty_check(ass_mat.asset_name):
-                    ass_mat_name = ass_mat.asset_name
-
-                if game_title == "halo1":
-                    shader = shader_processing.find_h1_shader_tag(asset.filepath, ass_mat_name)
-                    if not shader == None:
-                        shader_processing.generate_h1_shader(mat, shader, 0, print)
-                    else:
-                        print("Halo 1 Shader tag returned as None. Something went terribly wrong")
-
-                elif game_title == "halo2":
-                    shader = shader_processing.find_h2_shader_tag(asset.filepath, ass_mat_name)
-                    if not shader == None:
-                        shader_processing.generate_h2_shader(mat, shader, print)
-                    else:
-                        print("Halo 2 Shader tag returned as None. Something went terribly wrong")
-
-                elif game_title == "halo3":
-                    shader_path = shader_processing.find_h3_shader_tag(asset.filepath, ass_mat_name)
-                    if not shader_path == None:
-                        shader_processing.generate_h3_shader(mat, shader_path, print)
-                    else:
-                        print("Halo 3 Shader path returned as None. Something went terribly wrong")
-
-                else:
-                    print("Game title is unsupported: %s" % game_title)
-
-            if not mat in object_data.materials.values():
+        if 0 <= triangle_material_index < material_count:
+            mat = blender_mats[triangle_material_index]
+            if not mat.name in object_data.materials.keys():
                 object_data.materials.append(mat)
 
             mat.diffuse_color = random_color_gen.next()
-            material_index = object_data.materials.values().index(mat)
+            material_index = object_data.materials.keys().index(mat.name)
             object_data.polygons[triangle_idx].material_index = material_index
-
-        region_index = region_list.index(current_region_permutation)
-        region_attribute.data[triangle_idx].value = region_index + 1
 
         vertex_list = [object_vertices[triangle.v0], object_vertices[triangle.v1], object_vertices[triangle.v2]]
         for vertex_idx, vertex in enumerate(vertex_list):
@@ -808,7 +884,7 @@ def generate_mesh_retail(context, asset, object_vertices, object_triangles, obje
 
                 layer_color.data[loop_index].color = (color_r, color_g, color_b, color_a)
 
-    return vertex_weights_sets, region_list
+    return vertex_weights_sets
 
 def process_mesh_export_weights(vert, armature, original_geo, vertex_groups, joined_list, file_type, node_index_list=None):
     if len(vert.groups) != 0 and len(vert.groups) <= len(vertex_groups):
@@ -964,33 +1040,33 @@ def get_lod(lod_setting, game_version):
 
     return LOD_name
 
-def get_child_nodes(import_file_prerelease, import_file_main, parent_idx, file_type):
-    file_version = import_file_main.version
-    first_frame = import_file_main.transforms[0]
+def get_child_nodes(import_file, parent_idx, file_type):
+    file_version = import_file.version
+    first_frame = import_file.transforms[0]
 
     child_list = []
-    for child_idx, node in enumerate(import_file_main.nodes):
+    for child_idx, node in enumerate(import_file.nodes):
         if node.parent == parent_idx:
             child_distance = (Vector((0, 0, 0)) - first_frame[child_idx].translation).length
-            if file_version >= global_functions.get_version_matrix_check(file_type, None):
+            if file_version >= global_functions.get_version_matrix_check(file_type):
                 child_distance = (first_frame[parent_idx].translation - first_frame[child_idx].translation).length
 
             child_list.append(child_distance)
 
     return child_list
 
-def get_bone_distance(import_file_prerelease, import_file_main, current_idx, file_type):
+def get_bone_distance(import_file, current_idx, file_type):
     bone_distance = 0
-    file_version = import_file_main.version
-    first_frame = import_file_main.transforms[0]
+    file_version = import_file.version
+    first_frame = import_file.transforms[0]
 
-    child_list = get_child_nodes(import_file_prerelease, import_file_main, current_idx, file_type)
-    import_file_main_nodes = import_file_main.nodes
+    child_list = get_child_nodes(import_file, current_idx, file_type)
+    import_file_nodes = import_file.nodes
 
-    if len(child_list) == 0 and import_file_main_nodes[current_idx].parent and not import_file_main_nodes[current_idx].parent == -1:
+    if len(child_list) == 0 and import_file_nodes[current_idx].parent and not import_file_nodes[current_idx].parent == -1:
         bone_distance = (Vector((0, 0, 0)) - first_frame[current_idx].translation).length
-        if file_version >= global_functions.get_version_matrix_check(file_type, None):
-            bone_distance = (first_frame[import_file_main_nodes[current_idx].parent].translation - first_frame[current_idx].translation).length
+        if file_version >= global_functions.get_version_matrix_check(file_type):
+            bone_distance = (first_frame[import_file_nodes[current_idx].parent].translation - first_frame[current_idx].translation).length
 
     elif len(child_list) == 1:
         bone_distance = child_list[0]
@@ -1003,28 +1079,177 @@ def get_bone_distance(import_file_prerelease, import_file_main, current_idx, fil
 
     return bone_distance
 
-def get_mesh_data(ASSET, section_data, mesh, material_count, materials, random_color_gen, part_flags):
+def get_child_nodes_from_tags(nodes, parent_idx, file_type, file_version=8200):
+    child_list = []
+    for child_idx, node in enumerate(nodes):
+        if node["parent node"] == parent_idx:
+            child_position = Vector(nodes[child_idx]["default translation"]) * 100
+            child_distance = (Vector((0, 0, 0)) - child_position).length
+            if file_version >= global_functions.get_version_matrix_check(file_type):
+                child_distance = (Vector(nodes[parent_idx]["default translation"]) * 100 - child_position).length
+
+            child_list.append(child_distance)
+
+    return child_list
+
+def get_bone_distance_from_tags(nodes, current_idx, file_type, file_version=8200):
+    bone_distance = 0
+
+    child_list = get_child_nodes_from_tags(nodes, current_idx, file_type, file_version)
+    current_parent_idx = nodes[current_idx]["parent node"]
+    current_position = Vector(nodes[current_idx]["default translation"]) * 100
+    current_parent_position = Vector(nodes[current_parent_idx]["default translation"]) * 100
+    if len(child_list) == 0 and current_parent_idx is not None and not current_parent_idx == -1:
+        bone_distance = (Vector((0, 0, 0)) - current_position).length
+        if file_version >= global_functions.get_version_matrix_check(file_type):
+            bone_distance = (current_parent_position - current_position).length
+
+    elif len(child_list) == 1:
+        bone_distance = child_list[0]
+
+    elif len(child_list) > 1:
+        bone_distance = sum(child_list) / len(child_list)
+
+    if bone_distance < 1.0:
+        bone_distance = 1
+
+    return bone_distance
+
+def get_material(tag_element, asset_cache, game_title, shader_collection_dic=None):
+    mat = None
+
+    shader_tag = tag_element["shader"]
+    old_shader_tag = tag_element["old shader"]
+    shader_group = shader_tag["group name"]
+    shader_name = shader_tag["path"]
+    if global_functions.string_empty_check(shader_name):
+        shader_group = old_shader_tag["group name"]
+        shader_name = old_shader_tag["path"]
+
+    shader_directory = os.path.dirname(shader_name)
+    base_name = os.path.basename(shader_name)
+    has_collection = False
+    has_parameter = False
+
+    if shader_collection_dic:
+        collection_prefix = shader_collection_dic.get(shader_directory)
+        if not collection_prefix == None:
+            has_collection = True
+
+    lightmap_parameters = ""
+    for material_property in tag_element["properties"]:
+        property_enum = PropertyTypeEnum(material_property["type"]["value"])
+        property_value = material_property["real-value"]
+        if PropertyTypeEnum.lightmap_resolution == property_enum:
+            lightmap_parameters += " lm:%s" % property_value
+            has_parameter = True
+
+        elif PropertyTypeEnum.lightmap_power == property_enum:
+            lightmap_parameters += " lp:%s" % property_value
+            has_parameter = True
+
+        elif PropertyTypeEnum.lightmap_half_life == property_enum:
+            lightmap_parameters += " hl:%s" % property_value
+            has_parameter = True
+
+        elif PropertyTypeEnum.lightmap_diffuse_scale == property_enum:
+            lightmap_parameters += " ds:%s" % property_value
+            has_parameter = True
+
+    material_name = "invalid"
+    if not global_functions.string_empty_check(shader_name):
+        material_name = base_name
+
+    if has_collection:
+        material_name = "%s %s" % (collection_prefix, material_name)
+
+    if has_parameter:
+        material_name = "%s%s" % (material_name, lightmap_parameters)
+
+    SHAD_ASSET = asset_cache.get(shader_group, {}).get(shader_name)
+    mat = SHAD_ASSET["blender_assets"].get(material_name)
+
+    return mat
+
+def get_material_name(tag_element, asset_cache, game_title, shader_collection_dic=None):
+    mat = None
+
+    shader_tag = tag_element.shader
+    old_shader_tag = tag_element.old_shader
+    shader_group = shader_tag.tag_group
+    shader_name = shader_tag.name
+    if global_functions.string_empty_check(shader_name):
+        shader_group = old_shader_tag.tag_group
+        shader_name = old_shader_tag.name
+
+    shader_directory = os.path.dirname(shader_name)
+    base_name = os.path.basename(shader_name)
+    has_collection = False
+    has_parameter = False
+
+    if shader_collection_dic:
+        collection_prefix = shader_collection_dic.get(shader_directory)
+        if not collection_prefix == None:
+            has_collection = True
+
+    lightmap_parameters = ""
+    for material_property in tag_element.properties:
+        property_enum = PropertyTypeEnum(material_property.property_type)
+        property_value = material_property.real_value
+        if PropertyTypeEnum.lightmap_resolution == property_enum:
+            lightmap_parameters += " lm:%s" % property_value
+            has_parameter = True
+
+        elif PropertyTypeEnum.lightmap_power == property_enum:
+            lightmap_parameters += " lp:%s" % property_value
+            has_parameter = True
+
+        elif PropertyTypeEnum.lightmap_half_life == property_enum:
+            lightmap_parameters += " hl:%s" % property_value
+            has_parameter = True
+
+        elif PropertyTypeEnum.lightmap_diffuse_scale == property_enum:
+            lightmap_parameters += " ds:%s" % property_value
+            has_parameter = True
+
+    material_name = "invalid"
+    if not global_functions.string_empty_check(shader_name):
+        material_name = base_name
+
+    if has_collection:
+        material_name = "%s %s" % (collection_prefix, material_name)
+
+    if has_parameter:
+        material_name = "%s%s" % (material_name, lightmap_parameters)
+
+    SHAD_ASSET = asset_cache.get(shader_group, {}).get(shader_name)
+    mat = SHAD_ASSET["blender_assets"].get(material_name)
+
+    return mat
+
+def get_mesh_data(level_data, asset_cache, section_data, mesh, random_color_gen, shader_collection_dic):
+    material_count = len(level_data["materials"])
     for section_data in section_data:
         triangles = []
         triangle_mat_indices = []
-        vertices = [raw_vertex.position for raw_vertex in section_data.raw_vertices]
-        vertex_normals = [raw_vertex.normal for raw_vertex in section_data.raw_vertices]
-        for part_idx, part in enumerate(section_data.parts):
+        vertices = [Vector(raw_vertex["position"]) * 100 for raw_vertex in section_data["raw vertices"]]
+        vertex_normals = [Vector(raw_vertex["normal"]) for raw_vertex in section_data["raw vertices"]]
+        for part_idx, part in enumerate(section_data["parts"]):
             triangle_part = []
 
-            strip_length = part.strip_length
-            strip_start = part.strip_start_index
+            strip_length = part["strip length"]
+            strip_start = part["strip start index"]
 
-            triangle_indices = section_data.strip_indices[strip_start : (strip_start + strip_length)]
-            if part_flags.override_triangle_list in part_flags(part.flags):
+            triangle_indices = section_data["strip indices"][strip_start : (strip_start + strip_length)]
+            if PartFlags.override_triangle_list in PartFlags(part["flags"]):
                 triangle_length = int(len(triangle_indices) / 3)
                 for idx in range(triangle_length):
                     triangle_index = (idx * 3)
-                    v0 = section_data.strip_indices[strip_start + triangle_index]
-                    v1 = section_data.strip_indices[strip_start + triangle_index + 1]
-                    v2 = section_data.strip_indices[strip_start + triangle_index + 2]
+                    v0 = section_data["strip indices"][strip_start + triangle_index]["index"]
+                    v1 = section_data["strip indices"][strip_start + triangle_index + 1]["index"]
+                    v2 = section_data["strip indices"][strip_start + triangle_index + 2]["index"]
                     triangles.append((v0, v1, v2))
-                    triangle_mat_indices.append(part.material_index)
+                    triangle_mat_indices.append(part["material"])
 
             else:
                 index_count = len(triangle_indices)
@@ -1042,7 +1267,7 @@ def get_mesh_data(ASSET, section_data, mesh, material_count, materials, random_c
                         del triangle_part[triangle_part.index(reversed_triangle)]
 
                 for tri in triangle_part:
-                    triangle_mat_indices.append(part.material_index)
+                    triangle_mat_indices.append(part["material"])
                     triangles.append(tri)
 
         mesh.from_pydata(vertices, [], triangles)
@@ -1053,32 +1278,29 @@ def get_mesh_data(ASSET, section_data, mesh, material_count, materials, random_c
         for triangle_idx, triangle in enumerate(triangles):
             triangle_material_index = triangle_mat_indices[triangle_idx]
             if not triangle_material_index == -1 and triangle_material_index < material_count:
-                mat = ASSET.materials[triangle_material_index]
+                tag_element = level_data["materials"][triangle_material_index]
+                mat = get_material(tag_element, asset_cache, "halo2", shader_collection_dic)
 
-            if not triangle_material_index == -1:
-                if triangle_material_index < material_count:
-                    mat = materials[triangle_material_index]
+                if not mat in mesh.materials.values():
+                    mesh.materials.append(mat)
 
-                    if not mat in mesh.materials.values():
-                        mesh.materials.append(mat)
+                mat.diffuse_color = random_color_gen.next()
+                material_index = mesh.materials.values().index(mat)
+                mesh.polygons[triangle_idx].material_index = material_index
+            else:
+                material_name = "invalid"
+                mat = bpy.data.materials.get(material_name)
+                if mat is None:
+                    mat = bpy.data.materials.new(name=material_name)
 
-                    mat.diffuse_color = random_color_gen.next()
-                    material_index = mesh.materials.values().index(mat)
-                    mesh.polygons[triangle_idx].material_index = material_index
-                else:
-                    material_name = "invalid_material_%s" % triangle_material_index
-                    mat = bpy.data.materials.get(material_name)
-                    if mat is None:
-                        mat = bpy.data.materials.new(name=material_name)
+                if not mat in mesh.materials.values():
+                    mesh.materials.append(mat)
 
-                    if not mat in mesh.materials.values():
-                        mesh.materials.append(mat)
+                mat.diffuse_color = random_color_gen.next()
+                material_index = mesh.materials.values().index(mat)
+                mesh.polygons[triangle_idx].material_index = material_index
 
-                    mat.diffuse_color = random_color_gen.next()
-                    material_index = mesh.materials.values().index(mat)
-                    mesh.polygons[triangle_idx].material_index = material_index
-
-            vertex_list = [section_data.raw_vertices[triangle[0]], section_data.raw_vertices[triangle[1]], section_data.raw_vertices[triangle[2]]]
+            vertex_list = [section_data["raw vertices"][triangle[0]], section_data["raw vertices"][triangle[1]], section_data["raw vertices"][triangle[2]]]
             for vertex_idx, vertex in enumerate(vertex_list):
                 loop_index = (3 * triangle_idx) + vertex_idx
                 uv_name = "UVMap_Render"
@@ -1086,4 +1308,4 @@ def get_mesh_data(ASSET, section_data, mesh, material_count, materials, random_c
                 if layer_uv is None:
                     layer_uv = mesh.uv_layers.new(name=uv_name)
 
-                layer_uv.data[loop_index].uv = (vertex.texcoord[0], 1 - vertex.texcoord[1])
+                layer_uv.data[loop_index].uv = (vertex["texcoord"][0], 1 - vertex["texcoord"][1])

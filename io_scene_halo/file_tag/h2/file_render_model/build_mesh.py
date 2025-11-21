@@ -26,53 +26,96 @@
 
 import os
 import bpy
+import json
 import bmesh
 
+from enum import Flag, Enum, auto
+from mathutils import Matrix, Vector
+from ....file_tag.tag_interface import tag_interface, tag_common
 from ....global_functions import shader_processing, global_functions, mesh_processing
-from .format import PartFlags, GeometryClassificationEnum, PropertyTypeEnum
 
-def build_mesh_layout(context, import_file, geometry, current_region_permutation, armature, random_color_gen, materials):
+class PartFlags(Flag):
+    decalable = auto()
+    new_part_type = auto()
+    dislikes_photons = auto()
+    override_triangle_list = auto()
+    ignored_by_lightmapper = auto()
+
+class GeometryClassificationEnum(Enum):
+    worldspace = 0
+    rigid = auto()
+    rigid_boned = auto()
+    skinned = auto()
+    unsupported = auto()
+
+class PropertyTypeEnum(Enum):
+    lightmap_resolution = 0
+    lightmap_power = auto()
+    lightmap_half_life = auto()
+    lightmap_diffuse_scale = auto()
+
+def build_mesh(render_asset, geometry, armature, LOD, region_name, permutation_name, tag_ref, asset_cache, full_mesh, random_color_gen, simple_mesh, shader_collection_dic):
+    render_root = render_asset["Data"]
+
+    if region_name == "__unnamed":
+        region_name = "unnamed"
+
+    if permutation_name == "__base":
+        permutation_name = "base"
+
+    current_region_permutation = '%s %s %s' % (LOD, permutation_name, region_name)
+
     vertex_groups = []
     active_region_permutations = []
 
-    materials_count = len(import_file.materials)
-    full_mesh = bpy.data.meshes.new(current_region_permutation)
-    object_mesh = bpy.data.objects.new(current_region_permutation, full_mesh)
-    bm = bmesh.new()
+    materials_count = len(render_root["materials"])
+
+    if simple_mesh:
+        bm = bmesh.new()
+        bm.from_mesh(full_mesh)
+
+    else:
+        bm = bmesh.new()
+        full_mesh = bpy.data.meshes.new(current_region_permutation)
+        object_mesh = bpy.data.objects.new(current_region_permutation, full_mesh)
+        object_mesh.color = (1, 1, 1, 0)
+        object_mesh.parent = armature
+        mesh_processing.add_modifier(bpy.context, object_mesh, False, None, armature)
+
     vertex_weights_sets = []
-    for section_idx, section_data in enumerate(geometry.section_data):
+    for section_idx, section_data in enumerate(geometry["section data"]):
         mesh = bpy.data.meshes.new("%s_%s" % ("part", str(section_idx)))
 
         uses_node_map = False
-        node_map_count = len(section_data.node_map)
+        node_map_count = len(section_data["node map"])
         if node_map_count > 0:
             uses_node_map = True
 
         triangles = []
         triangle_mat_indices = []
-        vertices = [raw_vertex.position for raw_vertex in section_data.raw_vertices]
-        vertex_normals = [raw_vertex.normal for raw_vertex in section_data.raw_vertices]
-        for part_idx, part in enumerate(section_data.parts):
+        vertices = [Vector(raw_vertex["position"]) * 100 for raw_vertex in section_data["raw vertices"]]
+        vertex_normals = [Vector(raw_vertex["normal"]) for raw_vertex in section_data["raw vertices"]]
+        for part_idx, part in enumerate(section_data["parts"]):
             triangle_part = []
 
-            strip_length = part.strip_length
-            strip_start = part.strip_start_index
+            strip_length = part["strip length"]
+            strip_start = part["strip start index"]
 
-            triangle_indices = section_data.strip_indices[strip_start : (strip_start + strip_length)]
-            if PartFlags.override_triangle_list in PartFlags(part.flags):
+            triangle_indices = section_data["strip indices"][strip_start : (strip_start + strip_length)]
+            if PartFlags.override_triangle_list in PartFlags(part["flags"]):
                 triangle_length = int(len(triangle_indices) / 3)
                 for idx in range(triangle_length):
                     triangle_index = (idx * 3)
-                    v0 = section_data.strip_indices[strip_start + triangle_index]
-                    v1 = section_data.strip_indices[strip_start + triangle_index + 1]
-                    v2 = section_data.strip_indices[strip_start + triangle_index + 2]
+                    v0 = section_data["strip indices"][strip_start + triangle_index]["index"]
+                    v1 = section_data["strip indices"][strip_start + triangle_index + 1]["index"]
+                    v2 = section_data["strip indices"][strip_start + triangle_index + 2]["index"]
                     triangles.append((v0, v1, v2))
-                    triangle_mat_indices.append(part.material_index)
+                    triangle_mat_indices.append(part["material"])
 
             else:
                 index_count = len(triangle_indices)
                 for idx in range(index_count - 2):
-                    triangle_part.append([triangle_indices[idx], triangle_indices[idx + 1], triangle_indices[idx + 2]])
+                    triangle_part.append([triangle_indices[idx]["index"], triangle_indices[idx + 1]["index"], triangle_indices[idx + 2]["index"]])
 
                 # Fix face normals on uneven triangle indices
                 for triangle_idx in range(len(triangle_part)):
@@ -85,7 +128,7 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
                         del triangle_part[triangle_part.index(reversed_triangle)]
 
                 for tri in triangle_part:
-                    triangle_mat_indices.append(part.material_index)
+                    triangle_mat_indices.append(part["material"])
                     triangles.append(tri)
 
         mesh.from_pydata(vertices, [], triangles)
@@ -95,117 +138,115 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
         region_attribute = mesh.get_custom_attribute()
         mesh.normals_split_custom_set_from_vertices(vertex_normals)
 
-        for vertex_idx, vertex in enumerate(section_data.raw_vertices):
-            node_sets = []
-            if GeometryClassificationEnum.rigid == GeometryClassificationEnum(geometry.geometry_classification):
-                node_0_index = geometry.rigid_node
-            else:
-                node_0_index = vertex.node_index_0_new
+        for vertex_idx, vertex in enumerate(section_data["raw vertices"]):
+            if not simple_mesh:
+                node_sets = []
+                if GeometryClassificationEnum.rigid == GeometryClassificationEnum(geometry["global_geometry_classification_enum_definition"]["value"]):
+                    node_0_index = geometry["rigid node"]
+                else:
+                    node_0_index = vertex["node index (NEW)"]
+                    if uses_node_map:
+                        node_0_index = section_data["node map"][node_0_index]["node index"]
+
+                node_1_index = vertex["node index (NEW)_1"]
                 if uses_node_map:
-                    node_0_index = section_data.node_map[node_0_index]
+                    node_1_index = section_data["node map"][node_1_index]["node index"]
 
-            node_1_index = vertex.node_index_1_new
-            if uses_node_map:
-                node_1_index = section_data.node_map[node_1_index]
+                node_2_index = vertex["node index (NEW)_2"]
+                if uses_node_map:
+                    node_2_index = section_data["node map"][node_2_index]["node index"]
 
-            node_2_index = vertex.node_index_2_new
-            if uses_node_map:
-                node_2_index = section_data.node_map[node_2_index]
+                node_3_index = vertex["node index (NEW)_3"]
+                if uses_node_map:
+                    node_3_index = section_data["node map"][node_3_index]["node index"]
 
-            node_3_index = vertex.node_index_3_new
-            if uses_node_map:
-                node_3_index = section_data.node_map[node_3_index]
+                node_0_weight = vertex["node_weight"]
+                node_1_weight = vertex["node_weight_1"]
+                node_2_weight = vertex["node_weight_2"]
+                node_3_weight = vertex["node_weight_3"]
+                if not node_0_index == -1:
+                    group_name = render_root["nodes"][node_0_index]["name"]
+                    if not len(group_name) > 0:
+                        group_name = str(node_0_index)
 
-            node_0_weight = vertex.node_weight_0
-            node_1_weight = vertex.node_weight_1
-            node_2_weight = vertex.node_weight_2
-            node_3_weight = vertex.node_weight_3
-            if not node_0_index == -1:
-                group_name = import_file.nodes[node_0_index].name
-                if not len(group_name) > 0:
-                    group_name = str(node_0_index)
+                    if not node_0_index in vertex_groups:
+                        vertex_groups.append(node_0_index)
+                        object_mesh.vertex_groups.new(name = group_name)
 
-                if not node_0_index in vertex_groups:
-                    vertex_groups.append(node_0_index)
-                    object_mesh.vertex_groups.new(name = group_name)
+                    group_index = object_mesh.vertex_groups.keys().index(group_name)
+                    node_sets.append((group_index, vertex_idx, node_0_weight))
 
-                group_index = object_mesh.vertex_groups.keys().index(group_name)
-                node_sets.append((group_index, vertex_idx, node_0_weight))
+                if not node_1_index == -1:
+                    group_name = render_root["nodes"][node_1_index]["name"]
+                    if not len(group_name) > 0:
+                        group_name = str(node_1_index)
 
-            if not node_1_index == -1:
-                group_name = import_file.nodes[node_1_index].name
-                if not len(group_name) > 0:
-                    group_name = str(node_1_index)
+                    if not node_1_index in vertex_groups:
+                        vertex_groups.append(node_1_index)
+                        object_mesh.vertex_groups.new(name = group_name)
 
-                if not node_1_index in vertex_groups:
-                    vertex_groups.append(node_1_index)
-                    object_mesh.vertex_groups.new(name = group_name)
+                    group_index = object_mesh.vertex_groups.keys().index(group_name)
+                    node_sets.append((group_index, vertex_idx, node_1_weight))
 
-                group_index = object_mesh.vertex_groups.keys().index(group_name)
-                node_sets.append((group_index, vertex_idx, node_1_weight))
+                if not node_2_index == -1:
+                    group_name = render_root["nodes"][node_2_index]["name"]
+                    if len(group_name) == 0:
+                        group_name = str(node_2_index)
 
-            if not node_2_index == -1:
-                group_name = import_file.nodes[node_2_index].name
-                if len(group_name) == 0:
-                    group_name = str(node_2_index)
+                    if not node_2_index in vertex_groups:
+                        vertex_groups.append(node_2_index)
+                        object_mesh.vertex_groups.new(name = group_name)
 
-                if not node_2_index in vertex_groups:
-                    vertex_groups.append(node_2_index)
-                    object_mesh.vertex_groups.new(name = group_name)
+                    group_index = object_mesh.vertex_groups.keys().index(group_name)
+                    node_sets.append((group_index, vertex_idx, node_2_weight))
 
-                group_index = object_mesh.vertex_groups.keys().index(group_name)
-                node_sets.append((group_index, vertex_idx, node_2_weight))
+                if not node_3_index == -1:
+                    group_name = render_root["nodes"][node_3_index]["name"]
+                    if len(group_name) == 0:
+                        group_name = str(node_3_index)
 
-            if not node_3_index == -1:
-                group_name = import_file.nodes[node_3_index].name
-                if len(group_name) == 0:
-                    group_name = str(node_3_index)
+                    if not node_3_index in vertex_groups:
+                        vertex_groups.append(node_3_index)
+                        object_mesh.vertex_groups.new(name = group_name)
 
-                if not node_3_index in vertex_groups:
-                    vertex_groups.append(node_3_index)
-                    object_mesh.vertex_groups.new(name = group_name)
+                    group_index = object_mesh.vertex_groups.keys().index(group_name)
+                    node_sets.append((group_index, vertex_idx, node_3_weight))
 
-                group_index = object_mesh.vertex_groups.keys().index(group_name)
-                node_sets.append((group_index, vertex_idx, node_3_weight))
-
-            vertex_weights_sets.append(node_sets)
+                vertex_weights_sets.append(node_sets)
 
         for triangle_idx, triangle in enumerate(triangles):
             triangle_material_index = triangle_mat_indices[triangle_idx]
             if not triangle_material_index == -1 and triangle_material_index < materials_count:
-                mat = import_file.materials[triangle_material_index]
+                mat = render_root["materials"][triangle_material_index]
 
-            if not current_region_permutation in active_region_permutations:
-                active_region_permutations.append(current_region_permutation)
-                object_mesh.data.region_add(current_region_permutation)
+            if not simple_mesh:
+                if not current_region_permutation in active_region_permutations:
+                    active_region_permutations.append(current_region_permutation)
+                    object_mesh.data.region_add(current_region_permutation)
 
             if not triangle_material_index == -1:
                 if triangle_material_index < materials_count:
-                    mat = materials[triangle_material_index]
+                    tag_element = render_root["materials"][triangle_material_index]
+                    mat = mesh_processing.get_material(tag_element, asset_cache, "halo2", shader_collection_dic)
 
-                    if not mat in object_mesh.data.materials.values():
-                        object_mesh.data.materials.append(mat)
-
-                    mat.diffuse_color = random_color_gen.next()
-                    material_index = object_mesh.data.materials.values().index(mat)
-                    mesh.polygons[triangle_idx].material_index = material_index
                 else:
-                    material_name = "invalid_material_%s" % triangle_material_index
+                    material_name = "invalid"
                     mat = bpy.data.materials.get(material_name)
                     if mat is None:
                         mat = bpy.data.materials.new(name=material_name)
 
-                    if not mat in object_mesh.data.materials.values():
-                        object_mesh.data.materials.append(mat)
+                if not mat in full_mesh.materials.values():
+                    full_mesh.materials.append(mat)
 
-                    mat.diffuse_color = random_color_gen.next()
-                    material_index = object_mesh.data.materials.values().index(mat)
-                    mesh.polygons[triangle_idx].material_index = material_index
+                mat.diffuse_color = random_color_gen.next()
+                material_index = full_mesh.materials.values().index(mat)
+                mesh.polygons[triangle_idx].material_index = material_index
 
-            region_index = active_region_permutations.index(current_region_permutation)
-            region_attribute.data[triangle_idx].value = region_index + 1
+            if not simple_mesh:
+                region_index = active_region_permutations.index(current_region_permutation)
+                region_attribute.data[triangle_idx].value = region_index + 1
 
-            vertex_list = [section_data.raw_vertices[triangle[0]], section_data.raw_vertices[triangle[1]], section_data.raw_vertices[triangle[2]]]
+            vertex_list = [section_data["raw vertices"][triangle[0]], section_data["raw vertices"][triangle[1]], section_data["raw vertices"][triangle[2]]]
             for vertex_idx, vertex in enumerate(vertex_list):
                 loop_index = (3 * triangle_idx) + vertex_idx
                 uv_name = "UVMap_Render"
@@ -213,7 +254,7 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
                 if layer_uv is None:
                     layer_uv = mesh.uv_layers.new(name=uv_name)
 
-                layer_uv.data[loop_index].uv = (vertex.texcoord[0], 1 - vertex.texcoord[1])
+                layer_uv.data[loop_index].uv = (vertex["texcoord"][0], 1 - vertex["texcoord"][1])
 
         bm.from_mesh(mesh)
         bpy.data.meshes.remove(mesh)
@@ -221,38 +262,72 @@ def build_mesh_layout(context, import_file, geometry, current_region_permutation
     bm.to_mesh(full_mesh)
     bm.free()
 
-    bpy.context.collection.objects.link(object_mesh)
+    if not simple_mesh:
+        bpy.context.collection.objects.link(object_mesh)
+        for vertex_weights_set_idx, vertex_weights_set in enumerate(vertex_weights_sets):
+            for node_set in vertex_weights_set:
+                group_index = node_set[0]
+                vertex_index = node_set[1]
+                node_weight = node_set[2]
 
-    for vertex_weights_set_idx, vertex_weights_set in enumerate(vertex_weights_sets):
-        for node_set in vertex_weights_set:
-            group_index = node_set[0]
-            vertex_index = node_set[1]
-            node_weight = node_set[2]
-
-            object_mesh.vertex_groups[group_index].add([vertex_weights_set_idx], node_weight, 'ADD')
+                object_mesh.vertex_groups[group_index].add([vertex_weights_set_idx], node_weight, 'ADD')
 
     if (4, 1, 0) > bpy.app.version:
-        object_mesh.data.use_auto_smooth = True
+        full_mesh.use_auto_smooth = True
 
-    object_mesh.parent = armature
-    mesh_processing.add_modifier(context, object_mesh, False, None, armature)
+def get_variant_mesh(render_asset, armature, region, permutation, tag_ref, asset_cache, full_mesh, random_color_gen, simple_mesh, shader_collection_dic):
+    render_root = render_asset["Data"]
 
-def build_object(context, collection, geometry, armature, LOD, region_name, permutation_name, import_file, random_color_gen, materials):
-    if region_name == "__unnamed":
-        region_name = "unnamed"
+    l1_geometry_index = permutation["L1 section index"]
+    l2_geometry_index = permutation["L2 section index"]
+    l3_geometry_index = permutation["L3 section index"]
+    l4_geometry_index = permutation["L4 section index"]
+    l5_geometry_index = permutation["L5 section index"]
+    l6_geometry_index = permutation["L6 section index"]
 
-    if permutation_name == "__base":
-        permutation_name = "base"
+    visited_geo = set()
+    geometry_count = len(render_root["sections"])
+    if not l6_geometry_index == -1 and l6_geometry_index < geometry_count and not l6_geometry_index in visited_geo:
+        visited_geo.add(l6_geometry_index)
+        l6_geometry = render_root["sections"][l6_geometry_index]
+        build_mesh(render_asset, l6_geometry, armature, 'L6', region["name"], permutation["name"], tag_ref, asset_cache, full_mesh, random_color_gen, simple_mesh, shader_collection_dic)
 
-    object_name = '%s %s %s' % (LOD, permutation_name, region_name)
+    if not simple_mesh:
+        if not l5_geometry_index == -1 and l5_geometry_index < geometry_count and not l5_geometry_index in visited_geo:
+            visited_geo.add(l5_geometry_index)
+            l5_geometry = render_root["sections"][l5_geometry_index]
+            build_mesh(render_asset, l5_geometry, armature, 'L5', region["name"], permutation["name"], tag_ref, asset_cache, full_mesh, random_color_gen, simple_mesh, shader_collection_dic)
 
-    build_mesh_layout(context, import_file, geometry, object_name, armature, random_color_gen, materials)
+        if not l4_geometry_index == -1 and l4_geometry_index < geometry_count and not l4_geometry_index in visited_geo:
+            visited_geo.add(l4_geometry_index)
+            l4_geometry = render_root["sections"][l4_geometry_index]
+            build_mesh(render_asset, l4_geometry, armature, 'L4', region["name"], permutation["name"], tag_ref, asset_cache, full_mesh, random_color_gen, simple_mesh, shader_collection_dic)
 
-def get_geometry_layout(context, collection, import_file, armature, report):
+        if not l3_geometry_index == -1 and l3_geometry_index < geometry_count and not l3_geometry_index in visited_geo:
+            visited_geo.add(l3_geometry_index)
+            l3_geometry = render_root["sections"][l3_geometry_index]
+            build_mesh(render_asset, l3_geometry, armature, 'L3', region["name"], permutation["name"], tag_ref, asset_cache, full_mesh, random_color_gen, simple_mesh, shader_collection_dic)
+
+        if not l2_geometry_index == -1 and l2_geometry_index < geometry_count and not l2_geometry_index in visited_geo:
+            visited_geo.add(l2_geometry_index)
+            l2_geometry = render_root["sections"][l2_geometry_index]
+            build_mesh(render_asset, l2_geometry, armature, 'L2', region["name"], permutation["name"], tag_ref, asset_cache, full_mesh, random_color_gen, simple_mesh, shader_collection_dic)
+
+        if not l1_geometry_index == -1 and l1_geometry_index < geometry_count and not l1_geometry_index in visited_geo:
+            visited_geo.add(l1_geometry_index)
+            l1_geometry = render_root["sections"][l1_geometry_index]
+            build_mesh(render_asset, l1_geometry, armature, 'L1', region["name"], permutation["name"], tag_ref, asset_cache, full_mesh, random_color_gen, simple_mesh, shader_collection_dic)
+
+
+def get_geometry_layout(tag_ref, asset_cache, armature, report, simple_mesh=False, variant_element=None):
+    tag_groups = tag_common.h2_tag_groups
+    render_asset = tag_interface.get_disk_asset(tag_ref["path"], tag_groups.get(tag_ref["group name"]))
+    render_data = render_asset["Data"]
+
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
-    materials = []
     shader_collection_dic = {}
-    shader_collection_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, r"scenarios\shaders\shader_collections.shader_collections")
+    data_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path
+    shader_collection_path = os.path.join(data_path, r"scenarios\shaders\shader_collections.shader_collections")
     if os.path.isfile(shader_collection_path):
         shader_collection_file = open(shader_collection_path, "r")
         for line in shader_collection_file.readlines():
@@ -263,76 +338,105 @@ def get_geometry_layout(context, collection, import_file, armature, report):
                     path = split_result[1]
                     shader_collection_dic[path] = prefix
 
-    for material in import_file.materials:
-        material_path = material.shader.name
-        if global_functions.string_empty_check(material_path):
-            material_path = material.old_shader.name
+    for material in render_data["materials"]:
+        shader_tag = material["shader"]
+        old_shader_tag = material["old shader"]
+        shader_group = shader_tag["group name"]
+        shader_name = shader_tag["path"]
+        if global_functions.string_empty_check(shader_name):
+            shader_tag = old_shader_tag
+            shader_group = old_shader_tag["group name"]
+            shader_name = old_shader_tag["path"]
 
-        material_directory = os.path.dirname(material_path)
-        material_name = os.path.basename(material_path)
+        shader_directory = os.path.dirname(shader_name)
+        base_name = os.path.basename(shader_name)
+        has_collection = False
+        has_parameter = False
 
-        collection_prefix = shader_collection_dic.get(material_directory)
+        collection_prefix = shader_collection_dic.get(shader_directory)
         if not collection_prefix == None:
-            material_name = "%s %s" % (collection_prefix, material_name)
-        else:
-            print("Could not find a collection for: %s" % material_path)
+            has_collection = True
 
-        for material_property in material.properties:
-            property_enum = PropertyTypeEnum(material_property.property_type)
-            property_value = material_property.real_value
+        lightmap_parameters = ""
+        for material_property in material["properties"]:
+            property_enum = PropertyTypeEnum(material_property["type"]["value"])
+            property_value = material_property["real-value"]
             if PropertyTypeEnum.lightmap_resolution == property_enum:
-                material_name += " lm:%s" % property_value
+                lightmap_parameters += " lm:%s" % property_value
+                has_parameter = True
 
             elif PropertyTypeEnum.lightmap_power == property_enum:
-                material_name += " lp:%s" % property_value
+                lightmap_parameters += " lp:%s" % property_value
+                has_parameter = True
 
             elif PropertyTypeEnum.lightmap_half_life == property_enum:
-                material_name += " hl:%s" % property_value
+                lightmap_parameters += " hl:%s" % property_value
+                has_parameter = True
 
             elif PropertyTypeEnum.lightmap_diffuse_scale == property_enum:
-                material_name += " ds:%s" % property_value
+                lightmap_parameters += " ds:%s" % property_value
+                has_parameter = True
 
-        mat = bpy.data.materials.new(name=material_name)
-        shader_processing.generate_h2_shader(mat, material.shader, report)
+        SHAD_ASSET = asset_cache.get(shader_group, {}).get(shader_name)
+        if SHAD_ASSET is not None:
+            material_name = base_name
+            if has_collection:
+                material_name = "%s %s" % (collection_prefix, material_name)
 
-        materials.append(mat)
+            if has_parameter:
+                material_name = "%s%s" % (material_name, lightmap_parameters)
 
-    for region in import_file.regions:
-        for permutation in region.permutations:
-            l1_geometry_index = permutation.l1_section_index
-            l2_geometry_index = permutation.l2_section_index
-            l3_geometry_index = permutation.l3_section_index
-            l4_geometry_index = permutation.l4_section_index
-            l5_geometry_index = permutation.l5_section_index
-            l6_geometry_index = permutation.l6_section_index
+            mat = SHAD_ASSET["blender_assets"].get(material_name)
+            if not mat:
+                mat = bpy.data.materials.new(name=material_name)
+                shader_processing.generate_h2_shader(mat, shader_tag, asset_cache, report)
+                SHAD_ASSET["blender_assets"][material_name] = mat
 
-            geometry_count = len(import_file.sections)
-            if not l6_geometry_index == -1 and l6_geometry_index < geometry_count and not import_file.sections[l6_geometry_index].visited:
-                import_file.sections[l6_geometry_index].visited = True
-                l6_geometry = import_file.sections[l6_geometry_index]
-                build_object(context, collection, l6_geometry, armature, 'L6', region.name, permutation.name, import_file, random_color_gen, materials)
+        else:
+            material_name = "invalid"
+            if global_functions.string_empty_check(shader_name):
+                material_name = os.path.basename(shader_name)
 
-            if not l5_geometry_index == -1 and l5_geometry_index < geometry_count and not import_file.sections[l5_geometry_index].visited:
-                import_file.sections[l5_geometry_index].visited = True
-                l5_geometry = import_file.sections[l5_geometry_index]
-                build_object(context, collection, l5_geometry, armature, 'L5', region.name, permutation.name, import_file, random_color_gen, materials)
+            if has_collection:
+                material_name = "%s %s" % (collection_prefix, material_name)
 
-            if not l4_geometry_index == -1 and l4_geometry_index < geometry_count and not import_file.sections[l4_geometry_index].visited:
-                import_file.sections[l4_geometry_index].visited = True
-                l4_geometry = import_file.sections[l4_geometry_index]
-                build_object(context, collection, l4_geometry, armature, 'L4', region.name, permutation.name, import_file, random_color_gen, materials)
+            if has_parameter:
+                material_name = "%s%s" % (material_name, lightmap_parameters)
 
-            if not l3_geometry_index == -1 and l3_geometry_index < geometry_count and not import_file.sections[l3_geometry_index].visited:
-                import_file.sections[l3_geometry_index].visited = True
-                l3_geometry = import_file.sections[l3_geometry_index]
-                build_object(context, collection, l3_geometry, armature, 'L3', region.name, permutation.name, import_file, random_color_gen, materials)
+            mat = bpy.data.materials.get(material_name)
+            if not mat:
+                mat = bpy.data.materials.new(name=material_name)
 
-            if not l2_geometry_index == -1 and l2_geometry_index < geometry_count and not import_file.sections[l2_geometry_index].visited:
-                import_file.sections[l2_geometry_index].visited = True
-                l2_geometry = import_file.sections[l2_geometry_index]
-                build_object(context, collection, l2_geometry, armature, 'L2', region.name, permutation.name, import_file, random_color_gen, materials)
+    full_mesh = None
+    if simple_mesh:
+        object_name = os.path.basename(tag_ref["path"])
+        full_mesh = bpy.data.meshes.new(object_name)
+        
+        if variant_element is not None:
+            asset_cache[tag_ref["group name"]][tag_ref["path"]]["blender_assets"][variant_element["name"]] = full_mesh
+        else:
+            asset_cache[tag_ref["group name"]][tag_ref["path"]]["blender_assets"]["blender_asset"] = full_mesh
 
-            if not l1_geometry_index == -1 and l1_geometry_index < geometry_count and not import_file.sections[l1_geometry_index].visited:
-                import_file.sections[l1_geometry_index].visited = True
-                l1_geometry = import_file.sections[l1_geometry_index]
-                build_object(context, collection, l1_geometry, armature, 'L1', region.name, permutation.name, import_file, random_color_gen, materials)
+    if variant_element:
+        for variant_region in variant_element["regions"]:
+            region_element = None
+            for region in render_data["regions"]:
+                if region["name"] == variant_region["region name"]:
+                    region_element = region
+                    break
+
+            if region_element:
+                for variant_permutation in variant_region["permutations"]:
+                    permutation_element = None
+                    for permutation in region_element["permutations"]:
+                        if permutation["name"] == variant_permutation["permutation name"]:
+                            permutation_element = permutation
+                            break
+
+                    if permutation_element:
+                        get_variant_mesh(render_asset, armature, region_element, permutation_element, tag_ref, asset_cache, full_mesh, random_color_gen, simple_mesh, shader_collection_dic)
+                        break  
+    else:
+        for region in render_data["regions"]:
+            for permutation in region["permutations"]:
+                get_variant_mesh(render_asset, armature, region, permutation, tag_ref, asset_cache, full_mesh, random_color_gen, simple_mesh, shader_collection_dic)

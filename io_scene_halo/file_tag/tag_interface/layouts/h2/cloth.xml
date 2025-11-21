@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="clwd" name="cloth" version="0">
+  <Layout regolithID="block:cloth" internalName="cloth_block" name="cloth">
+    <FieldSet version="0" sizeofValue="132" sizeofSource="sizeof(cloth_definition)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:cloth_flags" CStyleName="cloth_flags" pascalStyleName="ClothFlags">
+          <Bit name="Doesn't use wind" CStyleName="doesnt_use_wind_bit" pascalStyleName="DoesntUseWindBit" />
+          <Bit name="Uses grid attach top" CStyleName="uses_grid_attach_top_bit" pascalStyleName="UsesGridAttachTopBit" />
+        </Options>
+      </LongFlags>
+      <StringId CStyleName="marker_attachment_name" pascalStyleName="MarkerAttachmentName" name="marker attachment name" />
+      <TagReference CStyleName="shader" pascalStyleName="Shader" name="Shader">
+        <tag>shad</tag>
+      </TagReference>
+      <Explanation name="Default cloth vertices" description="if not importing from a render model, type a grid size" />
+      <ShortInteger CStyleName="grid_x_dimension" pascalStyleName="GridXDimension" name="grid x dimension" />
+      <ShortInteger CStyleName="grid_y_dimension" pascalStyleName="GridYDimension" name="grid y dimension" />
+      <Real CStyleName="grid_spacing_x" pascalStyleName="GridSpacingX" name="grid spacing x" />
+      <Real CStyleName="grid_spacing_y" pascalStyleName="GridSpacingY" name="grid spacing y" />
+      <Explanation name="Cloth Properties" />
+      <Struct CStyleName="properties" pascalStyleName="Properties" name="properties">
+        <Layout regolithID="structure:cloth_properties" Name="cloth properties" tag="clpr" internalName="cloth_properties" backingBlockInternalName="cloth_properties_block">
+          <FieldSet version="0" sizeofValue="48" sizeofSource="sizeof(struct cloth_properties)" isLatest="true">
+            <ShortEnum CStyleName="integration_type" pascalStyleName="IntegrationType" name="Integration type" readOnly="true">
+              <Options regolithID="enum:cloth_integration_type" CStyleName="cloth_integration_type" pascalStyleName="ClothIntegrationType">
+                <Enum name="verlet" CStyleName="verlet" pascalStyleName="Verlet" />
+              </Options>
+            </ShortEnum>
+            <ShortInteger CStyleName="number_iterations" pascalStyleName="NumberIterations" name="Number iterations" description="[1-8] sug 1" />
+            <Real CStyleName="weight" pascalStyleName="Weight" name="weight" description="[-10.0 - 10.0] sug 1.0" />
+            <Real CStyleName="drag" pascalStyleName="Drag" name="drag" description="[0.0 - 0.5] sug 0.07" />
+            <Real CStyleName="wind_scale" pascalStyleName="WindScale" name="wind_scale" description="[0.0 - 3.0] sug 1.0" />
+            <Real CStyleName="wind_flappiness_scale" pascalStyleName="WindFlappinessScale" name="wind_flappiness_scale" description="[0.0 - 1.0] sug 0.75" />
+            <Real CStyleName="longest_rod" pascalStyleName="LongestRod" name="longest_rod" description="[1.0 - 10.0] sug 3.5" />
+            <Pad sizeOfSource="6*sizeof(real)" length="24" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Import or grid data" />
+      <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" readOnly="true" maxElementCount="128" maxElementCountSource="k_maximum_vertices_per_cloth">
+        <Layout regolithID="block:cloth_vertices" internalName="cloth_vertices_block" name="cloth_vertices_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(cloth_vertex_definition)" isLatest="true">
+            <RealPoint3D CStyleName="initial_position" pascalStyleName="InitialPosition" name="initial position" readOnly="true" />
+            <RealVector2D CStyleName="uv" pascalStyleName="Uv" name="uv" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="indices" pascalStyleName="Indices" name="indices" readOnly="true" maxElementCount="768" maxElementCountSource="k_maximum_indices_per_cloth">
+        <Layout regolithID="block:cloth_indices" internalName="cloth_indices_block" name="cloth_indices_block">
+          <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(cloth_index_definition)" isLatest="true">
+            <ShortInteger CStyleName="index" pascalStyleName="Index" name="index" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="strip_indices" pascalStyleName="StripIndices" name="strip indices" readOnly="true" maxElementCount="768" maxElementCountSource="k_maximum_indices_per_cloth">
+        <LayoutXRef>block:cloth_indices</LayoutXRef>
+      </Block>
+      <Block CStyleName="links" pascalStyleName="Links" name="links" readOnly="true" maxElementCount="640" maxElementCountSource="k_maximum_links_per_cloth">
+        <Layout regolithID="block:cloth_links" internalName="cloth_links_block" name="cloth_links_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(cloth_link_definition)" isLatest="true">
+            <LongInteger CStyleName="attachment_bits" pascalStyleName="AttachmentBits" name="attachment bits" readOnly="true" />
+            <ShortInteger CStyleName="index1" pascalStyleName="Index1" name="index1" readOnly="true" />
+            <ShortInteger CStyleName="index2" pascalStyleName="Index2" name="index2" readOnly="true" />
+            <Real CStyleName="default_distance" pascalStyleName="DefaultDistance" name="default_distance" readOnly="true" />
+            <Real CStyleName="damping_multiplier" pascalStyleName="DampingMultiplier" name="damping_multiplier" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

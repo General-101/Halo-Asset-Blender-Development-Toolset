@@ -27,232 +27,115 @@
 import os
 import bpy
 
-from ..global_functions import tag_format
+from .build_scene import build_mesh
+from .build_scene import build_physics
+from .build_scene import build_animations
+from .build_scene import build_collision
+from .build_scene import build_bsp
+from .build_scene import build_lightmap
+from .build_scene import build_scenario
+from .build_scene import build_camera_track
+from .build_scene import build_shader
 
-from .build_scene import build_mesh as build_scene_model
-from .build_scene import build_physics as build_scene_physics
-from .build_scene import build_animations as build_scene_animation
-from .build_scene import build_collision as build_scene_collision
-from .build_scene import build_bsp as build_scene_level
-from .build_scene import build_lightmap as build_scene_lightmap
-from .build_scene import build_scenario as build_scenario
-from .build_scene import build_camera_track as build_camera_track
+from ..global_functions import global_functions
+from ..file_tag.tag_interface.tag_definitions import h1, h2
+from ..file_tag.tag_interface import tag_interface, tag_common
 
-from .h1.file_model.process_file import process_file as process_mode
-from .h1.file_gbxmodel.process_file import process_file as process_mod2
-from .h2.file_render_model.process_file import process_file as process_h2_mode
-
-from .h1.file_model_collision_geometry.process_file import process_file as process_collision
-from .h2.file_collision_model.process_file import process_file as process_h2_collision
-
-from .h1.file_physics.process_file import process_file as process_physics
-from .h1.file_model_animations.process_file import process_file as process_h1_animation
-
-from .h1.file_scenario_structure_bsp.process_file import process_file as process_level
-from .h2.file_scenario_structure_bsp.process_file import process_file as process_h2_level
-from .h2.file_scenario_structure_lightmap.process_file import process_file as process_h2_lightmap
-
-from .h1.file_scenario.process_file import process_file as process_h1_scenario
-from .h2.file_scenario.process_file import process_file as process_h2_scenario
-
-from .h1.file_camera_track.process_file import process_file as process_camera_track
-from .h2.file_camera_track.process_file import process_file as process_h2_camera_track
-
-from ..file_tag.h1.file_shader_environment.process_file import process_file as process_shader_environment
-from ..file_tag.h1.file_shader_model.process_file import process_file as process_shader_model
-from ..file_tag.h1.file_shader_transparent_chicago.process_file import process_file as process_shader_transparent_chicago
-from ..file_tag.h1.file_shader_transparent_chicago_extended.process_file import process_file as process_shader_transparent_chicago_extended
-from ..file_tag.h1.file_shader_transparent_generic.process_file import process_file as process_shader_transparent_generic
-from ..file_tag.h1.file_shader_transparent_glass.process_file import process_file as process_shader_transparent_glass
-from ..file_tag.h1.file_shader_transparent_meter.process_file import process_file as process_shader_transparent_meter
-from ..file_tag.h1.file_shader_transparent_plasma.process_file import process_file as process_shader_transparent_plasma
-from ..file_tag.h1.file_shader_transparent_water.process_file import process_file as process_shader_transparent_water
-
-from ..global_functions.shader_processing import generate_shader_transparent_glass
-from ..global_functions.shader_processing import generate_shader_transparent_meter
-from ..global_functions.shader_generation.shader_environment import generate_shader_environment
-from ..global_functions.shader_generation.shader_model import generate_shader_model
 
 def load_file(context, file_path, game_title, fix_rotations, empty_markers, report):
-    tag_name = os.path.basename(file_path).rsplit(".", 1)[0]
-    input_stream = open(file_path, "rb")
-    if tag_format.check_file_size(input_stream) < 64: # Size of the header for all tags
-        input_stream.close()
-        report({'ERROR'}, "File size does not meet the minimum amount required. File is either not a tag or corrupted")
+    with open(file_path, 'rb') as input_stream:
+        asset_cache = {}
 
-        return {'CANCELLED'}
+        if game_title == "auto":
+            valid_header, tag_group, checksum, engine_tag = tag_interface.check_header(input_stream)
+            if engine_tag == "blam":
+                game_title = "halo1"
+            else:
+                game_title = "halo2"
 
-    if game_title == "auto":
-        tag_group, group_is_valid, engine_tag = tag_format.check_group(input_stream, True)
-        if engine_tag == "blam":
-            game_title = "halo1"
-        else:
-            game_title = "halo2"
-
-    is_big_endian = True
-    if not game_title == "halo1":
-        is_big_endian = False
-
-    tag_group, group_is_valid, engine_tag = tag_format.check_group(input_stream, is_big_endian)
-    if not group_is_valid:
-        input_stream.close()
-        print(file_path)
-        print(tag_group)
-        report({'ERROR'}, "File does not have a valid tag class. Make sure you are importing a tag supported by the toolset")
-
-        return {'CANCELLED'}
-
-    if tag_group == "mode" or tag_group == "mod2":
-        build_scene = build_scene_model
+        tag_groups = None
+        tag_extensions = None
+        engine_tag = None
+        merged_defs = None
+        tags_directory = ""
+        
         if game_title == "halo1":
-            if tag_group == "mode":
-                ASSET = process_mode(input_stream, report)
+            output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h1_merged_output")
+            tag_groups = tag_common.h1_tag_groups
+            tag_extensions = tag_common.h1_tag_extensions
+            engine_tag = tag_interface.EngineTag.H1Latest.value
+            merged_defs = h1.generate_defs(tag_common.h1_defs_directory, output_dir)
+            tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path
+            
+        elif game_title == "halo2":
+            output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h2_merged_output")
+            tag_groups = tag_common.h2_tag_groups
+            tag_extensions = tag_common.h2_tag_extensions
+            engine_tag = tag_interface.EngineTag.H2Latest.value
+            merged_defs = h2.generate_defs(tag_common.h2_defs_directory, output_dir)
+            tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path
+        else:
+            print("%s is not supported." % game_title)
+
+        if not global_functions.string_empty_check(tags_directory):
+            result = file_path.split(tags_directory, 1)
+            if len(result) > 1:
+                local_path, tag_extension = result[1].rsplit(".", 1)
+                tag_group = tag_extensions.get(tag_extension)
+                tag_ref = {"group name": tag_group, "path": local_path}
+
+                tag_interface.generate_tag_dictionary(game_title, tag_ref, tags_directory, tag_groups, engine_tag, merged_defs, asset_cache)
+
+                context.scene.halo.game_title = game_title
+                
+                if game_title == "halo1":
+                    shader_groups = ("senv", "soso", "schi", "scex", "sotr", "sgla", "smet", "spla", "swat")
+
+                elif game_title == "halo2":
+                    shader_groups = ("shad")
+
+                else:
+                    input_stream.close()
+                    report({'ERROR'}, "Not implemented")
+
+                    return {'CANCELLED'}
+
+                build_scene = None
+                if tag_group == "mode" or tag_group == "mod2":
+                    build_scene = build_mesh
+
+                elif tag_group == "coll":
+                    build_scene = build_collision
+
+                elif tag_group == "phys":
+                    build_scene = build_physics
+
+                elif tag_group == "antr":
+                    build_scene = build_animations
+
+                elif tag_group == "sbsp":
+                    build_scene = build_bsp
+
+                elif tag_group == "ltmp":
+                    build_scene = build_lightmap
+
+                elif tag_group == "scnr":
+                    context.scene.tag_scenario.scenario_path = file_path
+                    build_scene = build_scenario
+
+                elif tag_group == "trak":
+                    build_scene = build_camera_track
+
+                elif tag_group in shader_groups:
+                    build_scene = build_shader
+
+                input_stream.close()
+                if build_scene:
+                    build_scene.build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, report)
+                else:
+                    report({'ERROR'}, "Tag file has no support. Contact the plugin author if it should.")
 
             else:
-                ASSET = process_mod2(input_stream, report)
-
-        elif game_title == "halo2":
-            ASSET = process_h2_mode(input_stream, report)
-
+                report({'ERROR'}, "Invalid input provided. Check your tag directory settings and make sure the file exists in your tag directory.")
         else:
-            input_stream.close()
-            report({'ERROR'}, "Not implemented")
-
-            return {'CANCELLED'}
-
-    elif tag_group == "coll":
-        build_scene = build_scene_collision
-        if game_title == "halo1":
-            ASSET = process_collision(input_stream, report)
-
-        elif game_title == "halo2":
-            ASSET = process_h2_collision(input_stream, report)
-
-        else:
-            input_stream.close()
-            report({'ERROR'}, "Not implemented")
-
-            return {'CANCELLED'}
-
-    elif tag_group == "phys":
-        build_scene = build_scene_physics
-        if game_title == "halo1":
-            ASSET = process_physics(input_stream, report)
-
-        else:
-            input_stream.close()
-            report({'ERROR'}, "Not implemented")
-
-            return {'CANCELLED'}
-
-    elif tag_group == "antr":
-        build_scene = build_scene_animation
-        if game_title == "halo1":
-            ASSET = process_h1_animation(input_stream, report)
-
-        else:
-            input_stream.close()
-            report({'ERROR'}, "Not implemented")
-
-            return {'CANCELLED'}
-
-    elif tag_group == "sbsp":
-        build_scene = build_scene_level
-        if game_title == "halo1":
-            ASSET = process_level(input_stream, report)
-
-        elif game_title == "halo2":
-            ASSET = process_h2_level(input_stream, report)
-
-        else:
-            input_stream.close()
-            report({'ERROR'}, "Not implemented")
-
-            return {'CANCELLED'}
-
-    elif tag_group == "ltmp":
-        build_scene = build_scene_lightmap
-        if game_title == "halo2":
-            ASSET = process_h2_lightmap(input_stream, report)
-
-        else:
-            input_stream.close()
-            report({'ERROR'}, "Not implemented")
-
-            return {'CANCELLED'}
-
-    elif tag_group == "scnr":
-        context.scene.halo.game_title = game_title
-        context.scene.tag_scenario.scenario_path = file_path
-        build_scene = build_scenario
-        if game_title == "halo1":
-            ASSET = process_h1_scenario(input_stream, report)
-
-        elif game_title == "halo2":
-            ASSET = process_h2_scenario(input_stream, report)
-
-        else:
-            input_stream.close()
-            report({'ERROR'}, "Not implemented")
-
-            return {'CANCELLED'}
-
-    elif tag_group == "trak":
-        build_scene = build_camera_track
-        if game_title == "halo1":
-            ASSET = process_camera_track(input_stream, report)
-
-        else:
-            ASSET = process_h2_camera_track(input_stream, report)
-
-    elif tag_group == "senv":
-        build_scene = None
-        ASSET = process_shader_environment(input_stream, report)
-        mat = bpy.data.materials.new(name=tag_name)
-        generate_shader_environment(mat, ASSET, 0, report)
-
-    elif tag_group == "soso":
-        build_scene = None
-        ASSET = process_shader_model(input_stream, report)
-        mat = bpy.data.materials.new(name=tag_name)
-        generate_shader_model(mat, ASSET, report)
-
-    #elif tag_group == "schi":
-        #generate_shader_transparent_chicago(mat, shader, report)
-
-    #elif tag_group == "scex":
-        #generate_shader_transparent_chicago_extended(mat, shader, report)
-
-    #elif tag_group == "sotr":
-        #generate_shader_transparent_generic(mat, shader, report)
-
-    elif tag_group == "sgla":
-        build_scene = None
-        ASSET = process_shader_transparent_glass(input_stream, report)
-        mat = bpy.data.materials.new(name=tag_name)
-        generate_shader_transparent_glass(mat, ASSET, report)
-
-    elif tag_group == "smet":
-        build_scene = None
-        ASSET = process_shader_transparent_meter(input_stream, report)
-        mat = bpy.data.materials.new(name=tag_name)
-        generate_shader_transparent_meter(mat, ASSET, report)
-
-    #elif tag_group == "spla":
-        #generate_shader_transparent_plasma(mat, shader, report)
-
-    #elif tag_group == "swat":
-        #generate_shader_transparent_water(mat, shader, report)
-
-    else:
-        input_stream.close()
-        report({'ERROR'}, "Not implemented")
-
-        return {'CANCELLED'}
-
-    input_stream.close()
-    if build_scene:
-        build_scene.build_scene(context, ASSET, "retail", game_title, 0, fix_rotations, empty_markers, report)
-
-if __name__ == '__main__':
-    bpy.ops.import_scene.model()
+            report({'ERROR'}, "Invalid tag directory path provided. Check your tag directory settings.")

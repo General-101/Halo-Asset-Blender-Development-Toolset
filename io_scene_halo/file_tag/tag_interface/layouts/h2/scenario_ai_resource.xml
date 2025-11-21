@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="ai**" name="scenario_ai_resource" version="1">
+  <Layout regolithID="block:scenario_ai_resource" internalName="scenario_ai_resource_block" name="scenario_ai_resource">
+    <FieldSet version="0" sizeofValue="228" sizeofSource="sizeof(s_scenario_ai_resource)" isLatest="true">
+      <Block CStyleName="style_pallette" pascalStyleName="StylePallette" name="style pallette" maxElementCount="50">
+        <LayoutXRef>block:style_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="squad_groups" pascalStyleName="SquadGroups" name="squad groups" maxElementCount="100">
+        <LayoutXRef>block:squad_groups</LayoutXRef>
+      </Block>
+      <Block CStyleName="squads" pascalStyleName="Squads" name="squads" maxElementCount="335">
+        <LayoutXRef>block:squads</LayoutXRef>
+      </Block>
+      <Block CStyleName="zones" pascalStyleName="Zones" name="zones" maxElementCount="128">
+        <LayoutXRef>block:zone</LayoutXRef>
+      </Block>
+      <Block CStyleName="character_palette" pascalStyleName="CharacterPalette" name="character palette" maxElementCount="64">
+        <LayoutXRef>block:character_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_animation_references" pascalStyleName="AiAnimationReferences" name="ai animation references" maxElementCount="128">
+        <LayoutXRef>block:ai_animation_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_script_references" pascalStyleName="AiScriptReferences" name="ai script references" maxElementCount="128">
+        <LayoutXRef>block:ai_script_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_recording_references" pascalStyleName="AiRecordingReferences" name="ai recording references" maxElementCount="128">
+        <LayoutXRef>block:ai_recording_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="ai_conversations" pascalStyleName="AiConversations" name="ai conversations" maxElementCount="128">
+        <LayoutXRef>block:ai_conversation</LayoutXRef>
+      </Block>
+      <Block CStyleName="scripting_data" pascalStyleName="ScriptingData" name="scripting data" maxElementCount="1">
+        <LayoutXRef>block:cs_script_data</LayoutXRef>
+      </Block>
+      <Block CStyleName="orders" pascalStyleName="Orders" name="Orders" maxElementCount="300">
+        <LayoutXRef>block:orders</LayoutXRef>
+      </Block>
+      <Block CStyleName="triggers" pascalStyleName="Triggers" name="Triggers" maxElementCount="256">
+        <LayoutXRef>block:triggers</LayoutXRef>
+      </Block>
+      <Block CStyleName="bsp_references" pascalStyleName="BspReferences" name="bsp references" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_structure_bsp_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="weapon_references" pascalStyleName="WeaponReferences" name="weapon references" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_weapon_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="vehicle_references" pascalStyleName="VehicleReferences" name="vehicle references" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_vehicle_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="vehicle_datum_references" pascalStyleName="VehicleDatumReferences" name="vehicle datum references" maxElementCount="256" maxElementCountSource="MAXIMUM_VEHICLE_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_vehicle</LayoutXRef>
+      </Block>
+      <Block CStyleName="mission_dialogue_scenes" pascalStyleName="MissionDialogueScenes" name="mission dialogue scenes" maxElementCount="100" maxElementCountSource="k_max_scenes_per_scenario">
+        <LayoutXRef>block:ai_scene</LayoutXRef>
+      </Block>
+      <Block CStyleName="flocks" pascalStyleName="Flocks" name="flocks" maxElementCount="20" maxElementCountSource="k_max_flock_definitions_per_map">
+        <LayoutXRef>block:flock_definition</LayoutXRef>
+      </Block>
+      <Block CStyleName="trigger_volume_references" pascalStyleName="TriggerVolumeReferences" name="trigger volume references" maxElementCount="256" maxElementCountSource="MAXIMUM_TRIGGER_VOLUMES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_trigger_volume</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

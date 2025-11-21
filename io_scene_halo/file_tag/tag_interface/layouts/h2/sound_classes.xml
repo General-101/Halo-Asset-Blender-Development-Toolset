@@ -1,0 +1,239 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="sncl" name="sound_classes" version="1">
+  <Layout regolithID="block:sound_classes" internalName="sound_classes_block" name="sound_classes">
+    <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_sound_classes_definition)">
+      <Block CStyleName="sound_classes" pascalStyleName="SoundClasses" name="sound classes" maxElementCount="54" maxElementCountSource="NUMBER_OF_SOUND_CLASSES">
+        <Layout regolithID="block:sound_class" internalName="sound_class_block" name="sound_class_block">
+          <FieldSet version="0" sizeofValue="92" sizeofSource="sizeof(sound_class_definition_v1)">
+            <Pad sizeOfSource="92*sizeof(byte)" length="92" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="96" sizeofSource="sizeof(sound_class_definition_v2)">
+            <ShortInteger CStyleName="max_sounds_per_tag_116" pascalStyleName="MaxSoundsPerTag116" name="max sounds per tag [1,16]" description="maximum number of sounds playing per individual sound tag" />
+            <ShortInteger CStyleName="max_sounds_per_object_116" pascalStyleName="MaxSoundsPerObject116" name="max sounds per object [1,16]" description="maximum number of sounds of this type playing on an object" />
+            <LongInteger CStyleName="preemption_time" pascalStyleName="PreemptionTime" name="preemption time" units="ms" description="replaces other instances after this many milliseconds" />
+            <WordFlags CStyleName="internal_flags" pascalStyleName="InternalFlags" name="internal flags" readOnly="true">
+              <Options regolithID="enum:sound_class_internal_flags" CStyleName="sound_class_internal_flags" pascalStyleName="SoundClassInternalFlags">
+                <Bit name="valid" CStyleName="valid_bit" pascalStyleName="ValidBit" />
+                <Bit name="is speech" CStyleName="is_speech_bit" pascalStyleName="IsSpeechBit" />
+                <Bit name="scripted" CStyleName="scripted_bit" pascalStyleName="ScriptedBit" />
+                <Bit name="stops with object" CStyleName="stops_with_object_bit" pascalStyleName="StopsWithObjectBit" />
+                <Bit name="unused" CStyleName="unused4_bit" pascalStyleName="Unused4Bit" />
+                <Bit name="valid doppler factor" CStyleName="valid_doppler_factor_bit" pascalStyleName="ValidDopplerFactorBit" />
+                <Bit name="valid obstruction factor" CStyleName="valid_obstruction_factor_bit" pascalStyleName="ValidObstructionFactorBit" />
+                <Bit name="multilingual" CStyleName="multilingual_bit" pascalStyleName="MultilingualBit" />
+              </Options>
+            </WordFlags>
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:sound_class_flags" CStyleName="sound_class_flags" pascalStyleName="SoundClassFlags">
+                <Bit name="plays during pause" CStyleName="plays_during_pause_bit" pascalStyleName="PlaysDuringPauseBit" />
+                <Bit name="dry stereo mix" CStyleName="dry_stereo_mix_bit" pascalStyleName="DryStereoMixBit" />
+                <Bit name="no object obstruction" CStyleName="no_object_obstruction_bit" pascalStyleName="NoObjectObstructionBit" />
+                <Bit name="use center speaker unspatialized" CStyleName="use_center_speaker_unspatialized_bit" pascalStyleName="UseCenterSpeakerUnspatializedBit" />
+                <Bit name="send (mono) to lfe" CStyleName="send_mono_to_lfe_bit" pascalStyleName="SendMonoToLfeBit" />
+                <Bit name="deterministic" CStyleName="deterministic_bit" pascalStyleName="DeterministicBit" />
+                <Bit name="use huge transmission" CStyleName="use_huge_transmission_bit" pascalStyleName="UseHugeTransmissionBit" />
+                <Bit name="always use speakers" CStyleName="always_use_speakers_bit" pascalStyleName="AlwaysUseSpeakersBit" />
+                <Bit name="don't strip from main menu" CStyleName="dont_strip_from_main_menu_bit" pascalStyleName="DontStripFromMainMenuBit" />
+                <Bit name="ignore stereo headroom" CStyleName="ignore_stereo_headroom_bit" pascalStyleName="IgnoreStereoHeadroomBit" />
+                <Bit name="loop fade out is linear" CStyleName="loop_fade_out_is_linear_bit" pascalStyleName="LoopFadeOutIsLinearBit" />
+                <Bit name="stop when object dies" CStyleName="stop_when_object_dies_bit" pascalStyleName="StopWhenObjectDiesBit" />
+                <Bit name="allow cache file editing" CStyleName="allow_cache_file_editing_bit" pascalStyleName="AllowCacheFileEditingBit" />
+                <Bit name="bypass lfe" CStyleName="bypass_lfe_bit" pascalStyleName="BypassLfeBit" />
+              </Options>
+            </WordFlags>
+            <ShortInteger CStyleName="priority" pascalStyleName="Priority" name="priority" readOnly="true" />
+            <ShortEnum CStyleName="cache_miss_mode" pascalStyleName="CacheMissMode" name="cache miss mode" readOnly="true">
+              <Options regolithID="enum:sound_class_cache_miss_mode" CStyleName="sound_class_cache_miss_mode" pascalStyleName="SoundClassCacheMissMode">
+                <Enum name="discard" CStyleName="discard" pascalStyleName="Discard" />
+                <Enum name="postpone" CStyleName="postpone" pascalStyleName="Postpone" />
+              </Options>
+            </ShortEnum>
+            <Real CStyleName="reverb_gain" pascalStyleName="ReverbGain" name="reverb gain" units="dB" description="how much reverb applies to this sound class" tag="+dB+" />
+            <Real CStyleName="override_speaker_gain" pascalStyleName="OverrideSpeakerGain" name="override speaker gain" units="dB" tag="+dB+" />
+            <RealBounds CStyleName="distance_bounds" pascalStyleName="DistanceBounds" name="distance bounds" />
+            <Custom name="Update gain bounds" tag="edit" />
+            <RealBounds CStyleName="gain_bounds" pascalStyleName="GainBounds" name="gain bounds" units="dB" tag="+dB+" />
+            <Real CStyleName="cutscene_ducking" pascalStyleName="CutsceneDucking" name="cutscene ducking" units="dB" tag="+dB+" />
+            <Real CStyleName="cutscene_ducking_fade_in_time" pascalStyleName="CutsceneDuckingFadeInTime" name="cutscene ducking fade in time" units="seconds" />
+            <Real CStyleName="cutscene_ducking_sustain_time" pascalStyleName="CutsceneDuckingSustainTime" name="cutscene ducking sustain time" units="seconds" description="how long this lasts after the cutscene ends" />
+            <Real CStyleName="cutscene_ducking_fade_out_time" pascalStyleName="CutsceneDuckingFadeOutTime" name="cutscene ducking fade out time" units="seconds" />
+            <Real CStyleName="scripted_dialog_ducking" pascalStyleName="ScriptedDialogDucking" name="scripted dialog ducking" units="dB" tag="+dB+" />
+            <Real CStyleName="scripted_dialog_ducking_fade_in_time" pascalStyleName="ScriptedDialogDuckingFadeInTime" name="scripted dialog ducking fade in time" units="seconds" />
+            <Real CStyleName="scripted_dialog_ducking_sustain_time" pascalStyleName="ScriptedDialogDuckingSustainTime" name="scripted dialog ducking sustain time" units="seconds" description="how long this lasts after the scripted dialog ends" />
+            <Real CStyleName="scripted_dialog_ducking_fade_out_time" pascalStyleName="ScriptedDialogDuckingFadeOutTime" name="scripted dialog ducking fade out time" units="seconds" />
+            <Real CStyleName="doppler_factor" pascalStyleName="DopplerFactor" name="doppler factor" />
+            <CharEnum CStyleName="stereo_playback_type" pascalStyleName="StereoPlaybackType" name="stereo playback type">
+              <Options regolithID="enum:sound_class_stereo_playback_type" CStyleName="sound_class_stereo_playback_type" pascalStyleName="SoundClassStereoPlaybackType">
+                <Enum name="first person" CStyleName="first_person" pascalStyleName="FirstPerson" />
+                <Enum name="ambient" CStyleName="ambient" pascalStyleName="Ambient" />
+              </Options>
+            </CharEnum>
+            <Pad sizeOfSource="1*sizeof(byte)" length="1" />
+            <ShortInteger CStyleName="lowpass_cut_off_frequency" pascalStyleName="LowpassCutOffFrequency" name="lowpass cut off frequency" />
+            <Real CStyleName="transmission_multiplier" pascalStyleName="TransmissionMultiplier" name="transmission multiplier" />
+            <Real CStyleName="obstruction_max_bend" pascalStyleName="ObstructionMaxBend" name="obstruction max bend" />
+            <Real CStyleName="occlusion_max_bend" pascalStyleName="OcclusionMaxBend" name="occlusion max bend" />
+            <Real CStyleName="inner_silence_distance" pascalStyleName="InnerSilenceDistance" name="inner_silence_distance" />
+          </FieldSet>
+          <FieldSet version="2" sizeofValue="116" sizeofSource="sizeof(sound_class_definition_v3)">
+            <ShortInteger CStyleName="max_sounds_per_tag_116" pascalStyleName="MaxSoundsPerTag116" name="max sounds per tag [1,16]" description="maximum number of sounds playing per individual sound tag" />
+            <ShortInteger CStyleName="max_sounds_per_object_116" pascalStyleName="MaxSoundsPerObject116" name="max sounds per object [1,16]" description="maximum number of sounds of this type playing on an object" />
+            <LongInteger CStyleName="preemption_time" pascalStyleName="PreemptionTime" name="preemption time" units="ms" description="replaces other instances after this many milliseconds" />
+            <WordFlags CStyleName="internal_flags" pascalStyleName="InternalFlags" name="internal flags" readOnly="true">
+              <OptionsXRef>enum:sound_class_internal_flags</OptionsXRef>
+            </WordFlags>
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:sound_class_flags</OptionsXRef>
+            </WordFlags>
+            <ShortInteger CStyleName="priority" pascalStyleName="Priority" name="priority" readOnly="true" />
+            <ShortEnum CStyleName="cache_miss_mode" pascalStyleName="CacheMissMode" name="cache miss mode" readOnly="true">
+              <OptionsXRef>enum:sound_class_cache_miss_mode</OptionsXRef>
+            </ShortEnum>
+            <Real CStyleName="reverb_gain" pascalStyleName="ReverbGain" name="reverb gain" units="dB" description="how much reverb applies to this sound class" tag="+dB+" />
+            <Real CStyleName="override_speaker_gain" pascalStyleName="OverrideSpeakerGain" name="override speaker gain" units="dB" tag="+dB+" />
+            <RealBounds CStyleName="distance_bounds" pascalStyleName="DistanceBounds" name="distance bounds" />
+            <Custom name="Update gain bounds" tag="edit" />
+            <RealBounds CStyleName="gain_bounds" pascalStyleName="GainBounds" name="gain bounds" units="dB" tag="+dB+" />
+            <Real CStyleName="cutscene_ducking" pascalStyleName="CutsceneDucking" name="cutscene ducking" units="dB" tag="+dB+" />
+            <Real CStyleName="cutscene_ducking_fade_in_time" pascalStyleName="CutsceneDuckingFadeInTime" name="cutscene ducking fade in time" units="seconds" />
+            <Real CStyleName="cutscene_ducking_sustain_time" pascalStyleName="CutsceneDuckingSustainTime" name="cutscene ducking sustain time" units="seconds" description="how long this lasts after the cutscene ends" />
+            <Real CStyleName="cutscene_ducking_fade_out_time" pascalStyleName="CutsceneDuckingFadeOutTime" name="cutscene ducking fade out time" units="seconds" />
+            <Real CStyleName="scripted_dialog_ducking" pascalStyleName="ScriptedDialogDucking" name="scripted dialog ducking" units="dB" tag="+dB+" />
+            <Real CStyleName="scripted_dialog_ducking_fade_in_time" pascalStyleName="ScriptedDialogDuckingFadeInTime" name="scripted dialog ducking fade in time" units="seconds" />
+            <Real CStyleName="scripted_dialog_ducking_sustain_time" pascalStyleName="ScriptedDialogDuckingSustainTime" name="scripted dialog ducking sustain time" units="seconds" description="how long this lasts after the scripted dialog ends" />
+            <Real CStyleName="scripted_dialog_ducking_fade_out_time" pascalStyleName="ScriptedDialogDuckingFadeOutTime" name="scripted dialog ducking fade out time" units="seconds" />
+            <Real CStyleName="doppler_factor" pascalStyleName="DopplerFactor" name="doppler factor" />
+            <CharEnum CStyleName="stereo_playback_type" pascalStyleName="StereoPlaybackType" name="stereo playback type">
+              <OptionsXRef>enum:sound_class_stereo_playback_type</OptionsXRef>
+            </CharEnum>
+            <Pad sizeOfSource="1*sizeof(byte)" length="1" />
+            <Pad sizeOfSource="1*sizeof(short)" length="2" />
+            <Real CStyleName="transmission_multiplier" pascalStyleName="TransmissionMultiplier" name="transmission multiplier" />
+            <Real CStyleName="obstruction_max_bend" pascalStyleName="ObstructionMaxBend" name="obstruction max bend" />
+            <Real CStyleName="occlusion_max_bend" pascalStyleName="OcclusionMaxBend" name="occlusion max bend" />
+            <Real CStyleName="inner_silence_distance" pascalStyleName="InnerSilenceDistance" name="inner_silence_distance" />
+            <Explanation name="low pass filter parameters" />
+            <Struct CStyleName="lowpass_cut_off_parameters" pascalStyleName="LowpassCutOffParameters" name="lowpass cut off parameters">
+              <LayoutXRef>structure:sound_lowpass</LayoutXRef>
+            </Struct>
+          </FieldSet>
+          <FieldSet version="3" sizeofValue="128" sizeofSource="sizeof(sound_class_definition)" isLatest="true">
+            <ShortInteger CStyleName="max_sounds_per_tag_116" pascalStyleName="MaxSoundsPerTag116" name="max sounds per tag [1,16]" description="maximum number of sounds playing per individual sound tag" />
+            <ShortInteger CStyleName="max_sounds_per_object_116" pascalStyleName="MaxSoundsPerObject116" name="max sounds per object [1,16]" description="maximum number of sounds of this type playing on an object" />
+            <LongInteger CStyleName="preemption_time" pascalStyleName="PreemptionTime" name="preemption time" units="ms" description="replaces other instances after this many milliseconds" />
+            <WordFlags CStyleName="internal_flags" pascalStyleName="InternalFlags" name="internal flags" readOnly="true">
+              <OptionsXRef>enum:sound_class_internal_flags</OptionsXRef>
+            </WordFlags>
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:sound_class_flags</OptionsXRef>
+            </WordFlags>
+            <ShortInteger CStyleName="priority" pascalStyleName="Priority" name="priority" readOnly="true" />
+            <ShortEnum CStyleName="cache_miss_mode" pascalStyleName="CacheMissMode" name="cache miss mode" readOnly="true">
+              <OptionsXRef>enum:sound_class_cache_miss_mode</OptionsXRef>
+            </ShortEnum>
+            <Real CStyleName="reverb_gain" pascalStyleName="ReverbGain" name="reverb gain" units="dB" description="how much reverb applies to this sound class" tag="+dB+" />
+            <Real CStyleName="override_speaker_gain" pascalStyleName="OverrideSpeakerGain" name="override speaker gain" units="dB" tag="+dB+" />
+            <RealBounds CStyleName="distance_bounds" pascalStyleName="DistanceBounds" name="distance bounds" />
+            <Custom name="Update gain bounds" tag="edit" />
+            <RealBounds CStyleName="gain_bounds" pascalStyleName="GainBounds" name="gain bounds" units="dB" tag="+dB+" />
+            <Real CStyleName="cutscene_ducking" pascalStyleName="CutsceneDucking" name="cutscene ducking" units="dB" tag="+dB+" />
+            <Real CStyleName="cutscene_ducking_fade_in_time" pascalStyleName="CutsceneDuckingFadeInTime" name="cutscene ducking fade in time" units="seconds" />
+            <Real CStyleName="cutscene_ducking_sustain_time" pascalStyleName="CutsceneDuckingSustainTime" name="cutscene ducking sustain time" units="seconds" description="how long this lasts after the cutscene ends" />
+            <Real CStyleName="cutscene_ducking_fade_out_time" pascalStyleName="CutsceneDuckingFadeOutTime" name="cutscene ducking fade out time" units="seconds" />
+            <Real CStyleName="scripted_dialog_ducking" pascalStyleName="ScriptedDialogDucking" name="scripted dialog ducking" units="dB" tag="+dB+" />
+            <Real CStyleName="scripted_dialog_ducking_fade_in_time" pascalStyleName="ScriptedDialogDuckingFadeInTime" name="scripted dialog ducking fade in time" units="seconds" />
+            <Real CStyleName="scripted_dialog_ducking_sustain_time" pascalStyleName="ScriptedDialogDuckingSustainTime" name="scripted dialog ducking sustain time" units="seconds" description="how long this lasts after the scripted dialog ends" />
+            <Real CStyleName="scripted_dialog_ducking_fade_out_time" pascalStyleName="ScriptedDialogDuckingFadeOutTime" name="scripted dialog ducking fade out time" units="seconds" />
+            <Real CStyleName="doppler_factor" pascalStyleName="DopplerFactor" name="doppler factor" />
+            <CharEnum CStyleName="stereo_playback_type" pascalStyleName="StereoPlaybackType" name="stereo playback type">
+              <OptionsXRef>enum:sound_class_stereo_playback_type</OptionsXRef>
+            </CharEnum>
+            <Pad sizeOfSource="1*sizeof(byte)" length="1" />
+            <Pad sizeOfSource="1*sizeof(short)" length="2" />
+            <Real CStyleName="transmission_multiplier" pascalStyleName="TransmissionMultiplier" name="transmission multiplier" />
+            <Real CStyleName="obstruction_max_bend" pascalStyleName="ObstructionMaxBend" name="obstruction max bend" />
+            <Real CStyleName="occlusion_max_bend" pascalStyleName="OcclusionMaxBend" name="occlusion max bend" />
+            <Real CStyleName="inner_silence_distance" pascalStyleName="InnerSilenceDistance" name="inner_silence_distance" />
+            <Explanation name="low pass filter parameters" />
+            <Struct CStyleName="lowpass_cut_off_parameters" pascalStyleName="LowpassCutOffParameters" name="lowpass cut off parameters">
+              <LayoutXRef>structure:sound_lowpass</LayoutXRef>
+            </Struct>
+            <Block CStyleName="ext_ducking" pascalStyleName="ExtDucking" name="ext ducking" maxElementCount="54" maxElementCountSource="NUMBER_OF_SOUND_CLASSES">
+              <Layout regolithID="block:sound_class_ducker_block_definition" internalName="sound_class_ducker_block_definition" name="sound_class_ducker_block_definition">
+                <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_sound_class_ext_ducker)" isLatest="true">
+                  <LongEnum CStyleName="sound_class" pascalStyleName="SoundClass" name="sound class">
+                    <Options regolithID="enum:sound_class_ext_ducker" CStyleName="sound_class_ext_ducker" pascalStyleName="SoundClassExtDucker">
+                      <Enum name="projectile_impact" CStyleName="projectile_impact" pascalStyleName="ProjectileImpact" />
+                      <Enum name="projectile_detonation" CStyleName="projectile_detonation" pascalStyleName="ProjectileDetonation" />
+                      <Enum name="projectile_flyby" CStyleName="projectile_flyby" pascalStyleName="ProjectileFlyby" />
+                      <Enum CStyleName="unnamed_3" pascalStyleName="Unnamed3" />
+                      <Enum name="weapon_fire" CStyleName="weapon_fire" pascalStyleName="WeaponFire" />
+                      <Enum name="weapon_ready" CStyleName="weapon_ready" pascalStyleName="WeaponReady" />
+                      <Enum name="weapon_reload" CStyleName="weapon_reload" pascalStyleName="WeaponReload" />
+                      <Enum name="weapon_empty" CStyleName="weapon_empty" pascalStyleName="WeaponEmpty" />
+                      <Enum name="weapon_charge" CStyleName="weapon_charge" pascalStyleName="WeaponCharge" />
+                      <Enum name="weapon_overheat" CStyleName="weapon_overheat" pascalStyleName="WeaponOverheat" />
+                      <Enum name="weapon_idle" CStyleName="weapon_idle" pascalStyleName="WeaponIdle" />
+                      <Enum name="weapon_melee" CStyleName="weapon_melee" pascalStyleName="WeaponMelee" />
+                      <Enum name="weapon_animation" CStyleName="weapon_animation" pascalStyleName="WeaponAnimation" />
+                      <Enum name="object_impacts" CStyleName="object_impacts" pascalStyleName="ObjectImpacts" />
+                      <Enum name="particle_impacts" CStyleName="particle_impacts" pascalStyleName="ParticleImpacts" />
+                      <Enum name="weapon_fire_lod" CStyleName="weapon_fire_lod" pascalStyleName="WeaponFireLod" />
+                      <Enum name="weapon_fire_lod_far" CStyleName="weapon_fire_lod_far" pascalStyleName="WeaponFireLodFar" />
+                      <Enum name="lfe" CStyleName="lfe" pascalStyleName="Lfe" />
+                      <Enum name="unit_footsteps" CStyleName="unit_footsteps" pascalStyleName="UnitFootsteps" />
+                      <Enum name="unit_dialog" CStyleName="unit_dialog" pascalStyleName="UnitDialog" />
+                      <Enum name="unit_animation" CStyleName="unit_animation" pascalStyleName="UnitAnimation" />
+                      <Enum CStyleName="unnamed_21" pascalStyleName="Unnamed21" />
+                      <Enum name="vehicle_collision" CStyleName="vehicle_collision" pascalStyleName="VehicleCollision" />
+                      <Enum name="vehicle_engine" CStyleName="vehicle_engine" pascalStyleName="VehicleEngine" />
+                      <Enum name="vehicle_animation" CStyleName="vehicle_animation" pascalStyleName="VehicleAnimation" />
+                      <Enum CStyleName="unnamed_25" pascalStyleName="Unnamed25" />
+                      <Enum name="device_door" CStyleName="device_door" pascalStyleName="DeviceDoor" />
+                      <Enum CStyleName="unnamed_27" pascalStyleName="Unnamed27" />
+                      <Enum name="device_machinery" CStyleName="device_machinery" pascalStyleName="DeviceMachinery" />
+                      <Enum name="device_stationary" CStyleName="device_stationary" pascalStyleName="DeviceStationary" />
+                      <Enum CStyleName="unnamed_30" pascalStyleName="Unnamed30" />
+                      <Enum CStyleName="unnamed_31" pascalStyleName="Unnamed31" />
+                      <Enum name="music" CStyleName="music" pascalStyleName="Music" />
+                      <Enum name="ambient_nature" CStyleName="ambient_nature" pascalStyleName="AmbientNature" />
+                      <Enum name="ambient_machinery" CStyleName="ambient_machinery" pascalStyleName="AmbientMachinery" />
+                      <Enum CStyleName="unnamed_35" pascalStyleName="Unnamed35" />
+                      <Enum name="huge_ass" CStyleName="huge_ass" pascalStyleName="HugeAss" />
+                      <Enum name="object_looping" CStyleName="object_looping" pascalStyleName="ObjectLooping" />
+                      <Enum name="cinematic_music" CStyleName="cinematic_music" pascalStyleName="CinematicMusic" />
+                      <Enum name="reflection" CStyleName="reflection" pascalStyleName="Reflection" />
+                      <Enum name="reflection_lod" CStyleName="reflection_lod" pascalStyleName="ReflectionLod" />
+                      <Enum name="reflection_lod_far" CStyleName="reflection_lod_far" pascalStyleName="ReflectionLodFar" />
+                      <Enum CStyleName="unnamed_42" pascalStyleName="Unnamed42" />
+                      <Enum CStyleName="unnamed_43" pascalStyleName="Unnamed43" />
+                      <Enum CStyleName="unnamed_44" pascalStyleName="Unnamed44" />
+                      <Enum name="cortana_mission" CStyleName="cortana_mission" pascalStyleName="CortanaMission" />
+                      <Enum name="cortana_cinematic" CStyleName="cortana_cinematic" pascalStyleName="CortanaCinematic" />
+                      <Enum name="mission_dialog" CStyleName="mission_dialog" pascalStyleName="MissionDialog" />
+                      <Enum name="cinematic_dialog" CStyleName="cinematic_dialog" pascalStyleName="CinematicDialog" />
+                      <Enum name="scripted_cinematic_foley" CStyleName="scripted_cinematic_foley" pascalStyleName="ScriptedCinematicFoley" />
+                      <Enum name="game_event" CStyleName="game_event" pascalStyleName="GameEvent" />
+                      <Enum name="ui" CStyleName="ui" pascalStyleName="Ui" />
+                      <Enum name="test" CStyleName="test" pascalStyleName="Test" />
+                      <Enum name="multilingual_test" CStyleName="multilingual_test" pascalStyleName="MultilingualTest" />
+                    </Options>
+                  </LongEnum>
+                  <Real CStyleName="ducking" pascalStyleName="Ducking" name="ducking" units="dB" tag="+dB+" />
+                  <Real CStyleName="ducking_fade_in_time" pascalStyleName="DuckingFadeInTime" name="ducking fade in time" units="seconds" />
+                  <Real CStyleName="ducking_sustain_time" pascalStyleName="DuckingSustainTime" name="ducking sustain time" units="seconds" description="how long this lasts after the sound ends" />
+                  <Real CStyleName="ducking_fade_out_time" pascalStyleName="DuckingFadeOutTime" name="ducking fade out time" units="seconds" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="12" sizeofSource="sizeof(s_sound_classes_definition)" isLatest="true">
+      <Block CStyleName="sound_classes" pascalStyleName="SoundClasses" name="sound classes" maxElementCount="54" maxElementCountSource="NUMBER_OF_SOUND_CLASSES">
+        <LayoutXRef>block:sound_class</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

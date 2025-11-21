@@ -1,0 +1,18 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="hud#" name="hud_number" version="1">
+  <Layout regolithID="block:hud_number" internalName="hud_number_block" name="hud_number">
+    <FieldSet version="0" sizeofValue="100" sizeofSource="sizeof(struct hud_number_group)" isLatest="true">
+      <TagReference CStyleName="digits_bitmap" pascalStyleName="DigitsBitmap" name="digits bitmap">
+        <tag>bitmap</tag>
+      </TagReference>
+      <CharInteger CStyleName="bitmap_digit_width" pascalStyleName="BitmapDigitWidth" name="bitmap digit width" />
+      <CharInteger CStyleName="screen_digit_width" pascalStyleName="ScreenDigitWidth" name="screen digit width" />
+      <CharInteger CStyleName="x_offset" pascalStyleName="XOffset" name="x offset" />
+      <CharInteger CStyleName="y_offset" pascalStyleName="YOffset" name="y offset" />
+      <CharInteger CStyleName="decimal_point_width" pascalStyleName="DecimalPointWidth" name="decimal point width" />
+      <CharInteger CStyleName="colon_width" pascalStyleName="ColonWidth" name="colon width" />
+      <Pad name="pad" length="2" />
+      <Pad name="pad" length="76" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

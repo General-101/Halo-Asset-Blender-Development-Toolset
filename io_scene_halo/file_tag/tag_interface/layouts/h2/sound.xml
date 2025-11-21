@@ -1,0 +1,635 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="snd!" name="sound" version="4">
+  <Layout regolithID="block:sound" internalName="sound_block" name="sound">
+    <FieldSet version="0" sizeofValue="164" sizeofSource="">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:sound_flags</OptionsXRef>
+      </LongFlags>
+      <ShortEnum CStyleName="_class" pascalStyleName="Class" name="class">
+        <OptionsXRef>enum:sound_class</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="sample_rate" pascalStyleName="SampleRate" name="sample rate" readOnly="true">
+        <OptionsXRef>enum:sound_sample_rate</OptionsXRef>
+      </ShortEnum>
+      <Real CStyleName="minimum_distance" pascalStyleName="MinimumDistance" name="minimum distance" units="world units" description="the distance below which this sound no longer gets louder" />
+      <Real CStyleName="maximum_distance" pascalStyleName="MaximumDistance" name="maximum distance" units="world units" description="the distance beyond which this sound is no longer audible" />
+      <RealFraction CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" description="fraction of requests to play this sound that will be ignored (0 means always play.)" />
+      <RealBounds CStyleName="random_pitch_bounds" pascalStyleName="RandomPitchBounds" name="random pitch bounds" units="cents" description="the sound's pitch will be modulated randomly within this range." />
+      <Angle CStyleName="inner_cone_angle" pascalStyleName="InnerConeAngle" name="inner cone angle" units="degrees" description="within the cone defined by this angle and the sound's direction, the sound plays with a gain of 1.0." />
+      <Angle CStyleName="outer_cone_angle" pascalStyleName="OuterConeAngle" name="outer cone angle" units="degrees" description="outside the cone defined by this angle and the sound's direction, the sound plays with a gain of OUTER CONE GAIN. (0 means the sound does not attenuate with direction.)" />
+      <Real CStyleName="outer_cone_gain" pascalStyleName="OuterConeGain" name="outer cone gain" units="dB" description="the gain to use when the sound is directed away from the listener" />
+      <Real name="gain modifier" units="dB" />
+      <Real CStyleName="maximum_bend_per_second" pascalStyleName="MaximumBendPerSecond" name="maximum bend per second" units="cents" />
+      <ShortEnum CStyleName="output_effect" pascalStyleName="OutputEffect" name="output effect">
+        <OptionsXRef>enum:sound_output_effect</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="import_type" pascalStyleName="ImportType" name="import type" readOnly="true">
+        <Options regolithID="enum:sound_import_type" CStyleName="sound_import_type" pascalStyleName="SoundImportType">
+          <Enum name="unknown" CStyleName="unknown" pascalStyleName="Unknown" />
+          <Enum name="single-shot" CStyleName="single_shot" pascalStyleName="SingleShot" />
+          <Enum name="single-layer" CStyleName="single_layer" pascalStyleName="SingleLayer" />
+          <Enum name="multi-layer" CStyleName="multi_layer" pascalStyleName="MultiLayer" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="2*sizeof(long)" length="8" />
+      <RealFraction name="skip fraction modifier" />
+      <Real name="gain modifier" units="dB" />
+      <Real name="pitch modifier" units="cents" />
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <RealFraction name="skip fraction modifier" />
+      <Real name="gain modifier" units="dB" />
+      <Real name="pitch modifier" units="cents" />
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <ShortEnum CStyleName="encoding" pascalStyleName="Encoding" name="encoding" readOnly="true">
+        <OptionsXRef>enum:sound_encoding</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="compression" pascalStyleName="Compression" name="compression" readOnly="true">
+        <OptionsXRef>enum:sound_compression</OptionsXRef>
+      </ShortEnum>
+      <TagReference CStyleName="promotion_sound" pascalStyleName="PromotionSound" name="promotion sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <ShortInteger CStyleName="promotion_count" pascalStyleName="PromotionCount" name="promotion count" description="when there are this many instances of the sound, promote to the new sound." />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Pad sizeOfSource="5*sizeof(long)" length="20" />
+      <Block CStyleName="pitch_ranges" pascalStyleName="PitchRanges" name="pitch ranges" description="pitch ranges allow multiple samples to represent the same sound at different pitches" maxElementCount="9" maxElementCountSource="MAXIMUM_PITCH_RANGES_PER_SOUND">
+        <Layout regolithID="block:old_sound_pitch_range" internalName="old_sound_pitch_range_block" name="old_sound_pitch_range_block">
+          <FieldSet version="0" sizeofValue="84" sizeofSource="sizeof(struct sound_pitch_range_v1)" sizeofOverride="72" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" description="the name of the imported pitch range directory" readOnly="true" />
+            <Explanation name="pitch control" description="these settings control what pitches this set of samples represents. if there is only one pitch range, all three values are ignored." />
+            <Real CStyleName="natural_pitch" pascalStyleName="NaturalPitch" name="natural pitch" units="cents" description="the apparent pitch when these samples are played at their recorded pitch." tag="cent" />
+            <RealBounds CStyleName="bend_bounds" pascalStyleName="BendBounds" name="bend bounds" units="cents" description="the range of pitches that will be represented using this sample. this should always contain the natural pitch." tag="cent" />
+            <ShortInteger CStyleName="actual_permutation_count" pascalStyleName="ActualPermutationCount" name="actual permutation count" readOnly="true" />
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <Pad sizeOfSource="3*sizeof(long)" length="12" />
+            <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations" description="permutations represent equivalent variations of this sound." maxElementCount="1024" maxElementCountSource="k_old_maximum_permutations_per_pitch_range">
+              <Layout regolithID="block:old_sound_permutations" internalName="old_sound_permutations_block" name="old_sound_permutations_block">
+                <FieldSet version="0" sizeofValue="124" sizeofSource="sizeof(struct sound_permutation_v1)" isLatest="true">
+                  <String CStyleName="name" pascalStyleName="Name" name="name" description="name of the file from which this sample was imported" blockNameSource="true" readOnly="true" />
+                  <RealFraction CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" description="fraction of requests to play this permutation that are ignored (a different permutation is selected.)" />
+                  <Real CStyleName="gain" pascalStyleName="Gain" name="gain" units="dB" description="fraction of recorded volume to play at." />
+                  <ShortEnum CStyleName="compression" pascalStyleName="Compression" name="compression" readOnly="true">
+                    <OptionsXRef>enum:sound_compression</OptionsXRef>
+                  </ShortEnum>
+                  <ShortInteger CStyleName="next_permutation_index" pascalStyleName="NextPermutationIndex" name="next permutation index" readOnly="true" />
+                  <Pad sizeOfSource="5*sizeof(long)" length="20" />
+                  <Data CStyleName="samples" pascalStyleName="Samples" name="samples" description="sampled sound data" />
+                  <Data CStyleName="mouth_data" pascalStyleName="MouthData" name="mouth data" />
+                  <Data CStyleName="subtitle_data" pascalStyleName="SubtitleData" name="subtitle data" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="permutation_info" pascalStyleName="PermutationInfo" name="permutation info" maxElementCount="32" maxElementCountSource="k_old_maximum_random_permutations_per_pitch_range">
+              <Layout regolithID="block:old_sound_permutation_info" internalName="old_sound_permutation_info_block" name="old_sound_permutation_info_block">
+                <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(s_sound_permutation_info_v1)" isLatest="true">
+                  <Pad sizeOfSource="sizeof(long)*3" length="12" />
+                  <Data CStyleName="mouth_data" pascalStyleName="MouthData" name="mouth data" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="172" sizeofSource="">
+      <Custom name="SOUND_PLAYBACK_ID" tag="sply" />
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:sound_flags</OptionsXRef>
+      </LongFlags>
+      <ShortEnum CStyleName="_class" pascalStyleName="Class" name="class">
+        <OptionsXRef>enum:sound_class</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="sample_rate" pascalStyleName="SampleRate" name="sample rate" readOnly="true">
+        <OptionsXRef>enum:sound_sample_rate</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="output_effect" pascalStyleName="OutputEffect" name="output effect">
+        <OptionsXRef>enum:sound_output_effect</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="import_type" pascalStyleName="ImportType" name="import type" readOnly="true">
+        <OptionsXRef>enum:sound_import_type</OptionsXRef>
+      </ShortEnum>
+      <Struct CStyleName="playback" pascalStyleName="Playback" name="playback">
+        <Layout regolithID="structure:large_sound_playback_parameters" tag="snpl" internalName="large_sound_playback_parameters_struct" backingBlockInternalName="large_sound_playback_parameters_struct_block" name="large_sound_playback_parameters_struct">
+          <FieldSet version="0" sizeofValue="44" sizeofSource="sizeof(s_large_sound_definition_playback_parameters_v1)">
+            <Real CStyleName="minimum_distance" pascalStyleName="MinimumDistance" name="minimum distance" units="world units" description="the distance below which this sound no longer gets louder" />
+            <Real CStyleName="maximum_distance" pascalStyleName="MaximumDistance" name="maximum distance" units="world units" description="the distance beyond which this sound is no longer audible" />
+            <RealFraction CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" description="fraction of requests to play this sound that will be ignored (0 means always play.)" />
+            <Real CStyleName="maximum_bend_per_second" pascalStyleName="MaximumBendPerSecond" name="maximum bend per second" units="cents" tag="cent" />
+            <Real CStyleName="gain_base" pascalStyleName="GainBase" name="gain base" units="dB" description="sound's random gain will start here" tag="+dB+" />
+            <Real CStyleName="gain_variance" pascalStyleName="GainVariance" name="gain variance" units="dB" description="sound's gain will be randomly modulated within this range" tag="+dB+" />
+            <RealBounds CStyleName="random_pitch_bounds" pascalStyleName="RandomPitchBounds" name="random pitch bounds" units="cents" description="the sound's pitch will be modulated randomly within this range." tag="cent" />
+            <Angle CStyleName="inner_cone_angle" pascalStyleName="InnerConeAngle" name="inner cone angle" units="degrees" description="within the cone defined by this angle and the sound's direction, the sound plays with a gain of 1.0." />
+            <Angle CStyleName="outer_cone_angle" pascalStyleName="OuterConeAngle" name="outer cone angle" units="degrees" description="outside the cone defined by this angle and the sound's direction, the sound plays with a gain of OUTER CONE GAIN. (0 means the sound does not attenuate with direction.)" />
+            <Real CStyleName="outer_cone_gain" pascalStyleName="OuterConeGain" name="outer cone gain" units="dB" description="the gain to use when the sound is directed away from the listener" tag="+dB+" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="60" sizeofSource="sizeof(s_large_sound_definition_playback_parameters)" isLatest="true">
+            <Real CStyleName="minimum_distance" pascalStyleName="MinimumDistance" name="minimum distance" units="world units" description="the distance below which this sound no longer gets louder" />
+            <Real CStyleName="maximum_distance" pascalStyleName="MaximumDistance" name="maximum distance" units="world units" description="the distance beyond which this sound is no longer audible" />
+            <RealFraction CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" description="fraction of requests to play this sound that will be ignored (0 means always play.)" />
+            <Real CStyleName="maximum_bend_per_second" pascalStyleName="MaximumBendPerSecond" name="maximum bend per second" units="cents" tag="cent" />
+            <Explanation name="randomization" description="these settings control random variation of volume and pitch.&#xA; the second parameter gets clipped to the first." />
+            <Real CStyleName="gain_base" pascalStyleName="GainBase" name="gain base" units="dB" description="sound's random gain will start here" tag="+dB+" />
+            <Real CStyleName="gain_variance" pascalStyleName="GainVariance" name="gain variance" units="dB" description="sound's gain will be randomly modulated within this range" tag="+dB+" />
+            <RealBounds CStyleName="random_pitch_bounds" pascalStyleName="RandomPitchBounds" name="random pitch bounds" units="cents" description="the sound's pitch will be modulated randomly within this range." tag="cent" />
+            <Explanation name="directional sounds" description="these settings allow sounds to be directional, fading as they turn away from the listener" />
+            <Angle CStyleName="inner_cone_angle" pascalStyleName="InnerConeAngle" name="inner cone angle" units="degrees" description="within the cone defined by this angle and the sound's direction, the sound plays with a gain of 1.0." />
+            <Angle CStyleName="outer_cone_angle" pascalStyleName="OuterConeAngle" name="outer cone angle" units="degrees" description="outside the cone defined by this angle and the sound's direction, the sound plays with a gain of OUTER CONE GAIN. (0 means the sound does not attenuate with direction.)" />
+            <Real CStyleName="outer_cone_gain" pascalStyleName="OuterConeGain" name="outer cone gain" units="dB" description="the gain to use when the sound is directed away from the listener" tag="+dB+" />
+            <Explanation name="SCRIPTED LOCATION OVERRIDE" description="NOTE: this will only apply when the sound is started via script&#xA;azimuth:&#xA;    0 =&gt; front&#xA;    90 =&gt; left&#xA;    180 =&gt; back&#xA;    270 =&gt; right&#xA;" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:sound_playback_flags</OptionsXRef>
+            </LongFlags>
+            <Angle CStyleName="azimuth" pascalStyleName="Azimuth" name="azimuth" />
+            <Real CStyleName="positional_gain" pascalStyleName="PositionalGain" name="positional gain" units="dB" />
+            <Real CStyleName="first_person_gain" pascalStyleName="FirstPersonGain" name="first person gain" units="dB" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Struct CStyleName="scale" pascalStyleName="Scale" name="scale">
+        <Layout regolithID="structure:large_sound_scale_modifiers" tag="snsc" internalName="large_sound_scale_modifiers_struct" backingBlockInternalName="large_sound_scale_modifiers_struct_block" name="large_sound_scale_modifiers_struct">
+          <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(s_large_sound_definition_scale_modifiers)" isLatest="true">
+            <Explanation name="scale modifiers" description="as the sound's input scale changes from zero to one, these modifiers move between the two values specified here. the sound will play using the current scale modifier multiplied by the values specified above. (0 values are ignored.)" />
+            <RealBounds CStyleName="gain_modifier" pascalStyleName="GainModifier" name="gain modifier" units="dB" tag="+dB+" />
+            <RealBounds CStyleName="pitch_modifier" pascalStyleName="PitchModifier" name="pitch modifier" units="cents" tag="cent" />
+            <RealFractionBounds CStyleName="skip_fraction_modifier" pascalStyleName="SkipFractionModifier" name="skip fraction modifier" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="import properties" />
+      <ShortEnum CStyleName="encoding" pascalStyleName="Encoding" name="encoding" readOnly="true">
+        <OptionsXRef>enum:sound_encoding</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="compression" pascalStyleName="Compression" name="compression" readOnly="true">
+        <OptionsXRef>enum:sound_compression</OptionsXRef>
+      </ShortEnum>
+      <Struct CStyleName="promotion" pascalStyleName="Promotion" name="promotion">
+        <LayoutXRef>structure:sound_promotion_parameters</LayoutXRef>
+      </Struct>
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <Block CStyleName="pitch_ranges" pascalStyleName="PitchRanges" name="pitch ranges" description="pitch ranges allow multiple samples to represent the same sound at different pitches" readOnly="true" maxElementCount="9" maxElementCountSource="MAXIMUM_PITCH_RANGES_PER_SOUND">
+        <Layout regolithID="block:large_sound_pitch_range" internalName="large_sound_pitch_range_block" name="large_sound_pitch_range_block">
+          <FieldSet version="0" sizeofValue="60" sizeofSource="sizeof(s_large_sound_pitch_range)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" description="the name of the imported pitch range directory" readOnly="true" />
+            <Real CStyleName="natural_pitch" pascalStyleName="NaturalPitch" name="natural pitch" units="cents" description="the apparent pitch when these samples are played at their recorded pitch." tag="cent" />
+            <RealBounds CStyleName="bend_bounds" pascalStyleName="BendBounds" name="bend bounds" units="cents" description="the range of pitches that will be represented using this sample." tag="cent" />
+            <RealBounds />
+            <Struct>
+              <LayoutXRef>structure:mapping_function</LayoutXRef>
+            </Struct>
+            <Pad sizeOfSource="3*sizeof(long)" length="12" />
+            <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations" description="permutations represent equivalent variations of this sound." readOnly="true" maxElementCount="32" maxElementCountSource="MAXIMUM_PERMUTATIONS_PER_PITCH_RANGE">
+              <Layout regolithID="block:large_sound_permutations" internalName="large_sound_permutations_block" name="large_sound_permutations_block">
+                <FieldSet version="0" sizeofValue="100" sizeofSource="sizeof(s_large_sound_permutation)" isLatest="true">
+                  <StringId CStyleName="name" pascalStyleName="Name" name="name" description="name of the file from which this sample was imported" blockNameSource="true" readOnly="true" />
+                  <RealFraction CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" description="fraction of requests to play this permutation that are ignored (a different permutation is selected.)" />
+                  <Real CStyleName="gain" pascalStyleName="Gain" name="gain" units="dB" description="additional attenuation when played" tag="+dB+" />
+                  <Data />
+                  <Data />
+                  <Block maxElementCount="32767" maxElementCountSource="MAXIMUM_CHUNKS_PER_PERMUTATION">
+                    <LayoutXRef>block:sound_permutation_chunk</LayoutXRef>
+                  </Block>
+                  <ShortEnum CStyleName="compression" pascalStyleName="Compression" name="compression" readOnly="true">
+                    <OptionsXRef>enum:sound_compression</OptionsXRef>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <Data />
+                  <Block maxElementCount="65535" maxElementCountSource="MAXIMUM_MARKERS_PER_PERMUTATION">
+                    <Layout regolithID="block:sound_permutation_marker" internalName="sound_permutation_marker_block" name="sound_permutation_marker_block">
+                      <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_sound_permutation_marker)" isLatest="true">
+                        <LongInteger CStyleName="marker_id" pascalStyleName="MarkerId" name="marker id" readOnly="true" />
+                        <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+                        <LongInteger CStyleName="sample_offset" pascalStyleName="SampleOffset" name="sample offset" readOnly="true" />
+                        <Custom name="'mkpl'" tag="mkpl" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="platform_parameters" pascalStyleName="PlatformParameters" name="platform parameters" maxElementCount="1">
+        <Layout regolithID="block:sound_platform_sound_playback" internalName="sound_platform_sound_playback_block" name="sound_platform_sound_playback_block">
+          <FieldSet version="0" sizeofValue="84" sizeofSource="sizeof(s_sound_definition_custom_playback_definition)" isLatest="true">
+            <Struct CStyleName="playback_definition" pascalStyleName="PlaybackDefinition" name="playback definition">
+              <LayoutXRef>structure:simple_platform_sound_playback</LayoutXRef>
+            </Struct>
+            <Block maxElementCount="0">
+              <LayoutXRef>block:g_null</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+    <FieldSet version="2" sizeofValue="172" sizeofSource="">
+      <Custom name="SOUND_PLAYBACK_ID" tag="sply" />
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:sound_flags</OptionsXRef>
+      </LongFlags>
+      <ShortEnum CStyleName="_class" pascalStyleName="Class" name="class">
+        <OptionsXRef>enum:sound_class</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="sample_rate" pascalStyleName="SampleRate" name="sample rate" readOnly="true">
+        <OptionsXRef>enum:sound_sample_rate</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="output_effect" pascalStyleName="OutputEffect" name="output effect">
+        <OptionsXRef>enum:sound_output_effect</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="import_type" pascalStyleName="ImportType" name="import type" readOnly="true">
+        <OptionsXRef>enum:sound_import_type</OptionsXRef>
+      </ShortEnum>
+      <Struct CStyleName="playback" pascalStyleName="Playback" name="playback">
+        <LayoutXRef>structure:large_sound_playback_parameters</LayoutXRef>
+      </Struct>
+      <Struct CStyleName="scale" pascalStyleName="Scale" name="scale">
+        <LayoutXRef>structure:large_sound_scale_modifiers</LayoutXRef>
+      </Struct>
+      <Explanation name="import properties" />
+      <ShortEnum CStyleName="encoding" pascalStyleName="Encoding" name="encoding" readOnly="true">
+        <OptionsXRef>enum:sound_encoding</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="compression" pascalStyleName="Compression" name="compression" readOnly="true">
+        <OptionsXRef>enum:sound_compression</OptionsXRef>
+      </ShortEnum>
+      <Struct CStyleName="promotion" pascalStyleName="Promotion" name="promotion">
+        <LayoutXRef>structure:sound_promotion_parameters</LayoutXRef>
+      </Struct>
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <Block CStyleName="pitch_ranges" pascalStyleName="PitchRanges" name="pitch ranges" description="pitch ranges allow multiple samples to represent the same sound at different pitches" readOnly="true" maxElementCount="9" maxElementCountSource="MAXIMUM_PITCH_RANGES_PER_SOUND">
+        <LayoutXRef>block:large_sound_pitch_range</LayoutXRef>
+      </Block>
+      <Block CStyleName="platform_parameters" pascalStyleName="PlatformParameters" name="platform parameters" maxElementCount="1">
+        <LayoutXRef>block:sound_platform_sound_playback</LayoutXRef>
+      </Block>
+    </FieldSet>
+    <FieldSet version="3" sizeofValue="172" sizeofSource="">
+      <Custom name="SOUND_PLAYBACK_ID" tag="sply" />
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:sound_flags</OptionsXRef>
+      </LongFlags>
+      <ShortEnum CStyleName="_class" pascalStyleName="Class" name="class">
+        <OptionsXRef>enum:sound_class</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="sample_rate" pascalStyleName="SampleRate" name="sample rate" readOnly="true">
+        <OptionsXRef>enum:sound_sample_rate</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="output_effect" pascalStyleName="OutputEffect" name="output effect">
+        <OptionsXRef>enum:sound_output_effect</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="import_type" pascalStyleName="ImportType" name="import type" readOnly="true">
+        <OptionsXRef>enum:sound_import_type</OptionsXRef>
+      </ShortEnum>
+      <Struct CStyleName="playback" pascalStyleName="Playback" name="playback">
+        <LayoutXRef>structure:large_sound_playback_parameters</LayoutXRef>
+      </Struct>
+      <Struct CStyleName="scale" pascalStyleName="Scale" name="scale">
+        <LayoutXRef>structure:large_sound_scale_modifiers</LayoutXRef>
+      </Struct>
+      <Explanation name="import properties" />
+      <ShortEnum CStyleName="encoding" pascalStyleName="Encoding" name="encoding" readOnly="true">
+        <OptionsXRef>enum:sound_encoding</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="compression" pascalStyleName="Compression" name="compression" readOnly="true">
+        <OptionsXRef>enum:sound_compression</OptionsXRef>
+      </ShortEnum>
+      <Struct CStyleName="promotion" pascalStyleName="Promotion" name="promotion">
+        <LayoutXRef>structure:sound_promotion_parameters</LayoutXRef>
+      </Struct>
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <Block CStyleName="pitch_ranges" pascalStyleName="PitchRanges" name="pitch ranges" description="pitch ranges allow multiple samples to represent the same sound at different pitches" readOnly="true" maxElementCount="9" maxElementCountSource="MAXIMUM_PITCH_RANGES_PER_SOUND">
+        <LayoutXRef>block:large_sound_pitch_range</LayoutXRef>
+      </Block>
+      <Block CStyleName="platform_parameters" pascalStyleName="PlatformParameters" name="platform parameters" maxElementCount="1">
+        <LayoutXRef>block:sound_platform_sound_playback</LayoutXRef>
+      </Block>
+    </FieldSet>
+    <FieldSet version="4" sizeofValue="176" sizeofSource="sizeof(struct sound_definition_v1)">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:sound_flags</OptionsXRef>
+      </LongFlags>
+      <ShortEnum CStyleName="_class" pascalStyleName="Class" name="class">
+        <OptionsXRef>enum:sound_class</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="sample_rate" pascalStyleName="SampleRate" name="sample rate" readOnly="true">
+        <OptionsXRef>enum:sound_sample_rate</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="output_effect" pascalStyleName="OutputEffect" name="output effect">
+        <OptionsXRef>enum:sound_output_effect</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="import_type" pascalStyleName="ImportType" name="import type" readOnly="true">
+        <OptionsXRef>enum:sound_import_type</OptionsXRef>
+      </ShortEnum>
+      <Struct CStyleName="playback" pascalStyleName="Playback" name="playback">
+        <LayoutXRef>structure:sound_playback_parameters</LayoutXRef>
+      </Struct>
+      <Struct CStyleName="scale" pascalStyleName="Scale" name="scale">
+        <LayoutXRef>structure:sound_scale_modifiers</LayoutXRef>
+      </Struct>
+      <Explanation name="import properties" />
+      <ShortEnum CStyleName="encoding" pascalStyleName="Encoding" name="encoding" readOnly="true">
+        <OptionsXRef>enum:sound_encoding</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="compression" pascalStyleName="Compression" name="compression" readOnly="true">
+        <OptionsXRef>enum:sound_compression</OptionsXRef>
+      </ShortEnum>
+      <Struct CStyleName="promotion" pascalStyleName="Promotion" name="promotion">
+        <LayoutXRef>structure:sound_promotion_parameters</LayoutXRef>
+      </Struct>
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <Block CStyleName="pitch_ranges" pascalStyleName="PitchRanges" name="pitch ranges" description="pitch ranges allow multiple samples to represent the same sound at different pitches" readOnly="true" maxElementCount="9" maxElementCountSource="MAXIMUM_PITCH_RANGES_PER_SOUND">
+        <Layout regolithID="block:sound_pitch_range" internalName="sound_pitch_range_block" name="sound_pitch_range_block">
+          <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(s_sound_pitch_range)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" description="the name of the imported pitch range directory" readOnly="true" />
+            <Explanation name="pitch control" description="these settings control what pitches this set of samples represents. if there is only one pitch range, all three values are ignored." />
+            <ShortInteger CStyleName="natural_pitch" pascalStyleName="NaturalPitch" name="natural pitch" units="cents" description="the apparent pitch when these samples are played at their recorded pitch." />
+            <Pad sizeOfSource="2*sizeof(char)" length="2" />
+            <ShortBounds CStyleName="bend_bounds" pascalStyleName="BendBounds" name="bend bounds" units="cents" description="the range of pitches that will be represented using this sample." />
+            <ShortBounds tag="fn**" />
+            <Pad sizeOfSource="sizeof(dword)" length="4" />
+            <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations" description="permutations represent equivalent variations of this sound." readOnly="true" maxElementCount="32" maxElementCountSource="MAXIMUM_PERMUTATIONS_PER_PITCH_RANGE">
+              <Layout regolithID="block:sound_permutations" internalName="sound_permutations_block" name="sound_permutations_block">
+                <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(s_sound_permutation)" isLatest="true">
+                  <Custom name="'snpl'" tag="snpl" />
+                  <StringId CStyleName="name" pascalStyleName="Name" name="name" description="name of the file from which this sample was imported" blockNameSource="true" readOnly="true" />
+                  <Custom name="Update skip fraction" tag="edit" />
+                  <RealFraction CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" description="fraction of requests to play this permutation that are ignored (a different permutation is selected.)" />
+                  <Custom name="Update gain" tag="edit" />
+                  <Real CStyleName="gain" pascalStyleName="Gain" name="gain" units="dB" description="additional attenuation when played" tag="+dB+" />
+                  <LongInteger />
+                  <CustomShortBlockIndex />
+                  <ShortInteger />
+                  <Block maxElementCount="32767" maxElementCountSource="MAXIMUM_CHUNKS_PER_PERMUTATION">
+                    <LayoutXRef>block:sound_permutation_chunk</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="platform_parameters" pascalStyleName="PlatformParameters" name="platform parameters" maxElementCount="1">
+        <LayoutXRef>block:sound_platform_sound_playback</LayoutXRef>
+      </Block>
+      <Block maxElementCount="1">
+        <Layout regolithID="block:sound_extra_info" internalName="sound_extra_info_block" name="sound_extra_info_block">
+          <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(s_sound_definition_extra_info)" isLatest="true">
+            <Block CStyleName="language_permutation_info" pascalStyleName="LanguagePermutationInfo" name="language permutation info" maxElementCount="576" maxElementCountSource="MAXIMUM_PITCH_RANGES_PER_SOUND*MAXIMUM_PERMUTATIONS_PER_PITCH_RANGE * 2">
+              <Layout regolithID="block:sound_definition_language_permutation_info" internalName="sound_definition_language_permutation_info_block" name="sound_definition_language_permutation_info_block">
+                <FieldSet version="0" sizeofValue="80" sizeofSource="sizeof(s_sound_permutation_raw_info_old)">
+                  <Custom name="'snpl'" tag="snpl" />
+                  <StringId CStyleName="skip_fraction_name" pascalStyleName="SkipFractionName" name="skip fraction name" />
+                  <Data />
+                  <Data />
+                  <Data />
+                  <Block maxElementCount="65535" maxElementCountSource="MAXIMUM_MARKERS_PER_PERMUTATION">
+                    <LayoutXRef>block:sound_permutation_marker</LayoutXRef>
+                  </Block>
+                  <ShortEnum CStyleName="compression" pascalStyleName="Compression" name="compression" readOnly="true">
+                    <OptionsXRef>enum:sound_compression</OptionsXRef>
+                  </ShortEnum>
+                  <CharEnum CStyleName="language" pascalStyleName="Language" name="language" readOnly="true">
+                    <Options regolithID="enum:sound_language" CStyleName="sound_language" pascalStyleName="SoundLanguage">
+                      <Enum name="english" CStyleName="english" pascalStyleName="English" />
+                      <Enum name="japanese" CStyleName="japanese" pascalStyleName="Japanese" />
+                      <Enum name="german" CStyleName="german" pascalStyleName="German" />
+                      <Enum name="french" CStyleName="french" pascalStyleName="French" />
+                      <Enum name="spanish" CStyleName="spanish" pascalStyleName="Spanish" />
+                      <Enum name="italian" CStyleName="italian" pascalStyleName="Italian" />
+                      <Enum name="korean" CStyleName="korean" pascalStyleName="Korean" />
+                      <Enum name="chinese" CStyleName="chinese" pascalStyleName="Chinese" />
+                      <Enum name="portuguese" CStyleName="portuguese" pascalStyleName="Portuguese" />
+                    </Options>
+                  </CharEnum>
+                  <Pad sizeOfSource="sizeof(char)" length="1" />
+                </FieldSet>
+                <FieldSet version="1" sizeofValue="12" sizeofSource="sizeof(s_sound_definition_language_permutation_info)">
+                  <Block CStyleName="raw_info_block" pascalStyleName="RawInfoBlock" name="raw info block" maxElementCount="18" maxElementCountSource="2*k_language_count">
+                    <Layout regolithID="block:sound_permutation_raw_info_block_old" internalName="sound_permutation_raw_info_block_old" name="sound_permutation_raw_info_block_old">
+                      <FieldSet version="0" sizeofValue="80" sizeofSource="sizeof(s_sound_permutation_raw_info_old)" isLatest="true">
+                        <Custom name="'snpl'" tag="snpl" />
+                        <StringId CStyleName="skip_fraction_name" pascalStyleName="SkipFractionName" name="skip fraction name" />
+                        <Data />
+                        <Data />
+                        <Data />
+                        <Block maxElementCount="65535" maxElementCountSource="MAXIMUM_MARKERS_PER_PERMUTATION">
+                          <LayoutXRef>block:sound_permutation_marker</LayoutXRef>
+                        </Block>
+                        <ShortEnum CStyleName="compression" pascalStyleName="Compression" name="compression" readOnly="true">
+                          <OptionsXRef>enum:sound_compression</OptionsXRef>
+                        </ShortEnum>
+                        <CharEnum CStyleName="language" pascalStyleName="Language" name="language" readOnly="true">
+                          <OptionsXRef>enum:sound_language</OptionsXRef>
+                        </CharEnum>
+                        <Pad sizeOfSource="sizeof(char)" length="1" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+                <FieldSet version="2" sizeofValue="12" sizeofSource="sizeof(s_sound_definition_language_permutation_info)" isLatest="true">
+                  <Block CStyleName="raw_info_block_v3" pascalStyleName="RawInfoBlockV3" name="raw info block v3" maxElementCount="18" maxElementCountSource="2 * k_language_count">
+                    <Layout regolithID="block:sound_permutation_raw_info" internalName="sound_permutation_raw_info_block" name="sound_permutation_raw_info_block">
+                      <FieldSet version="0" sizeofValue="96" sizeofSource="sizeof(s_sound_permutation_raw_info)" isLatest="true">
+                        <Custom name="'snpl'" tag="snpl" />
+                        <StringId CStyleName="skip_fraction_name" pascalStyleName="SkipFractionName" name="skip fraction name" />
+                        <Data />
+                        <Data />
+                        <Data />
+                        <Block maxElementCount="65535" maxElementCountSource="MAXIMUM_MARKERS_PER_PERMUTATION">
+                          <LayoutXRef>block:sound_permutation_marker</LayoutXRef>
+                        </Block>
+                        <ShortEnum CStyleName="compression" pascalStyleName="Compression" name="compression" readOnly="true">
+                          <OptionsXRef>enum:sound_compression</OptionsXRef>
+                        </ShortEnum>
+                        <CharEnum CStyleName="language" pascalStyleName="Language" name="language" readOnly="true">
+                          <OptionsXRef>enum:sound_language</OptionsXRef>
+                        </CharEnum>
+                        <Pad sizeOfSource="sizeof(char)" length="1" />
+                        <Block maxElementCount="32767" maxElementCountSource="MAXIMUM_CHUNKS_PER_PERMUTATION">
+                          <LayoutXRef>block:sound_permutation_chunk</LayoutXRef>
+                        </Block>
+                        <LongInteger />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="encoded_permutation_section" pascalStyleName="EncodedPermutationSection" name="encoded permutation section" maxElementCount="1">
+              <LayoutXRef>block:sound_encoded_dialogue_section</LayoutXRef>
+            </Block>
+            <Struct CStyleName="geometry_block_info" pascalStyleName="GeometryBlockInfo" name="geometry block info">
+              <LayoutXRef>structure:global_geometry_block_info</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+    <FieldSet version="5" sizeofValue="172" sizeofSource="sizeof(struct sound_definition_v2)">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:sound_flags</OptionsXRef>
+      </LongFlags>
+      <CharEnum CStyleName="_class" pascalStyleName="Class" name="class">
+        <OptionsXRef>enum:sound_class</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="sample_rate" pascalStyleName="SampleRate" name="sample rate" readOnly="true">
+        <OptionsXRef>enum:sound_sample_rate</OptionsXRef>
+      </CharEnum>
+      <CharEnum>
+        <OptionsXRef>enum:sound_output_effect</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="import_type" pascalStyleName="ImportType" name="import type" readOnly="true">
+        <OptionsXRef>enum:sound_import_type</OptionsXRef>
+      </CharEnum>
+      <Struct CStyleName="playback" pascalStyleName="Playback" name="playback">
+        <LayoutXRef>structure:sound_playback_parameters</LayoutXRef>
+      </Struct>
+      <Struct CStyleName="scale" pascalStyleName="Scale" name="scale">
+        <LayoutXRef>structure:sound_scale_modifiers</LayoutXRef>
+      </Struct>
+      <Explanation name="import properties" />
+      <Pad sizeOfSource="sizeof(s_game_sound_deterministic_permutation)" length="2" />
+      <CharEnum CStyleName="encoding" pascalStyleName="Encoding" name="encoding" readOnly="true">
+        <OptionsXRef>enum:sound_encoding</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="compression" pascalStyleName="Compression" name="compression" readOnly="true">
+        <OptionsXRef>enum:sound_compression</OptionsXRef>
+      </CharEnum>
+      <Struct CStyleName="promotion" pascalStyleName="Promotion" name="promotion">
+        <LayoutXRef>structure:sound_promotion_parameters</LayoutXRef>
+      </Struct>
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <Block CStyleName="pitch_ranges" pascalStyleName="PitchRanges" name="pitch ranges" description="pitch ranges allow multiple samples to represent the same sound at different pitches" readOnly="true" maxElementCount="9" maxElementCountSource="MAXIMUM_PITCH_RANGES_PER_SOUND">
+        <LayoutXRef>block:sound_pitch_range</LayoutXRef>
+      </Block>
+      <Block CStyleName="platform_parameters" pascalStyleName="PlatformParameters" name="platform parameters" maxElementCount="1">
+        <LayoutXRef>block:sound_platform_sound_playback</LayoutXRef>
+      </Block>
+      <Block maxElementCount="1">
+        <LayoutXRef>block:sound_extra_info</LayoutXRef>
+      </Block>
+    </FieldSet>
+    <FieldSet version="6" sizeofValue="200" sizeofSource="sizeof(struct sound_definition_v3)">
+      <TagReference CStyleName="remastered_sound" pascalStyleName="RemasteredSound" name="remastered sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:sound_flags</OptionsXRef>
+      </LongFlags>
+      <CharEnum CStyleName="_class" pascalStyleName="Class" name="class">
+        <OptionsXRef>enum:sound_class</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="sample_rate" pascalStyleName="SampleRate" name="sample rate" readOnly="true">
+        <OptionsXRef>enum:sound_sample_rate</OptionsXRef>
+      </CharEnum>
+      <CharEnum>
+        <OptionsXRef>enum:sound_output_effect</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="import_type" pascalStyleName="ImportType" name="import type" readOnly="true">
+        <OptionsXRef>enum:sound_import_type</OptionsXRef>
+      </CharEnum>
+      <Struct CStyleName="playback" pascalStyleName="Playback" name="playback">
+        <LayoutXRef>structure:sound_playback_parameters</LayoutXRef>
+      </Struct>
+      <Struct CStyleName="scale" pascalStyleName="Scale" name="scale">
+        <LayoutXRef>structure:sound_scale_modifiers</LayoutXRef>
+      </Struct>
+      <Explanation name="import properties" />
+      <Pad sizeOfSource="sizeof(s_game_sound_deterministic_permutation)" length="2" />
+      <CharEnum CStyleName="encoding" pascalStyleName="Encoding" name="encoding" readOnly="true">
+        <OptionsXRef>enum:sound_encoding</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="compression" pascalStyleName="Compression" name="compression" readOnly="true">
+        <OptionsXRef>enum:sound_compression</OptionsXRef>
+      </CharEnum>
+      <Struct CStyleName="promotion" pascalStyleName="Promotion" name="promotion">
+        <LayoutXRef>structure:sound_promotion_parameters</LayoutXRef>
+      </Struct>
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <Real CStyleName="inner_silence_distance" pascalStyleName="InnerSilenceDistance" name="inner_silence_distance" description="don't play below this distance" />
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <Block CStyleName="pitch_ranges" pascalStyleName="PitchRanges" name="pitch ranges" description="pitch ranges allow multiple samples to represent the same sound at different pitches" readOnly="true" maxElementCount="9" maxElementCountSource="MAXIMUM_PITCH_RANGES_PER_SOUND">
+        <LayoutXRef>block:sound_pitch_range</LayoutXRef>
+      </Block>
+      <Block CStyleName="platform_parameters" pascalStyleName="PlatformParameters" name="platform parameters" maxElementCount="1">
+        <LayoutXRef>block:sound_platform_sound_playback</LayoutXRef>
+      </Block>
+      <Block maxElementCount="1">
+        <LayoutXRef>block:sound_extra_info</LayoutXRef>
+      </Block>
+      <Struct CStyleName="reflections" pascalStyleName="Reflections" name="reflections">
+        <Layout regolithID="structure:sound_reflection_parameters" tag="srpr" internalName="sound_reflection_parameters_struct" backingBlockInternalName="sound_reflection_parameters_struct_block" name="sound_reflection_parameters_struct">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_sound_reflection_parameters)" isLatest="true">
+            <Block CStyleName="reflections" pascalStyleName="Reflections" name="reflections" maxElementCount="16" maxElementCountSource="k_maximum_reflections_per_sound">
+              <Layout regolithID="block:sound_reflection" internalName="sound_reflection_block" name="sound_reflection_block">
+                <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(s_sound_reflection)" isLatest="true">
+                  <StringId CStyleName="reflection_type" pascalStyleName="ReflectionType" name="reflection type" description="type which is compared with type in current sound_environment tag" blockNameSource="true" />
+                  <TagReference name="reflection sound" blockNameSource="true">
+                    <tag>snd!</tag>
+                  </TagReference>
+                  <LongInteger name="reflection sound" units="ms" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Struct>
+    </FieldSet>
+    <FieldSet version="7" sizeofValue="220" sizeofSource="sizeof(struct sound_definition)" isLatest="true">
+      <TagReference CStyleName="remastered_sound" pascalStyleName="RemasteredSound" name="remastered sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:sound_flags</OptionsXRef>
+      </LongFlags>
+      <CharEnum CStyleName="_class" pascalStyleName="Class" name="class">
+        <OptionsXRef>enum:sound_class</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="sample_rate" pascalStyleName="SampleRate" name="sample rate" readOnly="true">
+        <OptionsXRef>enum:sound_sample_rate</OptionsXRef>
+      </CharEnum>
+      <CharEnum>
+        <OptionsXRef>enum:sound_output_effect</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="import_type" pascalStyleName="ImportType" name="import type" readOnly="true">
+        <OptionsXRef>enum:sound_import_type</OptionsXRef>
+      </CharEnum>
+      <Struct CStyleName="playback" pascalStyleName="Playback" name="playback">
+        <LayoutXRef>structure:sound_playback_parameters</LayoutXRef>
+      </Struct>
+      <Struct CStyleName="scale" pascalStyleName="Scale" name="scale">
+        <LayoutXRef>structure:sound_scale_modifiers</LayoutXRef>
+      </Struct>
+      <Explanation name="import properties" />
+      <Pad sizeOfSource="sizeof(s_game_sound_deterministic_permutation)" length="2" />
+      <CharEnum CStyleName="encoding" pascalStyleName="Encoding" name="encoding" readOnly="true">
+        <OptionsXRef>enum:sound_encoding</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="compression" pascalStyleName="Compression" name="compression" readOnly="true">
+        <OptionsXRef>enum:sound_compression</OptionsXRef>
+      </CharEnum>
+      <Struct CStyleName="promotion" pascalStyleName="Promotion" name="promotion">
+        <LayoutXRef>structure:sound_promotion_parameters</LayoutXRef>
+      </Struct>
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <Real CStyleName="inner_silence_distance" pascalStyleName="InnerSilenceDistance" name="inner_silence_distance" description="don't play below this distance" />
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <Block CStyleName="pitch_ranges" pascalStyleName="PitchRanges" name="pitch ranges" description="pitch ranges allow multiple samples to represent the same sound at different pitches" readOnly="true" maxElementCount="9" maxElementCountSource="MAXIMUM_PITCH_RANGES_PER_SOUND">
+        <LayoutXRef>block:sound_pitch_range</LayoutXRef>
+      </Block>
+      <Block CStyleName="platform_parameters" pascalStyleName="PlatformParameters" name="platform parameters" maxElementCount="1">
+        <LayoutXRef>block:sound_platform_sound_playback</LayoutXRef>
+      </Block>
+      <Block maxElementCount="1">
+        <LayoutXRef>block:sound_extra_info</LayoutXRef>
+      </Block>
+      <Struct CStyleName="reflections" pascalStyleName="Reflections" name="reflections">
+        <LayoutXRef>structure:sound_reflection_parameters</LayoutXRef>
+      </Struct>
+      <Explanation name="low pass filter parameters" />
+      <Struct CStyleName="lowpass_cut_off_parameters" pascalStyleName="LowpassCutOffParameters" name="lowpass cut off parameters">
+        <LayoutXRef>structure:sound_lowpass</LayoutXRef>
+      </Struct>
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,490 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="DeLa" name="ui_widget_definition" version="1">
+  <Layout regolithID="block:ui_widget_definition" internalName="ui_widget_definition_block" name="ui_widget_definition">
+    <FieldSet version="0" sizeofValue="1004" sizeofSource="sizeof(struct ui_widget_definition_group)" isLatest="true">
+      <ShortEnum CStyleName="widget_type" pascalStyleName="WidgetType" name="widget type">
+        <Options regolithID="enum:widget_type" CStyleName="widget_type" pascalStyleName="WidgetType">
+          <Enum name="container" CStyleName="container" pascalStyleName="Container" />
+          <Enum name="text box" CStyleName="text_box" pascalStyleName="TextBox" />
+          <Enum name="spinner list" CStyleName="spinner_list" pascalStyleName="SpinnerList" />
+          <Enum name="column list" CStyleName="column_list" pascalStyleName="ColumnList" />
+          <Enum name="game model not implemented" CStyleName="game_model_not_implemented" pascalStyleName="GameModelNotImplemented" />
+          <Enum name="movie not implemented" CStyleName="movie_not_implemented" pascalStyleName="MovieNotImplemented" />
+          <Enum name="custom not implemented" CStyleName="custom_not_implemented" pascalStyleName="CustomNotImplemented" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="controller_index" pascalStyleName="ControllerIndex" name="controller index">
+        <Options regolithID="enum:controller_index" CStyleName="controller_index" pascalStyleName="ControllerIndex">
+          <Enum name="player 1" CStyleName="player_1" pascalStyleName="Player1" />
+          <Enum name="player 2" CStyleName="player_2" pascalStyleName="Player2" />
+          <Enum name="player 3" CStyleName="player_3" pascalStyleName="Player3" />
+          <Enum name="player 4" CStyleName="player_4" pascalStyleName="Player4" />
+          <Enum name="any player" CStyleName="any_player" pascalStyleName="AnyPlayer" />
+        </Options>
+      </ShortEnum>
+      <String CStyleName="name" pascalStyleName="Name" name="name" />
+      <Rectangle2D CStyleName="bounds" pascalStyleName="Bounds" name="bounds" />
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="pass unhandled events to focused child" CStyleName="pass_unhandled_events_to_focused_child_bit" pascalStyleName="PassUnhandledEventsToFocusedChildBit" />
+          <Bit name="pause game time" CStyleName="pause_game_time_bit" pascalStyleName="PauseGameTimeBit" />
+          <Bit name="flash background bitmap" CStyleName="flash_background_bitmap_bit" pascalStyleName="FlashBackgroundBitmapBit" />
+          <Bit name="dpad up down tabs thru children" CStyleName="dpad_up_down_tabs_thru_children_bit" pascalStyleName="DpadUpDownTabsThruChildrenBit" />
+          <Bit name="dpad left right tabs thru children" CStyleName="dpad_left_right_tabs_thru_children_bit" pascalStyleName="DpadLeftRightTabsThruChildrenBit" />
+          <Bit name="dpad up down tabs thru list items" CStyleName="dpad_up_down_tabs_thru_list_items_bit" pascalStyleName="DpadUpDownTabsThruListItemsBit" />
+          <Bit name="dpad left right tabs thru list items" CStyleName="dpad_left_right_tabs_thru_list_items_bit" pascalStyleName="DpadLeftRightTabsThruListItemsBit" />
+          <Bit name="dont focus a specific child widget" CStyleName="dont_focus_a_specific_child_widget_bit" pascalStyleName="DontFocusASpecificChildWidgetBit" />
+          <Bit name="pass unhandled events to all children" CStyleName="pass_unhandled_events_to_all_children_bit" pascalStyleName="PassUnhandledEventsToAllChildrenBit" />
+          <Bit name="render regardless of controller index" CStyleName="render_regardless_of_controller_index_bit" pascalStyleName="RenderRegardlessOfControllerIndexBit" />
+          <Bit name="pass handled events to all children" CStyleName="pass_handled_events_to_all_children_bit" pascalStyleName="PassHandledEventsToAllChildrenBit" />
+          <Bit name="return to main menu if no history" CStyleName="return_to_main_menu_if_no_history_bit" pascalStyleName="ReturnToMainMenuIfNoHistoryBit" />
+          <Bit name="always use tag controller index" CStyleName="always_use_tag_controller_index_bit" pascalStyleName="AlwaysUseTagControllerIndexBit" />
+          <Bit name="always use nifty render fx" CStyleName="always_use_nifty_render_fx_bit" pascalStyleName="AlwaysUseNiftyRenderFxBit" />
+          <Bit name="dont push history" CStyleName="dont_push_history_bit" pascalStyleName="DontPushHistoryBit" />
+          <Bit name="force handle mouse" CStyleName="force_handle_mouse_bit" pascalStyleName="ForceHandleMouseBit" />
+        </Options>
+      </LongFlags>
+      <LongInteger CStyleName="milliseconds_to_auto_close" pascalStyleName="MillisecondsToAutoClose" name="milliseconds to auto close" />
+      <LongInteger CStyleName="milliseconds_auto_close_fade_time" pascalStyleName="MillisecondsAutoCloseFadeTime" name="milliseconds auto close fade time" />
+      <TagReference CStyleName="background_bitmap" pascalStyleName="BackgroundBitmap" name="background bitmap">
+        <tag>bitmap</tag>
+      </TagReference>
+      <Block CStyleName="game_data_inputs" pascalStyleName="GameDataInputs" name="game data inputs" maxElementCount="64">
+        <Layout regolithID="block:game data inputs" internalName="game data inputs_block" name="game data inputs_block">
+          <FieldSet version="0" sizeofValue="36" isLatest="true">
+            <ShortEnum CStyleName="function" pascalStyleName="Function" name="function">
+              <Options regolithID="enum:function" CStyleName="function" pascalStyleName="Function">
+                <Enum name="null" CStyleName="null" pascalStyleName="Null" />
+                <Enum name="player settings menu update desc" CStyleName="player_settings_menu_update_desc" pascalStyleName="PlayerSettingsMenuUpdateDesc" />
+                <Enum name="unused" CStyleName="unused" pascalStyleName="Unused" />
+                <Enum name="playlist settings menu update desc" CStyleName="playlist_settings_menu_update_desc" pascalStyleName="PlaylistSettingsMenuUpdateDesc" />
+                <Enum name="gametype select menu update desc" CStyleName="gametype_select_menu_update_desc" pascalStyleName="GametypeSelectMenuUpdateDesc" />
+                <Enum name="multiplayer type menu update desc" CStyleName="multiplayer_type_menu_update_desc" pascalStyleName="MultiplayerTypeMenuUpdateDesc" />
+                <Enum name="solo level select update" CStyleName="solo_level_select_update" pascalStyleName="SoloLevelSelectUpdate" />
+                <Enum name="difficulty menu update desc" CStyleName="difficulty_menu_update_desc" pascalStyleName="DifficultyMenuUpdateDesc" />
+                <Enum name="build number textbox only" CStyleName="build_number_textbox_only" pascalStyleName="BuildNumberTextboxOnly" />
+                <Enum name="server list update" CStyleName="server_list_update" pascalStyleName="ServerListUpdate" />
+                <Enum name="network pregame status update" CStyleName="network_pregame_status_update" pascalStyleName="NetworkPregameStatusUpdate" />
+                <Enum name="splitscreen pregame status update" CStyleName="splitscreen_pregame_status_update" pascalStyleName="SplitscreenPregameStatusUpdate" />
+                <Enum name="net splitscreen prejoin players" CStyleName="net_splitscreen_prejoin_players" pascalStyleName="NetSplitscreenPrejoinPlayers" />
+                <Enum name="mp profile list update" CStyleName="mp_profile_list_update" pascalStyleName="MpProfileListUpdate" />
+                <Enum name="3wide player profile list update" CStyleName="_3wide_player_profile_list_update" pascalStyleName="3widePlayerProfileListUpdate" />
+                <Enum name="plyr prof edit select menu upd8" CStyleName="plyr_prof_edit_select_menu_upd8" pascalStyleName="PlyrProfEditSelectMenuUpd8" />
+                <Enum name="player profile small menu update" CStyleName="player_profile_small_menu_update" pascalStyleName="PlayerProfileSmallMenuUpdate" />
+                <Enum name="game settings lists text update" CStyleName="game_settings_lists_text_update" pascalStyleName="GameSettingsListsTextUpdate" />
+                <Enum name="solo game objective text" CStyleName="solo_game_objective_text" pascalStyleName="SoloGameObjectiveText" />
+                <Enum name="color picker update" CStyleName="color_picker_update" pascalStyleName="ColorPickerUpdate" />
+                <Enum name="game settings lists pic update" CStyleName="game_settings_lists_pic_update" pascalStyleName="GameSettingsListsPicUpdate" />
+                <Enum name="main menu fake animate" CStyleName="main_menu_fake_animate" pascalStyleName="MainMenuFakeAnimate" />
+                <Enum name="mp level select update" CStyleName="mp_level_select_update" pascalStyleName="MpLevelSelectUpdate" />
+                <Enum name="get active plyr profile name" CStyleName="get_active_plyr_profile_name" pascalStyleName="GetActivePlyrProfileName" />
+                <Enum name="get edit plyr profile name" CStyleName="get_edit_plyr_profile_name" pascalStyleName="GetEditPlyrProfileName" />
+                <Enum name="get edit game settings name" CStyleName="get_edit_game_settings_name" pascalStyleName="GetEditGameSettingsName" />
+                <Enum name="get active plyr profile color" CStyleName="get_active_plyr_profile_color" pascalStyleName="GetActivePlyrProfileColor" />
+                <Enum name="mp set textbox map name" CStyleName="mp_set_textbox_map_name" pascalStyleName="MpSetTextboxMapName" />
+                <Enum name="mp set textbox game ruleset" CStyleName="mp_set_textbox_game_ruleset" pascalStyleName="MpSetTextboxGameRuleset" />
+                <Enum name="mp set textbox teams noteams" CStyleName="mp_set_textbox_teams_noteams" pascalStyleName="MpSetTextboxTeamsNoteams" />
+                <Enum name="mp set textbox score limit" CStyleName="mp_set_textbox_score_limit" pascalStyleName="MpSetTextboxScoreLimit" />
+                <Enum name="mp set textbox score limit type" CStyleName="mp_set_textbox_score_limit_type" pascalStyleName="MpSetTextboxScoreLimitType" />
+                <Enum name="mp set bitmap for map" CStyleName="mp_set_bitmap_for_map" pascalStyleName="MpSetBitmapForMap" />
+                <Enum name="mp set bitmap for ruleset" CStyleName="mp_set_bitmap_for_ruleset" pascalStyleName="MpSetBitmapForRuleset" />
+                <Enum name="mp set textbox" CStyleName="mp_set_textbox" pascalStyleName="MpSetTextbox" />
+                <Enum name="mp edit profile set rule text" CStyleName="mp_edit_profile_set_rule_text" pascalStyleName="MpEditProfileSetRuleText" />
+                <Enum name="system link status check" CStyleName="system_link_status_check" pascalStyleName="SystemLinkStatusCheck" />
+                <Enum name="mp game directions" CStyleName="mp_game_directions" pascalStyleName="MpGameDirections" />
+                <Enum name="teams no teams bitmap update" CStyleName="teams_no_teams_bitmap_update" pascalStyleName="TeamsNoTeamsBitmapUpdate" />
+                <Enum name="warn if diff will nuke saved game" CStyleName="warn_if_diff_will_nuke_saved_game" pascalStyleName="WarnIfDiffWillNukeSavedGame" />
+                <Enum name="dim if no net cable" CStyleName="dim_if_no_net_cable" pascalStyleName="DimIfNoNetCable" />
+                <Enum name="pause game set textbox inverted" CStyleName="pause_game_set_textbox_inverted" pascalStyleName="PauseGameSetTextboxInverted" />
+                <Enum name="dim unless two controllers" CStyleName="dim_unless_two_controllers" pascalStyleName="DimUnlessTwoControllers" />
+                <Enum name="controls update menu" CStyleName="controls_update_menu" pascalStyleName="ControlsUpdateMenu" />
+                <Enum name="video menu update" CStyleName="video_menu_update" pascalStyleName="VideoMenuUpdate" />
+                <Enum name="gamespy screen update" CStyleName="gamespy_screen_update" pascalStyleName="GamespyScreenUpdate" />
+                <Enum name="common button bar update" CStyleName="common_button_bar_update" pascalStyleName="CommonButtonBarUpdate" />
+                <Enum name="gamepad update menu" CStyleName="gamepad_update_menu" pascalStyleName="GamepadUpdateMenu" />
+                <Enum name="server settings update" CStyleName="server_settings_update" pascalStyleName="ServerSettingsUpdate" />
+                <Enum name="audio menu update" CStyleName="audio_menu_update" pascalStyleName="AudioMenuUpdate" />
+                <Enum name="mp prof vehicles update" CStyleName="mp_prof_vehicles_update" pascalStyleName="MpProfVehiclesUpdate" />
+                <Enum name="solo map list update" CStyleName="solo_map_list_update" pascalStyleName="SoloMapListUpdate" />
+                <Enum name="mp map list update" CStyleName="mp_map_list_update" pascalStyleName="MpMapListUpdate" />
+                <Enum name="gt select list update" CStyleName="gt_select_list_update" pascalStyleName="GtSelectListUpdate" />
+                <Enum name="gt edit list update" CStyleName="gt_edit_list_update" pascalStyleName="GtEditListUpdate" />
+                <Enum name="load game list update" CStyleName="load_game_list_update" pascalStyleName="LoadGameListUpdate" />
+                <Enum name="checking for updates" CStyleName="checking_for_updates" pascalStyleName="CheckingForUpdates" />
+                <Enum name="direct ip connect update" CStyleName="direct_ip_connect_update" pascalStyleName="DirectIpConnectUpdate" />
+                <Enum name="network settings update" CStyleName="network_settings_update" pascalStyleName="NetworkSettingsUpdate" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Pad name="pad" length="32" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="event_handlers" pascalStyleName="EventHandlers" name="event handlers" maxElementCount="32">
+        <Layout regolithID="block:event handlers" internalName="event handlers_block" name="event handlers_block">
+          <FieldSet version="0" sizeofValue="72" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="close current widget" CStyleName="close_current_widget_bit" pascalStyleName="CloseCurrentWidgetBit" />
+                <Bit name="close other widget" CStyleName="close_other_widget_bit" pascalStyleName="CloseOtherWidgetBit" />
+                <Bit name="close all widgets" CStyleName="close_all_widgets_bit" pascalStyleName="CloseAllWidgetsBit" />
+                <Bit name="open widget" CStyleName="open_widget_bit" pascalStyleName="OpenWidgetBit" />
+                <Bit name="reload self" CStyleName="reload_self_bit" pascalStyleName="ReloadSelfBit" />
+                <Bit name="reload other widget" CStyleName="reload_other_widget_bit" pascalStyleName="ReloadOtherWidgetBit" />
+                <Bit name="give focus to widget" CStyleName="give_focus_to_widget_bit" pascalStyleName="GiveFocusToWidgetBit" />
+                <Bit name="run function" CStyleName="run_function_bit" pascalStyleName="RunFunctionBit" />
+                <Bit name="replace self w widget" CStyleName="replace_self_w_widget_bit" pascalStyleName="ReplaceSelfWWidgetBit" />
+                <Bit name="go back to previous widget" CStyleName="go_back_to_previous_widget_bit" pascalStyleName="GoBackToPreviousWidgetBit" />
+                <Bit name="run scenario script" CStyleName="run_scenario_script_bit" pascalStyleName="RunScenarioScriptBit" />
+                <Bit name="try to branch on failure" CStyleName="try_to_branch_on_failure_bit" pascalStyleName="TryToBranchOnFailureBit" />
+              </Options>
+            </LongFlags>
+            <ShortEnum CStyleName="event_type" pascalStyleName="EventType" name="event type">
+              <Options regolithID="enum:event_type" CStyleName="event_type" pascalStyleName="EventType">
+                <Enum name="a button" CStyleName="a_button" pascalStyleName="AButton" />
+                <Enum name="b button" CStyleName="b_button" pascalStyleName="BButton" />
+                <Enum name="x button" CStyleName="x_button" pascalStyleName="XButton" />
+                <Enum name="y button" CStyleName="y_button" pascalStyleName="YButton" />
+                <Enum name="black button" CStyleName="black_button" pascalStyleName="BlackButton" />
+                <Enum name="white button" CStyleName="white_button" pascalStyleName="WhiteButton" />
+                <Enum name="left trigger" CStyleName="left_trigger" pascalStyleName="LeftTrigger" />
+                <Enum name="right trigger" CStyleName="right_trigger" pascalStyleName="RightTrigger" />
+                <Enum name="dpad up" CStyleName="dpad_up" pascalStyleName="DpadUp" />
+                <Enum name="dpad down" CStyleName="dpad_down" pascalStyleName="DpadDown" />
+                <Enum name="dpad left" CStyleName="dpad_left" pascalStyleName="DpadLeft" />
+                <Enum name="dpad right" CStyleName="dpad_right" pascalStyleName="DpadRight" />
+                <Enum name="start button" CStyleName="start_button" pascalStyleName="StartButton" />
+                <Enum name="back button" CStyleName="back_button" pascalStyleName="BackButton" />
+                <Enum name="left thumb" CStyleName="left_thumb" pascalStyleName="LeftThumb" />
+                <Enum name="right thumb" CStyleName="right_thumb" pascalStyleName="RightThumb" />
+                <Enum name="left analog stick up" CStyleName="left_analog_stick_up" pascalStyleName="LeftAnalogStickUp" />
+                <Enum name="left analog stick down" CStyleName="left_analog_stick_down" pascalStyleName="LeftAnalogStickDown" />
+                <Enum name="left analog stick left" CStyleName="left_analog_stick_left" pascalStyleName="LeftAnalogStickLeft" />
+                <Enum name="left analog stick right" CStyleName="left_analog_stick_right" pascalStyleName="LeftAnalogStickRight" />
+                <Enum name="left analog stick up 1" CStyleName="left_analog_stick_up_1" pascalStyleName="LeftAnalogStickUp1" />
+                <Enum name="right analog stick down" CStyleName="right_analog_stick_down" pascalStyleName="RightAnalogStickDown" />
+                <Enum name="right analog stick left" CStyleName="right_analog_stick_left" pascalStyleName="RightAnalogStickLeft" />
+                <Enum name="right analog stick right" CStyleName="right_analog_stick_right" pascalStyleName="RightAnalogStickRight" />
+                <Enum name="created" CStyleName="created" pascalStyleName="Created" />
+                <Enum name="deleted" CStyleName="deleted" pascalStyleName="Deleted" />
+                <Enum name="get focus" CStyleName="get_focus" pascalStyleName="GetFocus" />
+                <Enum name="lose focus" CStyleName="lose_focus" pascalStyleName="LoseFocus" />
+                <Enum name="left mouse" CStyleName="left_mouse" pascalStyleName="LeftMouse" />
+                <Enum name="middle mouse" CStyleName="middle_mouse" pascalStyleName="MiddleMouse" />
+                <Enum name="right mouse" CStyleName="right_mouse" pascalStyleName="RightMouse" />
+                <Enum name="double click" CStyleName="double_click" pascalStyleName="DoubleClick" />
+                <Enum name="custom activation" CStyleName="custom_activation" pascalStyleName="CustomActivation" />
+                <Enum name="post render" CStyleName="post_render" pascalStyleName="PostRender" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="function" pascalStyleName="Function" name="function">
+              <Options regolithID="enum:function" CStyleName="function" pascalStyleName="Function">
+                <Enum name="null" CStyleName="null" pascalStyleName="Null" />
+                <Enum name="list goto next item" CStyleName="list_goto_next_item" pascalStyleName="ListGotoNextItem" />
+                <Enum name="list goto previous item" CStyleName="list_goto_previous_item" pascalStyleName="ListGotoPreviousItem" />
+                <Enum name="unused" CStyleName="unused" pascalStyleName="Unused" />
+                <Enum name="unused1" CStyleName="unused1" pascalStyleName="Unused1" />
+                <Enum name="initialize sp level list solo" CStyleName="initialize_sp_level_list_solo" pascalStyleName="InitializeSpLevelListSolo" />
+                <Enum name="initialize sp level list coop" CStyleName="initialize_sp_level_list_coop" pascalStyleName="InitializeSpLevelListCoop" />
+                <Enum name="dispose sp level list" CStyleName="dispose_sp_level_list" pascalStyleName="DisposeSpLevelList" />
+                <Enum name="solo level set map" CStyleName="solo_level_set_map" pascalStyleName="SoloLevelSetMap" />
+                <Enum name="set difficulty" CStyleName="set_difficulty" pascalStyleName="SetDifficulty" />
+                <Enum name="start new game" CStyleName="start_new_game" pascalStyleName="StartNewGame" />
+                <Enum name="pause game restart at checkpoint" CStyleName="pause_game_restart_at_checkpoint" pascalStyleName="PauseGameRestartAtCheckpoint" />
+                <Enum name="pause game restart level" CStyleName="pause_game_restart_level" pascalStyleName="PauseGameRestartLevel" />
+                <Enum name="pause game return to main menu" CStyleName="pause_game_return_to_main_menu" pascalStyleName="PauseGameReturnToMainMenu" />
+                <Enum name="clear multiplayer player joins" CStyleName="clear_multiplayer_player_joins" pascalStyleName="ClearMultiplayerPlayerJoins" />
+                <Enum name="join controller to mp game" CStyleName="join_controller_to_mp_game" pascalStyleName="JoinControllerToMpGame" />
+                <Enum name="initialize net game server list" CStyleName="initialize_net_game_server_list" pascalStyleName="InitializeNetGameServerList" />
+                <Enum name="start network game server" CStyleName="start_network_game_server" pascalStyleName="StartNetworkGameServer" />
+                <Enum name="dispose net game server list" CStyleName="dispose_net_game_server_list" pascalStyleName="DisposeNetGameServerList" />
+                <Enum name="shutdown network game" CStyleName="shutdown_network_game" pascalStyleName="ShutdownNetworkGame" />
+                <Enum name="net game join from server list" CStyleName="net_game_join_from_server_list" pascalStyleName="NetGameJoinFromServerList" />
+                <Enum name="split screen game initialize" CStyleName="split_screen_game_initialize" pascalStyleName="SplitScreenGameInitialize" />
+                <Enum name="coop game initialize" CStyleName="coop_game_initialize" pascalStyleName="CoopGameInitialize" />
+                <Enum name="main menu intialize" CStyleName="main_menu_intialize" pascalStyleName="MainMenuIntialize" />
+                <Enum name="mp type menu initialize" CStyleName="mp_type_menu_initialize" pascalStyleName="MpTypeMenuInitialize" />
+                <Enum name="pick play stage for quick start" CStyleName="pick_play_stage_for_quick_start" pascalStyleName="PickPlayStageForQuickStart" />
+                <Enum name="mp level list initialize" CStyleName="mp_level_list_initialize" pascalStyleName="MpLevelListInitialize" />
+                <Enum name="mp level list dispose" CStyleName="mp_level_list_dispose" pascalStyleName="MpLevelListDispose" />
+                <Enum name="mp level select" CStyleName="mp_level_select" pascalStyleName="MpLevelSelect" />
+                <Enum name="mp profiles list initialize" CStyleName="mp_profiles_list_initialize" pascalStyleName="MpProfilesListInitialize" />
+                <Enum name="mp profiles list dispose" CStyleName="mp_profiles_list_dispose" pascalStyleName="MpProfilesListDispose" />
+                <Enum name="mp profile set for game" CStyleName="mp_profile_set_for_game" pascalStyleName="MpProfileSetForGame" />
+                <Enum name="swap player team" CStyleName="swap_player_team" pascalStyleName="SwapPlayerTeam" />
+                <Enum name="net game join player" CStyleName="net_game_join_player" pascalStyleName="NetGameJoinPlayer" />
+                <Enum name="player profile list initialize" CStyleName="player_profile_list_initialize" pascalStyleName="PlayerProfileListInitialize" />
+                <Enum name="player profile list dispose" CStyleName="player_profile_list_dispose" pascalStyleName="PlayerProfileListDispose" />
+                <Enum name="3wide plyr prof set for game" CStyleName="_3wide_plyr_prof_set_for_game" pascalStyleName="3widePlyrProfSetForGame" />
+                <Enum name="1wide plyr prof set for game" CStyleName="_1wide_plyr_prof_set_for_game" pascalStyleName="1widePlyrProfSetForGame" />
+                <Enum name="mp profile begin editing" CStyleName="mp_profile_begin_editing" pascalStyleName="MpProfileBeginEditing" />
+                <Enum name="mp profile end editing" CStyleName="mp_profile_end_editing" pascalStyleName="MpProfileEndEditing" />
+                <Enum name="mp profile set game engine" CStyleName="mp_profile_set_game_engine" pascalStyleName="MpProfileSetGameEngine" />
+                <Enum name="mp profile change name" CStyleName="mp_profile_change_name" pascalStyleName="MpProfileChangeName" />
+                <Enum name="mp profile set ctf rules" CStyleName="mp_profile_set_ctf_rules" pascalStyleName="MpProfileSetCtfRules" />
+                <Enum name="mp profile set koth rules" CStyleName="mp_profile_set_koth_rules" pascalStyleName="MpProfileSetKothRules" />
+                <Enum name="mp profile set slayer rules" CStyleName="mp_profile_set_slayer_rules" pascalStyleName="MpProfileSetSlayerRules" />
+                <Enum name="mp profile set oddball rules" CStyleName="mp_profile_set_oddball_rules" pascalStyleName="MpProfileSetOddballRules" />
+                <Enum name="mp profile set racing rules" CStyleName="mp_profile_set_racing_rules" pascalStyleName="MpProfileSetRacingRules" />
+                <Enum name="mp profile set player options" CStyleName="mp_profile_set_player_options" pascalStyleName="MpProfileSetPlayerOptions" />
+                <Enum name="mp profile set item options" CStyleName="mp_profile_set_item_options" pascalStyleName="MpProfileSetItemOptions" />
+                <Enum name="mp profile set indicator opts" CStyleName="mp_profile_set_indicator_opts" pascalStyleName="MpProfileSetIndicatorOpts" />
+                <Enum name="mp profile init game engine" CStyleName="mp_profile_init_game_engine" pascalStyleName="MpProfileInitGameEngine" />
+                <Enum name="mp profile init name" CStyleName="mp_profile_init_name" pascalStyleName="MpProfileInitName" />
+                <Enum name="mp profile init ctf rules" CStyleName="mp_profile_init_ctf_rules" pascalStyleName="MpProfileInitCtfRules" />
+                <Enum name="mp profile init koth rules" CStyleName="mp_profile_init_koth_rules" pascalStyleName="MpProfileInitKothRules" />
+                <Enum name="mp profile init slayer rules" CStyleName="mp_profile_init_slayer_rules" pascalStyleName="MpProfileInitSlayerRules" />
+                <Enum name="mp profile init oddball rules" CStyleName="mp_profile_init_oddball_rules" pascalStyleName="MpProfileInitOddballRules" />
+                <Enum name="mp profile init racing rules" CStyleName="mp_profile_init_racing_rules" pascalStyleName="MpProfileInitRacingRules" />
+                <Enum name="mp profile init player opts" CStyleName="mp_profile_init_player_opts" pascalStyleName="MpProfileInitPlayerOpts" />
+                <Enum name="mp profile init item options" CStyleName="mp_profile_init_item_options" pascalStyleName="MpProfileInitItemOptions" />
+                <Enum name="mp profile init indicator opts" CStyleName="mp_profile_init_indicator_opts" pascalStyleName="MpProfileInitIndicatorOpts" />
+                <Enum name="mp profile save changes" CStyleName="mp_profile_save_changes" pascalStyleName="MpProfileSaveChanges" />
+                <Enum name="color picker menu initialize" CStyleName="color_picker_menu_initialize" pascalStyleName="ColorPickerMenuInitialize" />
+                <Enum name="color picker menu dispose" CStyleName="color_picker_menu_dispose" pascalStyleName="ColorPickerMenuDispose" />
+                <Enum name="color picker select color" CStyleName="color_picker_select_color" pascalStyleName="ColorPickerSelectColor" />
+                <Enum name="player profile begin editing" CStyleName="player_profile_begin_editing" pascalStyleName="PlayerProfileBeginEditing" />
+                <Enum name="player profile end editing" CStyleName="player_profile_end_editing" pascalStyleName="PlayerProfileEndEditing" />
+                <Enum name="player profile change name" CStyleName="player_profile_change_name" pascalStyleName="PlayerProfileChangeName" />
+                <Enum name="player profile save changes" CStyleName="player_profile_save_changes" pascalStyleName="PlayerProfileSaveChanges" />
+                <Enum name="plyr prf init cntl settings" CStyleName="plyr_prf_init_cntl_settings" pascalStyleName="PlyrPrfInitCntlSettings" />
+                <Enum name="plyr prf init adv cntl set" CStyleName="plyr_prf_init_adv_cntl_set" pascalStyleName="PlyrPrfInitAdvCntlSet" />
+                <Enum name="plyr prf save cntl settings" CStyleName="plyr_prf_save_cntl_settings" pascalStyleName="PlyrPrfSaveCntlSettings" />
+                <Enum name="plyr prf save adv cntl set" CStyleName="plyr_prf_save_adv_cntl_set" pascalStyleName="PlyrPrfSaveAdvCntlSet" />
+                <Enum name="mp game player quit" CStyleName="mp_game_player_quit" pascalStyleName="MpGamePlayerQuit" />
+                <Enum name="main menu switch to solo game" CStyleName="main_menu_switch_to_solo_game" pascalStyleName="MainMenuSwitchToSoloGame" />
+                <Enum name="request del player profile" CStyleName="request_del_player_profile" pascalStyleName="RequestDelPlayerProfile" />
+                <Enum name="request del playlist profile" CStyleName="request_del_playlist_profile" pascalStyleName="RequestDelPlaylistProfile" />
+                <Enum name="final del player profile" CStyleName="final_del_player_profile" pascalStyleName="FinalDelPlayerProfile" />
+                <Enum name="final del playlist profile" CStyleName="final_del_playlist_profile" pascalStyleName="FinalDelPlaylistProfile" />
+                <Enum name="cancel profile delete" CStyleName="cancel_profile_delete" pascalStyleName="CancelProfileDelete" />
+                <Enum name="create edit playlist profile" CStyleName="create_edit_playlist_profile" pascalStyleName="CreateEditPlaylistProfile" />
+                <Enum name="create edit player profile" CStyleName="create_edit_player_profile" pascalStyleName="CreateEditPlayerProfile" />
+                <Enum name="net game speed start" CStyleName="net_game_speed_start" pascalStyleName="NetGameSpeedStart" />
+                <Enum name="net game delay start" CStyleName="net_game_delay_start" pascalStyleName="NetGameDelayStart" />
+                <Enum name="net server accept conx" CStyleName="net_server_accept_conx" pascalStyleName="NetServerAcceptConx" />
+                <Enum name="net server defer start" CStyleName="net_server_defer_start" pascalStyleName="NetServerDeferStart" />
+                <Enum name="net server allow start" CStyleName="net_server_allow_start" pascalStyleName="NetServerAllowStart" />
+                <Enum name="disable if no xdemos" CStyleName="disable_if_no_xdemos" pascalStyleName="DisableIfNoXdemos" />
+                <Enum name="run xdemos" CStyleName="run_xdemos" pascalStyleName="RunXdemos" />
+                <Enum name="sp reset controller choices" CStyleName="sp_reset_controller_choices" pascalStyleName="SpResetControllerChoices" />
+                <Enum name="sp set p1 controller choice" CStyleName="sp_set_p1_controller_choice" pascalStyleName="SpSetP1ControllerChoice" />
+                <Enum name="sp set p2 controller choice" CStyleName="sp_set_p2_controller_choice" pascalStyleName="SpSetP2ControllerChoice" />
+                <Enum name="error if no network connection" CStyleName="error_if_no_network_connection" pascalStyleName="ErrorIfNoNetworkConnection" />
+                <Enum name="start server if none advertised" CStyleName="start_server_if_none_advertised" pascalStyleName="StartServerIfNoneAdvertised" />
+                <Enum name="net game unjoin player" CStyleName="net_game_unjoin_player" pascalStyleName="NetGameUnjoinPlayer" />
+                <Enum name="close if not editing profile" CStyleName="close_if_not_editing_profile" pascalStyleName="CloseIfNotEditingProfile" />
+                <Enum name="exit to xbox dashboard" CStyleName="exit_to_xbox_dashboard" pascalStyleName="ExitToXboxDashboard" />
+                <Enum name="new campaign chosen" CStyleName="new_campaign_chosen" pascalStyleName="NewCampaignChosen" />
+                <Enum name="new campaign decision" CStyleName="new_campaign_decision" pascalStyleName="NewCampaignDecision" />
+                <Enum name="pop history stack once" CStyleName="pop_history_stack_once" pascalStyleName="PopHistoryStackOnce" />
+                <Enum name="difficulty menu init" CStyleName="difficulty_menu_init" pascalStyleName="DifficultyMenuInit" />
+                <Enum name="begin music fade out" CStyleName="begin_music_fade_out" pascalStyleName="BeginMusicFadeOut" />
+                <Enum name="new game if no plyr profiles" CStyleName="new_game_if_no_plyr_profiles" pascalStyleName="NewGameIfNoPlyrProfiles" />
+                <Enum name="exit gracefully to xbox dashboard" CStyleName="exit_gracefully_to_xbox_dashboard" pascalStyleName="ExitGracefullyToXboxDashboard" />
+                <Enum name="pause game invert pitch" CStyleName="pause_game_invert_pitch" pascalStyleName="PauseGameInvertPitch" />
+                <Enum name="start new coop game" CStyleName="start_new_coop_game" pascalStyleName="StartNewCoopGame" />
+                <Enum name="pause game invert spinner get" CStyleName="pause_game_invert_spinner_get" pascalStyleName="PauseGameInvertSpinnerGet" />
+                <Enum name="pause game invert spinner set" CStyleName="pause_game_invert_spinner_set" pascalStyleName="PauseGameInvertSpinnerSet" />
+                <Enum name="main menu quit game" CStyleName="main_menu_quit_game" pascalStyleName="MainMenuQuitGame" />
+                <Enum name="mouse emit accept event" CStyleName="mouse_emit_accept_event" pascalStyleName="MouseEmitAcceptEvent" />
+                <Enum name="mouse emit back event" CStyleName="mouse_emit_back_event" pascalStyleName="MouseEmitBackEvent" />
+                <Enum name="mouse emit dpad left event" CStyleName="mouse_emit_dpad_left_event" pascalStyleName="MouseEmitDpadLeftEvent" />
+                <Enum name="mouse emit dpad right event" CStyleName="mouse_emit_dpad_right_event" pascalStyleName="MouseEmitDpadRightEvent" />
+                <Enum name="mouse spinner 3wide click" CStyleName="mouse_spinner_3wide_click" pascalStyleName="MouseSpinner3wideClick" />
+                <Enum name="controls screen init" CStyleName="controls_screen_init" pascalStyleName="ControlsScreenInit" />
+                <Enum name="video screen init" CStyleName="video_screen_init" pascalStyleName="VideoScreenInit" />
+                <Enum name="controls begin binding" CStyleName="controls_begin_binding" pascalStyleName="ControlsBeginBinding" />
+                <Enum name="gamespy screen init" CStyleName="gamespy_screen_init" pascalStyleName="GamespyScreenInit" />
+                <Enum name="gamespy screen dispose" CStyleName="gamespy_screen_dispose" pascalStyleName="GamespyScreenDispose" />
+                <Enum name="gamespy select header" CStyleName="gamespy_select_header" pascalStyleName="GamespySelectHeader" />
+                <Enum name="gamespy select item" CStyleName="gamespy_select_item" pascalStyleName="GamespySelectItem" />
+                <Enum name="gamespy select button" CStyleName="gamespy_select_button" pascalStyleName="GamespySelectButton" />
+                <Enum name="plr prof init mouse set" CStyleName="plr_prof_init_mouse_set" pascalStyleName="PlrProfInitMouseSet" />
+                <Enum name="plr prof change mouse set" CStyleName="plr_prof_change_mouse_set" pascalStyleName="PlrProfChangeMouseSet" />
+                <Enum name="plr prof init audio set" CStyleName="plr_prof_init_audio_set" pascalStyleName="PlrProfInitAudioSet" />
+                <Enum name="plr prof change audio set" CStyleName="plr_prof_change_audio_set" pascalStyleName="PlrProfChangeAudioSet" />
+                <Enum name="plr prof change video set" CStyleName="plr_prof_change_video_set" pascalStyleName="PlrProfChangeVideoSet" />
+                <Enum name="controls screen dispose" CStyleName="controls_screen_dispose" pascalStyleName="ControlsScreenDispose" />
+                <Enum name="controls screen change set" CStyleName="controls_screen_change_set" pascalStyleName="ControlsScreenChangeSet" />
+                <Enum name="mouse emit x event" CStyleName="mouse_emit_x_event" pascalStyleName="MouseEmitXEvent" />
+                <Enum name="gamepad screen init" CStyleName="gamepad_screen_init" pascalStyleName="GamepadScreenInit" />
+                <Enum name="gamepad screen dispose" CStyleName="gamepad_screen_dispose" pascalStyleName="GamepadScreenDispose" />
+                <Enum name="gamepad screen change gamepads" CStyleName="gamepad_screen_change_gamepads" pascalStyleName="GamepadScreenChangeGamepads" />
+                <Enum name="gamepad screen select item" CStyleName="gamepad_screen_select_item" pascalStyleName="GamepadScreenSelectItem" />
+                <Enum name="mouse screen defaults" CStyleName="mouse_screen_defaults" pascalStyleName="MouseScreenDefaults" />
+                <Enum name="audio screen defaults" CStyleName="audio_screen_defaults" pascalStyleName="AudioScreenDefaults" />
+                <Enum name="video screen defaults" CStyleName="video_screen_defaults" pascalStyleName="VideoScreenDefaults" />
+                <Enum name="controls screen defaults" CStyleName="controls_screen_defaults" pascalStyleName="ControlsScreenDefaults" />
+                <Enum name="profile set edit begin" CStyleName="profile_set_edit_begin" pascalStyleName="ProfileSetEditBegin" />
+                <Enum name="profile manager delete" CStyleName="profile_manager_delete" pascalStyleName="ProfileManagerDelete" />
+                <Enum name="profile manager select" CStyleName="profile_manager_select" pascalStyleName="ProfileManagerSelect" />
+                <Enum name="gamespy dismiss error" CStyleName="gamespy_dismiss_error" pascalStyleName="GamespyDismissError" />
+                <Enum name="server settings init" CStyleName="server_settings_init" pascalStyleName="ServerSettingsInit" />
+                <Enum name="ss edit server name" CStyleName="ss_edit_server_name" pascalStyleName="SsEditServerName" />
+                <Enum name="ss edit server password" CStyleName="ss_edit_server_password" pascalStyleName="SsEditServerPassword" />
+                <Enum name="ss start game" CStyleName="ss_start_game" pascalStyleName="SsStartGame" />
+                <Enum name="video test dialog init" CStyleName="video_test_dialog_init" pascalStyleName="VideoTestDialogInit" />
+                <Enum name="video test dialog dispose" CStyleName="video_test_dialog_dispose" pascalStyleName="VideoTestDialogDispose" />
+                <Enum name="video test dialog accept" CStyleName="video_test_dialog_accept" pascalStyleName="VideoTestDialogAccept" />
+                <Enum name="gamespy dismiss filters" CStyleName="gamespy_dismiss_filters" pascalStyleName="GamespyDismissFilters" />
+                <Enum name="gamespy update filter settings" CStyleName="gamespy_update_filter_settings" pascalStyleName="GamespyUpdateFilterSettings" />
+                <Enum name="gamespy back handler" CStyleName="gamespy_back_handler" pascalStyleName="GamespyBackHandler" />
+                <Enum name="mouse spinner 1wide click" CStyleName="mouse_spinner_1wide_click" pascalStyleName="MouseSpinner1wideClick" />
+                <Enum name="controls back handler" CStyleName="controls_back_handler" pascalStyleName="ControlsBackHandler" />
+                <Enum name="controls advanced launch" CStyleName="controls_advanced_launch" pascalStyleName="ControlsAdvancedLaunch" />
+                <Enum name="controls advanced ok" CStyleName="controls_advanced_ok" pascalStyleName="ControlsAdvancedOk" />
+                <Enum name="mp pause menu open" CStyleName="mp_pause_menu_open" pascalStyleName="MpPauseMenuOpen" />
+                <Enum name="mp game options open" CStyleName="mp_game_options_open" pascalStyleName="MpGameOptionsOpen" />
+                <Enum name="mp choose team" CStyleName="mp_choose_team" pascalStyleName="MpChooseTeam" />
+                <Enum name="mp prof init vehicle options" CStyleName="mp_prof_init_vehicle_options" pascalStyleName="MpProfInitVehicleOptions" />
+                <Enum name="mp prof save vehicle options" CStyleName="mp_prof_save_vehicle_options" pascalStyleName="MpProfSaveVehicleOptions" />
+                <Enum name="single prev cl item activated" CStyleName="single_prev_cl_item_activated" pascalStyleName="SinglePrevClItemActivated" />
+                <Enum name="mp prof init teamplay options" CStyleName="mp_prof_init_teamplay_options" pascalStyleName="MpProfInitTeamplayOptions" />
+                <Enum name="mp prof save teamplay options" CStyleName="mp_prof_save_teamplay_options" pascalStyleName="MpProfSaveTeamplayOptions" />
+                <Enum name="mp game options choose" CStyleName="mp_game_options_choose" pascalStyleName="MpGameOptionsChoose" />
+                <Enum name="emit custom activation event" CStyleName="emit_custom_activation_event" pascalStyleName="EmitCustomActivationEvent" />
+                <Enum name="plr prof cancel audio set" CStyleName="plr_prof_cancel_audio_set" pascalStyleName="PlrProfCancelAudioSet" />
+                <Enum name="plr prof init network options" CStyleName="plr_prof_init_network_options" pascalStyleName="PlrProfInitNetworkOptions" />
+                <Enum name="plr prof save network options" CStyleName="plr_prof_save_network_options" pascalStyleName="PlrProfSaveNetworkOptions" />
+                <Enum name="credits post render" CStyleName="credits_post_render" pascalStyleName="CreditsPostRender" />
+                <Enum name="difficulty item select" CStyleName="difficulty_item_select" pascalStyleName="DifficultyItemSelect" />
+                <Enum name="credits initialize" CStyleName="credits_initialize" pascalStyleName="CreditsInitialize" />
+                <Enum name="credits dispose" CStyleName="credits_dispose" pascalStyleName="CreditsDispose" />
+                <Enum name="gamespy get patch" CStyleName="gamespy_get_patch" pascalStyleName="GamespyGetPatch" />
+                <Enum name="video screen dispose" CStyleName="video_screen_dispose" pascalStyleName="VideoScreenDispose" />
+                <Enum name="campaign menu init" CStyleName="campaign_menu_init" pascalStyleName="CampaignMenuInit" />
+                <Enum name="campaign menu continue" CStyleName="campaign_menu_continue" pascalStyleName="CampaignMenuContinue" />
+                <Enum name="load game menu init" CStyleName="load_game_menu_init" pascalStyleName="LoadGameMenuInit" />
+                <Enum name="load game menu dispose" CStyleName="load_game_menu_dispose" pascalStyleName="LoadGameMenuDispose" />
+                <Enum name="load game menu activated" CStyleName="load_game_menu_activated" pascalStyleName="LoadGameMenuActivated" />
+                <Enum name="solo menu save checkpoint" CStyleName="solo_menu_save_checkpoint" pascalStyleName="SoloMenuSaveCheckpoint" />
+                <Enum name="mp type set mode" CStyleName="mp_type_set_mode" pascalStyleName="MpTypeSetMode" />
+                <Enum name="checking for updates ok" CStyleName="checking_for_updates_ok" pascalStyleName="CheckingForUpdatesOk" />
+                <Enum name="checking for updates dismiss" CStyleName="checking_for_updates_dismiss" pascalStyleName="CheckingForUpdatesDismiss" />
+                <Enum name="direct ip connect init" CStyleName="direct_ip_connect_init" pascalStyleName="DirectIpConnectInit" />
+                <Enum name="direct ip connect go" CStyleName="direct_ip_connect_go" pascalStyleName="DirectIpConnectGo" />
+                <Enum name="direct ip edit field" CStyleName="direct_ip_edit_field" pascalStyleName="DirectIpEditField" />
+                <Enum name="network settings edit a port" CStyleName="network_settings_edit_a_port" pascalStyleName="NetworkSettingsEditAPort" />
+                <Enum name="network settings defaults" CStyleName="network_settings_defaults" pascalStyleName="NetworkSettingsDefaults" />
+                <Enum name="load game menu delete request" CStyleName="load_game_menu_delete_request" pascalStyleName="LoadGameMenuDeleteRequest" />
+                <Enum name="load game menu delete finish" CStyleName="load_game_menu_delete_finish" pascalStyleName="LoadGameMenuDeleteFinish" />
+              </Options>
+            </ShortEnum>
+            <TagReference CStyleName="widget_tag" pascalStyleName="WidgetTag" name="widget tag">
+              <tag>ui_widget_definition</tag>
+            </TagReference>
+            <TagReference CStyleName="sound_effect" pascalStyleName="SoundEffect" name="sound effect">
+              <tag>sound</tag>
+            </TagReference>
+            <String CStyleName="script" pascalStyleName="Script" name="script" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="search_and_replace_functions" pascalStyleName="SearchAndReplaceFunctions" name="search and replace functions" maxElementCount="32">
+        <Layout regolithID="block:search and replace functions" internalName="search and replace functions_block" name="search and replace functions_block">
+          <FieldSet version="0" sizeofValue="34" isLatest="true">
+            <String CStyleName="search_string" pascalStyleName="SearchString" name="search string" />
+            <ShortEnum CStyleName="replace_function" pascalStyleName="ReplaceFunction" name="replace function">
+              <Options regolithID="enum:replace_function" CStyleName="replace_function" pascalStyleName="ReplaceFunction">
+                <Enum name="null" CStyleName="null" pascalStyleName="Null" />
+                <Enum name="widget s controller" CStyleName="widget_s_controller" pascalStyleName="WidgetSController" />
+                <Enum name="build number" CStyleName="build_number" pascalStyleName="BuildNumber" />
+                <Enum name="pid" CStyleName="pid" pascalStyleName="Pid" />
+              </Options>
+            </ShortEnum>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="128" />
+      <TagReference CStyleName="text_label_unicode_strings_list" pascalStyleName="TextLabelUnicodeStringsList" name="text label unicode strings list">
+        <tag>unicode_string_list</tag>
+      </TagReference>
+      <TagReference CStyleName="text_font" pascalStyleName="TextFont" name="text font">
+        <tag>font</tag>
+      </TagReference>
+      <RealArgbColor CStyleName="text_color" pascalStyleName="TextColor" name="text color" />
+      <ShortEnum CStyleName="justification" pascalStyleName="Justification" name="justification">
+        <Options regolithID="enum:justification" CStyleName="justification" pascalStyleName="Justification">
+          <Enum name="left justify" CStyleName="left_justify" pascalStyleName="LeftJustify" />
+          <Enum name="right justify" CStyleName="right_justify" pascalStyleName="RightJustify" />
+          <Enum name="center justify" CStyleName="center_justify" pascalStyleName="CenterJustify" />
+        </Options>
+      </ShortEnum>
+      <LongFlags CStyleName="flags_1" pascalStyleName="Flags1" name="flags 1">
+        <Options regolithID="enum:flags_1" CStyleName="flags_1" pascalStyleName="Flags1">
+          <Bit name="editable" CStyleName="editable_bit" pascalStyleName="EditableBit" />
+          <Bit name="password" CStyleName="password_bit" pascalStyleName="PasswordBit" />
+          <Bit name="flashing" CStyleName="flashing_bit" pascalStyleName="FlashingBit" />
+          <Bit name="dont do that weird focus test" CStyleName="dont_do_that_weird_focus_test_bit" pascalStyleName="DontDoThatWeirdFocusTestBit" />
+        </Options>
+      </LongFlags>
+      <Pad name="pad" length="12" />
+      <ShortInteger CStyleName="string_list_index" pascalStyleName="StringListIndex" name="string list index" />
+      <ShortInteger CStyleName="horiz_offset" pascalStyleName="HorizOffset" name="horiz offset" />
+      <ShortInteger CStyleName="vert_offset" pascalStyleName="VertOffset" name="vert offset" />
+      <Pad name="pad" length="26" />
+      <Pad name="pad" length="2" />
+      <LongFlags CStyleName="flags_2" pascalStyleName="Flags2" name="flags 2">
+        <Options regolithID="enum:flags_2" CStyleName="flags_2" pascalStyleName="Flags2">
+          <Bit name="list items generated in code" CStyleName="list_items_generated_in_code_bit" pascalStyleName="ListItemsGeneratedInCodeBit" />
+          <Bit name="list items from string list tag" CStyleName="list_items_from_string_list_tag_bit" pascalStyleName="ListItemsFromStringListTagBit" />
+          <Bit name="list items only one tooltip" CStyleName="list_items_only_one_tooltip_bit" pascalStyleName="ListItemsOnlyOneTooltipBit" />
+          <Bit name="list single preview no scroll" CStyleName="list_single_preview_no_scroll_bit" pascalStyleName="ListSinglePreviewNoScrollBit" />
+        </Options>
+      </LongFlags>
+      <TagReference CStyleName="list_header_bitmap" pascalStyleName="ListHeaderBitmap" name="list header bitmap">
+        <tag>bitmap</tag>
+      </TagReference>
+      <TagReference CStyleName="list_footer_bitmap" pascalStyleName="ListFooterBitmap" name="list footer bitmap">
+        <tag>bitmap</tag>
+      </TagReference>
+      <Rectangle2D CStyleName="header_bounds" pascalStyleName="HeaderBounds" name="header bounds" />
+      <Rectangle2D CStyleName="footer_bounds" pascalStyleName="FooterBounds" name="footer bounds" />
+      <Pad name="pad" length="32" />
+      <TagReference CStyleName="extended_description_widget" pascalStyleName="ExtendedDescriptionWidget" name="extended description widget">
+        <tag>ui_widget_definition</tag>
+      </TagReference>
+      <Pad name="pad" length="32" />
+      <Pad name="pad" length="256" />
+      <Block CStyleName="conditional_widgets" pascalStyleName="ConditionalWidgets" name="conditional widgets" maxElementCount="32">
+        <Layout regolithID="block:conditional widgets" internalName="conditional widgets_block" name="conditional widgets_block">
+          <FieldSet version="0" sizeofValue="80" isLatest="true">
+            <TagReference CStyleName="widget_tag" pascalStyleName="WidgetTag" name="widget tag">
+              <tag>ui_widget_definition</tag>
+            </TagReference>
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="load if event handler function fails" CStyleName="load_if_event_handler_function_fails_bit" pascalStyleName="LoadIfEventHandlerFunctionFailsBit" />
+              </Options>
+            </LongFlags>
+            <ShortInteger CStyleName="custom_controller_index" pascalStyleName="CustomControllerIndex" name="custom controller index" />
+            <Pad name="pad" length="26" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="128" />
+      <Pad name="pad" length="128" />
+      <Block CStyleName="child_widgets" pascalStyleName="ChildWidgets" name="child widgets" maxElementCount="32">
+        <Layout regolithID="block:child widgets" internalName="child widgets_block" name="child widgets_block">
+          <FieldSet version="0" sizeofValue="80" isLatest="true">
+            <TagReference CStyleName="widget_tag" pascalStyleName="WidgetTag" name="widget tag">
+              <tag>ui_widget_definition</tag>
+            </TagReference>
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="use custom controller index" CStyleName="use_custom_controller_index_bit" pascalStyleName="UseCustomControllerIndexBit" />
+              </Options>
+            </LongFlags>
+            <ShortInteger CStyleName="custom_controller_index" pascalStyleName="CustomControllerIndex" name="custom controller index" />
+            <ShortInteger CStyleName="vertical_offset" pascalStyleName="VerticalOffset" name="vertical offset" />
+            <ShortInteger CStyleName="horizontal_offset" pascalStyleName="HorizontalOffset" name="horizontal offset" />
+            <Pad name="pad" length="22" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

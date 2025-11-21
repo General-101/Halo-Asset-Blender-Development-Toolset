@@ -1,0 +1,413 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="nhdt" name="new_hud_definition" version="1">
+  <Layout regolithID="block:new_hud_definition" internalName="new_hud_definition_block" name="new_hud_definition">
+    <FieldSet version="0" sizeofValue="60" sizeofSource="sizeof(struct s_new_hud_definition)" isLatest="true">
+      <TagReference CStyleName="do_not_use" pascalStyleName="DoNotUse" name="DO NOT USE">
+        <tag>nhdt</tag>
+      </TagReference>
+      <Block CStyleName="bitmap_widgets" pascalStyleName="BitmapWidgets" name="bitmap widgets" maxElementCount="256" maxElementCountSource="k_maximum_hud_bitmap_widgets_per_tag">
+        <Layout regolithID="block:hud_bitmap_widgets" internalName="hud_bitmap_widgets" name="hud_bitmap_widgets">
+          <FieldSet version="0" sizeofValue="120" sizeofSource="sizeof(struct s_hud_bitmap_widget_definition)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" />
+            <Struct>
+              <Layout regolithID="structure:hud_widget_inputs" tag="hwis" internalName="hud_widget_inputs_struct" backingBlockInternalName="hud_widget_inputs_struct_block" name="hud_widget_inputs_struct">
+                <FieldSet version="0" sizeofValue="0" sizeofSource="0" />
+                <FieldSet version="1" sizeofValue="4" sizeofSource="sizeof(s_hud_widget_inputs_definition)" isLatest="true">
+                  <Explanation name="widget inputs" />
+                  <CharEnum CStyleName="input_1" pascalStyleName="Input1" name="input 1">
+                    <Options regolithID="enum:hud_widget_inputs" CStyleName="hud_widget_inputs" pascalStyleName="HudWidgetInputs">
+                      <Enum name="BASIC zero" CStyleName="basic_zero" pascalStyleName="BasicZero" />
+                      <Enum name="BASIC one" CStyleName="basic_one" pascalStyleName="BasicOne" />
+                      <Enum name="BASIC time" CStyleName="basic_time" pascalStyleName="BasicTime" />
+                      <Enum name="BASIC global hud fade" CStyleName="basic_global_hud_fade" pascalStyleName="BasicGlobalHudFade" />
+                      <Enum name="..." CStyleName="unnamed_4" pascalStyleName="Unnamed4" />
+                      <Enum name="..." CStyleName="unnamed_5" pascalStyleName="Unnamed5" />
+                      <Enum name="..." CStyleName="unnamed_6" pascalStyleName="Unnamed6" />
+                      <Enum name="..." CStyleName="unnamed_7" pascalStyleName="Unnamed7" />
+                      <Enum name="..." CStyleName="unnamed_8" pascalStyleName="Unnamed8" />
+                      <Enum name="..." CStyleName="unnamed_9" pascalStyleName="Unnamed9" />
+                      <Enum name="..." CStyleName="unnamed_10" pascalStyleName="Unnamed10" />
+                      <Enum name="..." CStyleName="unnamed_11" pascalStyleName="Unnamed11" />
+                      <Enum name="..." CStyleName="unnamed_12" pascalStyleName="Unnamed12" />
+                      <Enum name="..." CStyleName="unnamed_13" pascalStyleName="Unnamed13" />
+                      <Enum name="..." CStyleName="unnamed_14" pascalStyleName="Unnamed14" />
+                      <Enum name="..." CStyleName="unnamed_15" pascalStyleName="Unnamed15" />
+                      <Enum name="UNIT shield" CStyleName="unit_shield" pascalStyleName="UnitShield" />
+                      <Enum name="UNIT body" CStyleName="unit_body" pascalStyleName="UnitBody" />
+                      <Enum name="UNIT autoaimed" CStyleName="unit_autoaimed" pascalStyleName="UnitAutoaimed" />
+                      <Enum name="UNIT has no grenades" CStyleName="unit_has_no_grenades" pascalStyleName="UnitHasNoGrenades" />
+                      <Enum name="UNIT frag gren cnt" CStyleName="unit_frag_gren_cnt" pascalStyleName="UnitFragGrenCnt" />
+                      <Enum name="UNIT plasma gren cnt" CStyleName="unit_plasma_gren_cnt" pascalStyleName="UnitPlasmaGrenCnt" />
+                      <Enum name="UNIT time on dpl shld" CStyleName="unit_time_on_dpl_shld" pascalStyleName="UnitTimeOnDplShld" />
+                      <Enum name="UNIT zoom fraction" CStyleName="unit_zoom_fraction" pascalStyleName="UnitZoomFraction" />
+                      <Enum name="UNIT camo value" CStyleName="unit_camo_value" pascalStyleName="UnitCamoValue" />
+                      <Enum name="..." CStyleName="unnamed_25" pascalStyleName="Unnamed25" />
+                      <Enum name="..." CStyleName="unnamed_26" pascalStyleName="Unnamed26" />
+                      <Enum name="..." CStyleName="unnamed_27" pascalStyleName="Unnamed27" />
+                      <Enum name="..." CStyleName="unnamed_28" pascalStyleName="Unnamed28" />
+                      <Enum name="..." CStyleName="unnamed_29" pascalStyleName="Unnamed29" />
+                      <Enum name="..." CStyleName="unnamed_30" pascalStyleName="Unnamed30" />
+                      <Enum name="..." CStyleName="unnamed_31" pascalStyleName="Unnamed31" />
+                      <Enum name="PARENT shield" CStyleName="parent_shield" pascalStyleName="ParentShield" />
+                      <Enum name="PARENT body" CStyleName="parent_body" pascalStyleName="ParentBody" />
+                      <Enum name="..." CStyleName="unnamed_34" pascalStyleName="Unnamed34" />
+                      <Enum name="..." CStyleName="unnamed_35" pascalStyleName="Unnamed35" />
+                      <Enum name="..." CStyleName="unnamed_36" pascalStyleName="Unnamed36" />
+                      <Enum name="..." CStyleName="unnamed_37" pascalStyleName="Unnamed37" />
+                      <Enum name="..." CStyleName="unnamed_38" pascalStyleName="Unnamed38" />
+                      <Enum name="..." CStyleName="unnamed_39" pascalStyleName="Unnamed39" />
+                      <Enum name="..." CStyleName="unnamed_40" pascalStyleName="Unnamed40" />
+                      <Enum name="..." CStyleName="unnamed_41" pascalStyleName="Unnamed41" />
+                      <Enum name="..." CStyleName="unnamed_42" pascalStyleName="Unnamed42" />
+                      <Enum name="..." CStyleName="unnamed_43" pascalStyleName="Unnamed43" />
+                      <Enum name="..." CStyleName="unnamed_44" pascalStyleName="Unnamed44" />
+                      <Enum name="..." CStyleName="unnamed_45" pascalStyleName="Unnamed45" />
+                      <Enum name="..." CStyleName="unnamed_46" pascalStyleName="Unnamed46" />
+                      <Enum name="..." CStyleName="unnamed_47" pascalStyleName="Unnamed47" />
+                      <Enum name="WEAPON clip ammo" CStyleName="weapon_clip_ammo" pascalStyleName="WeaponClipAmmo" />
+                      <Enum name="WEAPON heat" CStyleName="weapon_heat" pascalStyleName="WeaponHeat" />
+                      <Enum name="WEAPON battery" CStyleName="weapon_battery" pascalStyleName="WeaponBattery" />
+                      <Enum name="WEAPON total_ammo" CStyleName="weapon_total_ammo" pascalStyleName="WeaponTotalAmmo" />
+                      <Enum name="WEAPON barrel spin" CStyleName="weapon_barrel_spin" pascalStyleName="WeaponBarrelSpin" />
+                      <Enum name="WEAPON overheated" CStyleName="weapon_overheated" pascalStyleName="WeaponOverheated" />
+                      <Enum name="WEAPON clip ammo fraction" CStyleName="weapon_clip_ammo_fraction" pascalStyleName="WeaponClipAmmoFraction" />
+                      <Enum name="WEAPON time on overheat" CStyleName="weapon_time_on_overheat" pascalStyleName="WeaponTimeOnOverheat" />
+                      <Enum name="WEAPON battery fraction" CStyleName="weapon_battery_fraction" pascalStyleName="WeaponBatteryFraction" />
+                      <Enum name="WEAPON locking fraction" CStyleName="weapon_locking_fraction" pascalStyleName="WeaponLockingFraction" />
+                      <Enum name="..." CStyleName="unnamed_58" pascalStyleName="Unnamed58" />
+                      <Enum name="..." CStyleName="unnamed_59" pascalStyleName="Unnamed59" />
+                      <Enum name="..." CStyleName="unnamed_60" pascalStyleName="Unnamed60" />
+                      <Enum name="..." CStyleName="unnamed_61" pascalStyleName="Unnamed61" />
+                      <Enum name="..." CStyleName="unnamed_62" pascalStyleName="Unnamed62" />
+                      <Enum name="..." CStyleName="unnamed_63" pascalStyleName="Unnamed63" />
+                      <Enum name="..." CStyleName="unnamed_64" pascalStyleName="Unnamed64" />
+                      <Enum name="user score fraction" CStyleName="user_score_fraction" pascalStyleName="UserScoreFraction" />
+                      <Enum name="other user score fraction" CStyleName="other_user_score_fraction" pascalStyleName="OtherUserScoreFraction" />
+                      <Enum name="user winning" CStyleName="user_winning" pascalStyleName="UserWinning" />
+                      <Enum name="bomb arming amount" CStyleName="bomb_arming_amount" pascalStyleName="BombArmingAmount" />
+                      <Enum name="..." CStyleName="unnamed_69" pascalStyleName="Unnamed69" />
+                      <Enum name="..." CStyleName="unnamed_70" pascalStyleName="Unnamed70" />
+                      <Enum name="..." CStyleName="unnamed_71" pascalStyleName="Unnamed71" />
+                      <Enum name="..." CStyleName="unnamed_72" pascalStyleName="Unnamed72" />
+                      <Enum name="..." CStyleName="unnamed_73" pascalStyleName="Unnamed73" />
+                      <Enum name="..." CStyleName="unnamed_74" pascalStyleName="Unnamed74" />
+                      <Enum name="..." CStyleName="unnamed_75" pascalStyleName="Unnamed75" />
+                      <Enum name="..." CStyleName="unnamed_76" pascalStyleName="Unnamed76" />
+                      <Enum name="..." CStyleName="unnamed_77" pascalStyleName="Unnamed77" />
+                      <Enum name="..." CStyleName="unnamed_78" pascalStyleName="Unnamed78" />
+                      <Enum name="..." CStyleName="unnamed_79" pascalStyleName="Unnamed79" />
+                      <Enum name="..." CStyleName="unnamed_80" pascalStyleName="Unnamed80" />
+                    </Options>
+                  </CharEnum>
+                  <CharEnum CStyleName="input_2" pascalStyleName="Input2" name="input 2">
+                    <OptionsXRef>enum:hud_widget_inputs</OptionsXRef>
+                  </CharEnum>
+                  <CharEnum CStyleName="input_3" pascalStyleName="Input3" name="input 3">
+                    <OptionsXRef>enum:hud_widget_inputs</OptionsXRef>
+                  </CharEnum>
+                  <CharEnum CStyleName="input_4" pascalStyleName="Input4" name="input 4">
+                    <OptionsXRef>enum:hud_widget_inputs</OptionsXRef>
+                  </CharEnum>
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Struct>
+              <Layout regolithID="structure:hud_widget_state_definition" tag="hwsd" internalName="hud_widget_state_definition_struct" backingBlockInternalName="hud_widget_state_definition_struct_block" name="hud_widget_state_definition_struct">
+                <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(struct s_hud_widget_state_definition)" isLatest="true">
+                  <Explanation name="widget state" description="this section is split up into YES and NO flags.&#xA;a widget will draw if any of it's YES flags are true,&#xA;but it will NOT draw if any of it's NO flags are true.&#xA;" />
+                  <WordFlags CStyleName="y_unit_flags" pascalStyleName="YUnitFlags" name="[Y] unit flags">
+                    <Options regolithID="enum:hud_widget_unit_flags" CStyleName="hud_widget_unit_flags" pascalStyleName="HudWidgetUnitFlags">
+                      <Bit name="default" CStyleName="default_value_bit" pascalStyleName="DefaultBit" />
+                      <Bit name="grenade type is NONE" CStyleName="grenade_type_is_none_bit" pascalStyleName="GrenadeTypeIsNoneBit" />
+                      <Bit name="grenade type is frag" CStyleName="grenade_type_is_frag_bit" pascalStyleName="GrenadeTypeIsFragBit" />
+                      <Bit name="grenade type is plasma" CStyleName="grenade_type_is_plasma_bit" pascalStyleName="GrenadeTypeIsPlasmaBit" />
+                      <Bit name="unit is single wielding" CStyleName="unit_is_single_wielding_bit" pascalStyleName="UnitIsSingleWieldingBit" />
+                      <Bit name="unit is dual wielding" CStyleName="unit_is_dual_wielding_bit" pascalStyleName="UnitIsDualWieldingBit" />
+                      <Bit name="unit is unzoomed" CStyleName="unit_is_unzoomed_bit" pascalStyleName="UnitIsUnzoomedBit" />
+                      <Bit name="unit is zoomed (level 1)" CStyleName="unit_is_zoomed_level_1_bit" pascalStyleName="UnitIsZoomedLevel1Bit" />
+                      <Bit name="unit is zoomed (level 2)" CStyleName="unit_is_zoomed_level_2_bit" pascalStyleName="UnitIsZoomedLevel2Bit" />
+                      <Bit name="grenades disabled" CStyleName="grenades_disabled_bit" pascalStyleName="GrenadesDisabledBit" />
+                      <Bit name="binoculars enabled" CStyleName="binoculars_enabled_bit" pascalStyleName="BinocularsEnabledBit" />
+                      <Bit name="motion sensor enabled" CStyleName="motion_sensor_enabled_bit" pascalStyleName="MotionSensorEnabledBit" />
+                      <Bit name="shield enabled" CStyleName="shield_enabled_bit" pascalStyleName="ShieldEnabledBit" />
+                      <Bit name="dervish" CStyleName="dervish_bit" pascalStyleName="DervishBit" />
+                    </Options>
+                  </WordFlags>
+                  <WordFlags CStyleName="y_extra_flags" pascalStyleName="YExtraFlags" name="[Y] extra flags">
+                    <Options regolithID="enum:hud_widget_autoaim_flags" CStyleName="hud_widget_autoaim_flags" pascalStyleName="HudWidgetAutoaimFlags">
+                      <Bit name="autoaim-friendly" CStyleName="autoaim_friendly_bit" pascalStyleName="AutoaimFriendlyBit" />
+                      <Bit name="autoaim-plasma" CStyleName="autoaim_plasma_bit" pascalStyleName="AutoaimPlasmaBit" />
+                      <Bit name="autoaim-headshot" CStyleName="autoaim_headshot_bit" pascalStyleName="AutoaimHeadshotBit" />
+                      <Bit name="autoaim-vulnerable" CStyleName="autoaim_vulnerable_bit" pascalStyleName="AutoaimVulnerableBit" />
+                      <Bit name="autoaim-invincible" CStyleName="autoaim_invincible_bit" pascalStyleName="AutoaimInvincibleBit" />
+                    </Options>
+                  </WordFlags>
+                  <WordFlags CStyleName="y_weapon_flags" pascalStyleName="YWeaponFlags" name="[Y] weapon flags">
+                    <Options regolithID="enum:hud_widget_state_weapon_flags" CStyleName="hud_widget_state_weapon_flags" pascalStyleName="HudWidgetStateWeaponFlags">
+                      <Bit name="primary weapon" CStyleName="primary_weapon_bit" pascalStyleName="PrimaryWeaponBit" />
+                      <Bit name="secondary weapon" CStyleName="secondary_weapon_bit" pascalStyleName="SecondaryWeaponBit" />
+                      <Bit name="backpack weapon" CStyleName="backpack_weapon_bit" pascalStyleName="BackpackWeaponBit" />
+                      <Bit name="age below cutoff" CStyleName="age_below_cutoff_bit" pascalStyleName="AgeBelowCutoffBit" />
+                      <Bit name="clip below cutoff" CStyleName="clip_below_cutoff_bit" pascalStyleName="ClipBelowCutoffBit" />
+                      <Bit name="total below cutoff" CStyleName="total_below_cutoff_bit" pascalStyleName="TotalBelowCutoffBit" />
+                      <Bit name="overheated" CStyleName="overheated_bit" pascalStyleName="OverheatedBit" />
+                      <Bit name="out of ammo" CStyleName="out_of_ammo_bit" pascalStyleName="OutOfAmmoBit" />
+                      <Bit name="lock target available" CStyleName="lock_target_available_bit" pascalStyleName="LockTargetAvailableBit" />
+                      <Bit name="locking" CStyleName="locking_bit" pascalStyleName="LockingBit" />
+                      <Bit name="locked" CStyleName="locked_bit" pascalStyleName="LockedBit" />
+                    </Options>
+                  </WordFlags>
+                  <WordFlags CStyleName="y_game_engine_state_flags" pascalStyleName="YGameEngineStateFlags" name="[Y] game engine state flags">
+                    <Options regolithID="enum:hud_widget_state_flags" CStyleName="hud_widget_state_flags" pascalStyleName="HudWidgetStateFlags">
+                      <Bit name="campaign solo" CStyleName="campaign_solo_bit" pascalStyleName="CampaignSoloBit" />
+                      <Bit name="campaign coop" CStyleName="campaign_coop_bit" pascalStyleName="CampaignCoopBit" />
+                      <Bit name="free-for-all" CStyleName="free_for_all_bit" pascalStyleName="FreeForAllBit" />
+                      <Bit name="team game" CStyleName="team_game_bit" pascalStyleName="TeamGameBit" />
+                      <Bit name="user leading" CStyleName="user_leading_bit" pascalStyleName="UserLeadingBit" />
+                      <Bit name="user not leading" CStyleName="user_not_leading_bit" pascalStyleName="UserNotLeadingBit" />
+                      <Bit name="timed game" CStyleName="timed_game_bit" pascalStyleName="TimedGameBit" />
+                      <Bit name="untimed game" CStyleName="untimed_game_bit" pascalStyleName="UntimedGameBit" />
+                      <Bit name="other score valid" CStyleName="other_score_valid_bit" pascalStyleName="OtherScoreValidBit" />
+                      <Bit name="other score invalid" CStyleName="other_score_invalid_bit" pascalStyleName="OtherScoreInvalidBit" />
+                      <Bit name="player is arming bomb" CStyleName="player_is_arming_bomb_bit" pascalStyleName="PlayerIsArmingBombBit" />
+                      <Bit name="player talking" CStyleName="player_talking_bit" pascalStyleName="PlayerTalkingBit" />
+                    </Options>
+                  </WordFlags>
+                  <UselessPad length="8" />
+                  <WordFlags CStyleName="n_unit_flags" pascalStyleName="NUnitFlags" name="[N] unit flags">
+                    <OptionsXRef>enum:hud_widget_unit_flags</OptionsXRef>
+                  </WordFlags>
+                  <WordFlags CStyleName="n_extra_flags" pascalStyleName="NExtraFlags" name="[N] extra flags">
+                    <OptionsXRef>enum:hud_widget_autoaim_flags</OptionsXRef>
+                  </WordFlags>
+                  <WordFlags CStyleName="n_weapon_flags" pascalStyleName="NWeaponFlags" name="[N] weapon flags">
+                    <OptionsXRef>enum:hud_widget_state_weapon_flags</OptionsXRef>
+                  </WordFlags>
+                  <WordFlags CStyleName="n_game_engine_state_flags" pascalStyleName="NGameEngineStateFlags" name="[N] game engine state flags">
+                    <OptionsXRef>enum:hud_widget_state_flags</OptionsXRef>
+                  </WordFlags>
+                  <UselessPad length="8" />
+                  <CharInteger CStyleName="age_cutoff" pascalStyleName="AgeCutoff" name="age cutoff" />
+                  <CharInteger CStyleName="clip_cutoff" pascalStyleName="ClipCutoff" name="clip cutoff" />
+                  <CharInteger CStyleName="total_cutoff" pascalStyleName="TotalCutoff" name="total cutoff" />
+                  <Pad sizeOfSource="sizeof(byte)" length="1" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <ShortEnum CStyleName="anchor" pascalStyleName="Anchor" name="anchor">
+              <Options regolithID="enum:hud_bitmap_widget_anchor" CStyleName="hud_bitmap_widget_anchor" pascalStyleName="HudBitmapWidgetAnchor">
+                <Enum name="health and shield" CStyleName="health_and_shield" pascalStyleName="HealthAndShield" />
+                <Enum name="weapon hud" CStyleName="weapon_hud" pascalStyleName="WeaponHud" />
+                <Enum name="motion sensor" CStyleName="motion_sensor" pascalStyleName="MotionSensor" />
+                <Enum name="scoreboard" CStyleName="scoreboard" pascalStyleName="Scoreboard" />
+                <Enum name="crosshair" CStyleName="crosshair" pascalStyleName="Crosshair" />
+                <Enum name="lock-on target" CStyleName="lock_on_target" pascalStyleName="LockOnTarget" />
+                <Enum name="top center" CStyleName="top_center" pascalStyleName="TopCenter" />
+                <Enum name="bottom center" CStyleName="bottom_center" pascalStyleName="BottomCenter" />
+                <Enum name="left center" CStyleName="left_center" pascalStyleName="LeftCenter" />
+                <Enum name="right center" CStyleName="right_center" pascalStyleName="RightCenter" />
+              </Options>
+            </ShortEnum>
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:hud_bitmap_widgets_flags" CStyleName="hud_bitmap_widgets_flags" pascalStyleName="HudBitmapWidgetsFlags">
+                <Bit name="flip horizontally" CStyleName="flip_horizontally_bit" pascalStyleName="FlipHorizontallyBit" />
+                <Bit name="flip vertically" CStyleName="flip_vertically_bit" pascalStyleName="FlipVerticallyBit" />
+                <Bit name="(scope) mirror horizontally" CStyleName="scope_mirror_horizontally_bit" pascalStyleName="ScopeMirrorHorizontallyBit" />
+                <Bit name="(scope) mirror vertically" CStyleName="scope_mirror_vertically_bit" pascalStyleName="ScopeMirrorVerticallyBit" />
+                <Bit name="(scope) stretch" CStyleName="scope_stretch_bit" pascalStyleName="ScopeStretchBit" />
+              </Options>
+            </WordFlags>
+            <TagReference CStyleName="bitmap" pascalStyleName="Bitmap" name="bitmap">
+              <tag>bitm</tag>
+            </TagReference>
+            <TagReference CStyleName="shader" pascalStyleName="Shader" name="shader">
+              <tag>shad</tag>
+            </TagReference>
+            <CharInteger CStyleName="fullscreen_sequence_index" pascalStyleName="FullscreenSequenceIndex" name="fullscreen sequence index" />
+            <CharInteger CStyleName="halfscreen_sequence_index" pascalStyleName="HalfscreenSequenceIndex" name="halfscreen sequence index" />
+            <CharInteger CStyleName="quarterscreen_sequence_index" pascalStyleName="QuarterscreenSequenceIndex" name="quarterscreen sequence index" />
+            <Pad sizeOfSource="sizeof(byte)" length="1" />
+            <Point2D CStyleName="fullscreen_offset" pascalStyleName="FullscreenOffset" name="fullscreen offset" />
+            <Point2D CStyleName="halfscreen_offset" pascalStyleName="HalfscreenOffset" name="halfscreen offset" />
+            <Point2D CStyleName="quarterscreen_offset" pascalStyleName="QuarterscreenOffset" name="quarterscreen offset" />
+            <RealPoint2D CStyleName="fullscreen_registration_point" pascalStyleName="FullscreenRegistrationPoint" name="fullscreen registration point" />
+            <RealPoint2D CStyleName="halfscreen_registration_point" pascalStyleName="HalfscreenRegistrationPoint" name="halfscreen registration point" />
+            <RealPoint2D CStyleName="quarterscreen_registration_point" pascalStyleName="QuarterscreenRegistrationPoint" name="quarterscreen registration point" />
+            <Block CStyleName="effect" pascalStyleName="Effect" name="effect" maxElementCount="1">
+              <Layout regolithID="block:hud_widget_effect" internalName="hud_widget_effect_block" name="hud_widget_effect_block">
+                <FieldSet version="0" sizeofValue="124" sizeofSource="sizeof(struct s_hud_widget_effect_definition)" isLatest="true">
+                  <Explanation name="WIDGET EFFECTS" description="allow the scaling, rotation, and offsetting of widgets" />
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:hud_widget_effect_flags" CStyleName="hud_widget_effect_flags" pascalStyleName="HudWidgetEffectFlags">
+                      <Bit name="apply scale" CStyleName="apply_scale_bit" pascalStyleName="ApplyScaleBit" />
+                      <Bit name="apply theta" CStyleName="apply_theta_bit" pascalStyleName="ApplyThetaBit" />
+                      <Bit name="apply offset" CStyleName="apply_offset_bit" pascalStyleName="ApplyOffsetBit" />
+                    </Options>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <Explanation name="horizontal and vertical scale" />
+                  <Struct name="your mom">
+                    <Layout regolithID="structure:hud_widget_effect_function" tag="hwef" internalName="hud_widget_effect_function_struct" backingBlockInternalName="hud_widget_effect_function_struct_block" name="hud_widget_effect_function_struct">
+                      <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(struct s_hud_widget_effect_function)" isLatest="true">
+                        <StringId CStyleName="input_name" pascalStyleName="InputName" name="input name" />
+                        <StringId CStyleName="range_name" pascalStyleName="RangeName" name="range name" />
+                        <Real CStyleName="time_period_in_seconds" pascalStyleName="TimePeriodInSeconds" name="time period in seconds" />
+                        <Struct CStyleName="function" pascalStyleName="Function" name="function">
+                          <LayoutXRef>structure:scalar_function</LayoutXRef>
+                        </Struct>
+                      </FieldSet>
+                    </Layout>
+                  </Struct>
+                  <Struct name="your mom">
+                    <LayoutXRef>structure:hud_widget_effect_function</LayoutXRef>
+                  </Struct>
+                  <Explanation name="theta" />
+                  <Struct name="your mom">
+                    <LayoutXRef>structure:hud_widget_effect_function</LayoutXRef>
+                  </Struct>
+                  <Explanation name="horizontal and vertical offset" />
+                  <Struct name="your mom">
+                    <LayoutXRef>structure:hud_widget_effect_function</LayoutXRef>
+                  </Struct>
+                  <Struct name="your mom">
+                    <LayoutXRef>structure:hud_widget_effect_function</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <ShortEnum CStyleName="special_hud_type" pascalStyleName="SpecialHudType" name="special hud type">
+              <Options regolithID="enum:hud_special_type" CStyleName="hud_special_type" pascalStyleName="HudSpecialType">
+                <Enum name="unspecial" CStyleName="unspecial" pascalStyleName="Unspecial" />
+                <Enum name="s.b. player emblem" CStyleName="sb_player_emblem" pascalStyleName="SbPlayerEmblem" />
+                <Enum name="s.b. other player emblem" CStyleName="sb_other_player_emblem" pascalStyleName="SbOtherPlayerEmblem" />
+                <Enum name="s.b. player score meter" CStyleName="sb_player_score_meter" pascalStyleName="SbPlayerScoreMeter" />
+                <Enum name="s.b. other player score meter" CStyleName="sb_other_player_score_meter" pascalStyleName="SbOtherPlayerScoreMeter" />
+                <Enum name="unit shield meter" CStyleName="unit_shield_meter" pascalStyleName="UnitShieldMeter" />
+                <Enum name="motion sensor" CStyleName="motion_sensor" pascalStyleName="MotionSensor" />
+                <Enum name="territory meter" CStyleName="territory_meter" pascalStyleName="TerritoryMeter" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="text_widgets" pascalStyleName="TextWidgets" name="text widgets" maxElementCount="256" maxElementCountSource="k_maximum_hud_text_widgets_per_tag">
+        <Layout regolithID="block:hud_text_widgets" internalName="hud_text_widgets" name="hud_text_widgets">
+          <FieldSet version="0" sizeofValue="96" sizeofSource="sizeof(struct s_hud_text_widget_definition)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" />
+            <Struct>
+              <LayoutXRef>structure:hud_widget_inputs</LayoutXRef>
+            </Struct>
+            <Struct>
+              <LayoutXRef>structure:hud_widget_state_definition</LayoutXRef>
+            </Struct>
+            <ShortEnum CStyleName="anchor" pascalStyleName="Anchor" name="anchor">
+              <OptionsXRef>enum:hud_bitmap_widget_anchor</OptionsXRef>
+            </ShortEnum>
+            <Explanation name="FLAGS" description="string is a number: treats the inputted string id as a function name, not a string name&#xA;&#xA;force 2-digit number: when used in combination with above, forces output to be a 2-digit numberwith leading zeros if necessary&#xA;&#xA;force 3-digit number: same as above, but with 3 digits instead of 2&#xA;&#xA;" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:hud_text_widgets_flags" CStyleName="hud_text_widgets_flags" pascalStyleName="HudTextWidgetsFlags">
+                <Bit name="string is a number" CStyleName="string_is_a_number_bit" pascalStyleName="StringIsANumberBit" />
+                <Bit name="force 2-digit number" CStyleName="force_2_digit_number_bit" pascalStyleName="Force2DigitNumberBit" />
+                <Bit name="force 3-digit number" CStyleName="force_3_digit_number_bit" pascalStyleName="Force3DigitNumberBit" />
+                <Bit name="talking player hack" CStyleName="talking_player_hack_bit" pascalStyleName="TalkingPlayerHackBit" />
+              </Options>
+            </WordFlags>
+            <TagReference CStyleName="shader" pascalStyleName="Shader" name="shader">
+              <tag>shad</tag>
+            </TagReference>
+            <StringId CStyleName="string" pascalStyleName="String" name="string" />
+            <ShortEnum CStyleName="justification" pascalStyleName="Justification" name="justification">
+              <Options regolithID="enum:hud_text_justification" CStyleName="hud_text_justification" pascalStyleName="HudTextJustification">
+                <Enum name="left" CStyleName="left" pascalStyleName="Left" />
+                <Enum name="center" CStyleName="center" pascalStyleName="Center" />
+                <Enum name="right" CStyleName="right" pascalStyleName="Right" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <UselessPad length="12" />
+            <CharEnum CStyleName="fullscreen_font_index" pascalStyleName="FullscreenFontIndex" name="fullscreen font index">
+              <Options regolithID="enum:hud_text_widgets_font_type" CStyleName="hud_text_widgets_font_type" pascalStyleName="HudTextWidgetsFontType">
+                <Enum name="default" CStyleName="default_value" pascalStyleName="Default" />
+                <Enum name="number font" CStyleName="number_font" pascalStyleName="NumberFont" />
+              </Options>
+            </CharEnum>
+            <CharEnum CStyleName="halfscreen_font_index" pascalStyleName="HalfscreenFontIndex" name="halfscreen font index">
+              <OptionsXRef>enum:hud_text_widgets_font_type</OptionsXRef>
+            </CharEnum>
+            <CharEnum CStyleName="quarterscreen_font_index" pascalStyleName="QuarterscreenFontIndex" name="quarterscreen font index">
+              <OptionsXRef>enum:hud_text_widgets_font_type</OptionsXRef>
+            </CharEnum>
+            <Pad sizeOfSource="sizeof(byte)" length="1" />
+            <Real CStyleName="fullscreen_scale" pascalStyleName="FullscreenScale" name="fullscreen scale" />
+            <Real CStyleName="halfscreen_scale" pascalStyleName="HalfscreenScale" name="halfscreen scale" />
+            <Real CStyleName="quarterscreen_scale" pascalStyleName="QuarterscreenScale" name="quarterscreen scale" />
+            <Point2D CStyleName="fullscreen_offset" pascalStyleName="FullscreenOffset" name="fullscreen offset" />
+            <Point2D CStyleName="halfscreen_offset" pascalStyleName="HalfscreenOffset" name="halfscreen offset" />
+            <Point2D CStyleName="quarterscreen_offset" pascalStyleName="QuarterscreenOffset" name="quarterscreen offset" />
+            <Block CStyleName="effect" pascalStyleName="Effect" name="effect" maxElementCount="1">
+              <LayoutXRef>block:hud_widget_effect</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Struct CStyleName="dashlight_data" pascalStyleName="DashlightData" name="dashlight data">
+        <Layout regolithID="structure:new_hud_dashlight_data" tag="nhd2" internalName="new_hud_dashlight_data_struct" backingBlockInternalName="new_hud_dashlight_data_struct_block" name="new_hud_dashlight_data_struct">
+          <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct s_new_hud_dashlight_data)" isLatest="true">
+            <Explanation name="dashlight data" description="only relevant to new hud tags for weapons" />
+            <ShortInteger CStyleName="low_clip_cutoff" pascalStyleName="LowClipCutoff" name="low clip cutoff" description="the cutoff for showing the reload dashlight" />
+            <ShortInteger CStyleName="low_ammo_cutoff" pascalStyleName="LowAmmoCutoff" name="low ammo cutoff" description="the cutoff for showing the low ammo dashlight" />
+            <Real CStyleName="age_cutoff" pascalStyleName="AgeCutoff" name="age cutoff" description="the age cutoff for showing the low battery dashlight" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Block CStyleName="screen_effect_widgets" pascalStyleName="ScreenEffectWidgets" name="screen effect widgets" maxElementCount="4" maxElementCountSource="k_maximum_hud_screen_effect_widgets_per_tag">
+        <Layout regolithID="block:hud_screen_effect_widgets" internalName="hud_screen_effect_widgets" name="hud_screen_effect_widgets">
+          <FieldSet version="0" sizeofValue="112" sizeofSource="sizeof(struct s_hud_screen_effect_widget_definition)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" />
+            <Struct>
+              <LayoutXRef>structure:hud_widget_inputs</LayoutXRef>
+            </Struct>
+            <Struct>
+              <LayoutXRef>structure:hud_widget_state_definition</LayoutXRef>
+            </Struct>
+            <ShortEnum CStyleName="anchor" pascalStyleName="Anchor" name="anchor">
+              <OptionsXRef>enum:hud_bitmap_widget_anchor</OptionsXRef>
+            </ShortEnum>
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:hud_screen_effect_widgets_flags" CStyleName="hud_screen_effect_widgets_flags" pascalStyleName="HudScreenEffectWidgetsFlags">
+                <Bit name="unused" CStyleName="unused0_bit" pascalStyleName="Unused0Bit" />
+              </Options>
+            </WordFlags>
+            <TagReference CStyleName="bitmap" pascalStyleName="Bitmap" name="bitmap">
+              <tag>bitm</tag>
+            </TagReference>
+            <TagReference CStyleName="fullscreen_screen_effect" pascalStyleName="FullscreenScreenEffect" name="fullscreen screen effect">
+              <tag>egor</tag>
+            </TagReference>
+            <Struct CStyleName="waa" pascalStyleName="Waa" name="waa">
+              <Layout regolithID="structure:screen_effect_bonus" tag="sebs" internalName="screen_effect_bonus_struct" backingBlockInternalName="screen_effect_bonus_struct_block" name="screen_effect_bonus_struct">
+                <FieldSet version="0" sizeofValue="0" sizeofSource="0" />
+                <FieldSet version="1" sizeofValue="32" sizeofSource="sizeof(struct tag_reference)*2" isLatest="true">
+                  <TagReference CStyleName="halfscreen_screen_effect" pascalStyleName="HalfscreenScreenEffect" name="halfscreen screen effect">
+                    <tag>egor</tag>
+                  </TagReference>
+                  <TagReference CStyleName="quarterscreen_screen_effect" pascalStyleName="QuarterscreenScreenEffect" name="quarterscreen screen effect">
+                    <tag>egor</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <CharInteger CStyleName="fullscreen_sequence_index" pascalStyleName="FullscreenSequenceIndex" name="fullscreen sequence index" />
+            <CharInteger CStyleName="halfscreen_sequence_index" pascalStyleName="HalfscreenSequenceIndex" name="halfscreen sequence index" />
+            <CharInteger CStyleName="quarterscreen_sequence_index" pascalStyleName="QuarterscreenSequenceIndex" name="quarterscreen sequence index" />
+            <Pad sizeOfSource="sizeof(byte)" length="1" />
+            <Point2D CStyleName="fullscreen_offset" pascalStyleName="FullscreenOffset" name="fullscreen offset" />
+            <Point2D CStyleName="halfscreen_offset" pascalStyleName="HalfscreenOffset" name="halfscreen offset" />
+            <Point2D CStyleName="quarterscreen_offset" pascalStyleName="QuarterscreenOffset" name="quarterscreen offset" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

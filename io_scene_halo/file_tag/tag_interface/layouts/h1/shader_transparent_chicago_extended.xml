@@ -1,0 +1,485 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="scex" name="shader_transparent_chicago_extended" version="1">
+  <Layout regolithID="block:shader_transparent_chicago_extended" internalName="shader_transparent_chicago_extended_block" name="shader_transparent_chicago_extended">
+    <FieldSet version="0" sizeofValue="120" sizeofSource="sizeof(struct shader_transparent_chicago_extended_group)" isLatest="true">
+      <Explanation name="Radiosity" />
+      <Struct CStyleName="radiosity" pascalStyleName="Radiosity" name="radiosity">
+        <Layout regolithID="structure:shader_radiosity_properties" internalName="shader_radiosity_properties_struct" backingBlockInternalName="shader_radiosity_properties_struct_block" name="shader radiosity properties">
+          <FieldSet version="0" sizeofValue="32" isLatest="true">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="simple parameterization" CStyleName="simple_parameterization_bit" pascalStyleName="SimpleParameterizationBit" />
+                <Bit name="ignore normals" CStyleName="ignore_normals_bit" pascalStyleName="IgnoreNormalsBit" />
+                <Bit name="transparent lit" CStyleName="transparent_lit_bit" pascalStyleName="TransparentLitBit" />
+              </Options>
+            </WordFlags>
+            <ShortEnum CStyleName="detail_level" pascalStyleName="DetailLevel" name="detail level">
+              <Options regolithID="enum:detail_level" CStyleName="detail_level" pascalStyleName="DetailLevel">
+                <Enum name="high" CStyleName="high" pascalStyleName="High" />
+                <Enum name="medium" CStyleName="medium" pascalStyleName="Medium" />
+                <Enum name="low" CStyleName="low" pascalStyleName="Low" />
+                <Enum name="turd" CStyleName="turd" pascalStyleName="Turd" />
+              </Options>
+            </ShortEnum>
+            <Real CStyleName="power" pascalStyleName="Power" name="power" />
+            <RealRgbColor CStyleName="color_of_emitted_light" pascalStyleName="ColorOfEmittedLight" name="color of emitted light" />
+            <RealRgbColor CStyleName="tint_color" pascalStyleName="TintColor" name="tint color" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Physics" />
+      <Struct CStyleName="physics" pascalStyleName="Physics" name="physics">
+        <Layout regolithID="structure:shader_physics_properties" internalName="shader_physics_properties_struct" backingBlockInternalName="shader_physics_properties_struct_block" name="shader physics properties">
+          <FieldSet version="0" sizeofValue="8" isLatest="true">
+            <Pad name="pad" length="2" />
+            <ShortEnum CStyleName="material_type" pascalStyleName="MaterialType" name="material type">
+              <Options regolithID="enum:material_type" CStyleName="material_type" pascalStyleName="MaterialType">
+                <Enum name="dirt" CStyleName="dirt" pascalStyleName="Dirt" />
+                <Enum name="sand" CStyleName="sand" pascalStyleName="Sand" />
+                <Enum name="stone" CStyleName="stone" pascalStyleName="Stone" />
+                <Enum name="snow" CStyleName="snow" pascalStyleName="Snow" />
+                <Enum name="wood" CStyleName="wood" pascalStyleName="Wood" />
+                <Enum name="metal hollow" CStyleName="metal_hollow" pascalStyleName="MetalHollow" />
+                <Enum name="metal thin" CStyleName="metal_thin" pascalStyleName="MetalThin" />
+                <Enum name="metal thick" CStyleName="metal_thick" pascalStyleName="MetalThick" />
+                <Enum name="rubber" CStyleName="rubber" pascalStyleName="Rubber" />
+                <Enum name="glass" CStyleName="glass" pascalStyleName="Glass" />
+                <Enum name="force field" CStyleName="force_field" pascalStyleName="ForceField" />
+                <Enum name="grunt" CStyleName="grunt" pascalStyleName="Grunt" />
+                <Enum name="hunter armor" CStyleName="hunter_armor" pascalStyleName="HunterArmor" />
+                <Enum name="hunter skin" CStyleName="hunter_skin" pascalStyleName="HunterSkin" />
+                <Enum name="elite" CStyleName="elite" pascalStyleName="Elite" />
+                <Enum name="jackal" CStyleName="jackal" pascalStyleName="Jackal" />
+                <Enum name="jackal energy shield" CStyleName="jackal_energy_shield" pascalStyleName="JackalEnergyShield" />
+                <Enum name="engineer skin" CStyleName="engineer_skin" pascalStyleName="EngineerSkin" />
+                <Enum name="engineer force field" CStyleName="engineer_force_field" pascalStyleName="EngineerForceField" />
+                <Enum name="flood combat form" CStyleName="flood_combat_form" pascalStyleName="FloodCombatForm" />
+                <Enum name="flood carrier form" CStyleName="flood_carrier_form" pascalStyleName="FloodCarrierForm" />
+                <Enum name="cyborg armor" CStyleName="cyborg_armor" pascalStyleName="CyborgArmor" />
+                <Enum name="cyborg energy shield" CStyleName="cyborg_energy_shield" pascalStyleName="CyborgEnergyShield" />
+                <Enum name="human armor" CStyleName="human_armor" pascalStyleName="HumanArmor" />
+                <Enum name="human skin" CStyleName="human_skin" pascalStyleName="HumanSkin" />
+                <Enum name="sentinel" CStyleName="sentinel" pascalStyleName="Sentinel" />
+                <Enum name="monitor" CStyleName="monitor" pascalStyleName="Monitor" />
+                <Enum name="plastic" CStyleName="plastic" pascalStyleName="Plastic" />
+                <Enum name="water" CStyleName="water" pascalStyleName="Water" />
+                <Enum name="leaves" CStyleName="leaves" pascalStyleName="Leaves" />
+                <Enum name="elite energy shield" CStyleName="elite_energy_shield" pascalStyleName="EliteEnergyShield" />
+                <Enum name="ice" CStyleName="ice" pascalStyleName="Ice" />
+                <Enum name="hunter shield" CStyleName="hunter_shield" pascalStyleName="HunterShield" />
+              </Options>
+            </ShortEnum>
+            <ShortInteger CStyleName="type" pascalStyleName="Type" name="type" cacheOnly="true" unsigned="true" />
+            <Pad name="pad" length="2" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Transparent Chicago Extended Shader" description="This works the same as shader_transparent_chicago, but it supports 2-stage maps for 2003s low-end potato PCs that have no business running games more complex than Hearts.&#10;Use shader_transparent_chicago, instead, since its the same thing but less annoying." />
+      <Explanation name="Properties" />
+      <Struct CStyleName="properties" pascalStyleName="Properties" name="properties">
+        <Layout regolithID="structure:shader_transparent_properties" internalName="shader_transparent_properties_struct" backingBlockInternalName="shader_transparent_properties_struct_block" name="shader transparent properties">
+          <FieldSet version="0" sizeofValue="44" isLatest="true">
+            <CharInteger CStyleName="numeric_counter_limit" pascalStyleName="NumericCounterLimit" name="numeric counter limit" unsigned="true" />
+            <ByteFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="alpha tested" CStyleName="alpha_tested_bit" pascalStyleName="AlphaTestedBit" />
+                <Bit name="decal" CStyleName="decal_bit" pascalStyleName="DecalBit" />
+                <Bit name="two sided" CStyleName="two_sided_bit" pascalStyleName="TwoSidedBit" />
+                <Bit name="first map is in screenspace" CStyleName="first_map_is_in_screenspace_bit" pascalStyleName="FirstMapIsInScreenspaceBit" />
+                <Bit name="draw before water" CStyleName="draw_before_water_bit" pascalStyleName="DrawBeforeWaterBit" />
+                <Bit name="ignore effect" CStyleName="ignore_effect_bit" pascalStyleName="IgnoreEffectBit" />
+                <Bit name="scale first map with distance" CStyleName="scale_first_map_with_distance_bit" pascalStyleName="ScaleFirstMapWithDistanceBit" />
+                <Bit name="numeric" CStyleName="numeric_bit" pascalStyleName="NumericBit" />
+              </Options>
+            </ByteFlags>
+            <ShortEnum CStyleName="first_map_type" pascalStyleName="FirstMapType" name="first map type">
+              <Options regolithID="enum:first_map_type" CStyleName="first_map_type" pascalStyleName="FirstMapType">
+                <Enum name="2d map" CStyleName="_2d_map" pascalStyleName="2dMap" />
+                <Enum name="first map is reflection cube map" CStyleName="first_map_is_reflection_cube_map" pascalStyleName="FirstMapIsReflectionCubeMap" />
+                <Enum name="first map is object centered cube map" CStyleName="first_map_is_object_centered_cube_map" pascalStyleName="FirstMapIsObjectCenteredCubeMap" />
+                <Enum name="first map is viewer centered cube map" CStyleName="first_map_is_viewer_centered_cube_map" pascalStyleName="FirstMapIsViewerCenteredCubeMap" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="framebuffer_blend_function" pascalStyleName="FramebufferBlendFunction" name="framebuffer blend function">
+              <Options regolithID="enum:framebuffer_blend_function" CStyleName="framebuffer_blend_function" pascalStyleName="FramebufferBlendFunction">
+                <Enum name="alpha blend" CStyleName="alpha_blend" pascalStyleName="AlphaBlend" />
+                <Enum name="multiply" CStyleName="multiply" pascalStyleName="Multiply" />
+                <Enum name="double multiply" CStyleName="double_multiply" pascalStyleName="DoubleMultiply" />
+                <Enum name="add" CStyleName="add" pascalStyleName="Add" />
+                <Enum name="subtract" CStyleName="subtract" pascalStyleName="Subtract" />
+                <Enum name="component min" CStyleName="component_min" pascalStyleName="ComponentMin" />
+                <Enum name="component max" CStyleName="component_max" pascalStyleName="ComponentMax" />
+                <Enum name="alpha multiply add" CStyleName="alpha_multiply_add" pascalStyleName="AlphaMultiplyAdd" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="framebuffer_fade_mode" pascalStyleName="FramebufferFadeMode" name="framebuffer fade mode">
+              <Options regolithID="enum:framebuffer_fade_mode" CStyleName="framebuffer_fade_mode" pascalStyleName="FramebufferFadeMode">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="fade when perpendicular" CStyleName="fade_when_perpendicular" pascalStyleName="FadeWhenPerpendicular" />
+                <Enum name="fade when parallel" CStyleName="fade_when_parallel" pascalStyleName="FadeWhenParallel" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="framebuffer_fade_source" pascalStyleName="FramebufferFadeSource" name="framebuffer fade source">
+              <Options regolithID="enum:framebuffer_fade_source" CStyleName="framebuffer_fade_source" pascalStyleName="FramebufferFadeSource">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Explanation name="Lens Flares" />
+            <Struct CStyleName="lens_flares" pascalStyleName="LensFlares" name="lens flares">
+              <Layout regolithID="structure:shader_lens_flares" internalName="shader_lens_flares_struct" backingBlockInternalName="shader_lens_flares_struct_block" name="shader lens flares">
+                <FieldSet version="0" sizeofValue="20" isLatest="true">
+                  <Real CStyleName="lens_flare_spacing" pascalStyleName="LensFlareSpacing" name="lens flare spacing" />
+                  <TagReference CStyleName="lens_flare" pascalStyleName="LensFlare" name="lens flare">
+                    <tag>lens_flare</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Block CStyleName="extra_layers" pascalStyleName="ExtraLayers" name="extra layers" maxElementCount="4">
+              <Layout regolithID="block:extra layers" internalName="extra layers_block" name="extra layers_block">
+                <FieldSet version="0" sizeofValue="16" isLatest="true">
+                  <TagReference CStyleName="shader" pascalStyleName="Shader" name="shader">
+                    <tag>shader</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Block CStyleName="_4_stage_maps" pascalStyleName="4StageMaps" name="4 stage maps" maxElementCount="4">
+        <Layout regolithID="block:4 stage maps" internalName="4 stage maps_block" name="4 stage maps_block">
+          <FieldSet version="0" sizeofValue="220" isLatest="true">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="unfiltered" CStyleName="unfiltered_bit" pascalStyleName="UnfilteredBit" />
+                <Bit name="alpha replicate" CStyleName="alpha_replicate_bit" pascalStyleName="AlphaReplicateBit" />
+                <Bit name="u clamped" CStyleName="u_clamped_bit" pascalStyleName="UClampedBit" />
+                <Bit name="v clamped" CStyleName="v_clamped_bit" pascalStyleName="VClampedBit" />
+              </Options>
+            </WordFlags>
+            <Pad name="pad" length="2" />
+            <Pad name="pad" length="40" />
+            <ShortEnum CStyleName="color_function" pascalStyleName="ColorFunction" name="color function">
+              <Options regolithID="enum:color_function" CStyleName="color_function" pascalStyleName="ColorFunction">
+                <Enum name="current" CStyleName="current" pascalStyleName="Current" />
+                <Enum name="next map" CStyleName="next_map" pascalStyleName="NextMap" />
+                <Enum name="multiply" CStyleName="multiply" pascalStyleName="Multiply" />
+                <Enum name="double multiply" CStyleName="double_multiply" pascalStyleName="DoubleMultiply" />
+                <Enum name="add" CStyleName="add" pascalStyleName="Add" />
+                <Enum name="add signed current" CStyleName="add_signed_current" pascalStyleName="AddSignedCurrent" />
+                <Enum name="add signed next map" CStyleName="add_signed_next_map" pascalStyleName="AddSignedNextMap" />
+                <Enum name="subtract current" CStyleName="subtract_current" pascalStyleName="SubtractCurrent" />
+                <Enum name="subtract next map" CStyleName="subtract_next_map" pascalStyleName="SubtractNextMap" />
+                <Enum name="blend current alpha" CStyleName="blend_current_alpha" pascalStyleName="BlendCurrentAlpha" />
+                <Enum name="blend current alpha inverse" CStyleName="blend_current_alpha_inverse" pascalStyleName="BlendCurrentAlphaInverse" />
+                <Enum name="blend next map alpha" CStyleName="blend_next_map_alpha" pascalStyleName="BlendNextMapAlpha" />
+                <Enum name="blend next map alpha inverse" CStyleName="blend_next_map_alpha_inverse" pascalStyleName="BlendNextMapAlphaInverse" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="alpha_function" pascalStyleName="AlphaFunction" name="alpha function">
+              <Options regolithID="enum:alpha_function" CStyleName="alpha_function" pascalStyleName="AlphaFunction">
+                <Enum name="current" CStyleName="current" pascalStyleName="Current" />
+                <Enum name="next map" CStyleName="next_map" pascalStyleName="NextMap" />
+                <Enum name="multiply" CStyleName="multiply" pascalStyleName="Multiply" />
+                <Enum name="double multiply" CStyleName="double_multiply" pascalStyleName="DoubleMultiply" />
+                <Enum name="add" CStyleName="add" pascalStyleName="Add" />
+                <Enum name="add signed current" CStyleName="add_signed_current" pascalStyleName="AddSignedCurrent" />
+                <Enum name="add signed next map" CStyleName="add_signed_next_map" pascalStyleName="AddSignedNextMap" />
+                <Enum name="subtract current" CStyleName="subtract_current" pascalStyleName="SubtractCurrent" />
+                <Enum name="subtract next map" CStyleName="subtract_next_map" pascalStyleName="SubtractNextMap" />
+                <Enum name="blend current alpha" CStyleName="blend_current_alpha" pascalStyleName="BlendCurrentAlpha" />
+                <Enum name="blend current alpha inverse" CStyleName="blend_current_alpha_inverse" pascalStyleName="BlendCurrentAlphaInverse" />
+                <Enum name="blend next map alpha" CStyleName="blend_next_map_alpha" pascalStyleName="BlendNextMapAlpha" />
+                <Enum name="blend next map alpha inverse" CStyleName="blend_next_map_alpha_inverse" pascalStyleName="BlendNextMapAlphaInverse" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="36" />
+            <Explanation name="Parameters" />
+            <Struct CStyleName="parameters" pascalStyleName="Parameters" name="parameters">
+              <Layout regolithID="structure:shader_transparent_map_parameters" internalName="shader_transparent_map_parameters_struct" backingBlockInternalName="shader_transparent_map_parameters_struct_block" name="shader transparent map parameters">
+                <FieldSet version="0" sizeofValue="40" isLatest="true">
+                  <Real CStyleName="map_u_scale" pascalStyleName="MapUScale" name="map u scale" />
+                  <Real CStyleName="map_v_scale" pascalStyleName="MapVScale" name="map v scale" />
+                  <Real CStyleName="map_u_offset" pascalStyleName="MapUOffset" name="map u offset" />
+                  <Real CStyleName="map_v_offset" pascalStyleName="MapVOffset" name="map v offset" />
+                  <Real CStyleName="map_rotation" pascalStyleName="MapRotation" name="map rotation" />
+                  <Real CStyleName="mipmap_bias" pascalStyleName="MipmapBias" name="mipmap bias" />
+                  <TagReference CStyleName="map" pascalStyleName="Map" name="map">
+                    <tag>bitmap</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Pad name="pad" length="40" />
+            <Explanation name="Animation" />
+            <Struct CStyleName="animation" pascalStyleName="Animation" name="animation">
+              <Layout regolithID="structure:shader_transparent_map_animation" internalName="shader_transparent_map_animation_struct" backingBlockInternalName="shader_transparent_map_animation_struct_block" name="shader transparent map animation">
+                <FieldSet version="0" sizeofValue="56" isLatest="true">
+                  <ShortEnum CStyleName="u_animation_source" pascalStyleName="UAnimationSource" name="u animation source">
+                    <Options regolithID="enum:u_animation_source" CStyleName="u_animation_source" pascalStyleName="UAnimationSource">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                      <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                      <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                      <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="u_animation_function" pascalStyleName="UAnimationFunction" name="u animation function">
+                    <Options regolithID="enum:u_animation_function" CStyleName="u_animation_function" pascalStyleName="UAnimationFunction">
+                      <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                      <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                      <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                      <Enum name="cosine variable period" CStyleName="cosine_variable_period" pascalStyleName="CosineVariablePeriod" />
+                      <Enum name="diagonal wave" CStyleName="diagonal_wave" pascalStyleName="DiagonalWave" />
+                      <Enum name="diagonal wave variable period" CStyleName="diagonal_wave_variable_period" pascalStyleName="DiagonalWaveVariablePeriod" />
+                      <Enum name="slide" CStyleName="slide" pascalStyleName="Slide" />
+                      <Enum name="slide variable period" CStyleName="slide_variable_period" pascalStyleName="SlideVariablePeriod" />
+                      <Enum name="noise" CStyleName="noise" pascalStyleName="Noise" />
+                      <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+                      <Enum name="wander" CStyleName="wander" pascalStyleName="Wander" />
+                      <Enum name="spark" CStyleName="spark" pascalStyleName="Spark" />
+                    </Options>
+                  </ShortEnum>
+                  <Real CStyleName="u_animation_period" pascalStyleName="UAnimationPeriod" name="u animation period" />
+                  <Real CStyleName="u_animation_phase" pascalStyleName="UAnimationPhase" name="u animation phase" />
+                  <Real CStyleName="u_animation_scale" pascalStyleName="UAnimationScale" name="u animation scale" />
+                  <ShortEnum CStyleName="v_animation_source" pascalStyleName="VAnimationSource" name="v animation source">
+                    <Options regolithID="enum:v_animation_source" CStyleName="v_animation_source" pascalStyleName="VAnimationSource">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                      <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                      <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                      <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="v_animation_function" pascalStyleName="VAnimationFunction" name="v animation function">
+                    <Options regolithID="enum:v_animation_function" CStyleName="v_animation_function" pascalStyleName="VAnimationFunction">
+                      <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                      <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                      <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                      <Enum name="cosine variable period" CStyleName="cosine_variable_period" pascalStyleName="CosineVariablePeriod" />
+                      <Enum name="diagonal wave" CStyleName="diagonal_wave" pascalStyleName="DiagonalWave" />
+                      <Enum name="diagonal wave variable period" CStyleName="diagonal_wave_variable_period" pascalStyleName="DiagonalWaveVariablePeriod" />
+                      <Enum name="slide" CStyleName="slide" pascalStyleName="Slide" />
+                      <Enum name="slide variable period" CStyleName="slide_variable_period" pascalStyleName="SlideVariablePeriod" />
+                      <Enum name="noise" CStyleName="noise" pascalStyleName="Noise" />
+                      <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+                      <Enum name="wander" CStyleName="wander" pascalStyleName="Wander" />
+                      <Enum name="spark" CStyleName="spark" pascalStyleName="Spark" />
+                    </Options>
+                  </ShortEnum>
+                  <Real CStyleName="v_animation_period" pascalStyleName="VAnimationPeriod" name="v animation period" />
+                  <Real CStyleName="v_animation_phase" pascalStyleName="VAnimationPhase" name="v animation phase" />
+                  <Real CStyleName="v_animation_scale" pascalStyleName="VAnimationScale" name="v animation scale" />
+                  <ShortEnum CStyleName="rotation_animation_source" pascalStyleName="RotationAnimationSource" name="rotation animation source">
+                    <Options regolithID="enum:rotation_animation_source" CStyleName="rotation_animation_source" pascalStyleName="RotationAnimationSource">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                      <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                      <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                      <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="rotation_animation_function" pascalStyleName="RotationAnimationFunction" name="rotation animation function">
+                    <Options regolithID="enum:rotation_animation_function" CStyleName="rotation_animation_function" pascalStyleName="RotationAnimationFunction">
+                      <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                      <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                      <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                      <Enum name="cosine variable period" CStyleName="cosine_variable_period" pascalStyleName="CosineVariablePeriod" />
+                      <Enum name="diagonal wave" CStyleName="diagonal_wave" pascalStyleName="DiagonalWave" />
+                      <Enum name="diagonal wave variable period" CStyleName="diagonal_wave_variable_period" pascalStyleName="DiagonalWaveVariablePeriod" />
+                      <Enum name="slide" CStyleName="slide" pascalStyleName="Slide" />
+                      <Enum name="slide variable period" CStyleName="slide_variable_period" pascalStyleName="SlideVariablePeriod" />
+                      <Enum name="noise" CStyleName="noise" pascalStyleName="Noise" />
+                      <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+                      <Enum name="wander" CStyleName="wander" pascalStyleName="Wander" />
+                      <Enum name="spark" CStyleName="spark" pascalStyleName="Spark" />
+                    </Options>
+                  </ShortEnum>
+                  <Real CStyleName="rotation_animation_period" pascalStyleName="RotationAnimationPeriod" name="rotation animation period" />
+                  <Real CStyleName="rotation_animation_phase" pascalStyleName="RotationAnimationPhase" name="rotation animation phase" />
+                  <Real CStyleName="rotation_animation_scale" pascalStyleName="RotationAnimationScale" name="rotation animation scale" />
+                  <RealPoint2D CStyleName="rotation_animation_center" pascalStyleName="RotationAnimationCenter" name="rotation animation center" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="_2_stage_maps" pascalStyleName="2StageMaps" name="2 stage maps" maxElementCount="2" description="The original definitions have these set to 4, but issues occur when you do this as these are 2-stage maps, not 4-stage maps!&#10;Use the 4 stage maps (or just shader_transparent_chicago) for 4-stage maps.">
+        <Layout regolithID="block:2 stage maps" internalName="2 stage maps_block" name="2 stage maps_block">
+          <FieldSet version="0" sizeofValue="220" isLatest="true">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="unfiltered" CStyleName="unfiltered_bit" pascalStyleName="UnfilteredBit" />
+                <Bit name="alpha replicate" CStyleName="alpha_replicate_bit" pascalStyleName="AlphaReplicateBit" />
+                <Bit name="u clamped" CStyleName="u_clamped_bit" pascalStyleName="UClampedBit" />
+                <Bit name="v clamped" CStyleName="v_clamped_bit" pascalStyleName="VClampedBit" />
+              </Options>
+            </WordFlags>
+            <Pad name="pad" length="2" />
+            <Pad name="pad" length="40" />
+            <ShortEnum CStyleName="color_function" pascalStyleName="ColorFunction" name="color function">
+              <Options regolithID="enum:color_function" CStyleName="color_function" pascalStyleName="ColorFunction">
+                <Enum name="current" CStyleName="current" pascalStyleName="Current" />
+                <Enum name="next map" CStyleName="next_map" pascalStyleName="NextMap" />
+                <Enum name="multiply" CStyleName="multiply" pascalStyleName="Multiply" />
+                <Enum name="double multiply" CStyleName="double_multiply" pascalStyleName="DoubleMultiply" />
+                <Enum name="add" CStyleName="add" pascalStyleName="Add" />
+                <Enum name="add signed current" CStyleName="add_signed_current" pascalStyleName="AddSignedCurrent" />
+                <Enum name="add signed next map" CStyleName="add_signed_next_map" pascalStyleName="AddSignedNextMap" />
+                <Enum name="subtract current" CStyleName="subtract_current" pascalStyleName="SubtractCurrent" />
+                <Enum name="subtract next map" CStyleName="subtract_next_map" pascalStyleName="SubtractNextMap" />
+                <Enum name="blend current alpha" CStyleName="blend_current_alpha" pascalStyleName="BlendCurrentAlpha" />
+                <Enum name="blend current alpha inverse" CStyleName="blend_current_alpha_inverse" pascalStyleName="BlendCurrentAlphaInverse" />
+                <Enum name="blend next map alpha" CStyleName="blend_next_map_alpha" pascalStyleName="BlendNextMapAlpha" />
+                <Enum name="blend next map alpha inverse" CStyleName="blend_next_map_alpha_inverse" pascalStyleName="BlendNextMapAlphaInverse" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="alpha_function" pascalStyleName="AlphaFunction" name="alpha function">
+              <Options regolithID="enum:alpha_function" CStyleName="alpha_function" pascalStyleName="AlphaFunction">
+                <Enum name="current" CStyleName="current" pascalStyleName="Current" />
+                <Enum name="next map" CStyleName="next_map" pascalStyleName="NextMap" />
+                <Enum name="multiply" CStyleName="multiply" pascalStyleName="Multiply" />
+                <Enum name="double multiply" CStyleName="double_multiply" pascalStyleName="DoubleMultiply" />
+                <Enum name="add" CStyleName="add" pascalStyleName="Add" />
+                <Enum name="add signed current" CStyleName="add_signed_current" pascalStyleName="AddSignedCurrent" />
+                <Enum name="add signed next map" CStyleName="add_signed_next_map" pascalStyleName="AddSignedNextMap" />
+                <Enum name="subtract current" CStyleName="subtract_current" pascalStyleName="SubtractCurrent" />
+                <Enum name="subtract next map" CStyleName="subtract_next_map" pascalStyleName="SubtractNextMap" />
+                <Enum name="blend current alpha" CStyleName="blend_current_alpha" pascalStyleName="BlendCurrentAlpha" />
+                <Enum name="blend current alpha inverse" CStyleName="blend_current_alpha_inverse" pascalStyleName="BlendCurrentAlphaInverse" />
+                <Enum name="blend next map alpha" CStyleName="blend_next_map_alpha" pascalStyleName="BlendNextMapAlpha" />
+                <Enum name="blend next map alpha inverse" CStyleName="blend_next_map_alpha_inverse" pascalStyleName="BlendNextMapAlphaInverse" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="36" />
+            <Explanation name="Parameters" />
+            <Struct CStyleName="parameters" pascalStyleName="Parameters" name="parameters">
+              <Layout regolithID="structure:shader_transparent_map_parameters" internalName="shader_transparent_map_parameters_struct" backingBlockInternalName="shader_transparent_map_parameters_struct_block" name="shader transparent map parameters">
+                <FieldSet version="0" sizeofValue="40" isLatest="true">
+                  <Real CStyleName="map_u_scale" pascalStyleName="MapUScale" name="map u scale" />
+                  <Real CStyleName="map_v_scale" pascalStyleName="MapVScale" name="map v scale" />
+                  <Real CStyleName="map_u_offset" pascalStyleName="MapUOffset" name="map u offset" />
+                  <Real CStyleName="map_v_offset" pascalStyleName="MapVOffset" name="map v offset" />
+                  <Real CStyleName="map_rotation" pascalStyleName="MapRotation" name="map rotation" />
+                  <Real CStyleName="mipmap_bias" pascalStyleName="MipmapBias" name="mipmap bias" />
+                  <TagReference CStyleName="map" pascalStyleName="Map" name="map">
+                    <tag>bitmap</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Pad name="pad" length="40" />
+            <Explanation name="Animation" />
+            <Struct CStyleName="animation" pascalStyleName="Animation" name="animation">
+              <Layout regolithID="structure:shader_transparent_map_animation" internalName="shader_transparent_map_animation_struct" backingBlockInternalName="shader_transparent_map_animation_struct_block" name="shader transparent map animation">
+                <FieldSet version="0" sizeofValue="56" isLatest="true">
+                  <ShortEnum CStyleName="u_animation_source" pascalStyleName="UAnimationSource" name="u animation source">
+                    <Options regolithID="enum:u_animation_source" CStyleName="u_animation_source" pascalStyleName="UAnimationSource">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                      <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                      <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                      <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="u_animation_function" pascalStyleName="UAnimationFunction" name="u animation function">
+                    <Options regolithID="enum:u_animation_function" CStyleName="u_animation_function" pascalStyleName="UAnimationFunction">
+                      <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                      <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                      <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                      <Enum name="cosine variable period" CStyleName="cosine_variable_period" pascalStyleName="CosineVariablePeriod" />
+                      <Enum name="diagonal wave" CStyleName="diagonal_wave" pascalStyleName="DiagonalWave" />
+                      <Enum name="diagonal wave variable period" CStyleName="diagonal_wave_variable_period" pascalStyleName="DiagonalWaveVariablePeriod" />
+                      <Enum name="slide" CStyleName="slide" pascalStyleName="Slide" />
+                      <Enum name="slide variable period" CStyleName="slide_variable_period" pascalStyleName="SlideVariablePeriod" />
+                      <Enum name="noise" CStyleName="noise" pascalStyleName="Noise" />
+                      <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+                      <Enum name="wander" CStyleName="wander" pascalStyleName="Wander" />
+                      <Enum name="spark" CStyleName="spark" pascalStyleName="Spark" />
+                    </Options>
+                  </ShortEnum>
+                  <Real CStyleName="u_animation_period" pascalStyleName="UAnimationPeriod" name="u animation period" />
+                  <Real CStyleName="u_animation_phase" pascalStyleName="UAnimationPhase" name="u animation phase" />
+                  <Real CStyleName="u_animation_scale" pascalStyleName="UAnimationScale" name="u animation scale" />
+                  <ShortEnum CStyleName="v_animation_source" pascalStyleName="VAnimationSource" name="v animation source">
+                    <Options regolithID="enum:v_animation_source" CStyleName="v_animation_source" pascalStyleName="VAnimationSource">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                      <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                      <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                      <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="v_animation_function" pascalStyleName="VAnimationFunction" name="v animation function">
+                    <Options regolithID="enum:v_animation_function" CStyleName="v_animation_function" pascalStyleName="VAnimationFunction">
+                      <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                      <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                      <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                      <Enum name="cosine variable period" CStyleName="cosine_variable_period" pascalStyleName="CosineVariablePeriod" />
+                      <Enum name="diagonal wave" CStyleName="diagonal_wave" pascalStyleName="DiagonalWave" />
+                      <Enum name="diagonal wave variable period" CStyleName="diagonal_wave_variable_period" pascalStyleName="DiagonalWaveVariablePeriod" />
+                      <Enum name="slide" CStyleName="slide" pascalStyleName="Slide" />
+                      <Enum name="slide variable period" CStyleName="slide_variable_period" pascalStyleName="SlideVariablePeriod" />
+                      <Enum name="noise" CStyleName="noise" pascalStyleName="Noise" />
+                      <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+                      <Enum name="wander" CStyleName="wander" pascalStyleName="Wander" />
+                      <Enum name="spark" CStyleName="spark" pascalStyleName="Spark" />
+                    </Options>
+                  </ShortEnum>
+                  <Real CStyleName="v_animation_period" pascalStyleName="VAnimationPeriod" name="v animation period" />
+                  <Real CStyleName="v_animation_phase" pascalStyleName="VAnimationPhase" name="v animation phase" />
+                  <Real CStyleName="v_animation_scale" pascalStyleName="VAnimationScale" name="v animation scale" />
+                  <ShortEnum CStyleName="rotation_animation_source" pascalStyleName="RotationAnimationSource" name="rotation animation source">
+                    <Options regolithID="enum:rotation_animation_source" CStyleName="rotation_animation_source" pascalStyleName="RotationAnimationSource">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                      <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                      <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                      <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="rotation_animation_function" pascalStyleName="RotationAnimationFunction" name="rotation animation function">
+                    <Options regolithID="enum:rotation_animation_function" CStyleName="rotation_animation_function" pascalStyleName="RotationAnimationFunction">
+                      <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                      <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                      <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                      <Enum name="cosine variable period" CStyleName="cosine_variable_period" pascalStyleName="CosineVariablePeriod" />
+                      <Enum name="diagonal wave" CStyleName="diagonal_wave" pascalStyleName="DiagonalWave" />
+                      <Enum name="diagonal wave variable period" CStyleName="diagonal_wave_variable_period" pascalStyleName="DiagonalWaveVariablePeriod" />
+                      <Enum name="slide" CStyleName="slide" pascalStyleName="Slide" />
+                      <Enum name="slide variable period" CStyleName="slide_variable_period" pascalStyleName="SlideVariablePeriod" />
+                      <Enum name="noise" CStyleName="noise" pascalStyleName="Noise" />
+                      <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+                      <Enum name="wander" CStyleName="wander" pascalStyleName="Wander" />
+                      <Enum name="spark" CStyleName="spark" pascalStyleName="Spark" />
+                    </Options>
+                  </ShortEnum>
+                  <Real CStyleName="rotation_animation_period" pascalStyleName="RotationAnimationPeriod" name="rotation animation period" />
+                  <Real CStyleName="rotation_animation_phase" pascalStyleName="RotationAnimationPhase" name="rotation animation phase" />
+                  <Real CStyleName="rotation_animation_scale" pascalStyleName="RotationAnimationScale" name="rotation animation scale" />
+                  <RealPoint2D CStyleName="rotation_animation_center" pascalStyleName="RotationAnimationCenter" name="rotation animation center" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <LongFlags CStyleName="extra_flags" pascalStyleName="ExtraFlags" name="extra flags">
+        <Options regolithID="enum:extra_flags" CStyleName="extra_flags" pascalStyleName="ExtraFlags">
+          <Bit name="dont fade active camouflage" CStyleName="dont_fade_active_camouflage_bit" pascalStyleName="DontFadeActiveCamouflageBit" />
+          <Bit name="numeric countdown timer" CStyleName="numeric_countdown_timer_bit" pascalStyleName="NumericCountdownTimerBit" />
+          <Bit name="custom edition blending" CStyleName="custom_edition_blending_bit" pascalStyleName="CustomEditionBlendingBit" />
+        </Options>
+      </LongFlags>
+      <Pad name="pad" length="8" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

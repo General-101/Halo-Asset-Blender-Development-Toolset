@@ -38,8 +38,9 @@ from enum import Enum, auto
 from io import TextIOWrapper
 from datetime import datetime
 from collections import defaultdict
-from ..global_functions.parse_tags import parse_tag
 from mathutils import Vector, Euler, Quaternion, Matrix
+if (5, 0, 0) <= bpy.app.version:
+    from bpy_extras import anim_utils
 
 class ModelTypeEnum(Enum):
     render = 0
@@ -501,13 +502,13 @@ def get_matrix(obj_a, obj_b, is_local, armature, joined_list, is_node, version, 
         if armature:
             pose_bone = armature.pose.bones['%s' % (obj_a.name)]
             object_matrix = (pose_bone.matrix @ rotation_matrix) @ scale_matrix
-            if pose_bone.parent and not version >= get_version_matrix_check(file_type, None):
+            if pose_bone.parent and not version >= get_version_matrix_check(file_type):
                 #Files at or above 8205 use absolute transform instead of local transform for nodes
                 object_matrix = ((pose_bone.parent.matrix @ rotation_matrix).inverted() @ (pose_bone.matrix @ rotation_matrix)) @ scale_matrix
 
         else:
             object_matrix = obj_a.matrix_world @ scale_matrix
-            if obj_a.parent and not version >= get_version_matrix_check(file_type, None):
+            if obj_a.parent and not version >= get_version_matrix_check(file_type):
                 #Files at or above 8205 use absolute transform instead of local transform for nodes
                 object_matrix = (obj_a.parent.matrix_world.inverted() @ obj_a.matrix_world) @ scale_matrix
 
@@ -669,7 +670,7 @@ def set_framerate(frame_rate_enum, frame_rate_float):
 
     return frame_rate_value
 
-def get_version_matrix_check(filetype, game_version):
+def get_version_matrix_check(filetype):
     matrix_version = 0
     if filetype == 'JMA':
         matrix_version = 16394
@@ -695,35 +696,6 @@ def invert_rotations(filetype, file_version):
 
     return invert_rotations
 
-def gather_materials(game_version, material, material_list, export_type):
-    assigned_materials_list = []
-    if material is not None:
-        if material not in assigned_materials_list:
-            assigned_materials_list.append(material)
-
-    else:
-        if game_version == "halo1" and not None in material_list:
-            material_list.append(None)
-
-    if game_version == "halo1":
-        if material not in material_list:
-            material_list.append(material)
-
-    elif game_version == "halo2" or game_version == "halo3":
-        if export_type == "JMS":
-            if material not in material_list and material in assigned_materials_list:
-                material_list.append(material)
-
-        if export_type == "ASS":
-            if material not in material_list and material in assigned_materials_list:
-                material_list.append(material)
-
-    else:
-        if game_version == "halo1" and not None in material_list:
-            material_list.append(None)
-
-    return material_list
-
 def get_face_material(original_geo, face):
     object_materials = len(original_geo.material_slots)
     face_material_index = face.material_index
@@ -733,41 +705,29 @@ def get_face_material(original_geo, face):
 
     return assigned_material
 
-def get_material(game_version, original_geo, face, geometry, lod, region, permutation):
-    object_materials = len(original_geo.material_slots)
+def get_material(ob_material_slots, mesh, face, region_name, material_list):
     mat = None
-    assigned_material = None
-    face_material_index = face.material_index
-    if game_version == "halo1":
-        if not object_materials <= 0 and not face_material_index >= object_materials:
-            mat_slot = original_geo.material_slots[face_material_index]
-            if mat_slot.link == 'OBJECT':
-                if mat_slot is not None:
-                    mat = mat_slot.material
+    mat_count = len(ob_material_slots)
+    ass_mat_idx = -1
+    ob_mat_idx = face.material_index
 
-            else:
-                if geometry.materials[face_material_index] is not None:
-                    mat = geometry.materials[face_material_index]
+    if 0 <= ob_mat_idx < mat_count:
+        mat_slot = ob_material_slots[ob_mat_idx]
+        if mat_slot.link == 'OBJECT':
+            if mat_slot is not None:
+                mat = mat_slot.material
+        else:
+            if mesh.materials[ob_mat_idx] is not None:
+                mat = mesh.materials[ob_mat_idx]
 
-            if mat:
-                assigned_material = mat
+        if mat is not None:
+            mat_set = (mat, region_name)
+            if mat_set not in material_list:
+                material_list.append(mat_set)
 
-    elif game_version == "halo2" or game_version == "halo3":
-        assigned_material = -1
-        if  not object_materials <= 0 and not face_material_index >= object_materials:
-            mat_slot = original_geo.material_slots[face_material_index]
-            if mat_slot.link == 'OBJECT':
-                if mat_slot is not None:
-                    mat = mat_slot.material
+            ass_mat_idx = material_list.index(mat_set)
 
-            else:
-                if geometry.materials[face_material_index] is not None:
-                    mat = geometry.materials[face_material_index]
-
-            if mat:
-                assigned_material = [mat, lod, region, permutation]
-
-    return assigned_material
+    return ass_mat_idx
 
 class ParseError(Exception):
     pass
@@ -1295,16 +1255,89 @@ def get_transform(import_version, export_version, node, frame, node_list, transf
 
     return transform_matrix
 
-def build_bounds_list(SCNR_ASSET, bsp_bounds_list):
-    for structure_bsp_element in SCNR_ASSET.structure_bsps:
-        bsp_bounds = []
-        BSP_ASSET = parse_tag(structure_bsp_element.structure_bsp, print, "halo2", "retail")
-        if BSP_ASSET:
-            bsp_bounds.append(BSP_ASSET.world_bounds_x)
-            bsp_bounds.append(BSP_ASSET.world_bounds_y)
-            bsp_bounds.append(BSP_ASSET.world_bounds_z)
+def set_ass_material_properties(ass_mat, mat):
+    lighting_info = ass_mat.lighting_info
+    if len(lighting_info) > 0:
+        mat.ass_jms.is_bm = True
 
-            bsp_bounds_list.append(bsp_bounds)
+    for string in lighting_info:
+        if string.startswith("BM_FLAGS"):
+            string_bitfield = string.split()[1] #Split the string and retrieve the bitfield.
+            settings_count = len(string_bitfield)
+            mat.ass_jms.two_sided = int(string_bitfield[0])
+            mat.ass_jms.transparent_1_sided = int(string_bitfield[1])
+            mat.ass_jms.transparent_2_sided = int(string_bitfield[2])
+            mat.ass_jms.render_only = int(string_bitfield[3])
+            mat.ass_jms.collision_only = int(string_bitfield[4])
+            mat.ass_jms.sphere_collision_only = int(string_bitfield[5])
+            mat.ass_jms.fog_plane = int(string_bitfield[6])
+            mat.ass_jms.ladder = int(string_bitfield[7])
+            mat.ass_jms.breakable = int(string_bitfield[8])
+            mat.ass_jms.ai_deafening = int(string_bitfield[9])
+            mat.ass_jms.no_shadow = int(string_bitfield[10])
+            mat.ass_jms.shadow_only = int(string_bitfield[11])
+            mat.ass_jms.lightmap_only = int(string_bitfield[12])
+            mat.ass_jms.precise = int(string_bitfield[13])
+            mat.ass_jms.conveyor = int(string_bitfield[14])
+            mat.ass_jms.portal_1_way = int(string_bitfield[15])
+            mat.ass_jms.portal_door = int(string_bitfield[16])
+            mat.ass_jms.portal_vis_blocker = int(string_bitfield[17])
+            mat.ass_jms.ignored_by_lightmaps = int(string_bitfield[18])
+            mat.ass_jms.blocks_sound = int(string_bitfield[19])
+            mat.ass_jms.decal_offset = int(string_bitfield[20])
+            if settings_count >= 22:
+                mat.ass_jms.slip_surface = int(string_bitfield[21])
+
+        elif string.startswith("BM_LMRES"):
+            lmres_string_args = string.split()
+            lmres_count = len(lmres_string_args) - 1
+            mat.ass_jms.lightmap_res = float(lmres_string_args[1])
+            mat.ass_jms.photon_fidelity = int(lmres_string_args[2])
+            if lmres_count >= 3:
+                transparent_color = float(lmres_string_args[3])
+                mat.ass_jms.two_sided_transparent_tint = (transparent_color, transparent_color, transparent_color)
+            else:
+                mat.ass_jms.two_sided_transparent_tint = (float(lmres_string_args[3]), float(lmres_string_args[4]), float(lmres_string_args[5]))
+            if lmres_count >= 6:
+                mat.ass_jms.override_lightmap_transparency = int(lmres_string_args[6])
+                mat.ass_jms.additive_transparency = (float(lmres_string_args[7]), float(lmres_string_args[8]), float(lmres_string_args[9]))
+                mat.ass_jms.use_shader_gel = int(lmres_string_args[10])
+            if lmres_count >= 11:
+                mat.ass_jms.ignore_default_res_scale = int(lmres_string_args[11])
+
+        elif string.startswith("BM_LIGHTING_BASIC"):
+            lighting_basic_args = string.split()
+            lighting_count = len(lighting_basic_args) - 1
+            mat.ass_jms.power = float(lighting_basic_args[1])
+            mat.ass_jms.color = (float(lighting_basic_args[2]), float(lighting_basic_args[3]), float(lighting_basic_args[4]))
+            mat.ass_jms.quality = float(lighting_basic_args[5])
+            if lighting_count >= 6:
+                mat.ass_jms.power_per_unit_area = int(lighting_basic_args[6])
+            if lighting_count >= 7:
+                mat.ass_jms.emissive_focus = float(lighting_basic_args[7])
+
+        elif string.startswith("BM_LIGHTING_ATTEN"):
+            lighting_attenuation_args = string.split()
+            mat.ass_jms.attenuation_enabled = int(lighting_attenuation_args[1])
+            mat.ass_jms.falloff_distance = float(lighting_attenuation_args[2])
+            mat.ass_jms.cutoff_distance = float(lighting_attenuation_args[3])
+
+        elif string.startswith("BM_LIGHTING_FRUS"):
+            lighting_frus_args = string.split()
+            mat.ass_jms.frustum_blend = float(lighting_frus_args[1])
+            mat.ass_jms.frustum_falloff = float(lighting_frus_args[2])
+            mat.ass_jms.frustum_cutoff = float(lighting_frus_args[3])
+
+#def build_bounds_list(SCNR_ASSET, bsp_bounds_list):
+#    for structure_bsp_element in SCNR_ASSET.structure_bsps:
+#        bsp_bounds = []
+#        BSP_ASSET = parse_tag(structure_bsp_element.structure_bsp, print, "halo2", "retail")
+#        if BSP_ASSET:
+#            bsp_bounds.append(BSP_ASSET.world_bounds_x)
+#            bsp_bounds.append(BSP_ASSET.world_bounds_y)
+#            bsp_bounds.append(BSP_ASSET.world_bounds_z)
+#
+#            bsp_bounds_list.append(bsp_bounds)
 
 def get_origin_bsp(bsp_bounds_list, object_element):
     bsp_index = -1
@@ -1341,7 +1374,7 @@ def sort_by_parent(node_list):
         if node_idx in visited:
             return
         parent_idx = node_list[node_idx].parent
-        if parent_idx != -1:
+        if parent_idx is not None and parent_idx != -1:
             visit(parent_idx)
         visited.add(node_idx)
         sorted_nodes.append(node_idx)
@@ -1352,23 +1385,19 @@ def sort_by_parent(node_list):
     return sorted_nodes
 
 def get_data_bone(arm, node_name):
-    # Check for exact matches first
     for bone in arm.data.bones:
         if bone.name.lower() == node_name.lower():
             return bone
 
-    # If a bone hasn't been found yet, test whether the node name matches a bone name stripped of prefixes
     for bone in arm.data.bones:
         if remove_node_prefix(bone.name).lower() == node_name.lower():
             return bone
 
-def get_pose_bone(arm: bpy.types.Object, node_name: str) -> bpy.types.PoseBone | None:
-    # Check for exact matches first
+def get_pose_bone(arm, node_name):
     for bone in arm.pose.bones:
         if bone.name.lower() == node_name.lower():
             return bone
 
-    # If a bone hasn't been found yet, test whether the node name matches a bone name stripped of prefixes
     for bone in arm.pose.bones:
         if remove_node_prefix(bone.name).lower() == node_name.lower():
             return bone
@@ -1386,7 +1415,16 @@ def export_fcurve_data(action, fcurve_dict, armature, node, node_idx, frame, loc
         if node and node.animation_data:
             action = node.animation_data.action 
         if action:
-            fcurves = action.fcurves
+            if (5, 0, 0) <= bpy.app.version:
+                if action.slots:
+                    action_slot = action.slots[0]
+                else:
+                    action_slot = action.slots.new(id_type='OBJECT', name=armature.name)
+
+                channelbag = anim_utils.action_ensure_channelbag_for_slot(action, action_slot)
+                fcurves = channelbag.fcurves
+            else:
+                fcurves = action.fcurves
 
         fcurve_dict = {}
         for fc in fcurves:
@@ -1448,7 +1486,7 @@ def export_fcurve_data(action, fcurve_dict, armature, node, node_idx, frame, loc
 
     return transform_matrix
 
-def import_fcurve_data(action, armature, nodes, frames, JMA, JMAAsset, fix_rotations, is_inverted=False):
+def import_fcurve_data(action, armature, nodes, frames, JMA, fix_rotations, is_inverted=False):
     local_matrices = [None for node in nodes]
     for node_idx, node in enumerate(nodes):
         data_bone = get_data_bone(armature, node.name)
@@ -1464,8 +1502,8 @@ def import_fcurve_data(action, armature, nodes, frames, JMA, JMAAsset, fix_rotat
     unordered_map = sort_by_parent(nodes)
     absolute_frames = []
     for frame_idx, frame in enumerate(frames):
-        absolute_frame = [None for node in JMA.nodes]
-        for node_idx, node in enumerate(JMA.nodes):
+        absolute_frame = [None for node in nodes]
+        for node_idx, node in enumerate(nodes):
             unordered_index = unordered_map[node_idx]
             rotation = frame[unordered_index].rotation
             if is_inverted:
@@ -1476,7 +1514,7 @@ def import_fcurve_data(action, armature, nodes, frames, JMA, JMAAsset, fix_rotat
             matrix_translation = Matrix.Translation(frame[unordered_index].translation)
 
             transform_matrix = matrix_translation @ matrix_rotation @ matrix_scale
-            if JMA.version < 16394 and node.parent is not None and node.parent is not -1:
+            if JMA.version < 16394 and node.parent is not None and node.parent != -1:
                 absolute_matrix = absolute_frame[node.parent] @ transform_matrix
             else:
                 absolute_matrix = transform_matrix
@@ -1506,34 +1544,56 @@ def import_fcurve_data(action, armature, nodes, frames, JMA, JMAAsset, fix_rotat
         for path, count in data_paths.items():
             for index in range(count):
                 fcurve_data_path = f'pose.bones["{bone_name}"].{path}'
-                fcurve = get_fcurve(action.fcurves, fcurve_data_path, index)
-                if not fcurve:
-                    fcurve = action.fcurves.new(data_path=fcurve_data_path, index=index, action_group=bone_name)
+                if (5, 0, 0) <= bpy.app.version:
+                    if action.slots:
+                        action_slot = action.slots[0]
+                    else:
+                        action_slot = action.slots.new(id_type='OBJECT', name=armature.name)
+
+                    channelbag = anim_utils.action_ensure_channelbag_for_slot(action, action_slot)
+                    fcurve = channelbag.fcurves.ensure(fcurve_data_path, index=index, group_name=bone_name)
+                else:
+                    fcurve = get_fcurve(action.fcurves, fcurve_data_path, index)
+                    if not fcurve:
+                        fcurve = action.fcurves.new(data_path=fcurve_data_path, index=index, action_group=bone_name)
 
                 fcurve_map[bone_name][path][index] = fcurve
 
-    controller_fcurves = {
-        'location': [get_fcurve(action.fcurves, "location", i) or action.fcurves.new(data_path="location", index=i) for i in range(3)],
-        'rotation_euler': [get_fcurve(action.fcurves, "rotation_euler", i) or action.fcurves.new(data_path="rotation_euler", index=i) for i in range(3)],
-    }
+
+
+    if (5, 0, 0) <= bpy.app.version:
+        if action.slots:
+            action_slot = action.slots[0]
+        else:
+            action_slot = action.slots.new(id_type='OBJECT', name=armature.name)
+        channelbag = anim_utils.action_ensure_channelbag_for_slot(action, action_slot)
+        controller_fcurves = {
+            'location': [channelbag.fcurves.ensure("location", index=i) for i in range(3)],
+            'rotation_euler': [channelbag.fcurves.ensure("rotation_euler", index=i) for i in range(3)],
+        }
+    else:
+        controller_fcurves = {
+            'location': [get_fcurve(action.fcurves, "location", i) or action.fcurves.new(data_path="location", index=i) for i in range(3)],
+            'rotation_euler': [get_fcurve(action.fcurves, "rotation_euler", i) or action.fcurves.new(data_path="rotation_euler", index=i) for i in range(3)],
+        }
 
     for frame_idx, frame in enumerate(frames):
         absolute_frame = absolute_frames[frame_idx]
         frame_number = frame_idx + 1
 
-        if JMA.biped_controller_frame_type != JMAAsset.BipedControllerFrameType.DISABLE:
+        if JMA.biped_controller_frame_type != JMA.BipedControllerFrameType.DISABLE:
             controller_transform = JMA.biped_controller_transforms[frame_idx]
 
-            if JMA.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DX:
+            if JMA.biped_controller_frame_type & JMA.BipedControllerFrameType.DX:
                 armature.location.x = controller_transform.translation[0]
 
-            if JMA.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DY:
+            if JMA.biped_controller_frame_type & JMA.BipedControllerFrameType.DY:
                 armature.location.y = controller_transform.translation[1]
 
-            if JMA.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DZ:
+            if JMA.biped_controller_frame_type & JMA.BipedControllerFrameType.DZ:
                 armature.location.z = controller_transform.translation[2]
                 
-            if JMA.biped_controller_frame_type & JMAAsset.BipedControllerFrameType.DYAW:
+            if JMA.biped_controller_frame_type & JMA.BipedControllerFrameType.DYAW:
                 armature.rotation_euler.z = controller_transform.rotation.to_euler().z
 
             for i in range(3):
@@ -1544,20 +1604,20 @@ def import_fcurve_data(action, armature, nodes, frames, JMA, JMAAsset, fix_rotat
             if local_matrices[node_idx] is None:
                 continue
 
-            node_name = node.name
             pose_bone = get_pose_bone(armature, node.name)
+            node_name = pose_bone.name
             rotation_mode = 'QUATERNION'
             if pose_bone is not None:
                 rotation_mode = pose_bone.rotation_mode
 
             transform_matrix = absolute_frame[node_idx]
-            if node.parent is not None and node.parent is not -1:
+            if node.parent is not None and node.parent != -1:
                 transform_matrix = absolute_frame[node.parent].inverted() @ transform_matrix
 
             transform_matrix = local_matrices[node_idx].inverted() @ transform_matrix
 
             loc, rot_quat, scl = transform_matrix.decompose()
-            if rotation_mode is not 'QUATERNION':
+            if rotation_mode != 'QUATERNION':
                 rot_euler = rot_quat.to_euler('XYZ')
 
             for i in range(3):
@@ -1571,6 +1631,19 @@ def import_fcurve_data(action, armature, nodes, frames, JMA, JMAAsset, fix_rotat
             if rotation_mode == 'QUATERNION':
                 fcurve_map[node_name]['rotation_quaternion'][3].keyframe_points.insert(frame_number, rot_quat[3], options={'FAST'})
 
+def get_referenced_collection(collection_name, parent_collection, hide_render=False, hide_viewport=False):
+    asset_collection = bpy.data.collections.get(collection_name)
+    if asset_collection == None:
+        asset_collection = bpy.data.collections.new(collection_name)
+        parent_collection.children.link(asset_collection)
+        if not parent_collection.name == "Scene Collection":
+            asset_collection.tag_collection.parent = parent_collection
+
+    asset_collection.hide_render = hide_render
+    asset_collection.hide_viewport = hide_viewport
+
+    return asset_collection
+
 #https://www.cyril-richon.com/blog/2019/1/23/python-srgb-to-linear-linear-to-srgb
 def srgb2lin(s):
     if s <= 0.0404482362771082:
@@ -1579,7 +1652,6 @@ def srgb2lin(s):
         lin = pow(((s + 0.055) / 1.055), 2.4)
     return lin
 
-
 def lin2srgb(lin):
     if lin > 0.0031308:
         s = 1.055 * (pow(lin, (1.0 / 2.4))) - 0.055
@@ -1587,20 +1659,9 @@ def lin2srgb(lin):
         s = 12.92 * lin
     return s
 
-def convert_color_space(color, convert_to_srgb):
-    r,g,b,a = color
-    if convert_to_srgb:
-        r = lin2srgb(r)
-        g = lin2srgb(g)
-        b = lin2srgb(b)
-        a = lin2srgb(a)
-    else:
-        r = srgb2lin(r)
-        g = srgb2lin(g)
-        b = srgb2lin(b)
-        a = srgb2lin(a)
-
-    return (r, g, b, a)
+def convert_quaternion(quaternion):
+    i, j, k, w = quaternion
+    return Quaternion((w, i, j, k))
 
 def pack_datetime(year, month, day, hour, minute):
     packed = (

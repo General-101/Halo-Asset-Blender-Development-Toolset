@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedLayouts>
+  <Options regolithID="enum:shape_flags" CStyleName="shape_flags" pascalStyleName="ShapeFlags">
+    <Bit name="unused" CStyleName="unused0_bit" pascalStyleName="Unused0Bit" />
+  </Options>
+  <Layout regolithID="block:spheres" internalName="spheres_block" name="spheres_block">
+    <FieldSet version="0" alignment="4" sizeofValue="128" sizeofSource="sizeof(s_physics_model_sphere)" isLatest="true">
+      <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+      <ShortBlockIndex CStyleName="material" pascalStyleName="Material" name="material" readOnly="true" blockReference="block:physics_model_material" />
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:shape_flags</OptionsXRef>
+      </WordFlags>
+      <Real CStyleName="relative_mass_scale" pascalStyleName="RelativeMassScale" name="relative mass scale" />
+      <RealFraction CStyleName="friction" pascalStyleName="Friction" name="friction" />
+      <RealFraction CStyleName="restitution" pascalStyleName="Restitution" name="restitution" />
+      <Real CStyleName="volume" pascalStyleName="Volume" name="volume " readOnly="true" />
+      <Real CStyleName="mass" pascalStyleName="Mass" name="mass" readOnly="true" />
+      <Skip sizeOfSource="sizeof(short)" length="2" />
+      <ShortBlockIndex CStyleName="phantom" pascalStyleName="Phantom" name="phantom" readOnly="true" blockReference="block:phantoms" />
+      <Ptr length="4" />
+      <ShortInteger name="size" readOnly="true" />
+      <ShortInteger name="count" readOnly="true" />
+      <Pad tag="pd64" length="4" />
+      <Skip sizeOfSource="sizeof(int)" length="4" />
+      <Pad tag="pd64" length="4" />
+      <Real CStyleName="radius" pascalStyleName="Radius" name="radius" readOnly="true" />
+      <Pad tag="pd64" length="4" />
+      <Ptr length="4" />
+      <ShortInteger name="size" readOnly="true" />
+      <ShortInteger name="count" readOnly="true" />
+      <Pad tag="pd64" length="4" />
+      <Skip sizeOfSource="sizeof(int)" length="4" />
+      <Pad tag="pd64" length="4" />
+      <Ptr length="4" />
+      <RealVector3D CStyleName="rotation_i" pascalStyleName="RotationI" name="rotation i" readOnly="true" />
+      <Skip sizeOfSource="sizeof(real)" length="4" />
+      <RealVector3D CStyleName="rotation_j" pascalStyleName="RotationJ" name="rotation j" readOnly="true" />
+      <Skip sizeOfSource="sizeof(real)" length="4" />
+      <RealVector3D CStyleName="rotation_k" pascalStyleName="RotationK" name="rotation k" readOnly="true" />
+      <Skip sizeOfSource="sizeof(real)" length="4" />
+      <RealVector3D CStyleName="translation" pascalStyleName="Translation" name="translation" readOnly="true" />
+      <Skip sizeOfSource="sizeof(real)" length="4" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:pills" internalName="pills_block" name="pills_block">
+    <FieldSet version="0" alignment="4" sizeofValue="80" sizeofSource="sizeof(s_physics_model_pill)" isLatest="true">
+      <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+      <ShortBlockIndex CStyleName="material" pascalStyleName="Material" name="material" readOnly="true" blockReference="block:physics_model_material" />
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:shape_flags</OptionsXRef>
+      </WordFlags>
+      <Real CStyleName="relative_mass_scale" pascalStyleName="RelativeMassScale" name="relative mass scale" />
+      <RealFraction CStyleName="friction" pascalStyleName="Friction" name="friction" />
+      <RealFraction CStyleName="restitution" pascalStyleName="Restitution" name="restitution" />
+      <Real CStyleName="volume" pascalStyleName="Volume" name="volume " readOnly="true" />
+      <Real CStyleName="mass" pascalStyleName="Mass" name="mass" readOnly="true" />
+      <Skip sizeOfSource="sizeof(short)" length="2" />
+      <ShortBlockIndex CStyleName="phantom" pascalStyleName="Phantom" name="phantom" readOnly="true" blockReference="block:phantoms" />
+      <Ptr length="4" />
+      <ShortInteger CStyleName="size" pascalStyleName="Size" name="size" readOnly="true" />
+      <ShortInteger CStyleName="count" pascalStyleName="Count" name="count" readOnly="true" />
+      <Pad tag="pd64" length="4" />
+      <Skip sizeOfSource="sizeof(int)" length="4" />
+      <Pad tag="pd64" length="4" />
+      <Real CStyleName="radius" pascalStyleName="Radius" name="radius" readOnly="true" />
+      <Pad tag="pd64" length="4" />
+      <RealVector3D CStyleName="bottom" pascalStyleName="Bottom" name="bottom" readOnly="true" />
+      <Skip sizeOfSource="sizeof(real)" length="4" />
+      <RealVector3D CStyleName="top" pascalStyleName="Top" name="top" readOnly="true" />
+      <Skip sizeOfSource="sizeof(real)" length="4" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="structure:character_physics" Name="character physics" tag="chpy" internalName="character_physics_struct" backingBlockInternalName="character_physics_struct_block">
+    <FieldSet version="0" sizeofValue="160" sizeofSource="sizeof(s_character_physics_definition)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:character_physics_flags" CStyleName="character_physics_flags" pascalStyleName="CharacterPhysicsFlags">
+          <Bit name="centered_at_origin" CStyleName="centered_at_origin_bit" pascalStyleName="CenteredAtOriginBit" />
+          <Bit name="shape spherical" CStyleName="shape_spherical_bit" pascalStyleName="ShapeSphericalBit" />
+          <Bit name="use player physics" CStyleName="use_player_physics_bit" pascalStyleName="UsePlayerPhysicsBit" />
+          <Bit name="climb any surface" CStyleName="climb_any_surface_bit" pascalStyleName="ClimbAnySurfaceBit" />
+          <Bit name="flying" CStyleName="flying_bit" pascalStyleName="FlyingBit" />
+          <Bit name="not physical" CStyleName="not_physical_bit" pascalStyleName="NotPhysicalBit" />
+          <Bit name="dead character collision group" CStyleName="dead_character_collision_group_bit" pascalStyleName="DeadCharacterCollisionGroupBit" />
+        </Options>
+      </LongFlags>
+      <Real CStyleName="height_standing" pascalStyleName="HeightStanding" name="height standing" />
+      <Real CStyleName="height_crouching" pascalStyleName="HeightCrouching" name="height crouching" />
+      <Real CStyleName="radius" pascalStyleName="Radius" name="radius" />
+      <Real CStyleName="mass" pascalStyleName="Mass" name="mass" />
+      <StringId CStyleName="living_material_name" pascalStyleName="LivingMaterialName" name="living material name" description="collision material used when character is alive" tag="sted" />
+      <StringId CStyleName="dead_material_name" pascalStyleName="DeadMaterialName" name="dead material name" description="collision material used when character is dead" tag="sted" />
+      <UselessPad length="16" />
+      <Pad sizeOfSource="2*sizeof(c_global_material_type)" length="4" />
+      <UselessPad length="20" />
+      <Block CStyleName="dead_sphere_shapes" pascalStyleName="DeadSphereShapes" name="dead sphere shapes" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <LayoutXRef>block:spheres</LayoutXRef>
+      </Block>
+      <Block CStyleName="pill_shapes" pascalStyleName="PillShapes" name="pill shapes" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <LayoutXRef>block:pills</LayoutXRef>
+      </Block>
+      <Block CStyleName="sphere_shapes" pascalStyleName="SphereShapes" name="sphere shapes" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <LayoutXRef>block:spheres</LayoutXRef>
+      </Block>
+      <Explanation name="ground" />
+      <Struct CStyleName="ground_physics" pascalStyleName="GroundPhysics" name="ground physics">
+        <Layout regolithID="structure:character_physics_ground" Name="character physics ground" tag="chgr" internalName="character_physics_ground_struct" backingBlockInternalName="character_physics_ground_struct_block">
+          <FieldSet version="0" sizeofValue="48" sizeofSource="sizeof(s_character_physics_ground_definition)" isLatest="true">
+            <Angle CStyleName="maximum_slope_angle" pascalStyleName="MaximumSlopeAngle" name="maximum slope angle" units="degrees" />
+            <Angle CStyleName="downhill_falloff_angle" pascalStyleName="DownhillFalloffAngle" name="downhill falloff angle" units="degrees" />
+            <Angle CStyleName="downhill_cutoff_angle" pascalStyleName="DownhillCutoffAngle" name="downhill cutoff angle" units="degrees" />
+            <Angle CStyleName="uphill_falloff_angle" pascalStyleName="UphillFalloffAngle" name="uphill falloff angle" units="degrees" />
+            <Angle CStyleName="uphill_cutoff_angle" pascalStyleName="UphillCutoffAngle" name="uphill cutoff angle" units="degrees" />
+            <UselessPad length="16" />
+            <Real CStyleName="downhill_velocity_scale" pascalStyleName="DownhillVelocityScale" name="downhill velocity scale" />
+            <Real CStyleName="uphill_velocity_scale" pascalStyleName="UphillVelocityScale" name="uphill velocity scale" />
+            <UselessPad length="8" />
+            <Pad sizeOfSource="5*sizeof(real)" length="20" />
+            <UselessPad length="16" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="flying" />
+      <Struct CStyleName="flying_physics" pascalStyleName="FlyingPhysics" name="flying physics">
+        <Layout regolithID="structure:character_physics_flying" Name="character physics ground" tag="chfl" internalName="character_physics_flying_struct" backingBlockInternalName="character_physics_flying_struct_block">
+          <FieldSet version="0" sizeofValue="44" sizeofSource="sizeof(s_character_physics_flying_definition)" isLatest="true">
+            <Angle CStyleName="bank_angle" pascalStyleName="BankAngle" name="bank angle" units="degrees" description="angle at which we bank left/right when sidestepping or turning while moving forwards" />
+            <Real CStyleName="bank_apply_time" pascalStyleName="BankApplyTime" name="bank apply time" units="seconds" description="time it takes us to apply a bank" />
+            <Real CStyleName="bank_decay_time" pascalStyleName="BankDecayTime" name="bank decay time" units="seconds" description="time it takes us to recover from a bank" />
+            <Real CStyleName="pitch_ratio" pascalStyleName="PitchRatio" name="pitch ratio" description="amount that we pitch up/down when moving up or down" />
+            <Real CStyleName="max_velocity" pascalStyleName="MaxVelocity" name="max velocity" units="world units per second" description="max velocity when not crouching" />
+            <Real CStyleName="max_sidestep_velocity" pascalStyleName="MaxSidestepVelocity" name="max sidestep velocity" units="world units per second" description="max sideways or up/down velocity when not crouching" />
+            <Real CStyleName="acceleration" pascalStyleName="Acceleration" name="acceleration" units="world units per second squared" />
+            <Real CStyleName="deceleration" pascalStyleName="Deceleration" name="deceleration" units="world units per second squared" />
+            <Angle CStyleName="angular_velocity_maximum" pascalStyleName="AngularVelocityMaximum" name="angular velocity maximum" units="degrees per second" description="turn rate" />
+            <Angle CStyleName="angular_acceleration_maximum" pascalStyleName="AngularAccelerationMaximum" name="angular acceleration maximum" units="degrees per second squared" description="turn acceleration rate" />
+            <Real CStyleName="crouch_velocity_modifier" pascalStyleName="CrouchVelocityModifier" name="crouch velocity modifier" units="[0,1]" description="how much slower we fly if crouching (zero = same speed)" />
+            <UselessPad length="16" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="dead" />
+      <Struct CStyleName="dead_physics" pascalStyleName="DeadPhysics" name="dead physics">
+        <Layout regolithID="structure:character_physics_dead" Name="character physics dead" tag="chdd" internalName="character_physics_dead_struct" backingBlockInternalName="character_physics_dead_struct_block">
+          <FieldSet version="0" sizeofValue="0" sizeofSource="k_character_physics_dead_size" isLatest="true">
+            <UselessPad length="16" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="sentinel" />
+      <Struct CStyleName="sentinel_physics" pascalStyleName="SentinelPhysics" name="sentinel physics">
+        <Layout regolithID="structure:character_physics_sentinel" Name="character physics sentinel" tag="chsn" internalName="character_physics_sentinel_struct" backingBlockInternalName="character_physics_sentinel_struct_block">
+          <FieldSet version="0" sizeofValue="0" sizeofSource="k_character_physics_sentinel_size" isLatest="true">
+            <UselessPad length="16" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+    </FieldSet>
+  </Layout>
+</SharedLayouts>

@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="sily" name="text_value_pair_definition" version="1">
+  <Layout regolithID="block:text_value_pair_definition" internalName="text_value_pair_definition_block" name="text_value_pair_definition">
+    <FieldSet version="0" sizeofValue="48" sizeofSource="sizeof(s_text_value_pair_definition)" isLatest="true">
+      <LongEnum CStyleName="parameter" pascalStyleName="Parameter" name="parameter">
+        <OptionsXRef>enum:variant_settings_parameter</OptionsXRef>
+      </LongEnum>
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <TagReference CStyleName="string_list" pascalStyleName="StringList" name="string list">
+        <tag>unic</tag>
+      </TagReference>
+      <StringId CStyleName="title_text" pascalStyleName="TitleText" name="title text" />
+      <StringId CStyleName="header_text" pascalStyleName="HeaderText" name="header text" />
+      <StringId CStyleName="description_text" pascalStyleName="DescriptionText" name="description text" />
+      <Block CStyleName="text_value_pairs" pascalStyleName="TextValuePairs" name="text value pairs" maxElementCount="32" maxElementCountSource="k_maximum_text_value_pairs_new_per_block">
+        <Layout regolithID="block:text_value_pair_reference" internalName="text_value_pair_reference_block" name="text_value_pair_reference_block">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_text_value_pair_reference_new)" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:text_value_flags" CStyleName="text_value_flags" pascalStyleName="TextValueFlags">
+                <Bit name="default setting" CStyleName="default_setting_bit" pascalStyleName="DefaultSettingBit" />
+              </Options>
+            </LongFlags>
+            <LongInteger CStyleName="value" pascalStyleName="Value" name="value" />
+            <StringId CStyleName="label_string_id" pascalStyleName="LabelStringId" name="label string id" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

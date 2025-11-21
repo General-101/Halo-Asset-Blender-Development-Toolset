@@ -44,14 +44,14 @@ from bpy.props import (
         )
 
 from ...global_functions import global_functions
-from ...global_functions.tag_format import h1_tag_groups, h1_tag_groups_dic, h1_tag_extensions_dic
+from ...file_tag.tag_interface.tag_common import h1_tag_groups, h1_tag_extensions, h1_tag_groups_tuple, h2_tag_groups, h2_tag_extensions, h2_tag_groups_tuple
 
-def get_tag_groups():
+def get_tag_groups(self, context):
     items = ()
     if bpy.context.scene.halo.game_title == 'halo1':
-        items = h1_tag_groups
+        items = h1_tag_groups_tuple
     elif bpy.context.scene.halo.game_title == 'halo2':
-        items = ()
+        items = h2_tag_groups_tuple
 
     return items
 
@@ -67,8 +67,14 @@ def set_tag_name(self, context):
     tag_path = self.tag_path
 
     tag_path = tag_path.rsplit(".", 1)[0]
-    if not global_functions.string_empty_check(tag_path):
-        tag_path = "%s.%s" % (tag_path, h1_tag_groups_dic.get(tag_group))
+    tag_groups = None
+    if bpy.context.scene.halo.game_title == 'halo1':
+        tag_groups = h1_tag_groups
+    elif bpy.context.scene.halo.game_title == 'halo2':
+        tag_groups = h2_tag_groups
+
+    if not global_functions.string_empty_check(tag_path) and tag_groups:
+        tag_path = "%s.%s" % (tag_path, tag_groups.get(tag_group))
     else:
         tag_path = "NONE"
 
@@ -81,9 +87,15 @@ def set_tag_path(self, value):
     tag_group = self.tag_group
     tag_path = value.lower()
     config_tag_path = ""
+    tag_groups = None
+    tag_extensions = None
     if bpy.context.scene.halo.game_title == 'halo1':
+        tag_groups = h1_tag_groups
+        tag_extensions = h1_tag_extensions
         config_tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path.lower()
     elif bpy.context.scene.halo.game_title == 'halo2':
+        tag_groups = h2_tag_groups
+        tag_extensions = h2_tag_extensions
         config_tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path.lower()
     
     if not global_functions.string_empty_check(config_tag_path):
@@ -94,29 +106,30 @@ def set_tag_path(self, value):
             tag_path = tag_path[0]
 
     tag_path = tag_path.rsplit(".", 1)
-    if len(tag_path) >= 2:
-        tag_group = h1_tag_extensions_dic.get(tag_path[1])
+    if len(tag_path) >= 2 and tag_extensions:
+        tag_group = tag_extensions.get(tag_path[1])
         tag_path = tag_path[0]
     else:
         tag_path = tag_path[0]
 
     for ob in bpy.context.scene.objects:
-        tag_name = "%s.%s" % (self.tag_path, h1_tag_groups_dic.get(self.tag_group))
-        if hasattr(ob, 'tag_object') and ob.tag_object.tag_path == tag_name:
-            if not global_functions.string_empty_check(tag_path):
-                ob.tag_object.tag_path = "%s.%s" % (tag_path, h1_tag_groups_dic.get(tag_group))
-            else:
-                ob.tag_object.tag_path = "NONE"
-        if hasattr(ob, 'tag_netgame_flag') and ob.tag_netgame_flag.weapon_group == tag_name:
-            if not global_functions.string_empty_check(tag_path):
-                ob.tag_netgame_flag.weapon_group = "%s.%s" % (tag_path, h1_tag_groups_dic.get(tag_group))
-            else:
-                ob.tag_netgame_flag.weapon_group = "NONE"
-        if hasattr(ob, 'tag_netgame_equipment') and ob.tag_netgame_equipment.item_collection == tag_name:
-            if not global_functions.string_empty_check(tag_path):
-                ob.tag_netgame_equipment.item_collection = "%s.%s" % (tag_path, h1_tag_groups_dic.get(tag_group))
-            else:
-                ob.tag_netgame_equipment.item_collection = "NONE"
+        if tag_groups:
+            tag_name = "%s.%s" % (self.tag_path, tag_groups.get(self.tag_group))
+            if hasattr(ob, 'tag_object') and ob.tag_object.tag_path == tag_name:
+                if not global_functions.string_empty_check(tag_path):
+                    ob.tag_object.tag_path = "%s.%s" % (tag_path, tag_groups.get(tag_group))
+                else:
+                    ob.tag_object.tag_path = "NONE"
+            if hasattr(ob, 'tag_netgame_flag') and ob.tag_netgame_flag.weapon_group == tag_name:
+                if not global_functions.string_empty_check(tag_path):
+                    ob.tag_netgame_flag.weapon_group = "%s.%s" % (tag_path, tag_groups.get(tag_group))
+                else:
+                    ob.tag_netgame_flag.weapon_group = "NONE"
+            if hasattr(ob, 'tag_netgame_equipment') and ob.tag_netgame_equipment.item_collection == tag_name:
+                if not global_functions.string_empty_check(tag_path):
+                    ob.tag_netgame_equipment.item_collection = "%s.%s" % (tag_path, tag_groups.get(tag_group))
+                else:
+                    ob.tag_netgame_equipment.item_collection = "NONE"
 
     self["tag_path"] = tag_path
     self.tag_group = tag_group
@@ -129,7 +142,7 @@ class TagItem(PropertyGroup):
     tag_group: EnumProperty(
         name="Tag Group",
         description="The tag group for this item",
-        items= h1_tag_groups,
+        items= get_tag_groups,
         update=set_tag_name
         )
 

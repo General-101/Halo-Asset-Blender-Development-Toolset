@@ -24,16 +24,58 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import io
 import os
 import bpy
+import json
 import bmesh
+import base64
+import struct
 
 from sys import float_info
 from math import radians, log
+from enum import Flag, Enum, auto
 from mathutils import Matrix, Vector
-from ..h2.file_scenario_structure_bsp.format import ClusterPortalFlags as H2ClusterPortalFlags, SurfaceFlags as H2SurfaceFlags, PartFlags, PropertyTypeEnum
 from ...global_functions import shader_processing, mesh_processing, global_functions
-from ..h1.file_scenario_structure_bsp.format import ClusterPortalFlags as H1ClusterPortalFlags, SurfaceFlags as H1SurfaceFlags
+from ...file_tag.tag_interface import tag_interface, tag_common
+
+class H1ClusterPortalFlags(Flag):
+    ai_cant_hear_through_this = auto()
+
+class H1SurfaceFlags(Flag):
+    two_sided = auto()
+    invisible = auto()
+    climbable = auto()
+    breakable = auto()
+
+class H2ClusterPortalFlags(Flag):
+    ai_cant_hear_through_this = auto()
+    one_way = auto()
+    door = auto()
+    no_way = auto()
+    one_way_reversed = auto()
+    no_one_can_hear_through_this = auto()
+
+class H2SurfaceFlags(Flag):
+    two_sided = auto()
+    invisible = auto()
+    climbable = auto()
+    breakable = auto()
+    invalid = auto()
+    conveyor = auto()
+
+class PartFlags(Flag):
+    decalable = auto()
+    new_part_type = auto()
+    dislikes_photons = auto()
+    override_triangle_list = auto()
+    ignored_by_lightmapper = auto()
+
+class PropertyTypeEnum(Enum):
+    lightmap_resolution = 0
+    lightmap_power = auto()
+    lightmap_half_life = auto()
+    lightmap_diffuse_scale = auto()
 
 PLANE_PARALLEL_ANGLE_EPSILON = 0.0001
 WEATHER_POLYHEDRA_TOLERANCE  = 0.00001
@@ -48,7 +90,7 @@ def point_distance_to_plane(point, normal, dist, round_adjust=0):
     #       can be used as a measurement for the accuracy of the float.
     delta_max = 2**(int(log(abs(dist) + float_info.epsilon, 2)) - 23) + abs(round_adjust)
     delta = point.dot(normal) - dist
-    #print(delta_max, delta, round_adjust)
+
     return 0.0 if abs(delta) < delta_max else delta
 
 def is_point_this_side_of_plane(point, normal, dist, on_plane_ok=False,
@@ -228,7 +270,17 @@ def planes_to_convex_hull_vert_coords(planes, round_adjust=0.000001):
 
     return verts
 
-def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rotations, empty_markers, report, collection_override=None, cluster_collection_override=None):
+def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, report, collection_override=None, cluster_collection_override=None):
+    if game_title == "halo1":
+        tag_groups = tag_common.h1_tag_groups
+    elif game_title == "halo2":
+        tag_groups = tag_common.h2_tag_groups
+    else:
+        print("%s is not supported." % game_title)
+
+    level_asset = tag_interface.get_disk_asset(tag_ref["path"], tag_groups.get(tag_ref["group name"]))
+    level_data = level_asset["Data"]
+
     collection = context.collection
     if not collection_override == None:
         collection = collection_override
@@ -242,6 +294,7 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
     if level_root == None:
         level_mesh = bpy.data.meshes.new("frame_root")
         level_root = bpy.data.objects.new("frame_root", level_mesh)
+        level_root.color = (1, 1, 1, 0)
         collection.objects.link(level_root)
 
         mesh_processing.select_object(context, level_root)
@@ -252,14 +305,15 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
         level_root.hide_render = True
 
     if game_title == "halo1":
-        if len(LEVEL.lightmaps) > 0:
-            surfaces = LEVEL.surfaces
-            for lightmap_idx, lightmap in enumerate(LEVEL.lightmaps):
-                if len(lightmap.materials) > 0:
+        if len(level_data["lightmaps"]) > 0:
+            surfaces = level_data["surfaces"]
+            for lightmap_idx, lightmap in enumerate(level_data["lightmaps"]):
+                if len(lightmap["materials"]) > 0:
                     cluster_name = "cluster_%s" % lightmap_idx
                     full_mesh = bpy.data.meshes.new(cluster_name)
                     object_mesh = bpy.data.objects.new(cluster_name, full_mesh)
-                    object_mesh.tag_mesh.lightmap_index = lightmap.bitmap_index
+                    object_mesh.color = (1, 1, 1, 0)
+                    object_mesh.tag_mesh.lightmap_index = lightmap["bitmap"]
 
                     object_mesh.parent = level_root
                     cluster_collection_override.objects.link(object_mesh)
@@ -269,25 +323,82 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                     
                     bm = bmesh.new()
 
-                    for material_idx, material in enumerate(lightmap.materials):
+                    for material_idx, material in enumerate(lightmap["materials"]):
                         has_lightmap = False
-                        if material.vertices_count == material.lightmap_vertices_count:
+                        if material["vertex count"] == material["vertex count_1"]:
                             has_lightmap = True
 
                         material_name = "material_%s" % material_idx
                         mesh = bpy.data.meshes.new(material_name)
+                        start_index = material["surfaces"]
+
+                        uncompressed_data = base64.b64decode(material["uncompressed vertices"]["encoded"])
+                        compressed_data = base64.b64decode(material["compressed vertices"]["encoded"])
+
+                        uncompressed_stream = io.BytesIO(uncompressed_data)
+                        compressed_stream = io.BytesIO(compressed_data)
+
+                        uc_vertices = []
+                        c_vertices = []
+                        for ucr_vertex_idx in range(material["vertex count"]):
+                            position = struct.unpack("<fff", uncompressed_stream.read(12))
+                            normal = struct.unpack("<fff", uncompressed_stream.read(12))
+                            binormal = struct.unpack("<fff", uncompressed_stream.read(12))
+                            tangent = struct.unpack("<fff", uncompressed_stream.read(12))
+                            texture_coords = struct.unpack("<ff", uncompressed_stream.read(8))
+
+                            vertex_dict = {
+                                "position": position,
+                                "normal": normal,
+                                "binormal": binormal,
+                                "tangent": tangent,
+                                "texture_coords": texture_coords}
+
+                            uc_vertices.append(vertex_dict)
+
+                        if has_lightmap:
+                            for uc_vertex in uc_vertices:
+                                l_normal = struct.unpack("<fff", uncompressed_stream.read(12))
+                                l_texture_coords = struct.unpack("<ff", uncompressed_stream.read(8))
+
+                                uc_vertex["l_normal"] = l_normal
+                                uc_vertex["l_texture_coords"] = l_texture_coords
+
+                        # Compressed vertices stuff but we never use it so why bother - Gen
+                        if False:
+                            for cr_vertex_idx in range(material["vertex count"]):
+                                c_position = struct.unpack(">fff", compressed_stream.read(12))
+                                c_normal = struct.unpack(">I", compressed_stream.read(4))
+                                c_binormal = struct.unpack(">I", compressed_stream.read(4))
+                                c_tangent = struct.unpack(">I", compressed_stream.read(4))
+                                c_texture_coords = struct.unpack(">ff", compressed_stream.read(8))
+
+                                c_vertex_dict = {
+                                    "position": c_position,
+                                    "normal": c_normal,
+                                    "binormal": c_binormal,
+                                    "tangent": c_tangent,
+                                    "texture_coords": c_texture_coords}
+
+                                cr_vertices.append(c_vertex_dict)
+
+                            if has_lightmap:
+                                for cl_vertex_idx in range(material["vertex count_1"]):
+                                    cl_normal = struct.unpack(">I", compressed_stream.read(4))
+                                    cl_texture_coords = struct.unpack(">hh", compressed_stream.read(4))
+
+                                    cl_vertex_dict = {
+                                        "normal": cl_normal,
+                                        "texture_coords": cl_texture_coords}
+
+                                cl_vertices.append(cl_vertex_dict)
 
                         triangles = []
-                        start_index = material.surfaces
-
-                        triangle_indices = []
-                        triangles = []
-                        vertices = [vertex.translation for vertex in material.uncompressed_render_vertices]
-                        normals = [vertex.normal for vertex in material.uncompressed_render_vertices]
-
-                        for idx in range(material.surface_count):
+                        vertices = [Vector(vertex["position"]) * 100 for vertex in uc_vertices]
+                        normals = [Vector(vertex["normal"]) for vertex in uc_vertices]
+                        for idx in range(material["surface count"]):
                             surface_idx = start_index + idx
-                            triangles.append([surfaces[surface_idx].v2, surfaces[surface_idx].v1, surfaces[surface_idx].v0]) # Reversed order to fix facing normals
+                            triangles.append([surfaces[surface_idx]["vertex2 index"], surfaces[surface_idx]["vertex1 index"], surfaces[surface_idx]["vertex0 index"]]) # Reversed order to fix facing normals
 
                         mesh.from_pydata(vertices, [], triangles)
                         for tri_idx, poly in enumerate(mesh.polygons):
@@ -295,27 +406,42 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
 
                         mesh.normals_split_custom_set_from_vertices(normals)
                         for triangle_idx, triangle in enumerate(triangles):
-                            if material.shader_tag_ref.name_length > 0:
-                                permutation_index = ""
-                                if not material.shader_permutation == 0:
-                                    permutation_index = "%s" % material.shader_permutation
+                            shader_tag = material["shader"]
+                            shader_group = shader_tag["group name"]
+                            shader_name = shader_tag["path"]
+                            permutation = material["shader permutation"]
 
-                                material_name = "%s%s" % (os.path.basename(material.shader_tag_ref.name), permutation_index)
+                            has_permutation = permutation != 0
+
+                            SHAD_ASSET = asset_cache.get(shader_group, {}).get(shader_name)
+                            if SHAD_ASSET:
+                                material_name = os.path.basename(shader_name)
+                                if has_permutation:
+                                    material_name = "%s%s" % (material_name, permutation)
+                                    
+                                mat = SHAD_ASSET["blender_assets"].get(material_name)
+                                if not mat:
+                                    mat = bpy.data.materials.new(name=material_name)
+                                    shader_processing.generate_h1_shader(mat, shader_tag, permutation, asset_cache, report)
+                                    SHAD_ASSET["blender_assets"][material_name] = mat
 
                             else:
-                                material_name = "invalid_material_%s" % material_idx
+                                material_name = "invalid"
+                                if global_functions.string_empty_check(shader_name):
+                                    material_name = os.path.basename(shader_name)
 
-                            mat = bpy.data.materials.get(material_name)
-                            if mat is None:
-                                mat = bpy.data.materials.new(name=material_name)
-                                if material.shader_tag_ref.name_length > 0:
-                                    shader_processing.generate_h1_shader(mat, material.shader_tag_ref, material.shader_permutation, report)
+                                if has_permutation:
+                                    material_name = "%s%s" % (material_name, permutation)
 
-                            if not material_name in object_mesh.data.materials.keys():
+                                mat = bpy.data.materials.get(material_name)
+                                if not mat:
+                                    mat = bpy.data.materials.new(name=material_name)
+
+                            if mat.name not in object_mesh.data.materials:
                                 object_mesh.data.materials.append(mat)
 
                             mat.diffuse_color = random_color_gen.next()
-                            material_index = object_mesh.data.materials.keys().index(material_name)
+                            material_index = object_mesh.data.materials.find(mat.name)
                             mesh.polygons[triangle_idx].material_index = material_index
 
                             uv_name = 'UVMap_Render'
@@ -329,24 +455,24 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                             if layer_uv_lightmap is None:
                                 layer_uv_lightmap = mesh.uv_layers.new(name=uv_lightmap_name)
 
-                            render_vertex_list = [material.uncompressed_render_vertices[triangle[0]], material.uncompressed_render_vertices[triangle[1]], material.uncompressed_render_vertices[triangle[2]]]
+                            render_vertex_list = [uc_vertices[triangle[0]], uc_vertices[triangle[1]], uc_vertices[triangle[2]]]
                             for vertex_idx, vertex in enumerate(render_vertex_list):
                                 loop_index = (3 * triangle_idx) + vertex_idx
 
-                                U = vertex.UV[0]
-                                V = vertex.UV[1]
+                                u = vertex["texture_coords"][0]
+                                v = vertex["texture_coords"][1]
 
-                                layer_uv.data[loop_index].uv = (U, 1 - V)
+                                layer_uv.data[loop_index].uv = (u, 1 - v)
 
                             if has_lightmap:
-                                lightmap_vertex_list = [material.uncompressed_lightmap_vertices[triangle[0]], material.uncompressed_lightmap_vertices[triangle[1]], material.uncompressed_lightmap_vertices[triangle[2]]]
+                                lightmap_vertex_list = [uc_vertices[triangle[0]], uc_vertices[triangle[1]], uc_vertices[triangle[2]]]
                                 for vertex_idx, vertex in enumerate(lightmap_vertex_list):
                                     loop_index = (3 * triangle_idx) + vertex_idx
 
-                                    U_L = vertex.UV[0]
-                                    V_L = vertex.UV[1]
+                                    u_l = vertex["l_texture_coords"][0]
+                                    v_l = vertex["l_texture_coords"][1]
 
-                                    layer_uv_lightmap.data[loop_index].uv = (U_L, V_L)
+                                    layer_uv_lightmap.data[loop_index].uv = (u_l, v_l)
 
                         bm.from_mesh(mesh)
                         bpy.data.meshes.remove(mesh)
@@ -354,32 +480,33 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                     bm.to_mesh(full_mesh)
                     bm.free()
 
-        if len(LEVEL.cluster_portals) > 0:
+        if len(level_data["cluster portals"]) > 0:
             portal_bm = bmesh.new()
             portal_mesh = bpy.data.meshes.new("level_portals")
             portal_object = bpy.data.objects.new("level_portals", portal_mesh)
+            portal_object.color = (1, 1, 1, 0)
             portal_object.parent = level_root
             collection.objects.link(portal_object)
             portal_object.hide_set(True)
             portal_object.hide_render = True
-            for cluster in LEVEL.clusters:
-                for portal in cluster.portals:
+            for cluster in level_data["clusters"]:
+                for portal in cluster["portals"]:
                     vert_indices = []
-                    cluster_portal = LEVEL.cluster_portals[portal]
-                    for vertex in cluster_portal.vertices:
-                        vert_indices.append(portal_bm.verts.new(vertex.translation))
+                    cluster_portal = level_data["cluster portals"][portal["portal"]]
+                    for vertex in cluster_portal["vertices"]:
+                        vert_indices.append(portal_bm.verts.new(Vector(vertex["point"]) * 100))
 
                     portal_bm.faces.new(vert_indices)
 
                 portal_bm.verts.ensure_lookup_table()
                 portal_bm.faces.ensure_lookup_table()
 
-                for portal_idx, portal in enumerate(cluster.portals):
-                    cluster_portal = LEVEL.cluster_portals[portal]
+                for portal_idx, portal in enumerate(cluster["portals"]):
+                    cluster_portal = level_data["cluster portals"][portal["portal"]]
                     material_list = []
 
                     material_name = "+portal"
-                    if H1ClusterPortalFlags.ai_cant_hear_through_this in H1ClusterPortalFlags(cluster_portal.flags):
+                    if H1ClusterPortalFlags.ai_cant_hear_through_this in H1ClusterPortalFlags(cluster_portal["flags"]):
                         material_name = "+portal&"
 
                     mat = bpy.data.materials.get(material_name)
@@ -397,23 +524,25 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                     material_index = material_list.index(mat)
                     portal_bm.faces[portal_idx].material_index = material_index
 
-                    cluster_portal = LEVEL.cluster_portals[portal]
+                    cluster_portal = level_data["cluster portals"][portal["portal"]]
                     poly = portal_bm.faces[portal_idx]
-                    plane = LEVEL.collision_bsps[0].planes[cluster_portal.plane_index]
-                    if poly.normal.dot(plane.point_3d) < 0:
+                    plane = level_data["collision bsp"][0]["planes"][cluster_portal["plane index"]]
+                    x, y, z, d = plane["plane"]
+                    if poly.normal.dot(Vector((x, y, z))) < 0:
                         poly.flip()
 
             portal_bm.to_mesh(portal_mesh)
             portal_bm.free()
 
-        for marker in LEVEL.markers:
-            object_name_prefix = '#%s' % marker.name
+        for marker in level_data["markers"]:
+            object_name_prefix = '#%s' % marker["name"]
             marker_name_override = ""
-            if context.scene.objects.get('#%s' % marker.name):
-                marker_name_override = marker.name
+            if context.scene.objects.get('#%s' % marker["name"]):
+                marker_name_override = marker["name"]
 
             mesh = bpy.data.meshes.new(object_name_prefix)
             object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+            object_mesh.color = (1, 1, 1, 0)
             collection.objects.link(object_mesh)
             object_mesh.hide_set(True)
             object_mesh.hide_render = True
@@ -427,8 +556,9 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
 
             object_mesh.parent = level_root
 
-            matrix_translate = Matrix.Translation(marker.translation)
-            matrix_rotation = marker.rotation.to_matrix().to_4x4()
+            matrix_translate = Matrix.Translation(Vector(marker["position"]) * 100)
+            marker_rot = global_functions.convert_quaternion(marker["rotation"]).inverted()
+            matrix_rotation = marker_rot.to_matrix().to_4x4()
 
             transform_matrix = matrix_translate @ matrix_rotation
             if fix_rotations:
@@ -438,18 +568,19 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
             object_mesh.data.ass_jms.Object_Type = 'SPHERE'
             object_mesh.dimensions = (2, 2, 2)
 
-        if len(LEVEL.fog_planes) > 0:
+        if len(level_data["fog planes"]) > 0:
             fog_planes_bm = bmesh.new()
             fog_planes_mesh = bpy.data.meshes.new("level_fog_planes")
             fog_planes_object = bpy.data.objects.new("level_fog_planes", fog_planes_mesh)
+            fog_planes_object.color = (1, 1, 1, 0)
             fog_planes_object.parent = level_root
             collection.objects.link(fog_planes_object)
             fog_planes_object.hide_set(True)
             fog_planes_object.hide_render = True
-            for fog_plane in LEVEL.fog_planes:
+            for fog_plane in level_data["fog planes"]:
                 vert_indices = []
-                for vertex in fog_plane.vertices:
-                    vert_indices.append(fog_planes_bm.verts.new(vertex.translation))
+                for vertex in fog_plane["vertices"]:
+                    vert_indices.append(fog_planes_bm.verts.new(Vector(vertex["point"]) * 100))
 
                 fog_planes_bm.faces.new(vert_indices)
 
@@ -475,30 +606,33 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
             fog_planes_bm.to_mesh(fog_planes_mesh)
             fog_planes_bm.free()
 
-        if len(LEVEL.weather_polyhedras) > 0:
+        if len(level_data["weather polyhedra"]) > 0:
             material_name = "+weatherpoly"
             mat = bpy.data.materials.get(material_name)
             if mat is None:
                 mat = bpy.data.materials.new(name=material_name)
 
             mat.diffuse_color = random_color_gen.next()
-            for poly_idx, weather_polyhedra in enumerate(LEVEL.weather_polyhedras):
-                tolerance = weather_polyhedra.bounding_sphere_center.magnitude * WEATHER_POLYHEDRA_TOLERANCE
-                coords = planes_to_convex_hull_vert_coords([
-                    (plane.point_3d, plane.distance)
-                    for plane in weather_polyhedra.planes
-                    ], tolerance
-                    )
+            for poly_idx, weather_polyhedra in enumerate(level_data["weather polyhedra"]):
+                bsc_vector = Vector(weather_polyhedra["bounding sphere center"])
+                tolerance = bsc_vector.magnitude * WEATHER_POLYHEDRA_TOLERANCE
+                weather_planes = []
+                for plane in weather_polyhedra["planes"]:
+                    x, y, z, d = plane["plane"]
+                    weather_planes.append((Vector((x, y, z)), d))
+
+                coords = planes_to_convex_hull_vert_coords(weather_planes, tolerance)
                 if len(coords) <= 3:
                     continue
 
                 bm = bmesh.new()
                 for coord in coords:
-                    bm.verts.new(coord*100)
+                    bm.verts.new(coord * 100)
 
                 bmesh.ops.convex_hull(bm, input=bm.verts)
                 mesh = bpy.data.meshes.new("weather_polyhedra_%d" % poly_idx)
                 obj = bpy.data.objects.new("weather_polyhedra_%d" % poly_idx, mesh)
+                obj.color = (1, 1, 1, 0)
                 obj.parent = level_root
                 collection.objects.link(obj)
                 bm.to_mesh(mesh)
@@ -520,57 +654,91 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                         path = split_result[1]
                         shader_collection_dic[path] = prefix
 
-        materials = []
-        for material in LEVEL.materials:
-            material_path = material.shader.name
-            if global_functions.string_empty_check(material_path):
-                material_path = material.old_shader.name
+        for material in level_data["materials"]:
+            shader_tag = material["shader"]
+            old_shader_tag = material["old shader"]
+            shader_group = shader_tag["group name"]
+            shader_name = shader_tag["path"]
+            if global_functions.string_empty_check(shader_name):
+                shader_tag = old_shader_tag
+                shader_group = old_shader_tag["group name"]
+                shader_name = old_shader_tag["path"]
 
-            material_directory = os.path.dirname(material_path)
-            material_name = os.path.basename(material_path)
+            shader_directory = os.path.dirname(shader_name)
+            base_name = os.path.basename(shader_name)
+            has_collection = False
+            has_parameter = False
 
-            collection_prefix = shader_collection_dic.get(material_directory)
+            collection_prefix = shader_collection_dic.get(shader_directory)
             if not collection_prefix == None:
-                material_name = "%s %s" % (collection_prefix, material_name)
-            else:
-                print("Could not find a collection for: %s" % material_path)
+                has_collection = True
 
-            for material_property in material.properties:
-                property_enum = PropertyTypeEnum(material_property.property_type)
-                property_value = material_property.real_value
+            lightmap_parameters = ""
+            for material_property in material["properties"]:
+                property_enum = PropertyTypeEnum(material_property["type"]["value"])
+                property_value = material_property["real-value"]
                 if PropertyTypeEnum.lightmap_resolution == property_enum:
-                    material_name += " lm:%s" % property_value
+                    lightmap_parameters += " lm:%s" % property_value
+                    has_parameter = True
 
                 elif PropertyTypeEnum.lightmap_power == property_enum:
-                    material_name += " lp:%s" % property_value
+                    lightmap_parameters += " lp:%s" % property_value
+                    has_parameter = True
 
                 elif PropertyTypeEnum.lightmap_half_life == property_enum:
-                    material_name += " hl:%s" % property_value
+                    lightmap_parameters += " hl:%s" % property_value
+                    has_parameter = True
 
                 elif PropertyTypeEnum.lightmap_diffuse_scale == property_enum:
-                    material_name += " ds:%s" % property_value
+                    lightmap_parameters += " ds:%s" % property_value
+                    has_parameter = True
 
-            mat = bpy.data.materials.new(name=material_name)
-            shader_processing.generate_h2_shader(mat, material.shader, report)
+            SHAD_ASSET = asset_cache.get(shader_group, {}).get(shader_name)
+            if SHAD_ASSET:
+                material_name = base_name
+                if has_collection:
+                    material_name = "%s %s" % (collection_prefix, material_name)
 
-            materials.append(mat)
+                if has_parameter:
+                    material_name = "%s%s" % (material_name, lightmap_parameters)
 
-        if len(LEVEL.clusters) > 0:
-            material_count = len(LEVEL.materials)
-            for cluster_idx, cluster in enumerate(LEVEL.clusters):
+                mat = SHAD_ASSET["blender_assets"].get(material_name)
+                if not mat:
+                    mat = bpy.data.materials.new(name=material_name)
+                    shader_processing.generate_h2_shader(mat, shader_tag, asset_cache, report)
+                    SHAD_ASSET["blender_assets"][material_name] = mat
+  
+            else:
+                material_name = "invalid"
+                if global_functions.string_empty_check(shader_name):
+                    material_name = os.path.basename(shader_name)
+
+                if has_collection:
+                    material_name = "%s %s" % (collection_prefix, material_name)
+
+                if has_parameter:
+                    material_name = "%s%s" % (material_name, lightmap_parameters)
+
+                mat = bpy.data.materials.get(material_name)
+                if not mat:
+                    mat = bpy.data.materials.new(name=material_name)
+
+        if len(level_data["clusters"]) > 0:
+            for cluster_idx, cluster in enumerate(level_data["clusters"]):
                 cluster_name = "cluster_%s" % cluster_idx
                 mesh = bpy.data.meshes.new(cluster_name)
                 object_mesh = bpy.data.objects.new(cluster_name, mesh)
+                object_mesh.color = (1, 1, 1, 0)
 
                 object_mesh.parent = level_root
-                mesh_processing.get_mesh_data(LEVEL, cluster.cluster_data, mesh, material_count, materials, random_color_gen, PartFlags)
+                mesh_processing.get_mesh_data(level_data, asset_cache, cluster["cluster data"], mesh, random_color_gen, shader_collection_dic)
 
                 cluster_collection_override.objects.link(object_mesh)
 
                 if (4, 1, 0) > bpy.app.version:
                     object_mesh.data.use_auto_smooth = True
 
-        if len(LEVEL.instanced_geometry_instances) > 0:
+        if len(level_data["instanced geometry instances"]) > 0:
             instance_collection = cluster_collection_override
             if not cluster_collection_override == None:
                 bsp_name = instance_collection.name.split("_", 1)[0]
@@ -581,62 +749,65 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                     cluster_collection_override.children.link(instance_collection)
 
             meshes = []
-            for instanced_geometry_definition_idx, instanced_geometry_definition in enumerate(LEVEL.instanced_geometry_definition):
+            for instanced_geometry_definition_idx, instanced_geometry_definition in enumerate(level_data["instanced geometries definitions"]):
                 cluster_name = "instanced_geometry_definition_%s" % instanced_geometry_definition_idx
                 mesh = bpy.data.meshes.new(cluster_name)
-                mesh_processing.get_mesh_data(LEVEL, instanced_geometry_definition.render_data, mesh, material_count, materials, random_color_gen, PartFlags)
+                mesh_processing.get_mesh_data(level_data, asset_cache, instanced_geometry_definition["render data"], mesh, random_color_gen, shader_collection_dic)
 
                 meshes.append(mesh)
 
-            for instanced_geometry_instance_idx, instanced_geometry_instance in enumerate(LEVEL.instanced_geometry_instances):
-                mesh = meshes[instanced_geometry_instance.instance_definition]
-                ob_name = instanced_geometry_instance.name
+            for instanced_geometry_instance in level_data["instanced geometry instances"]:
+                mesh = meshes[instanced_geometry_instance["instance definition"]]
+                ob_name = instanced_geometry_instance["name"]
 
                 object_mesh = bpy.data.objects.new(ob_name, mesh)
-                object_mesh.tag_mesh.instance_lightmap_policy_enum = str(instanced_geometry_instance.lightmapping_policy)
+                object_mesh.color = (1, 1, 1, 0)
+                object_mesh.tag_mesh.instance_lightmap_policy_enum = str(instanced_geometry_instance["lightmapping policy"]["value"])
 
                 object_mesh.parent = level_root
                 instance_collection.objects.link(object_mesh)
 
-                matrix_scale = Matrix.Scale(instanced_geometry_instance.scale, 4)
+                matrix_scale = Matrix.Scale(instanced_geometry_instance["scale"], 4)
                 matrix_rotation = Matrix()
-                matrix_rotation[0] = *instanced_geometry_instance.forward, 0
-                matrix_rotation[1] = *instanced_geometry_instance.left, 0
-                matrix_rotation[2] = *instanced_geometry_instance.up, 0
+                matrix_rotation[0] = *Vector(instanced_geometry_instance["forward"]), 0
+                matrix_rotation[1] = *Vector(instanced_geometry_instance["left"]), 0
+                matrix_rotation[2] = *Vector(instanced_geometry_instance["up"]), 0
                 matrix_rotation = matrix_rotation.inverted()
-                matrix_translation = Matrix.Translation(instanced_geometry_instance.position)
+                matrix_translation = Matrix.Translation(Vector(instanced_geometry_instance["position"]) * 100)
                 transform_matrix = (matrix_translation @ matrix_rotation @ matrix_scale)
                 object_mesh.matrix_world = transform_matrix
 
                 if (4, 1, 0) > bpy.app.version:
                     object_mesh.data.use_auto_smooth = True
 
-        if len(LEVEL.cluster_portals) > 0:
+        if len(level_data["cluster portals"]) > 0:
             portal_bm = bmesh.new()
             portal_mesh = bpy.data.meshes.new("level_portals")
             portal_object = bpy.data.objects.new("level_portals", portal_mesh)
+            portal_object.color = (1, 1, 1, 0)
             portal_object.parent = level_root
             collection.objects.link(portal_object)
             portal_object.hide_set(True)
             portal_object.hide_render = True
-            for cluster in LEVEL.clusters:
-                for portal in cluster.portals:
+            for cluster in level_data["clusters"]:
+                for portal in cluster["portals"]:
                     vert_indices = []
-                    cluster_portal = LEVEL.cluster_portals[portal]
-                    for vertex in cluster_portal.vertices:
-                        vert_indices.append(portal_bm.verts.new(vertex))
+                    cluster_portal = level_data["cluster portals"][portal["portal index"]]
+                    for vertex in cluster_portal["vertices"]:
+                        position = Vector(vertex["point"]) * 100
+                        vert_indices.append(portal_bm.verts.new(position))
 
                     portal_bm.faces.new(vert_indices)
 
                 portal_bm.verts.ensure_lookup_table()
                 portal_bm.faces.ensure_lookup_table()
 
-                for portal_idx, portal in enumerate(cluster.portals):
-                    cluster_portal = LEVEL.cluster_portals[portal]
+                for portal_idx, portal in enumerate(cluster["portals"]):
+                    cluster_portal = level_data["cluster portals"][portal["portal index"]]
                     material_list = []
 
                     material_name = "+portal"
-                    if H2ClusterPortalFlags.ai_cant_hear_through_this in H2ClusterPortalFlags(cluster_portal.flags):
+                    if H2ClusterPortalFlags.ai_cant_hear_through_this in H2ClusterPortalFlags(cluster_portal["flags"]):
                         material_name = "+portal&"
 
                     mat = bpy.data.materials.get(material_name)
@@ -654,21 +825,19 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                     material_index = material_list.index(mat)
                     portal_bm.faces[portal_idx].material_index = material_index
 
-                    cluster_portal = LEVEL.cluster_portals[portal]
-                    poly = portal_bm.faces[portal_idx]
-                    plane = LEVEL.collision_bsps[0].planes[cluster_portal.plane_index]
-
             portal_bm.to_mesh(portal_mesh)
             portal_bm.free()
 
-        for marker in LEVEL.markers:
-            object_name_prefix = '#%s' % marker.name
+        for marker in level_data["markers"]:
+            marker_name = marker["name"]
+            object_name_prefix = '#%s' % marker_name
             marker_name_override = ""
-            if context.scene.objects.get('#%s' % marker.name):
-                marker_name_override = marker.name
+            if context.scene.objects.get('#%s' % marker_name):
+                marker_name_override = marker_name
 
             mesh = bpy.data.meshes.new(object_name_prefix)
             object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+            object_mesh.color = (1, 1, 1, 0)
             collection.objects.link(object_mesh)
             object_mesh.hide_set(True)
             object_mesh.hide_render = True
@@ -682,8 +851,9 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
 
             object_mesh.parent = level_root
 
-            matrix_translate = Matrix.Translation(marker.position)
-            matrix_rotation = marker.rotation.to_matrix().to_4x4()
+            position = Vector(marker["position"]) * 100
+            matrix_translate = Matrix.Translation(position)
+            matrix_rotation = global_functions.convert_quaternion(marker["rotation"]).to_matrix().to_4x4()
 
             transform_matrix = matrix_translate @ matrix_rotation
             if fix_rotations:
@@ -693,32 +863,33 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
             object_mesh.data.ass_jms.Object_Type = 'SPHERE'
             object_mesh.dimensions = (2, 2, 2)
 
-    for bsp_idx, bsp in enumerate(LEVEL.collision_bsps):
+    for bsp_idx, bsp in enumerate(level_data["collision bsp"]):
         collision_name = "level_collision"
         collision_bm = bmesh.new()
 
         collision_mesh = bpy.data.meshes.new(collision_name)
         collision_object = bpy.data.objects.new(collision_name, collision_mesh)
+        collision_object.color = (1, 1, 1, 0)
         collection.objects.link(collision_object)
         collision_object.hide_set(True)
         collision_object.hide_render = True
-        for surface_idx, surface in enumerate(bsp.surfaces):
-            edge_index = surface.first_edge
+        for surface_idx, surface in enumerate(bsp["surfaces"]):
+            edge_index = surface["first edge"]
             surface_edges = []
             vert_indices = []
             while edge_index not in surface_edges:
                 surface_edges.append(edge_index)
-                edge = bsp.edges[edge_index]
-                if edge.left_surface == surface_idx:
-                    vert_indices.append(collision_bm.verts.new(bsp.vertices[edge.start_vertex].translation))
-                    edge_index = edge.forward_edge
+                edge = bsp["edges"][edge_index]
+                if edge["left surface"] == surface_idx:
+                    vert_indices.append(collision_bm.verts.new(Vector(bsp["vertices"][edge["start vertex"]]["point"]) * 100))
+                    edge_index = edge["forward edge"]
 
                 else:
-                    vert_indices.append(collision_bm.verts.new(bsp.vertices[edge.end_vertex].translation))
-                    edge_index = edge.reverse_edge
+                    vert_indices.append(collision_bm.verts.new(Vector(bsp["vertices"][edge["end vertex"]]["point"]) * 100))
+                    edge_index = edge["reverse edge"]
 
             is_invalid = False
-            if game_title == "halo2" and H2SurfaceFlags.invalid in H2SurfaceFlags(surface.flags):
+            if game_title == "halo2" and H2SurfaceFlags.invalid in H2SurfaceFlags(surface["flags"]):
                 is_invalid = True
 
             if not is_invalid and len(vert_indices) >= 3:
@@ -727,22 +898,22 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
         collision_bm.verts.ensure_lookup_table()
         collision_bm.faces.ensure_lookup_table()
         surface_idx = 0
-        for surface in bsp.surfaces:
+        for surface in bsp["surfaces"]:
             is_invalid = False
-            if game_title == "halo2" and H2SurfaceFlags.invalid in H2SurfaceFlags(surface.flags):
+            if game_title == "halo2" and H2SurfaceFlags.invalid in H2SurfaceFlags(surface["flags"]):
                 is_invalid = True
 
             if not is_invalid:
-                ngon_material_index = surface.material
+                ngon_material_index = surface["material"]
                 if not ngon_material_index == -1:
-                    mat = LEVEL.collision_materials[ngon_material_index]
+                    mat = level_data["collision materials"][ngon_material_index]
 
                 if not ngon_material_index == -1:
                     if game_title == "halo1":
-                        shader_path = mat.shader_tag_ref.name
+                        shader_path = mat["shader"]["path"]
                         material_name = os.path.basename(shader_path)
                     else:
-                        shader_path = mat.new_shader.name
+                        shader_path = mat["new shader"]["path"]
 
                         material_directory = os.path.dirname(shader_path)
                         material_name = os.path.basename(shader_path)
@@ -750,37 +921,36 @@ def build_scene(context, LEVEL, game_version, game_title, file_version, fix_rota
                         collection_prefix = shader_collection_dic.get(material_directory)
                         if not collection_prefix == None:
                             material_name = "%s %s" % (collection_prefix, material_name)
-                        else:
-                            print("Could not find a collection for: %s" % material_path)
-
 
                     if game_title == "halo1":
-                        if H1SurfaceFlags.two_sided in H1SurfaceFlags(surface.flags):
+                        surface_flags = H1SurfaceFlags(surface["flags"])
+                        if H1SurfaceFlags.two_sided in surface_flags:
                             material_name += "%"
 
-                        if H1SurfaceFlags.invisible in H1SurfaceFlags(surface.flags):
+                        if H1SurfaceFlags.invisible in surface_flags:
                             material_name += "*"
 
-                        if H1SurfaceFlags.climbable in H1SurfaceFlags(surface.flags):
+                        if H1SurfaceFlags.climbable in surface_flags:
                             material_name += "^"
 
-                        if H1SurfaceFlags.breakable in H1SurfaceFlags(surface.flags):
+                        if H1SurfaceFlags.breakable in surface_flags:
                             material_name += "-"
 
                     else:
-                        if H2SurfaceFlags.two_sided in H2SurfaceFlags(surface.flags):
+                        surface_flags = H2SurfaceFlags(surface["flags"])
+                        if H2SurfaceFlags.two_sided in surface_flags:
                             material_name += "%"
 
-                        if H2SurfaceFlags.invisible in H2SurfaceFlags(surface.flags):
+                        if H2SurfaceFlags.invisible in surface_flags:
                             material_name += "*"
 
-                        if H2SurfaceFlags.climbable in H2SurfaceFlags(surface.flags):
+                        if H2SurfaceFlags.climbable in surface_flags:
                             material_name += "^"
 
-                        if H2SurfaceFlags.breakable in H2SurfaceFlags(surface.flags):
+                        if H2SurfaceFlags.breakable in surface_flags:
                             material_name += "-"
 
-                        if H2SurfaceFlags.conveyor in H2SurfaceFlags(surface.flags):
+                        if H2SurfaceFlags.conveyor in surface_flags:
                             material_name += ">"
 
                 else:

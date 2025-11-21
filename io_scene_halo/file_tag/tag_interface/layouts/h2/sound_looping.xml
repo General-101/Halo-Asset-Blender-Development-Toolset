@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="lsnd" name="sound_looping" version="3">
+  <Layout regolithID="block:sound_looping" internalName="sound_looping_block" name="sound_looping">
+    <FieldSet version="0" sizeofValue="84" sizeofSource="sizeof(struct looping_sound_definition_v1)">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:sound_looping_flags" CStyleName="sound_looping_flags" pascalStyleName="SoundLoopingFlags">
+          <Bit name="deafening to AIs" description="when used as a background stereo track, causes nearby AIs to be unable to hear" CStyleName="deafening_to_ais_bit" pascalStyleName="DeafeningToAisBit" />
+          <Bit name="not a loop" description="this is a collection of permutations strung together that should play once then stop." CStyleName="not_a_loop_bit" pascalStyleName="NotALoopBit" />
+          <Bit name="stops music" description="all other music loops will stop when this one starts." CStyleName="stops_music_bit" pascalStyleName="StopsMusicBit" />
+          <Bit name="always spatialize" description="always play as 3d sound, even in first person" CStyleName="always_spatialize_bit" pascalStyleName="AlwaysSpatializeBit" />
+          <Bit name="synchronize playback" description="synchronizes playback with other looping sounds attached to the owner of this sound" CStyleName="synchronize_playback_bit" pascalStyleName="SynchronizePlaybackBit" />
+          <Bit name="synchronize tracks" CStyleName="synchronize_tracks_bit" pascalStyleName="SynchronizeTracksBit" />
+          <Bit name="fake spatialization with distance" CStyleName="fake_spatialization_with_distance_bit" pascalStyleName="FakeSpatializationWithDistanceBit" />
+          <Bit name="combine all 3d playback" CStyleName="combine_all_3d_playback_bit" pascalStyleName="CombineAll3dPlaybackBit" />
+          <Bit name="legacy only" CStyleName="legacy_only_bit" pascalStyleName="LegacyOnlyBit" />
+          <Bit name="remastered only" CStyleName="remastered_only_bit" pascalStyleName="RemasteredOnlyBit" />
+        </Options>
+      </LongFlags>
+      <Explanation name="when scale is ZERO" description="as the sound's input scale changes from zero to one, these modifiers move between the two values specified here. the sound will play using the current scale modifier multiplied by the value specified below. (0 values are ignored.)" />
+      <Real name="detail sound period" />
+      <Pad sizeOfSource="2*sizeof(long)" length="8" />
+      <Explanation name="when scale is ONE" description="as the sound's input scale changes from zero to one, these modifiers move between the two values specified here. the sound will play using the current scale modifier multiplied by the value specified below. (0 values are ignored.)" />
+      <Real name="detail sound period" />
+      <Pad sizeOfSource="2*sizeof(long)" length="8" />
+      <Pad sizeOfSource="4*sizeof(long)" length="16" />
+      <TagReference CStyleName="continuous_damage_effect" pascalStyleName="ContinuousDamageEffect" name="continuous damage effect">
+        <tag />
+      </TagReference>
+      <Block CStyleName="tracks" pascalStyleName="Tracks" name="tracks" description="tracks play in parallel and loop continuously for the duration of the looping sound." maxElementCount="3" maxElementCountSource="MAXIMUM_TRACKS_PER_LOOPING_SOUND">
+        <Layout regolithID="block:looping_sound_track" internalName="looping_sound_track_block" name="looping_sound_track_block">
+          <FieldSet version="0" sizeofValue="160" sizeofSource="sizeof(struct looping_sound_track_v1)">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:looping_sound_track_flags" CStyleName="looping_sound_track_flags" pascalStyleName="LoopingSoundTrackFlags">
+                <Bit name="fade in at start" description="the loop sound should fade in while the start sound is playing." CStyleName="fade_in_at_start_bit" pascalStyleName="FadeInAtStartBit" />
+                <Bit name="fade out at stop" description="the loop sound should fade out while the stop sound is playing." CStyleName="fade_out_at_stop_bit" pascalStyleName="FadeOutAtStopBit" />
+                <Bit name="crossfade alt loop" description="when the sound changes to the alternate version,  ." CStyleName="crossfade_alt_loop_bit" pascalStyleName="CrossfadeAltLoopBit" />
+                <Bit name="master surround sound track" CStyleName="master_surround_sound_track_bit" pascalStyleName="MasterSurroundSoundTrackBit" />
+                <Bit name="fade out at alt stop" CStyleName="fade_out_at_alt_stop_bit" pascalStyleName="FadeOutAtAltStopBit" />
+              </Options>
+            </LongFlags>
+            <Real CStyleName="gain" pascalStyleName="Gain" name="gain" units="dB" />
+            <Real CStyleName="fade_in_duration" pascalStyleName="FadeInDuration" name="fade in duration" units="seconds" />
+            <Real CStyleName="fade_out_duration" pascalStyleName="FadeOutDuration" name="fade out duration" units="seconds" />
+            <Pad sizeOfSource="8*sizeof(long)" length="32" />
+            <TagReference CStyleName="start" pascalStyleName="Start" name="start">
+              <tag>snd!</tag>
+            </TagReference>
+            <TagReference CStyleName="loop" pascalStyleName="Loop" name="loop" blockNameSource="true">
+              <tag>snd!</tag>
+            </TagReference>
+            <TagReference CStyleName="end" pascalStyleName="End" name="end">
+              <tag>snd!</tag>
+            </TagReference>
+            <Pad sizeOfSource="8*sizeof(long)" length="32" />
+            <TagReference CStyleName="alternate_loop" pascalStyleName="AlternateLoop" name="alternate loop">
+              <tag>snd!</tag>
+            </TagReference>
+            <TagReference CStyleName="alternate_end" pascalStyleName="AlternateEnd" name="alternate end">
+              <tag>snd!</tag>
+            </TagReference>
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="144" sizeofSource="sizeof(struct looping_sound_track)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:looping_sound_track_flags</OptionsXRef>
+            </LongFlags>
+            <Real CStyleName="gain" pascalStyleName="Gain" name="gain" units="dB" tag="+dB+" />
+            <Real CStyleName="fade_in_duration" pascalStyleName="FadeInDuration" name="fade in duration" units="seconds" />
+            <Real CStyleName="fade_out_duration" pascalStyleName="FadeOutDuration" name="fade out duration" units="seconds" />
+            <TagReference CStyleName="_in" pascalStyleName="In" name="in">
+              <tag>snd!</tag>
+            </TagReference>
+            <TagReference CStyleName="loop" pascalStyleName="Loop" name="loop">
+              <tag>snd!</tag>
+            </TagReference>
+            <TagReference CStyleName="out" pascalStyleName="Out" name="out">
+              <tag>snd!</tag>
+            </TagReference>
+            <TagReference CStyleName="alt_loop" pascalStyleName="AltLoop" name="alt loop">
+              <tag>snd!</tag>
+            </TagReference>
+            <TagReference CStyleName="alt_out" pascalStyleName="AltOut" name="alt out">
+              <tag>snd!</tag>
+            </TagReference>
+            <UselessPad length="12" />
+            <ShortEnum CStyleName="output_effect" pascalStyleName="OutputEffect" name="output effect">
+              <OptionsXRef>enum:sound_output_effect</OptionsXRef>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <TagReference CStyleName="alt_trans_in" pascalStyleName="AltTransIn" name="alt trans in">
+              <tag>snd!</tag>
+            </TagReference>
+            <TagReference CStyleName="alt_trans_out" pascalStyleName="AltTransOut" name="alt trans out">
+              <tag>snd!</tag>
+            </TagReference>
+            <Real CStyleName="alt_crossfade_duration" pascalStyleName="AltCrossfadeDuration" name="alt crossfade duration" units="seconds" />
+            <Real CStyleName="alt_fade_out_duration" pascalStyleName="AltFadeOutDuration" name="alt fade out duration" units="seconds" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="detail_sounds" pascalStyleName="DetailSounds" name="detail sounds" description="detail sounds play at random throughout the duration of the looping sound." maxElementCount="12" maxElementCountSource="MAXIMUM_DETAIL_SOUNDS_PER_LOOPING_SOUND">
+        <Layout regolithID="block:looping_sound_detail" internalName="looping_sound_detail_block" name="looping_sound_detail_block">
+          <FieldSet version="0" sizeofValue="104" sizeofSource="sizeof(struct looping_sound_detail_v1)">
+            <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+              <tag>snd!</tag>
+            </TagReference>
+            <Explanation name="frequency of play" />
+            <RealBounds CStyleName="random_period_bounds" pascalStyleName="RandomPeriodBounds" name="random period bounds" units="seconds" description="the time between successive playings of this sound will be randomly selected from this range." />
+            <Real CStyleName="gain" pascalStyleName="Gain" name="gain" units="dB" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:looping_sound_detail_flags" CStyleName="looping_sound_detail_flags" pascalStyleName="LoopingSoundDetailFlags">
+                <Bit name="don't play with alternate" CStyleName="dont_play_with_alternate_bit" pascalStyleName="DontPlayWithAlternateBit" />
+                <Bit name="don't play without alternate" CStyleName="dont_play_without_alternate_bit" pascalStyleName="DontPlayWithoutAlternateBit" />
+                <Bit name="start immediately with loop" CStyleName="start_immediately_with_loop_bit" pascalStyleName="StartImmediatelyWithLoopBit" />
+              </Options>
+            </LongFlags>
+            <Pad sizeOfSource="12*sizeof(long)" length="48" />
+            <Explanation name="random spatialization" description="if the sound specified above is not stereo it will be randomly spatialized according to the following constraints. if both lower and upper bounds are zero for any of the following fields, the sound's position will be randomly selected from all possible directions or distances." />
+            <AngleBounds CStyleName="yaw_bounds" pascalStyleName="YawBounds" name="yaw bounds" units="degrees" description="the sound's position along the horizon will be randomly selected from this range." />
+            <AngleBounds CStyleName="pitch_bounds" pascalStyleName="PitchBounds" name="pitch bounds" units="degrees" description="the sound's position above (positive values) or below (negative values) the horizon will be randomly selected from this range." />
+            <RealBounds CStyleName="distance_bounds" pascalStyleName="DistanceBounds" name="distance bounds" units="world units" description="the sound's distance (from its spatialized looping sound or from the listener if the looping sound is stereo) will be randomly selected from this range." />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="60" sizeofSource="sizeof(struct looping_sound_detail)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+            <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound">
+              <tag>snd!</tag>
+            </TagReference>
+            <Explanation name="frequency of play" />
+            <RealBounds CStyleName="random_period_bounds" pascalStyleName="RandomPeriodBounds" name="random period bounds" units="seconds" description="the time between successive playings of this sound will be randomly selected from this range." />
+            <Real tag="+dB+" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:looping_sound_detail_flags</OptionsXRef>
+            </LongFlags>
+            <Explanation name="random spatialization" description="if the sound specified above is not stereo it will be randomly spatialized according to the following constraints. if both lower and upper bounds are zero for any of the following fields, the sound's position will be randomly selected from all possible directions or distances." />
+            <AngleBounds CStyleName="yaw_bounds" pascalStyleName="YawBounds" name="yaw bounds" units="degrees" description="the sound's position along the horizon will be randomly selected from this range." />
+            <AngleBounds CStyleName="pitch_bounds" pascalStyleName="PitchBounds" name="pitch bounds" units="degrees" description="the sound's position above (positive values) or below (negative values) the horizon will be randomly selected from this range." />
+            <RealBounds CStyleName="distance_bounds" pascalStyleName="DistanceBounds" name="distance bounds" units="world units" description="the sound's distance (from its spatialized looping sound or from the listener if the looping sound is stereo) will be randomly selected from this range." />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="60" sizeofSource="sizeof(struct looping_sound_definition_v2)">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:sound_looping_flags</OptionsXRef>
+      </LongFlags>
+      <Real CStyleName="martys_music_time" pascalStyleName="MartysMusicTime" name="marty's music time" units="seconds" />
+      <Real />
+      <Pad sizeOfSource="2*sizeof(long)" length="8" />
+      <TagReference>
+        <tag />
+      </TagReference>
+      <Block CStyleName="tracks" pascalStyleName="Tracks" name="tracks" description="tracks play in parallel and loop continuously for the duration of the looping sound." maxElementCount="3" maxElementCountSource="MAXIMUM_TRACKS_PER_LOOPING_SOUND">
+        <LayoutXRef>block:looping_sound_track</LayoutXRef>
+      </Block>
+      <Block CStyleName="detail_sounds" pascalStyleName="DetailSounds" name="detail sounds" description="detail sounds play at random throughout the duration of the looping sound." maxElementCount="12" maxElementCountSource="MAXIMUM_DETAIL_SOUNDS_PER_LOOPING_SOUND">
+        <LayoutXRef>block:looping_sound_detail</LayoutXRef>
+      </Block>
+    </FieldSet>
+    <FieldSet version="2" sizeofValue="60" sizeofSource="sizeof(struct looping_sound_definition_v2)">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:sound_looping_flags</OptionsXRef>
+      </LongFlags>
+      <Real CStyleName="martys_music_time" pascalStyleName="MartysMusicTime" name="marty's music time" units="seconds" />
+      <Real />
+      <Pad sizeOfSource="2*sizeof(long)" length="8" />
+      <TagReference>
+        <tag />
+      </TagReference>
+      <Block CStyleName="tracks" pascalStyleName="Tracks" name="tracks" description="tracks play in parallel and loop continuously for the duration of the looping sound." maxElementCount="3" maxElementCountSource="MAXIMUM_TRACKS_PER_LOOPING_SOUND">
+        <LayoutXRef>block:looping_sound_track</LayoutXRef>
+      </Block>
+      <Block CStyleName="detail_sounds" pascalStyleName="DetailSounds" name="detail sounds" description="detail sounds play at random throughout the duration of the looping sound." maxElementCount="12" maxElementCountSource="MAXIMUM_DETAIL_SOUNDS_PER_LOOPING_SOUND">
+        <LayoutXRef>block:looping_sound_detail</LayoutXRef>
+      </Block>
+    </FieldSet>
+    <FieldSet version="3" sizeofValue="76" sizeofSource="sizeof(struct looping_sound_definition)" isLatest="true">
+      <TagReference CStyleName="remastered_looping_sound" pascalStyleName="RemasteredLoopingSound" name="remastered looping sound">
+        <tag>lsnd</tag>
+      </TagReference>
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:sound_looping_flags</OptionsXRef>
+      </LongFlags>
+      <Real CStyleName="martys_music_time" pascalStyleName="MartysMusicTime" name="marty's music time" units="seconds" />
+      <Real />
+      <Pad sizeOfSource="2*sizeof(long)" length="8" />
+      <TagReference>
+        <tag />
+      </TagReference>
+      <Block CStyleName="tracks" pascalStyleName="Tracks" name="tracks" description="tracks play in parallel and loop continuously for the duration of the looping sound." maxElementCount="3" maxElementCountSource="MAXIMUM_TRACKS_PER_LOOPING_SOUND">
+        <LayoutXRef>block:looping_sound_track</LayoutXRef>
+      </Block>
+      <Block CStyleName="detail_sounds" pascalStyleName="DetailSounds" name="detail sounds" description="detail sounds play at random throughout the duration of the looping sound." maxElementCount="12" maxElementCountSource="MAXIMUM_DETAIL_SOUNDS_PER_LOOPING_SOUND">
+        <LayoutXRef>block:looping_sound_detail</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

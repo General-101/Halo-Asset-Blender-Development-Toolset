@@ -25,13 +25,24 @@
 # ##### END MIT LICENSE BLOCK #####
 
 import bpy
+import json
 import bmesh
 
 import numpy as np
 from math import radians
 from mathutils import Matrix, Euler, Vector
+from ...file_tag.tag_interface import tag_interface, tag_common
 
-def build_scene(context, PHYSICS, game_version, game_title, file_version, fix_rotations, empty_markers, report):
+def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, report):
+    if game_title == "halo1":
+        tag_groups = tag_common.h1_tag_groups
+    elif game_title == "halo2":
+        tag_groups = tag_common.h2_tag_groups
+    else:
+        print("%s is not supported." % game_title)
+
+    physics_data = tag_interface.get_disk_asset(tag_ref["path"], tag_groups.get(tag_ref["group name"]))["Data"]
+
     collection = context.collection
 
     active_object = context.view_layer.objects.active
@@ -40,23 +51,25 @@ def build_scene(context, PHYSICS, game_version, game_title, file_version, fix_ro
         armature = active_object
 
     if armature:
-        for mass_point_idx, mass_point in enumerate(PHYSICS.mass_points):
-            if game_title == "halo2" and mass_point.powered_mass_point < 0:
+        for mass_point_idx, mass_point in enumerate(physics_data["mass points"]):
+            if game_title == "halo2" and mass_point["powered mass points"] < 0:
                 continue
 
-            parent_idx = mass_point.model_node
-            object_name_prefix = '#%s' % mass_point.name
+            parent_idx = mass_point["model node"]
+            object_name_prefix = '#%s' % mass_point["name"]
 
             marker_name_override = ""
-            if context.scene.objects.get('#%s' % mass_point.name):
-                marker_name_override = mass_point.name
+            if context.scene.objects.get('#%s' % mass_point["name"]):
+                marker_name_override = mass_point["name"]
 
             if empty_markers:
                 object_mesh = bpy.data.objects.new(object_name_prefix, None)
+                object_mesh.color = (1, 1, 1, 0)
 
             else:
                 mesh = bpy.data.meshes.new(object_name_prefix)
                 object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+                object_mesh.color = (1, 1, 1, 0)
 
             collection.objects.link(object_mesh)
 
@@ -81,22 +94,32 @@ def build_scene(context, PHYSICS, game_version, game_title, file_version, fix_ro
                 object_mesh.parent_type = "BONE"
                 object_mesh.parent_bone = armature.data.bones[0].name
 
-            matrix_translate = Matrix.Translation(mass_point.position)
+            matrix_translate = Matrix.Translation(Vector(mass_point["position"]) * 100)
             matrix_rotation = Matrix.Identity(3)
 
-            marker_radius = mass_point.radius
+            marker_radius = mass_point["radius"] * 100
 
             scale = Matrix.Scale(marker_radius, 4)
 
-            right = np.cross(mass_point.up, mass_point.forward)
-            matrix_rotation = Matrix((mass_point.forward, right, mass_point.up))
+            vector_up = Vector(mass_point["up"])
+            vector_forward = Vector(mass_point["forward"])
+            right = np.cross(vector_up, vector_forward)
+            matrix_rotation = Matrix((vector_forward, right, vector_up))
             matrix_rotation = matrix_rotation.to_4x4().inverted(Matrix.Identity(4))
             transform_matrix = matrix_translate @ matrix_rotation @ scale
+
+            if fix_rotations:
+                transform_matrix = transform_matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')
 
             object_mesh.matrix_world = transform_matrix
             if not empty_markers:
                 object_mesh.data.ass_jms.Object_Type = 'SPHERE'
+            else:
+                object_mesh.empty_display_type = 'SPHERE'
+
             if game_title == "halo2":
+                # Add some extra logic to change how physics tags are handled if the target game is Halo 2 for upgrading.
+                # Don't remember when this would come up but I assume Digsite related. Probably no longer needed - Gen
                 object_mesh.ass_jms.marker_mask_type = '0'
                 marker_transform = object_mesh.matrix_world
 
@@ -107,9 +130,6 @@ def build_scene(context, PHYSICS, game_version, game_title, file_version, fix_ro
 
                 transform_matrix = Matrix.LocRotScale(pos, Euler((0.0, 0.0, radians(rot_z))), Vector((-1, -1, -1)))
 
-                object_mesh.parent = armature
-                object_mesh.parent_type = "BONE"
-                object_mesh.parent_bone = armature.data.bones[0].name
                 object_mesh.matrix_world = transform_matrix
 
             else:

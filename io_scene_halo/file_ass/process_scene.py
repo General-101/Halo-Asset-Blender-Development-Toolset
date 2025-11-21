@@ -33,7 +33,7 @@ from ..global_functions import mesh_processing, global_functions, resource_manag
 from datetime import datetime
 
 def get_material_strings(material, version):
-    material_strings = []
+    lighting_info = []
     bm_flags = "BM_FLAGS "
     bm_lmres = "BM_LMRES "
     bm_lighting_basic = "BM_LIGHTING_BASIC "
@@ -94,14 +94,14 @@ def get_material_strings(material, version):
     bm_lighting_frus += '%0.10f' % material.ass_jms.frustum_cutoff
 
     if material.ass_jms.is_bm:
-        material_strings.append(bm_flags)
-        material_strings.append(bm_lmres)
+        lighting_info.append(bm_flags)
+        lighting_info.append(bm_lmres)
         if material.ass_jms.power > 0:
-            material_strings.append(bm_lighting_basic)
-            material_strings.append(bm_lighting_atten)
-            material_strings.append(bm_lighting_frus)
+            lighting_info.append(bm_lighting_basic)
+            lighting_info.append(bm_lighting_atten)
+            lighting_info.append(bm_lighting_frus)
 
-    return material_strings
+    return lighting_info
 
 def scale_is_uniform(obj):
     is_uniform = True
@@ -138,13 +138,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
     if not context.view_layer.objects.active == None:
         bpy.ops.object.mode_set(mode='OBJECT')
 
-    default_region = ""
-    default_permutation = ""
-
     limit_value = 0.001
-
-    region_list = []
-    permutation_list = []
 
     ASS.materials = []
     ASS.objects = []
@@ -182,21 +176,21 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
 
         elif obj.type == 'LIGHT' and version >= 3:
             instance_list.append(obj)
-            if not obj.name in linked_object_list:
-                linked_object_list.append(obj.name)
+            if not obj.data.name in linked_object_list:
+                linked_object_list.append(obj.data.name)
                 object_count += 1
 
             if obj.data.type == 'SPOT':
-                geometry_list.append((obj, obj, 'SPOT_LGT'))
+                geometry_list.append((obj.data, obj, 'SPOT_LGT'))
 
             elif obj.data.type == 'AREA':
-                geometry_list.append((obj, obj, 'DIRECT_LGT'))
+                geometry_list.append((obj.data, obj, 'DIRECT_LGT'))
 
             elif obj.data.type == 'POINT':
-                geometry_list.append((obj, obj,'OMNI_LGT'))
+                geometry_list.append((obj.data, obj,'OMNI_LGT'))
 
             elif obj.data.type == 'SUN':
-                geometry_list.append((obj, obj, 'AMBIENT_LGT'))
+                geometry_list.append((obj.data, obj, 'AMBIENT_LGT'))
 
             else:
                 print("Bad light")
@@ -245,7 +239,6 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
             geometry_list.append((obj_mesh_data, obj_data, 'EMPTY'))
             instance_list.append(obj_data)
 
-
     instance_ids_original = set()
     instance_ids_full = set()
     now = datetime.now()
@@ -288,11 +281,6 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
         node_index_list = []
 
         region_index = -1
-        lod = None
-        region = ""
-        permutation = ""
-        face_set = (None, default_permutation, default_region)
-
         evaluted_mesh = geometry[0]
         original_geo = geometry[1]
         geo_class = geometry[2]
@@ -360,10 +348,9 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                 light_properties.light_type = geo_class
                 light_properties.light_color = (original_geo.data.color[0], original_geo.data.color[1], original_geo.data.color[2])
                 light_properties.intensity = original_geo.data.energy
-
                 if geo_class == 'SPOT_LGT' or geo_class == 'DIRECT_LGT':
                     light_properties.hotspot_size = degrees(original_geo.data.halo_light.spot_size)
-                    light_properties.hotspot_falloff_size = original_geo.data.halo_light.spot_blend * degrees(original_geo.data.halo_light.spot_size)
+                    light_properties.hotspot_falloff_size = degrees(original_geo.data.halo_light.spot_size) * (1 - original_geo.data.halo_light.spot_blend)
 
                     light_properties.light_shape = int(original_geo.data.halo_light.light_cone_shape)
                     light_properties.light_aspect_ratio = original_geo.data.halo_light.aspect_ratio
@@ -381,22 +368,13 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                 if global_functions.string_empty_check(xref_name):
                     xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
+                region_name = ""
                 if not original_geo.data.active_region == -1:
-                    region_set = original_geo.data.region_list[original_geo.data.active_region].name.split()
-                    lod, permutation, region = global_functions.material_definition_parser(False, region_set, default_region, default_permutation)
-
-                    if not permutation in permutation_list:
-                        permutation_list.append(permutation)
-
-                    if not region in region_list:
-                        region_list.append(region)
+                    region_name = original_geo.data.region_list[original_geo.data.active_region].name
 
                 radius = object_dimensions.object_radius
                 face = original_geo.data.polygons[0]
-                material = global_functions.get_material(game_version, original_geo, face, evaluted_mesh, lod, region, permutation)
-                if not material == -1:
-                    material_list = global_functions.gather_materials(game_version, material, material_list, 'ASS')
-                    material_index = material_list.index(material)
+                material_index = global_functions.get_material(original_geo.material_slots, evaluted_mesh, face, region_name, material_list)
 
             elif geo_class == 'BOX':
                 xref_path = original_geo.data.ass_jms.XREF_path
@@ -404,22 +382,13 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                 if global_functions.string_empty_check(xref_name):
                     xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
+                region_name = ""
                 if not original_geo.data.active_region == -1:
-                    region_set = original_geo.data.region_list[original_geo.data.active_region].name.split()
-                    lod, permutation, region = global_functions.material_definition_parser(False, region_set, default_region, default_permutation)
-
-                    if not permutation in permutation_list:
-                        permutation_list.append(permutation)
-
-                    if not region in region_list:
-                        region_list.append(region)
+                    region_name = original_geo.data.region_list[original_geo.data.active_region].name
 
                 face = original_geo.data.polygons[0]
                 extents = [object_dimensions.dimension[0], object_dimensions.dimension[1], object_dimensions.dimension[2]]
-                material = global_functions.get_material(game_version, original_geo, face, evaluted_mesh, lod, region, permutation)
-                if not material == -1:
-                    material_list = global_functions.gather_materials(game_version, material, material_list, 'ASS')
-                    material_index = material_list.index(material)
+                material_index = global_functions.get_material(original_geo.material_slots, evaluted_mesh, face, region_name, material_list)
 
             elif geo_class == 'PILL':
                 xref_path = original_geo.data.ass_jms.XREF_path
@@ -427,23 +396,14 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                 if global_functions.string_empty_check(xref_name):
                     xref_name = os.path.basename(xref_path).rsplit('.', 1)[0]
 
+                region_name = ""
                 if not original_geo.data.active_region == -1:
-                    region_set = original_geo.data.region_list[original_geo.data.active_region].name.split()
-                    lod, permutation, region = global_functions.material_definition_parser(False, region_set, default_region, default_permutation)
-
-                    if not permutation in permutation_list:
-                        permutation_list.append(permutation)
-
-                    if not region in region_list:
-                        region_list.append(region)
+                    region_name = original_geo.data.region_list[original_geo.data.active_region].name
 
                 face = original_geo.data.polygons[0]
                 height = object_dimensions.pill_height
                 radius = object_dimensions.object_radius
-                material = global_functions.get_material(game_version, original_geo, face, evaluted_mesh, lod, region, permutation)
-                if not material == -1:
-                    material_list = global_functions.gather_materials(game_version, material, material_list, 'ASS')
-                    material_index = material_list.index(material)
+                material_index = global_functions.get_material(original_geo.material_slots, evaluted_mesh, face, region_name, material_list)
 
             elif geo_class == 'MESH':
                 xref_path = original_geo.data.ass_jms.XREF_path
@@ -458,26 +418,13 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                 region_attribute = evaluted_mesh.get_custom_attribute()
                 region_count = len(original_geo.data.region_list)
                 for idx, face in enumerate(evaluted_mesh.polygons):
+                    region_name = ""
                     if not original_geo.data.active_region == -1 and region_count > 0:
                         region_idx = region_attribute.data[idx].value - 1
                         if not region_idx == -1 and not region_idx >= region_count:
-                            face_set = mesh_processing.process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, region_idx)
-                            if not region in region_list:
-                                region_list.append(region)
+                            region_name = original_geo.data.region_list[region_idx].name
 
-                            region_index = region_list.index(region)
-                            if not game_version == "halo1":
-                                if not permutation in permutation_list:
-                                    permutation_list.append(permutation)
-
-                    permutation = face_set[1]
-                    region = face_set[2]
-
-                    material = global_functions.get_material(game_version, original_geo, face, evaluted_mesh, lod, region, permutation)
-                    material_index = -1
-                    if not material == -1:
-                        material_list = global_functions.gather_materials(game_version, material, material_list, "ASS")
-                        material_index = material_list.index(material)
+                    material_index = global_functions.get_material(original_geo.material_slots, evaluted_mesh, face, region_name, material_list)
 
                     v0 = (idx * 3)
                     v1 = (idx * 3) + 1
@@ -489,7 +436,6 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                         loop_data = evaluted_mesh.loops[loop_index]
                         vertex_data = evaluted_mesh.vertices[loop_data.vertex_index]
 
-                        region = region_index
                         normal = evaluted_mesh.corner_normals[loop_index].vector.normalized()
                         if not loop_normals:
                             normal = vertex_data.normal.normalized()
@@ -502,7 +448,7 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
                         color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index, point_idx)
                         node_influence_count, node_set = mesh_processing.process_mesh_export_weights(vertex_data, armature, original_geo, vertex_groups, instance_list, "ASS", node_index_list)
 
-                        verts.append(ASS.Vertex(node_influence_count, node_set, region, scaled_translation, normal, color, uv_set))
+                        verts.append(ASS.Vertex(node_influence_count, node_set, region_index, scaled_translation, normal, color, uv_set))
 
                 original_geo.to_mesh_clear()
 
@@ -514,25 +460,11 @@ def process_scene(context, version, game_version, hidden_geo, nonrender_geo, app
         ASS.instances[-1].bone_groups = node_index_list
 
     for material in material_list:
-        material_data = material[0]
-
-        texture_path = ""
-
-        slot_index = bpy.data.materials.find(material_data.name)
-        lod = mesh_processing.get_lod(material[1], game_version)
-        region = material[2]
-        permutation = material[3]
-
+        material_data, variant_name = material
         material_name = mesh_processing.append_material_symbols(material_data, game_version, True)
         material_lightmap = get_material_strings(material_data, version)
 
-        if region:
-            region = region.replace(' ', '_').replace('\t', '_')
-
-        if permutation:
-            permutation = permutation.replace(' ', '_').replace('\t', '_')
-
-        ASS.materials.append(ASS.Material(material_name, material_name, texture_path, slot_index, lod, permutation, region, material_lightmap))
+        ASS.materials.append(ASS.Material(material_name, variant_name, material_lightmap))
 
     # Restore visibility status for all resources
     resource_management.restore_collection_visibility(stored_collection_visibility)

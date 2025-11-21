@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="pmov" name="particle_physics" version="1">
+  <Layout regolithID="block:particle_physics" internalName="particle_physics_block" name="particle_physics">
+    <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(c_particle_movement_definition)" isLatest="true">
+      <TagReference CStyleName="_template" pascalStyleName="Template" name="template">
+        <tag>pmov</tag>
+      </TagReference>
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:particle_physics_flags" CStyleName="particle_physics_flags" pascalStyleName="ParticlePhysicsFlags">
+          <Bit name="physics" CStyleName="physics_bit" pascalStyleName="PhysicsBit" />
+          <Bit name="collide with structure" CStyleName="collide_with_structure_bit" pascalStyleName="CollideWithStructureBit" />
+          <Bit name="collide with media" CStyleName="collide_with_media_bit" pascalStyleName="CollideWithMediaBit" />
+          <Bit name="collide with scenery" CStyleName="collide_with_scenery_bit" pascalStyleName="CollideWithSceneryBit" />
+          <Bit name="collide with vehicles" CStyleName="collide_with_vehicles_bit" pascalStyleName="CollideWithVehiclesBit" />
+          <Bit name="collide with bipeds" CStyleName="collide_with_bipeds_bit" pascalStyleName="CollideWithBipedsBit" />
+          <Bit name="swarm" CStyleName="swarm_bit" pascalStyleName="SwarmBit" />
+          <Bit name="wind" CStyleName="wind_bit" pascalStyleName="WindBit" />
+        </Options>
+      </LongFlags>
+      <Block CStyleName="movements" pascalStyleName="Movements" name="movements" maxElementCount="4" maxElementCountSource="c_particle_movement_definition::k_type_count">
+        <Layout regolithID="block:particle_controller" internalName="particle_controller" name="particle_controller">
+          <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(c_particle_controller)" isLatest="true">
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <Options regolithID="enum:particle_controller_type" CStyleName="particle_controller_type" pascalStyleName="ParticleControllerType">
+                <Enum name="physics" CStyleName="physics" pascalStyleName="Physics" />
+                <Enum name="collider" CStyleName="collider" pascalStyleName="Collider" />
+                <Enum name="swarm" CStyleName="swarm" pascalStyleName="Swarm" />
+                <Enum name="wind" CStyleName="wind" pascalStyleName="Wind" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <Block CStyleName="parameters" pascalStyleName="Parameters" name="parameters" maxElementCount="9" maxElementCountSource="c_particle_movement_definition::k_flocking_parameter_count">
+              <Layout regolithID="block:particle_controller_parameters" internalName="particle_controller_parameters" name="particle_controller_parameters">
+                <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(c_particle_controller_parameter)" isLatest="true">
+                  <LongInteger CStyleName="parameter_id" pascalStyleName="ParameterId" name="parameter id" />
+                  <Struct CStyleName="property" pascalStyleName="Property" name="property">
+                    <LayoutXRef>structure:particle_property_scalar_struct_new</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Pad sizeOfSource="2*sizeof(dword)" length="8" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="udlg" name="dialogue" version="1">
+  <Layout regolithID="block:dialogue" internalName="dialogue_block" name="dialogue">
+    <FieldSet version="0" sizeofValue="56" sizeofSource="sizeof(s_dialogue_definition_v1)">
+      <TagReference CStyleName="global_dialogue_info" pascalStyleName="GlobalDialogueInfo" name="global dialogue info">
+        <tag>adlg</tag>
+      </TagReference>
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:dialogue_flags" CStyleName="dialogue_flags" pascalStyleName="DialogueFlags">
+          <Bit name="female" CStyleName="female_bit" pascalStyleName="FemaleBit" />
+        </Options>
+      </LongFlags>
+      <Pad sizeOfSource="5*sizeof(long)" length="20" />
+      <Block CStyleName="vocalizations" pascalStyleName="Vocalizations" name="vocalizations" maxElementCount="500">
+        <Layout regolithID="block:sound_references" internalName="sound_references_block" name="sound_references_block">
+          <FieldSet version="0" sizeofValue="44" sizeofSource="sizeof(s_vocalization_sound_v1)">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:sound_references_flags" CStyleName="sound_references_flags" pascalStyleName="SoundReferencesFlags">
+                <Bit name="new vocalization" CStyleName="new_vocalization_bit" pascalStyleName="NewVocalizationBit" />
+              </Options>
+            </WordFlags>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="5*sizeof(long)" length="20" />
+            <StringId CStyleName="vocalization" pascalStyleName="Vocalization" name="vocalization" blockNameSource="true" />
+            <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound">
+              <tag>snd!</tag>
+            </TagReference>
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="24" sizeofSource="sizeof(s_vocalization_sound)" isLatest="true">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:sound_references_flags</OptionsXRef>
+            </WordFlags>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <StringId CStyleName="vocalization" pascalStyleName="Vocalization" name="vocalization" blockNameSource="true" />
+            <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound">
+              <tag>snd!</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <StringId CStyleName="mission_dialogue_designator" pascalStyleName="MissionDialogueDesignator" name="mission dialogue designator" description="3-letter mission dialogue designator name" />
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="36" sizeofSource="sizeof(s_dialogue_definition)" isLatest="true">
+      <TagReference CStyleName="global_dialogue_info" pascalStyleName="GlobalDialogueInfo" name="global dialogue info">
+        <tag>adlg</tag>
+      </TagReference>
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:dialogue_flags</OptionsXRef>
+      </LongFlags>
+      <Block CStyleName="vocalizations" pascalStyleName="Vocalizations" name="vocalizations" maxElementCount="500">
+        <LayoutXRef>block:sound_references</LayoutXRef>
+      </Block>
+      <StringId CStyleName="mission_dialogue_designator" pascalStyleName="MissionDialogueDesignator" name="mission dialogue designator" description="3-letter mission dialogue designator name" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

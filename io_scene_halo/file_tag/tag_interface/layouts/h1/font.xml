@@ -1,0 +1,65 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="font" name="font" version="1">
+  <Layout regolithID="block:font" internalName="font_block" name="font">
+    <FieldSet version="0" sizeofValue="156" sizeofSource="sizeof(struct font_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="disable mcc font override" CStyleName="disable_mcc_font_override_bit" pascalStyleName="DisableMccFontOverrideBit" />
+        </Options>
+      </LongFlags>
+      <ShortInteger CStyleName="ascending_height" pascalStyleName="AscendingHeight" name="ascending height" />
+      <ShortInteger CStyleName="descending_height" pascalStyleName="DescendingHeight" name="descending height" />
+      <ShortInteger CStyleName="leading_height" pascalStyleName="LeadingHeight" name="leading height" />
+      <ShortInteger CStyleName="leading_width" pascalStyleName="LeadingWidth" name="leading width" cacheOnly="true" description="you cant actually set this; it gets overridden with (ascending height + descending height) / 5 on map build" />
+      <ShortEnum CStyleName="encoding_type" pascalStyleName="EncodingType" name="encoding type" cacheOnly="true">
+        <Options regolithID="enum:encoding_type" CStyleName="encoding_type" pascalStyleName="EncodingType">
+          <Enum name="ucs-2" CStyleName="ucs_2" pascalStyleName="Ucs2" />
+          <Enum name="extended" CStyleName="extended" pascalStyleName="Extended" />
+        </Options>
+      </ShortEnum>
+      <ShortInteger CStyleName="character_offset" pascalStyleName="CharacterOffset" name="character offset" cacheOnly="true" unsigned="true" />
+      <Pad name="pad" length="32" />
+      <Block CStyleName="character_tables" pascalStyleName="CharacterTables" name="character tables" cacheOnly="true" maxElementCount="256">
+        <Layout regolithID="block:character tables" internalName="character tables_block" name="character tables_block">
+          <FieldSet version="0" sizeofValue="12" isLatest="true">
+            <Block CStyleName="character_table" pascalStyleName="CharacterTable" name="character table" maxElementCount="256">
+              <Layout regolithID="block:character table" internalName="character table_block" name="character table_block">
+                <FieldSet version="0" sizeofValue="2" isLatest="true">
+                  <ShortInteger CStyleName="character_index" pascalStyleName="CharacterIndex" name="character index" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <TagReference CStyleName="bold" pascalStyleName="Bold" name="bold">
+        <tag>font</tag>
+      </TagReference>
+      <TagReference CStyleName="italic" pascalStyleName="Italic" name="italic">
+        <tag>font</tag>
+      </TagReference>
+      <TagReference CStyleName="condense" pascalStyleName="Condense" name="condense">
+        <tag>font</tag>
+      </TagReference>
+      <TagReference CStyleName="underline" pascalStyleName="Underline" name="underline">
+        <tag>font</tag>
+      </TagReference>
+      <Block CStyleName="characters" pascalStyleName="Characters" name="characters" maxElementCount="32000">
+        <Layout regolithID="block:characters" internalName="characters_block" name="characters_block">
+          <FieldSet version="0" sizeofValue="20" isLatest="true">
+            <ShortInteger CStyleName="character" pascalStyleName="Character" name="character" unsigned="true" />
+            <ShortInteger CStyleName="character_width" pascalStyleName="CharacterWidth" name="character width" />
+            <ShortInteger CStyleName="bitmap_width" pascalStyleName="BitmapWidth" name="bitmap width" />
+            <ShortInteger CStyleName="bitmap_height" pascalStyleName="BitmapHeight" name="bitmap height" />
+            <ShortInteger CStyleName="bitmap_origin_x" pascalStyleName="BitmapOriginX" name="bitmap origin x" />
+            <ShortInteger CStyleName="bitmap_origin_y" pascalStyleName="BitmapOriginY" name="bitmap origin y" />
+            <ShortInteger CStyleName="hardware_character_index" pascalStyleName="HardwareCharacterIndex" name="hardware character index" unsigned="true" />
+            <ShortInteger CStyleName="draw_generation" pascalStyleName="DrawGeneration" name="draw generation" cacheOnly="true" unsigned="true" description="stores the draw generation counter to track character usage during drawing" />
+            <LongInteger CStyleName="pixels_offset" pascalStyleName="PixelsOffset" name="pixels offset" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Data CStyleName="pixels" pascalStyleName="Pixels" name="pixels" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

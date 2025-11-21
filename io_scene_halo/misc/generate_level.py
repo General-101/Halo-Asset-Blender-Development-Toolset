@@ -27,20 +27,70 @@
 import os
 import bpy
 import json
+import base64
 import random
 
 from math import radians, degrees
+from enum import Flag, Enum, auto
 from mathutils import Matrix, Vector, Euler
 from ..global_ui.maze_ui import CharacterFlags
 from ..misc.maze_gen.solve_maze import solve_maze
-from ..global_functions.tag_format import TagAsset
 from ..misc.maze_gen.generate_maze import generate_maze
 from ..global_functions.mesh_processing import deselect_objects, select_object
-from ..file_tag.h1.file_scenario.build_asset import build_asset as build_h1_scenario
-from ..file_tag.h1.file_scenario.format import ScenarioAsset, EncounterFlags, GroupFlags, TeamEnum, ObjectFlags
+from ..file_tag.tag_interface import tag_interface, tag_common
+from ..file_tag.tag_interface.tag_definitions import h1, h2
 
 DEBUG = False
 ADDON_DIRECTORY = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
+class TeamEnum(Enum):
+    default_by_unit = 0
+    player = auto()
+    human = auto()
+    covenant = auto()
+    flood = auto()
+    sentinel = auto()
+    unused6 = auto()
+    unused7 = auto()
+    unused8 = auto()
+    unused9 = auto()
+
+class EncounterFlags(Flag):
+    not_initially_created = auto()
+    respawn_enabled = auto()
+    initially_blind = auto()
+    initially_deaf = auto()
+    initially_braindead = auto()
+    _3d_firing_positions = auto()
+    manual_bsp_index_specified = auto()
+
+class GroupFlags(Flag):
+    a = auto()
+    b = auto()
+    c = auto()
+    d = auto()
+    e = auto()
+    f = auto()
+    g = auto()
+    h = auto()
+    i = auto()
+    j = auto()
+    k = auto()
+    l = auto()
+    m = auto()
+    n = auto()
+    o = auto()
+    p = auto()
+    q = auto()
+    r = auto()
+    s = auto()
+    t = auto()
+    u = auto()
+    v = auto()
+    w = auto()
+    x = auto()
+    y = auto()
+    z = auto()
 
 def create_object(collection, parent, file_path):
     block = None
@@ -226,7 +276,7 @@ def flip_normals(obj):
     bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
     bpy.ops.object.select_all(action='DESELECT')
 
-def generate_player_starting_locations(SCENARIO, player_count, block, attachment_points, valid_polygons):
+def generate_player_starting_locations(scenario_asset, player_count, block, valid_polygons):
     is_valid = False
     if not len(valid_polygons) == 0:
         is_valid = True
@@ -238,7 +288,6 @@ def generate_player_starting_locations(SCENARIO, player_count, block, attachment
         else:
             player_position = block.matrix_world @ Vector()
 
-        attachment_position = attachment_points[-1].matrix_world.to_translation()
         vector_a = Vector((player_position[0], player_position[1]))
         vector = Vector((-1, 0))
 
@@ -246,46 +295,37 @@ def generate_player_starting_locations(SCENARIO, player_count, block, attachment
         if not vector_a[0] == 0 and not vector_a[1] == 0:
             facing_angle = vector_a.angle_signed(vector)
 
-        player_starting_location = SCENARIO.PlayerStartingLocation()
-        player_starting_location.position = player_position / 100
-        player_starting_location.facing = facing_angle
-        player_starting_location.team_index = 0
-        player_starting_location.bsp_index = 0
-        player_starting_location.type_0 = 0
-        player_starting_location.type_1 = 0
-        player_starting_location.type_2 = 0
-        player_starting_location.type_3 = 0
+        player_starting_location = {
+            "position": list(player_position / 100),
+            "facing": facing_angle,
+            "team index": 0,
+            "bsp index": 0,
+            "type 0": {"type": "ShortEnum", "value": 0, "value name": ""},
+            "type 1": {"type": "ShortEnum", "value": 0, "value name": ""},
+            "type 2": {"type": "ShortEnum", "value": 0, "value name": ""},
+            "type 3": {"type": "ShortEnum", "value": 0, "value name": ""},
+        }
 
-        SCENARIO.player_starting_locations.append(player_starting_location)
+        scenario_asset["Data"]["player starting locations"].append(player_starting_location)
 
-def generate_player_profiles(TAG, SCENARIO, mission_key, weapons_dic):
+def generate_player_profiles(scenario_asset, mission_key, weapons_dic):
     mission_globals = mission_key["globals"]
     mission_scripts = mission_key["scripts"]
 
-    for player_idx, player_starting_location in enumerate(SCENARIO.player_starting_locations):
-        player_starting_profile = SCENARIO.PlayerStartingProfile()
-
-        player_starting_profile.name = "player%s_starting_profile" % player_idx
-        player_starting_profile.starting_health_damage = 1
-        player_starting_profile.starting_shield_damage = 1
-
-        primary_tag_group = "weap"
-        primary_tag_path = ""
-        player_starting_profile.primary_weapon_tag_ref = TAG.TagRef(primary_tag_group, primary_tag_path, len(primary_tag_path), upgrade_patches=TAG.upgrade_patches)
-
-        player_starting_profile.primary_rounds_loaded = 0
-        player_starting_profile.primary_rounds_total = 0
-
-        secondary_tag_group = "weap"
-        secondary_tag_path = ""
-        player_starting_profile.secondary_weapon_tag_ref = TAG.TagRef(secondary_tag_group, secondary_tag_path, len(secondary_tag_path), upgrade_patches=TAG.upgrade_patches)
-
-        player_starting_profile.secondary_rounds_loaded = 0
-        player_starting_profile.secondary_rounds_total = 0
-        player_starting_profile.starting_fragmentation_grenades_count = 0
-        player_starting_profile.starting_plasma_grenade_count = 0
-        player_starting_profile.starting_custom_2_grenade_count = 0
-        player_starting_profile.starting_custom_3_grenade_count = 0
+    #for player_idx, player_starting_location in enumerate(scenario_asset["Data"]["player starting locations"]):
+        #player_starting_location["name"] = "player%s_starting_profile" % player_idx
+        #player_starting_location["starting health modifier"] = 1
+        #player_starting_location["starting shield modifier"] = 1
+        #player_starting_location["primary weapon"] = {"group name":"weap", "path":""}
+        #player_starting_location["primary rounds loaded"] = 0
+        #player_starting_location["primary rounds reserved"] = 0
+        #player_starting_location["secondary weapon"] = {"group name":"weap", "path":""}
+        #player_starting_location["secondary rounds loaded"] = 0
+        #player_starting_location["secondary rounds reserved"] = 0
+        #player_starting_location["starting fragmentation grenade count"] = 0
+        #player_starting_location["starting plasma grenade count"] = 0
+        #player_starting_location["starting grenade type2 count"] = 0
+        #player_starting_location["starting grenade type3 count"] = 0
 
     loadout_count = 24
     loadout_id_key = mission_globals["loadout_id"] = {}
@@ -305,31 +345,22 @@ def generate_player_profiles(TAG, SCENARIO, mission_key, weapons_dic):
         while primary["name"] == secondary["name"]:
             secondary = random.choice(weapons_dic["weapons"])
 
-        player_starting_profile = SCENARIO.PlayerStartingProfile()
+        player_starting_profile = {}
+        player_starting_profile["name"] = "loadout_%s" % loadout_idx
+        player_starting_profile["starting health modifier"] = 0
+        player_starting_profile["starting shield modifier"] = 0
+        player_starting_profile["primary weapon"] = {"group name":"weap", "path":primary["path"]}
+        player_starting_profile["primary rounds loaded"] = primary["rounds_loaded"]
+        player_starting_profile["primary rounds reserved"] = primary["rounds_total"]
+        player_starting_profile["secondary weapon"] = {"group name":"weap", "path":secondary["path"]}
+        player_starting_profile["secondary rounds loaded"] = secondary["rounds_loaded"]
+        player_starting_profile["secondary rounds reserved"] = secondary["rounds_total"]
+        player_starting_profile["starting fragmentation grenade count"] = 2
+        player_starting_profile["starting plasma grenade count"] = 0
+        player_starting_profile["starting grenade type2 count"] = 0
+        player_starting_profile["starting grenade type3 count"] = 0
 
-        player_starting_profile.name = "loadout_%s" % loadout_idx
-        player_starting_profile.starting_health_damage = 0
-        player_starting_profile.starting_shield_damage = 0
-
-        primary_tag_group = "weap"
-        primary_tag_path = primary["path"]
-        player_starting_profile.primary_weapon_tag_ref = TAG.TagRef(primary_tag_group, primary_tag_path, len(primary_tag_path), upgrade_patches=TAG.upgrade_patches)
-
-        player_starting_profile.primary_rounds_loaded = primary["rounds_loaded"]
-        player_starting_profile.primary_rounds_total = primary["rounds_total"]
-
-        secondary_tag_group = "weap"
-        secondary_tag_path = secondary["path"]
-        player_starting_profile.secondary_weapon_tag_ref = TAG.TagRef(secondary_tag_group, secondary_tag_path, len(secondary_tag_path), upgrade_patches=TAG.upgrade_patches)
-
-        player_starting_profile.secondary_rounds_loaded = secondary["rounds_loaded"]
-        player_starting_profile.secondary_rounds_total = secondary["rounds_total"]
-        player_starting_profile.starting_fragmentation_grenades_count = 2
-        player_starting_profile.starting_plasma_grenade_count = 0
-        player_starting_profile.starting_custom_2_grenade_count = 0
-        player_starting_profile.starting_custom_3_grenade_count = 0
-
-        SCENARIO.player_starting_profiles.append(player_starting_profile)
+        scenario_asset["Data"]["player starting profile"].append(player_starting_profile)
         cond_list.append("((= loadout_id %s)(player_add_equipment player loadout_%s 0))" % (loadout_idx, loadout_idx))
 
     loadout_body.append(cond_list)
@@ -340,20 +371,24 @@ def find_center(block):
 
     return global_bbox_center
 
-def generate_trigger_volume(SCENARIO, trigger_name, block):
-    trigger_volume = SCENARIO.TriggerVolume()
-    trigger_volume.name = trigger_name
-    trigger_volume.forward = Vector((1.0, 0.0, 0.0))
-    trigger_volume.up = Vector((0.0, 0.0, 1.0))
-    trigger_volume.position = (find_center(block) - (block.dimensions / 2)) / 100
-    trigger_volume.extents = block.dimensions / 100
+def generate_trigger_volume(scenario_asset, trigger_name, block):
+    trigger_volume = {
+        "type": {"type": "ShortEnum", "value": 1, "value name": ""},
+        "name": trigger_name,
+        "parameters": 0.0,
+        "parameters_1": 0.0,
+        "parameters_2": 0.0,
+        "rotation vector forward": [1.0, 0.0, 0.0],
+        "rotation vector up": [0.0, 0.0, 1.0],
+        "starting corner": list((find_center(block) - (block.dimensions / 2)) / 100),
+        "ending corner offset": list(block.dimensions / 100)
+    }
 
-    SCENARIO.trigger_volumes.append(trigger_volume)
+    scenario_asset["Data"]["trigger volumes"].append(trigger_volume)
 
-def generate_actor_palette(TAG, SCENARIO, actor_path):
-    actor = TAG.TagRef("actv", actor_path, len(actor_path), upgrade_patches=TAG.upgrade_patches)
-
-    SCENARIO.actor_palette.append(actor)
+def generate_actor_palette(scenario_asset, actor_path):
+    palette_entry = {"reference": {"group name":"actv", "path":actor_path}}
+    scenario_asset["Data"]["actor palette"].append(palette_entry)
 
 def unduplicate_name(material_name):
     undupped_name = material_name
@@ -364,15 +399,13 @@ def unduplicate_name(material_name):
 
     return undupped_name
 
-def generate_encounters(TAG, SCENARIO, block, attachment_points, mission_body, valid_polygons, characters_dic, active_teams):
+def generate_encounters(scenario_asset, block, attachment_points, mission_body, valid_polygons, characters_dic, active_teams):
     ai_count = 3
 
     if len(valid_polygons) > 0:
         for team in active_teams:
             team_id = TeamEnum[team]
             actor_dic = characters_dic[team]
-
-            encounter = SCENARIO.Encounter()
 
             encounter_name = "encounter_%s_%s" % (block.name, team_id.name)
             mission_body.append("(ai_place %s)" % encounter_name)
@@ -381,47 +414,50 @@ def generate_encounters(TAG, SCENARIO, block, attachment_points, mission_body, v
             if team_id == TeamEnum.sentinel:
                 encounter_flags += EncounterFlags._3d_firing_positions.value
 
-            encounter.name = encounter_name
-            encounter.flags = encounter_flags
-            encounter.team_index = team_id.value
-            encounter.search_behavior = 0
-            encounter.manual_bsp_index = 0
-            encounter.respawn_delay = (0.0, 0.0)
-            encounter.squads = []
-            encounter.platoons = []
-            encounter.firing_positions = []
-            encounter.player_starting_locations = []
+            encounter = {
+                "name": encounter_name,
+                "flags": encounter_flags,
+                "team index": {"type": "ShortEnum", "value": team_id.value, "value name": ""},
+                "search behavior": {"type": "ShortEnum", "value": 0, "value name": ""},
+                "manual bsp index": 0,
+                "respawn delay": {"Min": 0.0, "Max": 0.0},
+                "precomputed bsp index": 0,
+                "squads": [],
+                "platoons": [],
+                "firing positions": [],
+                "player starting locations": [],
+            }
+
             for squad_idx in range(1):
-                squad = SCENARIO.Squad()
+                squad = {
+                  "name": "squad_%s" % squad_idx,
+                  "actor type": -1,
+                  "platoon": -1,
+                  "initial state": {"type": "ShortEnum", "value": 0, "value name": ""},
+                  "return state": {"type": "ShortEnum", "value": 0, "value name": ""},
+                  "flags": 0,
+                  "unique leader type": {"type": "ShortEnum", "value": 0, "value name": ""},
+                  "maneuver to squad": -1,
+                  "squad delay time": 0.0,
+                  "attacking": GroupFlags.a.value,
+                  "attacking search": GroupFlags.a.value,
+                  "attacking guard": GroupFlags.a.value,
+                  "defending": 0,
+                  "defending search": 0,
+                  "defending guard": 0,
+                  "pursuing": 0,
+                  "normal diff count": ai_count,
+                  "insane diff count": ai_count,
+                  "major upgrade": {"type": "ShortEnum", "value": 0, "value name": ""},
+                  "respawn min actors": 0,
+                  "respawn max actors": 0,
+                  "respawn total": 0,
+                  "respawn delay": {"Min": 0.0, "Max": 0.0},
+                  "move positions": [],
+                  "starting locations": [],
+                }
 
-                squad.name = "squad_%s" % squad_idx
-                squad.actor_type = -1
-                squad.platoon = -1
-                squad.initial_state = 0
-                squad.return_state = 0
-                squad.flags = 0
-                squad.unique_leader_type = 0
-                squad.maneuver_to_squad = -1
-                squad.squad_delay_time = 0
-                squad.attacking = GroupFlags.a.value
-                squad.attacking_search = GroupFlags.a.value
-                squad.attacking_guard = GroupFlags.a.value
-                squad.defending = 0
-                squad.defending_search = 0
-                squad.defending_guard = 0
-                squad.pursuing = 0
-                squad.normal_diff_count = ai_count
-                squad.insane_diff_count = ai_count
-                squad.major_upgrade = 0
-                squad.respawn_min_actors = 0
-                squad.respawn_max_actors = 0
-                squad.respawn_total = 0
-                squad.respawn_delay = (0.0, 0.0)
-                squad.move_positions = []
-                squad.starting_locations = []
                 for location_idx in range(ai_count):
-                    starting_location = SCENARIO.StartingLocation()
-
                     valid_actors = []
                     polygon_count = len(valid_polygons)
                     counter = 0
@@ -445,37 +481,34 @@ def generate_encounters(TAG, SCENARIO, block, attachment_points, mission_body, v
                     position = block.matrix_world @ selected_polygon.center
 
                     actor_index = -1
-                    for actor_idx, actor in enumerate(SCENARIO.actor_palette):
-                        if random_variant == actor.name:
+                    for actor_idx, actor in enumerate(scenario_asset["Data"]["actor palette"]):
+                        if random_variant == actor["reference"]["path"]:
                             actor_index = actor_idx
                             break
 
                     if actor_index == -1:
-                        generate_actor_palette(TAG, SCENARIO, random_variant)
-                        actor_index = len(SCENARIO.actor_palette) - 1
+                        generate_actor_palette(scenario_asset, random_variant)
+                        actor_index = len(scenario_asset["Data"]["actor palette"]) - 1
 
                     if team_id == TeamEnum.sentinel:
                         position += Vector((random_actor["position_additive"][0], random_actor["position_additive"][1], random_actor["position_additive"][2]))
 
-                    starting_location.position = position / 100
-                    starting_location.facing = 0.0
-                    starting_location.sequence_id = 0
-                    starting_location.flags = 0
-                    starting_location.return_state = 0
-                    starting_location.initial_state = 0
-                    starting_location.actor_type = actor_index
-                    starting_location.command_list = -1
+                    starting_location = {
+                        "position": list(position / 100),
+                        "facing": 0.0,
+                        "sequence id": 0,
+                        "flags": 0,
+                        "return state": {"type": "ShortEnum", "value": 0, "value name": ""},
+                        "initial state": {"type": "ShortEnum", "value": 0, "value name": ""},
+                        "actor type": actor_index,
+                        "command list": -1
+                    }
 
-                    squad.starting_locations.append(starting_location)
+                    squad["starting locations"].append(starting_location)
 
-                squad.move_positions_tag_block = TAG.TagBlock()
-                squad.starting_locations_tag_block = TAG.TagBlock(len(squad.starting_locations))
-
-                encounter.squads.append(squad)
+                encounter["squads"].append(squad)
 
             for squad_idx in range(64):
-                firing_position = SCENARIO.FiringPosition()
-
                 selected_polygon = random.choice(valid_polygons)
                 poly_index = selected_polygon.index
                 position = block.matrix_world @ selected_polygon.center
@@ -493,17 +526,14 @@ def generate_encounters(TAG, SCENARIO, block, attachment_points, mission_body, v
 
                     position = position + Vector((0.0, 0.0, height_additive))
 
-                firing_position.position = position / 100
-                firing_position.group_index = 0
+                firing_position = {
+                    "position": list(position / 100),
+                    "group index": {"type": "ShortEnum", "value": 0, "value name": ""}
+                }
 
-                encounter.firing_positions.append(firing_position)
+                encounter["firing positions"].append(firing_position)
 
-            encounter.squads_tag_block = TAG.TagBlock(len(encounter.squads))
-            encounter.platoons_tag_block = TAG.TagBlock()
-            encounter.firing_positions_tag_block = TAG.TagBlock(len(encounter.firing_positions))
-            encounter.player_starting_locations_tag_block = TAG.TagBlock()
-
-            SCENARIO.encounters.append(encounter)
+            scenario_asset["Data"]["encounters"].append(encounter)
 
 def process_dic_element(script_function, script_name):
     dic_string = ""
@@ -549,7 +579,7 @@ def generate_string_from_dic(script):
 
     return dic_string
 
-def generate_source_files(TAG, SCENARIO, output_path, script_dic):
+def generate_source_files(scenario_asset, output_path, script_dic):
     hek_root, local_path = output_path.split("\\tags\\")
     data_directory = os.path.join(hek_root, "data")
     script_directory = os.path.join(data_directory, local_path, "scripts")
@@ -565,164 +595,23 @@ def generate_source_files(TAG, SCENARIO, output_path, script_dic):
             with open(os.path.join(script_directory, "%s.hsc" % script_name), 'wb') as f:
                 f.write(ascii_text.encode('ascii'))
 
-        source_file = SCENARIO.SourceFile()
-        source_file.name = script_name
-        source_file.source = ascii_text
-        source_file.source_tag_data = TAG.RawData(len(source_file.source) + 1)
 
-        SCENARIO.source_files.append(source_file)
+        encoded_ascii_text = base64.b64encode(ascii_text.encode('ascii')).decode('utf-8')
+        source_file = {
+            "name": script_name,
+            "source": {"length": len(ascii_text.encode('ascii')), "encoded": encoded_ascii_text}
+        }
 
-def generate_structure_bsps(TAG, SCENARIO):
-    sbsp_tag_group = "sbsp"
-    sbsp_tag_path = r"levels\test\maze_gen\maze_gen"
+        scenario_asset["Data"]["source files"].append(source_file)
 
-    structure_bsp = TAG.TagRef(sbsp_tag_group, sbsp_tag_path, len(sbsp_tag_path), upgrade_patches=TAG.upgrade_patches)
-
-    SCENARIO.structure_bsps.append(structure_bsp)
-
-def initialize_scenario():
-    TAG = TagAsset()
-    SCENARIO = ScenarioAsset()
-    TAG.is_legacy = False
-
-    SCENARIO.header = TAG.Header()
-    SCENARIO.header.unk1 = 0
-    SCENARIO.header.flags = 0
-    SCENARIO.header.type = 0
-    SCENARIO.header.name = ""
-    SCENARIO.header.tag_group = "scnr"
-    SCENARIO.header.checksum = -1
-    SCENARIO.header.data_offset = 64
-    SCENARIO.header.data_length = 0
-    SCENARIO.header.unk2 = 0
-    SCENARIO.header.version = 2
-    SCENARIO.header.destination = 0
-    SCENARIO.header.plugin_handle = -1
-    SCENARIO.header.engine_tag = "blam"
-
-    SCENARIO.dont_use_tag_ref = TAG.TagRef()
-    SCENARIO.wont_use_tag_ref = TAG.TagRef()
-    SCENARIO.cant_use_tag_ref = TAG.TagRef()
-    SCENARIO.skies_tag_block = TAG.TagBlock()
-    SCENARIO.child_scenarios_tag_block = TAG.TagBlock()
-    SCENARIO.predicted_resources_tag_block = TAG.TagBlock()
-    SCENARIO.functions_tag_block = TAG.TagBlock()
-    SCENARIO.editor_scenario_data = TAG.RawData()
-    SCENARIO.comments_tag_block = TAG.TagBlock()
-    SCENARIO.scavenger_hunt_objects_tag_block = TAG.TagBlock()
-    SCENARIO.object_names_tag_block = TAG.TagBlock()
-    SCENARIO.scenery_tag_block = TAG.TagBlock()
-    SCENARIO.scenery_palette_tag_block = TAG.TagBlock()
-    SCENARIO.bipeds_tag_block = TAG.TagBlock()
-    SCENARIO.biped_palette_tag_block = TAG.TagBlock()
-    SCENARIO.vehicles_tag_block = TAG.TagBlock()
-    SCENARIO.vehicle_palette_tag_block = TAG.TagBlock()
-    SCENARIO.equipment_tag_block = TAG.TagBlock()
-    SCENARIO.equipment_palette_tag_block = TAG.TagBlock()
-    SCENARIO.weapons_tag_block = TAG.TagBlock()
-    SCENARIO.weapon_palette_tag_block = TAG.TagBlock()
-    SCENARIO.device_groups_tag_block = TAG.TagBlock()
-    SCENARIO.machines_tag_block = TAG.TagBlock()
-    SCENARIO.machine_palette_tag_block = TAG.TagBlock()
-    SCENARIO.controls_tag_block = TAG.TagBlock()
-    SCENARIO.control_palette_tag_block = TAG.TagBlock()
-    SCENARIO.light_fixtures_tag_block = TAG.TagBlock()
-    SCENARIO.light_fixtures_palette_tag_block = TAG.TagBlock()
-    SCENARIO.sound_scenery_tag_block = TAG.TagBlock()
-    SCENARIO.sound_scenery_palette_tag_block = TAG.TagBlock()
-    SCENARIO.player_starting_profile_tag_block = TAG.TagBlock()
-    SCENARIO.player_starting_locations_tag_block = TAG.TagBlock()
-    SCENARIO.trigger_volumes_tag_block = TAG.TagBlock()
-    SCENARIO.recorded_animations_tag_block = TAG.TagBlock()
-    SCENARIO.netgame_flags_tag_block = TAG.TagBlock()
-    SCENARIO.netgame_equipment_tag_block = TAG.TagBlock()
-    SCENARIO.starting_equipment_tag_block = TAG.TagBlock()
-    SCENARIO.bsp_switch_trigger_volumes_tag_block = TAG.TagBlock()
-    SCENARIO.decals_tag_block = TAG.TagBlock()
-    SCENARIO.decal_palette_tag_block = TAG.TagBlock()
-    SCENARIO.detail_object_collection_palette_tag_block = TAG.TagBlock()
-    SCENARIO.actor_palette_tag_block = TAG.TagBlock()
-    SCENARIO.encounters_tag_block = TAG.TagBlock()
-    SCENARIO.command_lists_tag_block = TAG.TagBlock()
-    SCENARIO.ai_animation_references_tag_block = TAG.TagBlock()
-    SCENARIO.ai_script_references_tag_block = TAG.TagBlock()
-    SCENARIO.ai_recording_references_tag_block = TAG.TagBlock()
-    SCENARIO.ai_conversations_tag_block = TAG.TagBlock()
-    SCENARIO.script_syntax_data_tag_data = TAG.RawData()
-    SCENARIO.script_string_data_tag_data = TAG.RawData()
-    SCENARIO.scripts_tag_block = TAG.TagBlock()
-    SCENARIO.globals_tag_block = TAG.TagBlock()
-    SCENARIO.references_tag_block = TAG.TagBlock()
-    SCENARIO.source_files_tag_block = TAG.TagBlock()
-    SCENARIO.cutscene_flags_tag_block = TAG.TagBlock()
-    SCENARIO.cutscene_camera_points_tag_block = TAG.TagBlock()
-    SCENARIO.cutscene_titles_tag_block = TAG.TagBlock()
-    SCENARIO.custom_object_names_tag_ref = TAG.TagRef()
-    SCENARIO.chapter_title_text_tag_ref = TAG.TagRef()
-    SCENARIO.hud_messages_tag_ref = TAG.TagRef()
-    SCENARIO.structure_bsps_tag_block = TAG.TagBlock()
-
-    SCENARIO.skies = []
-    SCENARIO.child_scenarios = []
-    SCENARIO.predicted_resources = []
-    SCENARIO.functions = []
-    SCENARIO.editor_scenario_data = bytes()
-    SCENARIO.comments = []
-    SCENARIO.scavenger_hunt_objects = []
-    SCENARIO.object_names = []
-    SCENARIO.scenery = []
-    SCENARIO.scenery_palette = []
-    SCENARIO.bipeds = []
-    SCENARIO.biped_palette = []
-    SCENARIO.vehicles = []
-    SCENARIO.vehicle_palette = []
-    SCENARIO.equipment = []
-    SCENARIO.equipment_palette = []
-    SCENARIO.weapons = []
-    SCENARIO.weapon_palette = []
-    SCENARIO.device_groups = []
-    SCENARIO.device_machines = []
-    SCENARIO.device_machine_palette = []
-    SCENARIO.device_controls = []
-    SCENARIO.device_control_palette = []
-    SCENARIO.device_light_fixtures = []
-    SCENARIO.device_light_fixtures_palette = []
-    SCENARIO.sound_scenery = []
-    SCENARIO.sound_scenery_palette = []
-    SCENARIO.player_starting_profiles = []
-    SCENARIO.player_starting_locations = []
-    SCENARIO.trigger_volumes = []
-    SCENARIO.recorded_animations = []
-    SCENARIO.netgame_flags = []
-    SCENARIO.netgame_equipment = []
-    SCENARIO.starting_equipment = []
-    SCENARIO.bsp_switch_trigger_volumes = []
-    SCENARIO.decals = []
-    SCENARIO.decal_palette = []
-    SCENARIO.detail_object_collection_palette  = []
-    SCENARIO.actor_palette = []
-    SCENARIO.encounters = []
-    SCENARIO.command_lists = []
-    SCENARIO.ai_animation_references = []
-    SCENARIO.ai_script_references = []
-    SCENARIO.ai_recording_references = []
-    SCENARIO.ai_conversations = []
-    SCENARIO.script_syntax_data = bytes()
-    SCENARIO.script_string_data = bytes()
-    SCENARIO.scripts = []
-    SCENARIO.script_globals = []
-    SCENARIO.references = []
-    SCENARIO.source_files = []
-    SCENARIO.cutscene_flags = []
-    SCENARIO.cutscene_camera_points = []
-    SCENARIO.cutscene_titles = []
-    SCENARIO.structure_bsps = []
-
-    return TAG, SCENARIO
+def generate_structure_bsps(scenario_asset):
+    palette_entry = {"structure bsp": {"group name":"sbsp", "path":r"levels\test\maze_gen\maze_gen"}}
+    scenario_asset["Data"]["structure bsps"].append(palette_entry)
 
 def create_level_root(collection, context):
     level_mesh = bpy.data.meshes.new("frame_root")
     level_root = bpy.data.objects.new("frame_root", level_mesh)
+    level_root.color = (1, 1, 1, 0)
     collection.objects.link(level_root)
     level_root.select_set(True)
     context.view_layer.objects.active = level_root
@@ -733,72 +622,6 @@ def create_level_root(collection, context):
     context.view_layer.objects.active = None
 
     return level_root
-
-def initialize_tag_blocks(TAG, SCENARIO):
-    SCENARIO.dont_use_tag_ref = TAG.TagRef("sbsp")
-    SCENARIO.wont_use_tag_ref = TAG.TagRef("sbsp")
-    SCENARIO.cant_use_tag_ref = TAG.TagRef("sky ")
-    SCENARIO.skies_tag_block = TAG.TagBlock(len(SCENARIO.skies))
-    SCENARIO.scenario_type = 0
-    SCENARIO.scenario_flags = 0
-    SCENARIO.child_scenarios_tag_block = TAG.TagBlock(len(SCENARIO.child_scenarios))
-    SCENARIO.local_north = 0.0
-    SCENARIO.predicted_resources_tag_block = TAG.TagBlock(len(SCENARIO.predicted_resources))
-    SCENARIO.functions_tag_block = TAG.TagBlock(len(SCENARIO.functions))
-    SCENARIO.editor_scenario_data = TAG.RawData()
-    SCENARIO.comments_tag_block = TAG.TagBlock(len(SCENARIO.comments))
-    SCENARIO.scavenger_hunt_objects_tag_block = TAG.TagBlock(len(SCENARIO.scavenger_hunt_objects))
-    SCENARIO.object_names_tag_block = TAG.TagBlock(len(SCENARIO.object_names))
-    SCENARIO.scenery_tag_block = TAG.TagBlock(len(SCENARIO.scenery))
-    SCENARIO.scenery_palette_tag_block = TAG.TagBlock(len(SCENARIO.scenery_palette))
-    SCENARIO.bipeds_tag_block = TAG.TagBlock(len(SCENARIO.bipeds))
-    SCENARIO.biped_palette_tag_block = TAG.TagBlock(len(SCENARIO.biped_palette))
-    SCENARIO.vehicles_tag_block = TAG.TagBlock(len(SCENARIO.vehicles))
-    SCENARIO.vehicle_palette_tag_block = TAG.TagBlock(len(SCENARIO.vehicle_palette))
-    SCENARIO.equipment_tag_block = TAG.TagBlock(len(SCENARIO.equipment))
-    SCENARIO.equipment_palette_tag_block = TAG.TagBlock(len(SCENARIO.equipment_palette))
-    SCENARIO.weapons_tag_block = TAG.TagBlock(len(SCENARIO.weapons))
-    SCENARIO.weapon_palette_tag_block = TAG.TagBlock(len(SCENARIO.weapon_palette))
-    SCENARIO.device_groups_tag_block = TAG.TagBlock(len(SCENARIO.device_groups))
-    SCENARIO.machines_tag_block = TAG.TagBlock(len(SCENARIO.device_machines))
-    SCENARIO.machine_palette_tag_block = TAG.TagBlock(len(SCENARIO.device_machine_palette))
-    SCENARIO.controls_tag_block = TAG.TagBlock(len(SCENARIO.device_controls))
-    SCENARIO.control_palette_tag_block = TAG.TagBlock(len(SCENARIO.device_control_palette))
-    SCENARIO.light_fixtures_tag_block = TAG.TagBlock(len(SCENARIO.device_light_fixtures))
-    SCENARIO.light_fixtures_palette_tag_block = TAG.TagBlock(len(SCENARIO.device_light_fixtures_palette))
-    SCENARIO.sound_scenery_tag_block = TAG.TagBlock(len(SCENARIO.sound_scenery))
-    SCENARIO.sound_scenery_palette_tag_block = TAG.TagBlock(len(SCENARIO.sound_scenery_palette))
-    SCENARIO.player_starting_profile_tag_block = TAG.TagBlock(len(SCENARIO.player_starting_profiles))
-    SCENARIO.player_starting_locations_tag_block = TAG.TagBlock(len(SCENARIO.player_starting_locations))
-    SCENARIO.trigger_volumes_tag_block = TAG.TagBlock(len(SCENARIO.trigger_volumes))
-    SCENARIO.recorded_animations_tag_block = TAG.TagBlock(len(SCENARIO.recorded_animations))
-    SCENARIO.netgame_flags_tag_block = TAG.TagBlock(len(SCENARIO.netgame_flags))
-    SCENARIO.netgame_equipment_tag_block = TAG.TagBlock(len(SCENARIO.netgame_equipment))
-    SCENARIO.starting_equipment_tag_block = TAG.TagBlock(len(SCENARIO.starting_equipment))
-    SCENARIO.bsp_switch_trigger_volumes_tag_block = TAG.TagBlock(len(SCENARIO.bsp_switch_trigger_volumes))
-    SCENARIO.decals_tag_block = TAG.TagBlock(len(SCENARIO.decals))
-    SCENARIO.decal_palette_tag_block = TAG.TagBlock(len(SCENARIO.decal_palette))
-    SCENARIO.detail_object_collection_palette_tag_block = TAG.TagBlock(len(SCENARIO.detail_object_collection_palette))
-    SCENARIO.actor_palette_tag_block = TAG.TagBlock(len(SCENARIO.actor_palette))
-    SCENARIO.encounters_tag_block = TAG.TagBlock(len(SCENARIO.encounters))
-    SCENARIO.command_lists_tag_block = TAG.TagBlock(len(SCENARIO.command_lists))
-    SCENARIO.ai_animation_references_tag_block = TAG.TagBlock(len(SCENARIO.ai_animation_references))
-    SCENARIO.ai_script_references_tag_block = TAG.TagBlock(len(SCENARIO.ai_script_references))
-    SCENARIO.ai_recording_references_tag_block = TAG.TagBlock(len(SCENARIO.ai_recording_references))
-    SCENARIO.ai_conversations_tag_block = TAG.TagBlock(len(SCENARIO.ai_conversations))
-    SCENARIO.script_syntax_data_tag_data = TAG.RawData()
-    SCENARIO.script_string_data_tag_data = TAG.RawData()
-    SCENARIO.scripts_tag_block = TAG.TagBlock(len(SCENARIO.scripts))
-    SCENARIO.globals_tag_block = TAG.TagBlock(len(SCENARIO.globals))
-    SCENARIO.references_tag_block = TAG.TagBlock(len(SCENARIO.references))
-    SCENARIO.source_files_tag_block = TAG.TagBlock(len(SCENARIO.source_files))
-    SCENARIO.cutscene_flags_tag_block = TAG.TagBlock(len(SCENARIO.cutscene_flags))
-    SCENARIO.cutscene_camera_points_tag_block = TAG.TagBlock(len(SCENARIO.cutscene_camera_points))
-    SCENARIO.cutscene_titles_tag_block = TAG.TagBlock(len(SCENARIO.cutscene_titles))
-    SCENARIO.custom_object_names_tag_ref = TAG.TagRef("ustr")
-    SCENARIO.chapter_title_text_tag_ref = TAG.TagRef("ustr")
-    SCENARIO.hud_messages_tag_ref = TAG.TagRef("hmt ")
-    SCENARIO.structure_bsps_tag_block = TAG.TagBlock(len(SCENARIO.structure_bsps))
 
 def grab_block(blocks_dic, game_title, level_theme, block_type):
     block_name = random.choice(blocks_dic[level_theme][block_type])["name"]
@@ -830,6 +653,7 @@ def append_keys(main_dic, json_path):
 def generate_camera_armature(context):
     armdata = bpy.data.armatures.new('Armature')
     armature = bpy.data.objects.new('Armature', armdata)
+    armature.color = (1, 1, 1, 0)
     context.collection.objects.link(armature)
 
     select_object(context, armature)
@@ -846,13 +670,13 @@ def generate_camera_armature(context):
 
     return armature
 
-def generate_camera_zoom(context, armature, shot_start, shot_end, distance, zoom_in, SCENARIO):
+def generate_camera_zoom(context, armature, shot_start, shot_end, distance, zoom_in, scenario_asset):
     shot_timing = (shot_start, shot_start + (shot_end - 1))
     bpy.ops.object.mode_set(mode = 'POSE')
     pose_bone = armature.pose.bones["frame_root"]
 
-    p_loc = SCENARIO.player_starting_locations[0].position
-    facing_z = SCENARIO.player_starting_locations[0].facing
+    p_loc = scenario_asset["Data"]["player starting locations"][0]["position"]
+    facing_z = scenario_asset["Data"]["player starting locations"][0]["facing"]
     player_matrix = Matrix.Translation(p_loc * 100)
     p_radius = 30
     p_height = 55
@@ -887,14 +711,14 @@ def generate_camera_zoom(context, armature, shot_start, shot_end, distance, zoom
     bpy.ops.object.mode_set(mode = 'OBJECT')
     context.scene.frame_set(context.scene.frame_current + 1)
 
-def generate_camera_arc(context, armature, shot_start, shot_end, interpolation, angle, SCENARIO):
+def generate_camera_arc(context, armature, shot_start, shot_end, interpolation, angle, scenario_asset):
     interpolation += 1
     bpy.ops.object.mode_set(mode = 'POSE')
     pose_bone = armature.pose.bones["frame_root"]
 
-    p_loc = SCENARIO.player_starting_locations[0].position
-    facing_z = degrees(SCENARIO.player_starting_locations[0].facing)
-    player_matrix = Matrix.Translation(p_loc * 100)
+    p_loc = scenario_asset["Data"]["player starting locations"][0]["position"]
+    facing_z = degrees(scenario_asset["Data"]["player starting locations"][0]["facing"])
+    player_matrix = Matrix.Translation(Vector(p_loc) * 100)
 
     shot_timings = [round(shot_end + x * (1 - shot_end) / (interpolation - 1)) for x in range(interpolation)]
     shot_timings.reverse()
@@ -921,35 +745,34 @@ def generate_camera_arc(context, armature, shot_start, shot_end, interpolation, 
     bpy.ops.object.mode_set(mode = 'OBJECT')
     context.scene.frame_set(context.scene.frame_current + 1)
 
-def generate_intro_cutscene(context, SCENARIO, TAG):
+def generate_intro_cutscene(context, scenario_asset):
     tag_path = r"cinematics\effects\teleportation\teleportation"
-    machine = TAG.TagRef("mach", tag_path, len(tag_path), upgrade_patches=TAG.upgrade_patches)
+    palette_entry = {"name": {"group name":"mach", "path":tag_path}}
+    scenario_asset["Data"]["machine palette"].append(palette_entry)
 
-    SCENARIO.device_machine_palette.append(machine)
+    for player_idx, player_starting_location in enumerate(scenario_asset["Data"]["player starting locations"]):
+        object_name = {
+            "name": "tele_%s" % player_idx,
+            "object type": {"type": "ShortEnum", "value": -1, "value name": ""},
+            "object index": -1
+        }
 
-    for player_idx, player_starting_location in enumerate(SCENARIO.player_starting_locations):
-        object_name = SCENARIO.ObjectName()
+        device_machine = {
+            "type": 0,
+            "name": player_idx,
+            "not placed": 0,
+            "desired permutation": 0,
+            "position": list(player_starting_location["position"]),
+            "rotation": [0.0, 0.0, 0.0],
+            "appearance player index": 0,
+            "power group": -1,
+            "position group": -1,
+            "device flags": 0,
+            "machine flags": 0,
+        }
 
-        object_name.name = "tele_%s" % player_idx
-        object_name.object_type = -1
-        object_name.placement_index = -1
-
-        SCENARIO.object_names.append(object_name)
-
-        device_machine = SCENARIO.DeviceMachine()
-        device_machine.type_index = 0
-        device_machine.name_index = player_idx
-        device_machine.placement_flags = 0
-        device_machine.desired_permutation = 0
-        device_machine.position = player_starting_location.position
-        device_machine.rotation = Euler()
-        device_machine.appearance_player_index = 0
-        device_machine.power_group_index = -1
-        device_machine.position_group_index = -1
-        device_machine.flags_0 = 0
-        device_machine.flags_1 = 0
-
-        SCENARIO.device_machines.append(device_machine)
+        scenario_asset["Data"]["object names"].append(object_name)
+        scenario_asset["Data"]["machines"].append(device_machine)
 
     deselect_objects(context)
     context.scene.frame_start = 1
@@ -960,9 +783,9 @@ def generate_intro_cutscene(context, SCENARIO, TAG):
     bpy.ops.object.mode_set(mode = 'POSE')
     pose_bone = armature.pose.bones["frame_root"]
 
-    p_loc = SCENARIO.player_starting_locations[0].position
-    facing_z = degrees(SCENARIO.player_starting_locations[0].facing)
-    player_matrix = Matrix.Translation(p_loc * 100)
+    p_loc = scenario_asset["Data"]["player starting locations"][0]["position"]
+    facing_z = degrees(scenario_asset["Data"]["player starting locations"][0]["facing"])
+    player_matrix = Matrix.Translation(Vector(p_loc) * 100)
 
     local_pos = Vector((80, 0, 55))
 
@@ -975,10 +798,10 @@ def generate_intro_cutscene(context, SCENARIO, TAG):
     pose_bone.rotation_euler[2] = radians(180 + facing_z)
     context.view_layer.update()
 
-    #generate_camera_zoom(context, armature, context.scene.frame_current, 150, 50, False, SCENARIO)
-    generate_camera_arc(context, armature, context.scene.frame_current, 100, 24, 15, SCENARIO)
-    generate_camera_arc(context, armature, context.scene.frame_current, 100, 24, -15, SCENARIO)
-    #generate_camera_zoom(context, armature, context.scene.frame_current, 150, 50, True, SCENARIO)
+    #generate_camera_zoom(context, armature, context.scene.frame_current, 150, 50, False, scenario_asset)
+    generate_camera_arc(context, armature, context.scene.frame_current, 100, 24, 15, scenario_asset)
+    generate_camera_arc(context, armature, context.scene.frame_current, 100, 24, -15, scenario_asset)
+    #generate_camera_zoom(context, armature, context.scene.frame_current, 150, 50, True, scenario_asset)
     frames = []
     action = armature.animation_data.action
     for fcu in action.fcurves:
@@ -1143,7 +966,17 @@ def generate_level(context, game_title, level_seed, level_theme, level_damage, l
     scene = context.scene
     collection = context.collection
 
-    TAG, SCENARIO = initialize_scenario()
+    scenario_asset = {"Data": {}}
+    scenario_asset["Data"]["object names"] = []
+    scenario_asset["Data"]["machines"] = []
+    scenario_asset["Data"]["machine palette"] = []
+    scenario_asset["Data"]["player starting profile"] = []
+    scenario_asset["Data"]["player starting locations"] = []
+    scenario_asset["Data"]["trigger volumes"] = []
+    scenario_asset["Data"]["actor palette"] = []
+    scenario_asset["Data"]["encounters"] = []
+    scenario_asset["Data"]["source files"] = []
+    scenario_asset["Data"]["structure bsps"] = []
 
     script_dic = {}
     generate_global_scripts(script_dic, player_count)
@@ -1219,13 +1052,13 @@ def generate_level(context, game_title, level_seed, level_theme, level_damage, l
             player_intro_body.append("(sleep (camera_time))")
             player_intro_body.append("(camera_control 0)")
 
-            generate_player_starting_locations(SCENARIO, player_count, block, attachment_points, valid_polygons)
+            generate_player_starting_locations(scenario_asset, player_count, block, valid_polygons)
 
-            generate_trigger_volume(SCENARIO, "starting_trigger", block)
+            generate_trigger_volume(scenario_asset, "starting_trigger", block)
 
-            generate_intro_cutscene(context, SCENARIO, TAG)
+            generate_intro_cutscene(context, scenario_asset)
 
-            generate_player_profiles(TAG, SCENARIO, mission_key, weapons_dic)
+            generate_player_profiles(scenario_asset, mission_key, weapons_dic)
 
             end_point = attachment_points[-1]
 
@@ -1240,7 +1073,7 @@ def generate_level(context, game_title, level_seed, level_theme, level_damage, l
             for point in attachment_points:
                 apply_transform(point)
 
-            generate_trigger_volume(SCENARIO, "ending_trigger", block)
+            generate_trigger_volume(scenario_asset, "ending_trigger", block)
 
             end_key = mission_scripts["end"] = {}
 
@@ -1280,9 +1113,9 @@ def generate_level(context, game_title, level_seed, level_theme, level_damage, l
                         if surface.value:
                             valid_polygons.append(block.data.polygons[surface_idx])
 
-                generate_trigger_volume(SCENARIO, "cell_%s_trigger" % cell_idx, block)
+                generate_trigger_volume(scenario_asset, "cell_%s_trigger" % cell_idx, block)
 
-                generate_encounters(TAG, SCENARIO, block, attachment_points, mission_main_body, valid_polygons, characters_dic, active_teams)
+                generate_encounters(scenario_asset, block, attachment_points, mission_main_body, valid_polygons, characters_dic, active_teams)
 
                 end_point = attachment_points[-1]
 
@@ -1300,7 +1133,7 @@ def generate_level(context, game_title, level_seed, level_theme, level_damage, l
                 if scale == -1:
                     flip_normals(block)
 
-                generate_trigger_volume(SCENARIO, "cell_%s_trigger" % cell_idx, block)
+                generate_trigger_volume(scenario_asset, "cell_%s_trigger" % cell_idx, block)
 
                 end_point = attachment_points[-1]
 
@@ -1315,18 +1148,18 @@ def generate_level(context, game_title, level_seed, level_theme, level_damage, l
 
     bpy.ops.outliner.orphans_purge(do_local_ids=True, do_linked_ids=True, do_recursive=True)
 
-    generate_source_files(TAG, SCENARIO, output_directory, script_dic)
+    generate_source_files(scenario_asset, output_directory, script_dic)
 
-    generate_structure_bsps(TAG, SCENARIO)
-
-    initialize_tag_blocks(TAG, SCENARIO)
+    generate_structure_bsps(scenario_asset)
 
     if not os.path.exists(os.path.dirname(output_directory)):
         os.makedirs(os.path.dirname(output_directory))
 
+    output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h1_merged_output")
+    engine_tag = tag_interface.EngineTag.H1Latest.value
+    merged_defs = h1.generate_defs(tag_common.h1_defs_directory, output_dir)
+
     output_file = os.path.join(output_directory, "maze_gen.scenario")
-    output_stream = open(output_file, 'wb')
-    build_h1_scenario(output_stream, SCENARIO, report)
-    output_stream.close()
+    tag_interface.write_file(merged_defs, scenario_asset, tag_interface.obfuscation_buffer_prepare(), output_file, engine_tag=engine_tag)
 
     return {'FINISHED'}

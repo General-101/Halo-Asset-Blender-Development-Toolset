@@ -1,0 +1,759 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="sotr" name="shader_transparent_generic" version="1">
+  <Layout regolithID="block:shader_transparent_generic" internalName="shader_transparent_generic_block" name="shader_transparent_generic">
+    <FieldSet version="0" sizeofValue="108" sizeofSource="sizeof(struct shader_transparent_generic_group)" isLatest="true">
+      <Explanation name="Radiosity" />
+      <Struct CStyleName="radiosity" pascalStyleName="Radiosity" name="radiosity">
+        <Layout regolithID="structure:shader_radiosity_properties" internalName="shader_radiosity_properties_struct" backingBlockInternalName="shader_radiosity_properties_struct_block" name="shader radiosity properties">
+          <FieldSet version="0" sizeofValue="32" isLatest="true">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="simple parameterization" CStyleName="simple_parameterization_bit" pascalStyleName="SimpleParameterizationBit" />
+                <Bit name="ignore normals" CStyleName="ignore_normals_bit" pascalStyleName="IgnoreNormalsBit" />
+                <Bit name="transparent lit" CStyleName="transparent_lit_bit" pascalStyleName="TransparentLitBit" />
+              </Options>
+            </WordFlags>
+            <ShortEnum CStyleName="detail_level" pascalStyleName="DetailLevel" name="detail level">
+              <Options regolithID="enum:detail_level" CStyleName="detail_level" pascalStyleName="DetailLevel">
+                <Enum name="high" CStyleName="high" pascalStyleName="High" />
+                <Enum name="medium" CStyleName="medium" pascalStyleName="Medium" />
+                <Enum name="low" CStyleName="low" pascalStyleName="Low" />
+                <Enum name="turd" CStyleName="turd" pascalStyleName="Turd" />
+              </Options>
+            </ShortEnum>
+            <Real CStyleName="power" pascalStyleName="Power" name="power" />
+            <RealRgbColor CStyleName="color_of_emitted_light" pascalStyleName="ColorOfEmittedLight" name="color of emitted light" />
+            <RealRgbColor CStyleName="tint_color" pascalStyleName="TintColor" name="tint color" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Physics" />
+      <Struct CStyleName="physics" pascalStyleName="Physics" name="physics">
+        <Layout regolithID="structure:shader_physics_properties" internalName="shader_physics_properties_struct" backingBlockInternalName="shader_physics_properties_struct_block" name="shader physics properties">
+          <FieldSet version="0" sizeofValue="8" isLatest="true">
+            <Pad name="pad" length="2" />
+            <ShortEnum CStyleName="material_type" pascalStyleName="MaterialType" name="material type">
+              <Options regolithID="enum:material_type" CStyleName="material_type" pascalStyleName="MaterialType">
+                <Enum name="dirt" CStyleName="dirt" pascalStyleName="Dirt" />
+                <Enum name="sand" CStyleName="sand" pascalStyleName="Sand" />
+                <Enum name="stone" CStyleName="stone" pascalStyleName="Stone" />
+                <Enum name="snow" CStyleName="snow" pascalStyleName="Snow" />
+                <Enum name="wood" CStyleName="wood" pascalStyleName="Wood" />
+                <Enum name="metal hollow" CStyleName="metal_hollow" pascalStyleName="MetalHollow" />
+                <Enum name="metal thin" CStyleName="metal_thin" pascalStyleName="MetalThin" />
+                <Enum name="metal thick" CStyleName="metal_thick" pascalStyleName="MetalThick" />
+                <Enum name="rubber" CStyleName="rubber" pascalStyleName="Rubber" />
+                <Enum name="glass" CStyleName="glass" pascalStyleName="Glass" />
+                <Enum name="force field" CStyleName="force_field" pascalStyleName="ForceField" />
+                <Enum name="grunt" CStyleName="grunt" pascalStyleName="Grunt" />
+                <Enum name="hunter armor" CStyleName="hunter_armor" pascalStyleName="HunterArmor" />
+                <Enum name="hunter skin" CStyleName="hunter_skin" pascalStyleName="HunterSkin" />
+                <Enum name="elite" CStyleName="elite" pascalStyleName="Elite" />
+                <Enum name="jackal" CStyleName="jackal" pascalStyleName="Jackal" />
+                <Enum name="jackal energy shield" CStyleName="jackal_energy_shield" pascalStyleName="JackalEnergyShield" />
+                <Enum name="engineer skin" CStyleName="engineer_skin" pascalStyleName="EngineerSkin" />
+                <Enum name="engineer force field" CStyleName="engineer_force_field" pascalStyleName="EngineerForceField" />
+                <Enum name="flood combat form" CStyleName="flood_combat_form" pascalStyleName="FloodCombatForm" />
+                <Enum name="flood carrier form" CStyleName="flood_carrier_form" pascalStyleName="FloodCarrierForm" />
+                <Enum name="cyborg armor" CStyleName="cyborg_armor" pascalStyleName="CyborgArmor" />
+                <Enum name="cyborg energy shield" CStyleName="cyborg_energy_shield" pascalStyleName="CyborgEnergyShield" />
+                <Enum name="human armor" CStyleName="human_armor" pascalStyleName="HumanArmor" />
+                <Enum name="human skin" CStyleName="human_skin" pascalStyleName="HumanSkin" />
+                <Enum name="sentinel" CStyleName="sentinel" pascalStyleName="Sentinel" />
+                <Enum name="monitor" CStyleName="monitor" pascalStyleName="Monitor" />
+                <Enum name="plastic" CStyleName="plastic" pascalStyleName="Plastic" />
+                <Enum name="water" CStyleName="water" pascalStyleName="Water" />
+                <Enum name="leaves" CStyleName="leaves" pascalStyleName="Leaves" />
+                <Enum name="elite energy shield" CStyleName="elite_energy_shield" pascalStyleName="EliteEnergyShield" />
+                <Enum name="ice" CStyleName="ice" pascalStyleName="Ice" />
+                <Enum name="hunter shield" CStyleName="hunter_shield" pascalStyleName="HunterShield" />
+              </Options>
+            </ShortEnum>
+            <ShortInteger CStyleName="type" pascalStyleName="Type" name="type" cacheOnly="true" unsigned="true" />
+            <Pad name="pad" length="2" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Properties" />
+      <Struct CStyleName="properties" pascalStyleName="Properties" name="properties">
+        <Layout regolithID="structure:shader_transparent_properties" internalName="shader_transparent_properties_struct" backingBlockInternalName="shader_transparent_properties_struct_block" name="shader transparent properties">
+          <FieldSet version="0" sizeofValue="44" isLatest="true">
+            <CharInteger CStyleName="numeric_counter_limit" pascalStyleName="NumericCounterLimit" name="numeric counter limit" unsigned="true" />
+            <ByteFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="alpha tested" CStyleName="alpha_tested_bit" pascalStyleName="AlphaTestedBit" />
+                <Bit name="decal" CStyleName="decal_bit" pascalStyleName="DecalBit" />
+                <Bit name="two sided" CStyleName="two_sided_bit" pascalStyleName="TwoSidedBit" />
+                <Bit name="first map is in screenspace" CStyleName="first_map_is_in_screenspace_bit" pascalStyleName="FirstMapIsInScreenspaceBit" />
+                <Bit name="draw before water" CStyleName="draw_before_water_bit" pascalStyleName="DrawBeforeWaterBit" />
+                <Bit name="ignore effect" CStyleName="ignore_effect_bit" pascalStyleName="IgnoreEffectBit" />
+                <Bit name="scale first map with distance" CStyleName="scale_first_map_with_distance_bit" pascalStyleName="ScaleFirstMapWithDistanceBit" />
+                <Bit name="numeric" CStyleName="numeric_bit" pascalStyleName="NumericBit" />
+              </Options>
+            </ByteFlags>
+            <ShortEnum CStyleName="first_map_type" pascalStyleName="FirstMapType" name="first map type">
+              <Options regolithID="enum:first_map_type" CStyleName="first_map_type" pascalStyleName="FirstMapType">
+                <Enum name="2d map" CStyleName="_2d_map" pascalStyleName="2dMap" />
+                <Enum name="first map is reflection cube map" CStyleName="first_map_is_reflection_cube_map" pascalStyleName="FirstMapIsReflectionCubeMap" />
+                <Enum name="first map is object centered cube map" CStyleName="first_map_is_object_centered_cube_map" pascalStyleName="FirstMapIsObjectCenteredCubeMap" />
+                <Enum name="first map is viewer centered cube map" CStyleName="first_map_is_viewer_centered_cube_map" pascalStyleName="FirstMapIsViewerCenteredCubeMap" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="framebuffer_blend_function" pascalStyleName="FramebufferBlendFunction" name="framebuffer blend function">
+              <Options regolithID="enum:framebuffer_blend_function" CStyleName="framebuffer_blend_function" pascalStyleName="FramebufferBlendFunction">
+                <Enum name="alpha blend" CStyleName="alpha_blend" pascalStyleName="AlphaBlend" />
+                <Enum name="multiply" CStyleName="multiply" pascalStyleName="Multiply" />
+                <Enum name="double multiply" CStyleName="double_multiply" pascalStyleName="DoubleMultiply" />
+                <Enum name="add" CStyleName="add" pascalStyleName="Add" />
+                <Enum name="subtract" CStyleName="subtract" pascalStyleName="Subtract" />
+                <Enum name="component min" CStyleName="component_min" pascalStyleName="ComponentMin" />
+                <Enum name="component max" CStyleName="component_max" pascalStyleName="ComponentMax" />
+                <Enum name="alpha multiply add" CStyleName="alpha_multiply_add" pascalStyleName="AlphaMultiplyAdd" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="framebuffer_fade_mode" pascalStyleName="FramebufferFadeMode" name="framebuffer fade mode">
+              <Options regolithID="enum:framebuffer_fade_mode" CStyleName="framebuffer_fade_mode" pascalStyleName="FramebufferFadeMode">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="fade when perpendicular" CStyleName="fade_when_perpendicular" pascalStyleName="FadeWhenPerpendicular" />
+                <Enum name="fade when parallel" CStyleName="fade_when_parallel" pascalStyleName="FadeWhenParallel" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="framebuffer_fade_source" pascalStyleName="FramebufferFadeSource" name="framebuffer fade source">
+              <Options regolithID="enum:framebuffer_fade_source" CStyleName="framebuffer_fade_source" pascalStyleName="FramebufferFadeSource">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Explanation name="Lens Flares" />
+            <Struct CStyleName="lens_flares" pascalStyleName="LensFlares" name="lens flares">
+              <Layout regolithID="structure:shader_lens_flares" internalName="shader_lens_flares_struct" backingBlockInternalName="shader_lens_flares_struct_block" name="shader lens flares">
+                <FieldSet version="0" sizeofValue="20" isLatest="true">
+                  <Real CStyleName="lens_flare_spacing" pascalStyleName="LensFlareSpacing" name="lens flare spacing" />
+                  <TagReference CStyleName="lens_flare" pascalStyleName="LensFlare" name="lens flare">
+                    <tag>lens_flare</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Block CStyleName="extra_layers" pascalStyleName="ExtraLayers" name="extra layers" maxElementCount="4">
+              <Layout regolithID="block:extra layers" internalName="extra layers_block" name="extra layers_block">
+                <FieldSet version="0" sizeofValue="16" isLatest="true">
+                  <TagReference CStyleName="shader" pascalStyleName="Shader" name="shader">
+                    <tag>shader</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Block CStyleName="maps" pascalStyleName="Maps" name="maps" maxElementCount="4">
+        <Layout regolithID="block:maps" internalName="maps_block" name="maps_block">
+          <FieldSet version="0" sizeofValue="100" isLatest="true">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="unfiltered" CStyleName="unfiltered_bit" pascalStyleName="UnfilteredBit" />
+                <Bit name="u clamped" CStyleName="u_clamped_bit" pascalStyleName="UClampedBit" />
+                <Bit name="v clamped" CStyleName="v_clamped_bit" pascalStyleName="VClampedBit" />
+              </Options>
+            </WordFlags>
+            <Pad name="pad" length="2" />
+            <Explanation name="Parameters" />
+            <Struct CStyleName="parameters" pascalStyleName="Parameters" name="parameters">
+              <Layout regolithID="structure:shader_transparent_map_parameters" internalName="shader_transparent_map_parameters_struct" backingBlockInternalName="shader_transparent_map_parameters_struct_block" name="shader transparent map parameters">
+                <FieldSet version="0" sizeofValue="40" isLatest="true">
+                  <Real CStyleName="map_u_scale" pascalStyleName="MapUScale" name="map u scale" />
+                  <Real CStyleName="map_v_scale" pascalStyleName="MapVScale" name="map v scale" />
+                  <Real CStyleName="map_u_offset" pascalStyleName="MapUOffset" name="map u offset" />
+                  <Real CStyleName="map_v_offset" pascalStyleName="MapVOffset" name="map v offset" />
+                  <Real CStyleName="map_rotation" pascalStyleName="MapRotation" name="map rotation" />
+                  <Real CStyleName="mipmap_bias" pascalStyleName="MipmapBias" name="mipmap bias" />
+                  <TagReference CStyleName="map" pascalStyleName="Map" name="map">
+                    <tag>bitmap</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Explanation name="Animation" />
+            <Struct CStyleName="animation" pascalStyleName="Animation" name="animation">
+              <Layout regolithID="structure:shader_transparent_map_animation" internalName="shader_transparent_map_animation_struct" backingBlockInternalName="shader_transparent_map_animation_struct_block" name="shader transparent map animation">
+                <FieldSet version="0" sizeofValue="56" isLatest="true">
+                  <ShortEnum CStyleName="u_animation_source" pascalStyleName="UAnimationSource" name="u animation source">
+                    <Options regolithID="enum:u_animation_source" CStyleName="u_animation_source" pascalStyleName="UAnimationSource">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                      <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                      <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                      <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="u_animation_function" pascalStyleName="UAnimationFunction" name="u animation function">
+                    <Options regolithID="enum:u_animation_function" CStyleName="u_animation_function" pascalStyleName="UAnimationFunction">
+                      <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                      <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                      <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                      <Enum name="cosine variable period" CStyleName="cosine_variable_period" pascalStyleName="CosineVariablePeriod" />
+                      <Enum name="diagonal wave" CStyleName="diagonal_wave" pascalStyleName="DiagonalWave" />
+                      <Enum name="diagonal wave variable period" CStyleName="diagonal_wave_variable_period" pascalStyleName="DiagonalWaveVariablePeriod" />
+                      <Enum name="slide" CStyleName="slide" pascalStyleName="Slide" />
+                      <Enum name="slide variable period" CStyleName="slide_variable_period" pascalStyleName="SlideVariablePeriod" />
+                      <Enum name="noise" CStyleName="noise" pascalStyleName="Noise" />
+                      <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+                      <Enum name="wander" CStyleName="wander" pascalStyleName="Wander" />
+                      <Enum name="spark" CStyleName="spark" pascalStyleName="Spark" />
+                    </Options>
+                  </ShortEnum>
+                  <Real CStyleName="u_animation_period" pascalStyleName="UAnimationPeriod" name="u animation period" />
+                  <Real CStyleName="u_animation_phase" pascalStyleName="UAnimationPhase" name="u animation phase" />
+                  <Real CStyleName="u_animation_scale" pascalStyleName="UAnimationScale" name="u animation scale" />
+                  <ShortEnum CStyleName="v_animation_source" pascalStyleName="VAnimationSource" name="v animation source">
+                    <Options regolithID="enum:v_animation_source" CStyleName="v_animation_source" pascalStyleName="VAnimationSource">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                      <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                      <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                      <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="v_animation_function" pascalStyleName="VAnimationFunction" name="v animation function">
+                    <Options regolithID="enum:v_animation_function" CStyleName="v_animation_function" pascalStyleName="VAnimationFunction">
+                      <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                      <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                      <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                      <Enum name="cosine variable period" CStyleName="cosine_variable_period" pascalStyleName="CosineVariablePeriod" />
+                      <Enum name="diagonal wave" CStyleName="diagonal_wave" pascalStyleName="DiagonalWave" />
+                      <Enum name="diagonal wave variable period" CStyleName="diagonal_wave_variable_period" pascalStyleName="DiagonalWaveVariablePeriod" />
+                      <Enum name="slide" CStyleName="slide" pascalStyleName="Slide" />
+                      <Enum name="slide variable period" CStyleName="slide_variable_period" pascalStyleName="SlideVariablePeriod" />
+                      <Enum name="noise" CStyleName="noise" pascalStyleName="Noise" />
+                      <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+                      <Enum name="wander" CStyleName="wander" pascalStyleName="Wander" />
+                      <Enum name="spark" CStyleName="spark" pascalStyleName="Spark" />
+                    </Options>
+                  </ShortEnum>
+                  <Real CStyleName="v_animation_period" pascalStyleName="VAnimationPeriod" name="v animation period" />
+                  <Real CStyleName="v_animation_phase" pascalStyleName="VAnimationPhase" name="v animation phase" />
+                  <Real CStyleName="v_animation_scale" pascalStyleName="VAnimationScale" name="v animation scale" />
+                  <ShortEnum CStyleName="rotation_animation_source" pascalStyleName="RotationAnimationSource" name="rotation animation source">
+                    <Options regolithID="enum:rotation_animation_source" CStyleName="rotation_animation_source" pascalStyleName="RotationAnimationSource">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                      <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                      <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                      <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="rotation_animation_function" pascalStyleName="RotationAnimationFunction" name="rotation animation function">
+                    <Options regolithID="enum:rotation_animation_function" CStyleName="rotation_animation_function" pascalStyleName="RotationAnimationFunction">
+                      <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                      <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                      <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                      <Enum name="cosine variable period" CStyleName="cosine_variable_period" pascalStyleName="CosineVariablePeriod" />
+                      <Enum name="diagonal wave" CStyleName="diagonal_wave" pascalStyleName="DiagonalWave" />
+                      <Enum name="diagonal wave variable period" CStyleName="diagonal_wave_variable_period" pascalStyleName="DiagonalWaveVariablePeriod" />
+                      <Enum name="slide" CStyleName="slide" pascalStyleName="Slide" />
+                      <Enum name="slide variable period" CStyleName="slide_variable_period" pascalStyleName="SlideVariablePeriod" />
+                      <Enum name="noise" CStyleName="noise" pascalStyleName="Noise" />
+                      <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+                      <Enum name="wander" CStyleName="wander" pascalStyleName="Wander" />
+                      <Enum name="spark" CStyleName="spark" pascalStyleName="Spark" />
+                    </Options>
+                  </ShortEnum>
+                  <Real CStyleName="rotation_animation_period" pascalStyleName="RotationAnimationPeriod" name="rotation animation period" />
+                  <Real CStyleName="rotation_animation_phase" pascalStyleName="RotationAnimationPhase" name="rotation animation phase" />
+                  <Real CStyleName="rotation_animation_scale" pascalStyleName="RotationAnimationScale" name="rotation animation scale" />
+                  <RealPoint2D CStyleName="rotation_animation_center" pascalStyleName="RotationAnimationCenter" name="rotation animation center" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="stages" pascalStyleName="Stages" name="stages" maxElementCount="7">
+        <Layout regolithID="block:stages" internalName="stages_block" name="stages_block">
+          <FieldSet version="0" sizeofValue="112" isLatest="true">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="color mux" CStyleName="color_mux_bit" pascalStyleName="ColorMuxBit" />
+                <Bit name="alpha mux" CStyleName="alpha_mux_bit" pascalStyleName="AlphaMuxBit" />
+                <Bit name="a out controls color0 animation" CStyleName="a_out_controls_color0_animation_bit" pascalStyleName="AOutControlsColor0AnimationBit" />
+              </Options>
+            </WordFlags>
+            <Pad name="pad" length="2" />
+            <ShortEnum CStyleName="color0_source" pascalStyleName="Color0Source" name="color0 source">
+              <Options regolithID="enum:color0_source" CStyleName="color0_source" pascalStyleName="Color0Source">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="a" CStyleName="a" pascalStyleName="A" />
+                <Enum name="b" CStyleName="b" pascalStyleName="B" />
+                <Enum name="c" CStyleName="c" pascalStyleName="C" />
+                <Enum name="d" CStyleName="d" pascalStyleName="D" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="color0_animation_function" pascalStyleName="Color0AnimationFunction" name="color0 animation function">
+              <Options regolithID="enum:color0_animation_function" CStyleName="color0_animation_function" pascalStyleName="Color0AnimationFunction">
+                <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                <Enum name="cosine variable period" CStyleName="cosine_variable_period" pascalStyleName="CosineVariablePeriod" />
+                <Enum name="diagonal wave" CStyleName="diagonal_wave" pascalStyleName="DiagonalWave" />
+                <Enum name="diagonal wave variable period" CStyleName="diagonal_wave_variable_period" pascalStyleName="DiagonalWaveVariablePeriod" />
+                <Enum name="slide" CStyleName="slide" pascalStyleName="Slide" />
+                <Enum name="slide variable period" CStyleName="slide_variable_period" pascalStyleName="SlideVariablePeriod" />
+                <Enum name="noise" CStyleName="noise" pascalStyleName="Noise" />
+                <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+                <Enum name="wander" CStyleName="wander" pascalStyleName="Wander" />
+                <Enum name="spark" CStyleName="spark" pascalStyleName="Spark" />
+              </Options>
+            </ShortEnum>
+            <Real CStyleName="color0_animation_period" pascalStyleName="Color0AnimationPeriod" name="color0 animation period" />
+            <RealArgbColor CStyleName="color0_animation" pascalStyleName="Color0Animation" name="color0 animation lower bound" />
+            <RealArgbColor CStyleName="color0_animation" pascalStyleName="Color0Animation" name="color0 animation upper bound" />
+            <RealArgbColor CStyleName="color1" pascalStyleName="Color1" name="color1" />
+            <ShortEnum CStyleName="input_a" pascalStyleName="InputA" name="input a">
+              <Options regolithID="enum:input_a" CStyleName="input_a" pascalStyleName="InputA">
+                <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                <Enum name="one half" CStyleName="one_half" pascalStyleName="OneHalf" />
+                <Enum name="negative one" CStyleName="negative_one" pascalStyleName="NegativeOne" />
+                <Enum name="negative one half" CStyleName="negative_one_half" pascalStyleName="NegativeOneHalf" />
+                <Enum name="map color 0" CStyleName="map_color_0" pascalStyleName="MapColor0" />
+                <Enum name="map color 1" CStyleName="map_color_1" pascalStyleName="MapColor1" />
+                <Enum name="map color 2" CStyleName="map_color_2" pascalStyleName="MapColor2" />
+                <Enum name="map color 3" CStyleName="map_color_3" pascalStyleName="MapColor3" />
+                <Enum name="vertex color 0 diffuse light" CStyleName="vertex_color_0_diffuse_light" pascalStyleName="VertexColor0DiffuseLight" />
+                <Enum name="vertex color 1 fade perpendicular" CStyleName="vertex_color_1_fade_perpendicular" pascalStyleName="VertexColor1FadePerpendicular" />
+                <Enum name="scratch color 0" CStyleName="scratch_color_0" pascalStyleName="ScratchColor0" />
+                <Enum name="scratch color 1" CStyleName="scratch_color_1" pascalStyleName="ScratchColor1" />
+                <Enum name="constant color 0" CStyleName="constant_color_0" pascalStyleName="ConstantColor0" />
+                <Enum name="constant color 1" CStyleName="constant_color_1" pascalStyleName="ConstantColor1" />
+                <Enum name="map alpha 0" CStyleName="map_alpha_0" pascalStyleName="MapAlpha0" />
+                <Enum name="map alpha 1" CStyleName="map_alpha_1" pascalStyleName="MapAlpha1" />
+                <Enum name="map alpha 2" CStyleName="map_alpha_2" pascalStyleName="MapAlpha2" />
+                <Enum name="map alpha 3" CStyleName="map_alpha_3" pascalStyleName="MapAlpha3" />
+                <Enum name="vertex alpha 0 fade none" CStyleName="vertex_alpha_0_fade_none" pascalStyleName="VertexAlpha0FadeNone" />
+                <Enum name="vertex alpha 1 fade perpendicular" CStyleName="vertex_alpha_1_fade_perpendicular" pascalStyleName="VertexAlpha1FadePerpendicular" />
+                <Enum name="scratch alpha 0" CStyleName="scratch_alpha_0" pascalStyleName="ScratchAlpha0" />
+                <Enum name="scratch alpha 1" CStyleName="scratch_alpha_1" pascalStyleName="ScratchAlpha1" />
+                <Enum name="constant alpha 0" CStyleName="constant_alpha_0" pascalStyleName="ConstantAlpha0" />
+                <Enum name="constant alpha 1" CStyleName="constant_alpha_1" pascalStyleName="ConstantAlpha1" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="input_a_mapping" pascalStyleName="InputAMapping" name="input a mapping">
+              <Options regolithID="enum:input_a_mapping" CStyleName="input_a_mapping" pascalStyleName="InputAMapping">
+                <Enum name="clamp x" CStyleName="clamp_x" pascalStyleName="ClampX" />
+                <Enum name="1 clamp x" CStyleName="_1_clamp_x" pascalStyleName="1ClampX" />
+                <Enum name="2" CStyleName="_2" pascalStyleName="2" />
+                <Enum name="1 2" CStyleName="_1_2" pascalStyleName="12" />
+                <Enum name="clamp x 1 2" CStyleName="clamp_x_1_2" pascalStyleName="ClampX12" />
+                <Enum name="1 2 clamp x" CStyleName="_1_2_clamp_x" pascalStyleName="12ClampX" />
+                <Enum name="x" CStyleName="x" pascalStyleName="X" />
+                <Enum name="x 1" CStyleName="x_1" pascalStyleName="X1" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="input_b" pascalStyleName="InputB" name="input b">
+              <Options regolithID="enum:input_b" CStyleName="input_b" pascalStyleName="InputB">
+                <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                <Enum name="one half" CStyleName="one_half" pascalStyleName="OneHalf" />
+                <Enum name="negative one" CStyleName="negative_one" pascalStyleName="NegativeOne" />
+                <Enum name="negative one half" CStyleName="negative_one_half" pascalStyleName="NegativeOneHalf" />
+                <Enum name="map color 0" CStyleName="map_color_0" pascalStyleName="MapColor0" />
+                <Enum name="map color 1" CStyleName="map_color_1" pascalStyleName="MapColor1" />
+                <Enum name="map color 2" CStyleName="map_color_2" pascalStyleName="MapColor2" />
+                <Enum name="map color 3" CStyleName="map_color_3" pascalStyleName="MapColor3" />
+                <Enum name="vertex color 0 diffuse light" CStyleName="vertex_color_0_diffuse_light" pascalStyleName="VertexColor0DiffuseLight" />
+                <Enum name="vertex color 1 fade perpendicular" CStyleName="vertex_color_1_fade_perpendicular" pascalStyleName="VertexColor1FadePerpendicular" />
+                <Enum name="scratch color 0" CStyleName="scratch_color_0" pascalStyleName="ScratchColor0" />
+                <Enum name="scratch color 1" CStyleName="scratch_color_1" pascalStyleName="ScratchColor1" />
+                <Enum name="constant color 0" CStyleName="constant_color_0" pascalStyleName="ConstantColor0" />
+                <Enum name="constant color 1" CStyleName="constant_color_1" pascalStyleName="ConstantColor1" />
+                <Enum name="map alpha 0" CStyleName="map_alpha_0" pascalStyleName="MapAlpha0" />
+                <Enum name="map alpha 1" CStyleName="map_alpha_1" pascalStyleName="MapAlpha1" />
+                <Enum name="map alpha 2" CStyleName="map_alpha_2" pascalStyleName="MapAlpha2" />
+                <Enum name="map alpha 3" CStyleName="map_alpha_3" pascalStyleName="MapAlpha3" />
+                <Enum name="vertex alpha 0 fade none" CStyleName="vertex_alpha_0_fade_none" pascalStyleName="VertexAlpha0FadeNone" />
+                <Enum name="vertex alpha 1 fade perpendicular" CStyleName="vertex_alpha_1_fade_perpendicular" pascalStyleName="VertexAlpha1FadePerpendicular" />
+                <Enum name="scratch alpha 0" CStyleName="scratch_alpha_0" pascalStyleName="ScratchAlpha0" />
+                <Enum name="scratch alpha 1" CStyleName="scratch_alpha_1" pascalStyleName="ScratchAlpha1" />
+                <Enum name="constant alpha 0" CStyleName="constant_alpha_0" pascalStyleName="ConstantAlpha0" />
+                <Enum name="constant alpha 1" CStyleName="constant_alpha_1" pascalStyleName="ConstantAlpha1" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="input_b_mapping" pascalStyleName="InputBMapping" name="input b mapping">
+              <Options regolithID="enum:input_b_mapping" CStyleName="input_b_mapping" pascalStyleName="InputBMapping">
+                <Enum name="clamp x" CStyleName="clamp_x" pascalStyleName="ClampX" />
+                <Enum name="1 clamp x" CStyleName="_1_clamp_x" pascalStyleName="1ClampX" />
+                <Enum name="2" CStyleName="_2" pascalStyleName="2" />
+                <Enum name="1 2" CStyleName="_1_2" pascalStyleName="12" />
+                <Enum name="clamp x 1 2" CStyleName="clamp_x_1_2" pascalStyleName="ClampX12" />
+                <Enum name="1 2 clamp x" CStyleName="_1_2_clamp_x" pascalStyleName="12ClampX" />
+                <Enum name="x" CStyleName="x" pascalStyleName="X" />
+                <Enum name="x 1" CStyleName="x_1" pascalStyleName="X1" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="input_c" pascalStyleName="InputC" name="input c">
+              <Options regolithID="enum:input_c" CStyleName="input_c" pascalStyleName="InputC">
+                <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                <Enum name="one half" CStyleName="one_half" pascalStyleName="OneHalf" />
+                <Enum name="negative one" CStyleName="negative_one" pascalStyleName="NegativeOne" />
+                <Enum name="negative one half" CStyleName="negative_one_half" pascalStyleName="NegativeOneHalf" />
+                <Enum name="map color 0" CStyleName="map_color_0" pascalStyleName="MapColor0" />
+                <Enum name="map color 1" CStyleName="map_color_1" pascalStyleName="MapColor1" />
+                <Enum name="map color 2" CStyleName="map_color_2" pascalStyleName="MapColor2" />
+                <Enum name="map color 3" CStyleName="map_color_3" pascalStyleName="MapColor3" />
+                <Enum name="vertex color 0 diffuse light" CStyleName="vertex_color_0_diffuse_light" pascalStyleName="VertexColor0DiffuseLight" />
+                <Enum name="vertex color 1 fade perpendicular" CStyleName="vertex_color_1_fade_perpendicular" pascalStyleName="VertexColor1FadePerpendicular" />
+                <Enum name="scratch color 0" CStyleName="scratch_color_0" pascalStyleName="ScratchColor0" />
+                <Enum name="scratch color 1" CStyleName="scratch_color_1" pascalStyleName="ScratchColor1" />
+                <Enum name="constant color 0" CStyleName="constant_color_0" pascalStyleName="ConstantColor0" />
+                <Enum name="constant color 1" CStyleName="constant_color_1" pascalStyleName="ConstantColor1" />
+                <Enum name="map alpha 0" CStyleName="map_alpha_0" pascalStyleName="MapAlpha0" />
+                <Enum name="map alpha 1" CStyleName="map_alpha_1" pascalStyleName="MapAlpha1" />
+                <Enum name="map alpha 2" CStyleName="map_alpha_2" pascalStyleName="MapAlpha2" />
+                <Enum name="map alpha 3" CStyleName="map_alpha_3" pascalStyleName="MapAlpha3" />
+                <Enum name="vertex alpha 0 fade none" CStyleName="vertex_alpha_0_fade_none" pascalStyleName="VertexAlpha0FadeNone" />
+                <Enum name="vertex alpha 1 fade perpendicular" CStyleName="vertex_alpha_1_fade_perpendicular" pascalStyleName="VertexAlpha1FadePerpendicular" />
+                <Enum name="scratch alpha 0" CStyleName="scratch_alpha_0" pascalStyleName="ScratchAlpha0" />
+                <Enum name="scratch alpha 1" CStyleName="scratch_alpha_1" pascalStyleName="ScratchAlpha1" />
+                <Enum name="constant alpha 0" CStyleName="constant_alpha_0" pascalStyleName="ConstantAlpha0" />
+                <Enum name="constant alpha 1" CStyleName="constant_alpha_1" pascalStyleName="ConstantAlpha1" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="input_c_mapping" pascalStyleName="InputCMapping" name="input c mapping">
+              <Options regolithID="enum:input_c_mapping" CStyleName="input_c_mapping" pascalStyleName="InputCMapping">
+                <Enum name="clamp x" CStyleName="clamp_x" pascalStyleName="ClampX" />
+                <Enum name="1 clamp x" CStyleName="_1_clamp_x" pascalStyleName="1ClampX" />
+                <Enum name="2" CStyleName="_2" pascalStyleName="2" />
+                <Enum name="1 2" CStyleName="_1_2" pascalStyleName="12" />
+                <Enum name="clamp x 1 2" CStyleName="clamp_x_1_2" pascalStyleName="ClampX12" />
+                <Enum name="1 2 clamp x" CStyleName="_1_2_clamp_x" pascalStyleName="12ClampX" />
+                <Enum name="x" CStyleName="x" pascalStyleName="X" />
+                <Enum name="x 1" CStyleName="x_1" pascalStyleName="X1" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="input_d" pascalStyleName="InputD" name="input d">
+              <Options regolithID="enum:input_d" CStyleName="input_d" pascalStyleName="InputD">
+                <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                <Enum name="one half" CStyleName="one_half" pascalStyleName="OneHalf" />
+                <Enum name="negative one" CStyleName="negative_one" pascalStyleName="NegativeOne" />
+                <Enum name="negative one half" CStyleName="negative_one_half" pascalStyleName="NegativeOneHalf" />
+                <Enum name="map color 0" CStyleName="map_color_0" pascalStyleName="MapColor0" />
+                <Enum name="map color 1" CStyleName="map_color_1" pascalStyleName="MapColor1" />
+                <Enum name="map color 2" CStyleName="map_color_2" pascalStyleName="MapColor2" />
+                <Enum name="map color 3" CStyleName="map_color_3" pascalStyleName="MapColor3" />
+                <Enum name="vertex color 0 diffuse light" CStyleName="vertex_color_0_diffuse_light" pascalStyleName="VertexColor0DiffuseLight" />
+                <Enum name="vertex color 1 fade perpendicular" CStyleName="vertex_color_1_fade_perpendicular" pascalStyleName="VertexColor1FadePerpendicular" />
+                <Enum name="scratch color 0" CStyleName="scratch_color_0" pascalStyleName="ScratchColor0" />
+                <Enum name="scratch color 1" CStyleName="scratch_color_1" pascalStyleName="ScratchColor1" />
+                <Enum name="constant color 0" CStyleName="constant_color_0" pascalStyleName="ConstantColor0" />
+                <Enum name="constant color 1" CStyleName="constant_color_1" pascalStyleName="ConstantColor1" />
+                <Enum name="map alpha 0" CStyleName="map_alpha_0" pascalStyleName="MapAlpha0" />
+                <Enum name="map alpha 1" CStyleName="map_alpha_1" pascalStyleName="MapAlpha1" />
+                <Enum name="map alpha 2" CStyleName="map_alpha_2" pascalStyleName="MapAlpha2" />
+                <Enum name="map alpha 3" CStyleName="map_alpha_3" pascalStyleName="MapAlpha3" />
+                <Enum name="vertex alpha 0 fade none" CStyleName="vertex_alpha_0_fade_none" pascalStyleName="VertexAlpha0FadeNone" />
+                <Enum name="vertex alpha 1 fade perpendicular" CStyleName="vertex_alpha_1_fade_perpendicular" pascalStyleName="VertexAlpha1FadePerpendicular" />
+                <Enum name="scratch alpha 0" CStyleName="scratch_alpha_0" pascalStyleName="ScratchAlpha0" />
+                <Enum name="scratch alpha 1" CStyleName="scratch_alpha_1" pascalStyleName="ScratchAlpha1" />
+                <Enum name="constant alpha 0" CStyleName="constant_alpha_0" pascalStyleName="ConstantAlpha0" />
+                <Enum name="constant alpha 1" CStyleName="constant_alpha_1" pascalStyleName="ConstantAlpha1" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="input_d_mapping" pascalStyleName="InputDMapping" name="input d mapping">
+              <Options regolithID="enum:input_d_mapping" CStyleName="input_d_mapping" pascalStyleName="InputDMapping">
+                <Enum name="clamp x" CStyleName="clamp_x" pascalStyleName="ClampX" />
+                <Enum name="1 clamp x" CStyleName="_1_clamp_x" pascalStyleName="1ClampX" />
+                <Enum name="2" CStyleName="_2" pascalStyleName="2" />
+                <Enum name="1 2" CStyleName="_1_2" pascalStyleName="12" />
+                <Enum name="clamp x 1 2" CStyleName="clamp_x_1_2" pascalStyleName="ClampX12" />
+                <Enum name="1 2 clamp x" CStyleName="_1_2_clamp_x" pascalStyleName="12ClampX" />
+                <Enum name="x" CStyleName="x" pascalStyleName="X" />
+                <Enum name="x 1" CStyleName="x_1" pascalStyleName="X1" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="output_ab" pascalStyleName="OutputAb" name="output ab">
+              <Options regolithID="enum:output_ab" CStyleName="output_ab" pascalStyleName="OutputAb">
+                <Enum name="alpha discard" CStyleName="alpha_discard" pascalStyleName="AlphaDiscard" />
+                <Enum name="alpha scratch alpha 0 final alpha" CStyleName="alpha_scratch_alpha_0_final_alpha" pascalStyleName="AlphaScratchAlpha0FinalAlpha" />
+                <Enum name="alpha scratch alpha 1" CStyleName="alpha_scratch_alpha_1" pascalStyleName="AlphaScratchAlpha1" />
+                <Enum name="alpha vertex alpha 0 fog" CStyleName="alpha_vertex_alpha_0_fog" pascalStyleName="AlphaVertexAlpha0Fog" />
+                <Enum name="alpha vertex alpha 1" CStyleName="alpha_vertex_alpha_1" pascalStyleName="AlphaVertexAlpha1" />
+                <Enum name="alpha map alpha 0" CStyleName="alpha_map_alpha_0" pascalStyleName="AlphaMapAlpha0" />
+                <Enum name="alpha map alpha 1" CStyleName="alpha_map_alpha_1" pascalStyleName="AlphaMapAlpha1" />
+                <Enum name="alpha map alpha 2" CStyleName="alpha_map_alpha_2" pascalStyleName="AlphaMapAlpha2" />
+                <Enum name="alpha map alpha 3" CStyleName="alpha_map_alpha_3" pascalStyleName="AlphaMapAlpha3" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="output_ab_function" pascalStyleName="OutputAbFunction" name="output ab function">
+              <Options regolithID="enum:output_ab_function" CStyleName="output_ab_function" pascalStyleName="OutputAbFunction">
+                <Enum name="multiply" CStyleName="multiply" pascalStyleName="Multiply" />
+                <Enum name="dot product" CStyleName="dot_product" pascalStyleName="DotProduct" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="output_bc" pascalStyleName="OutputBc" name="output bc">
+              <Options regolithID="enum:output_bc" CStyleName="output_bc" pascalStyleName="OutputBc">
+                <Enum name="alpha discard" CStyleName="alpha_discard" pascalStyleName="AlphaDiscard" />
+                <Enum name="alpha scratch alpha 0 final alpha" CStyleName="alpha_scratch_alpha_0_final_alpha" pascalStyleName="AlphaScratchAlpha0FinalAlpha" />
+                <Enum name="alpha scratch alpha 1" CStyleName="alpha_scratch_alpha_1" pascalStyleName="AlphaScratchAlpha1" />
+                <Enum name="alpha vertex alpha 0 fog" CStyleName="alpha_vertex_alpha_0_fog" pascalStyleName="AlphaVertexAlpha0Fog" />
+                <Enum name="alpha vertex alpha 1" CStyleName="alpha_vertex_alpha_1" pascalStyleName="AlphaVertexAlpha1" />
+                <Enum name="alpha map alpha 0" CStyleName="alpha_map_alpha_0" pascalStyleName="AlphaMapAlpha0" />
+                <Enum name="alpha map alpha 1" CStyleName="alpha_map_alpha_1" pascalStyleName="AlphaMapAlpha1" />
+                <Enum name="alpha map alpha 2" CStyleName="alpha_map_alpha_2" pascalStyleName="AlphaMapAlpha2" />
+                <Enum name="alpha map alpha 3" CStyleName="alpha_map_alpha_3" pascalStyleName="AlphaMapAlpha3" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="output_cd_function" pascalStyleName="OutputCdFunction" name="output cd function">
+              <Options regolithID="enum:output_cd_function" CStyleName="output_cd_function" pascalStyleName="OutputCdFunction">
+                <Enum name="multiply" CStyleName="multiply" pascalStyleName="Multiply" />
+                <Enum name="dot product" CStyleName="dot_product" pascalStyleName="DotProduct" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="output_ab_cd_mux_sum" pascalStyleName="OutputAbCdMuxSum" name="output ab cd mux sum">
+              <Options regolithID="enum:output_ab_cd_mux_sum" CStyleName="output_ab_cd_mux_sum" pascalStyleName="OutputAbCdMuxSum">
+                <Enum name="alpha discard" CStyleName="alpha_discard" pascalStyleName="AlphaDiscard" />
+                <Enum name="alpha scratch alpha 0 final alpha" CStyleName="alpha_scratch_alpha_0_final_alpha" pascalStyleName="AlphaScratchAlpha0FinalAlpha" />
+                <Enum name="alpha scratch alpha 1" CStyleName="alpha_scratch_alpha_1" pascalStyleName="AlphaScratchAlpha1" />
+                <Enum name="alpha vertex alpha 0 fog" CStyleName="alpha_vertex_alpha_0_fog" pascalStyleName="AlphaVertexAlpha0Fog" />
+                <Enum name="alpha vertex alpha 1" CStyleName="alpha_vertex_alpha_1" pascalStyleName="AlphaVertexAlpha1" />
+                <Enum name="alpha map alpha 0" CStyleName="alpha_map_alpha_0" pascalStyleName="AlphaMapAlpha0" />
+                <Enum name="alpha map alpha 1" CStyleName="alpha_map_alpha_1" pascalStyleName="AlphaMapAlpha1" />
+                <Enum name="alpha map alpha 2" CStyleName="alpha_map_alpha_2" pascalStyleName="AlphaMapAlpha2" />
+                <Enum name="alpha map alpha 3" CStyleName="alpha_map_alpha_3" pascalStyleName="AlphaMapAlpha3" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="output_mapping_color" pascalStyleName="OutputMappingColor" name="output mapping color">
+              <Options regolithID="enum:output_mapping_color" CStyleName="output_mapping_color" pascalStyleName="OutputMappingColor">
+                <Enum name="color identity" CStyleName="color_identity" pascalStyleName="ColorIdentity" />
+                <Enum name="color scale by 1 2" CStyleName="color_scale_by_1_2" pascalStyleName="ColorScaleBy12" />
+                <Enum name="color scale by 2" CStyleName="color_scale_by_2" pascalStyleName="ColorScaleBy2" />
+                <Enum name="color scale by 4" CStyleName="color_scale_by_4" pascalStyleName="ColorScaleBy4" />
+                <Enum name="color bias by 1 2" CStyleName="color_bias_by_1_2" pascalStyleName="ColorBiasBy12" />
+                <Enum name="color expand normal" CStyleName="color_expand_normal" pascalStyleName="ColorExpandNormal" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="input_a_alpha" pascalStyleName="InputAAlpha" name="input a alpha">
+              <Options regolithID="enum:input_a_alpha" CStyleName="input_a_alpha" pascalStyleName="InputAAlpha">
+                <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                <Enum name="one half" CStyleName="one_half" pascalStyleName="OneHalf" />
+                <Enum name="negative one" CStyleName="negative_one" pascalStyleName="NegativeOne" />
+                <Enum name="negative one half" CStyleName="negative_one_half" pascalStyleName="NegativeOneHalf" />
+                <Enum name="map alpha 0" CStyleName="map_alpha_0" pascalStyleName="MapAlpha0" />
+                <Enum name="map alpha 1" CStyleName="map_alpha_1" pascalStyleName="MapAlpha1" />
+                <Enum name="map alpha 2" CStyleName="map_alpha_2" pascalStyleName="MapAlpha2" />
+                <Enum name="map alpha 3" CStyleName="map_alpha_3" pascalStyleName="MapAlpha3" />
+                <Enum name="vertex alpha 0 fade none" CStyleName="vertex_alpha_0_fade_none" pascalStyleName="VertexAlpha0FadeNone" />
+                <Enum name="vertex alpha 1 fade perpendicular" CStyleName="vertex_alpha_1_fade_perpendicular" pascalStyleName="VertexAlpha1FadePerpendicular" />
+                <Enum name="scratch alpha 0" CStyleName="scratch_alpha_0" pascalStyleName="ScratchAlpha0" />
+                <Enum name="scratch alpha 1" CStyleName="scratch_alpha_1" pascalStyleName="ScratchAlpha1" />
+                <Enum name="constant alpha 0" CStyleName="constant_alpha_0" pascalStyleName="ConstantAlpha0" />
+                <Enum name="constant alpha 1" CStyleName="constant_alpha_1" pascalStyleName="ConstantAlpha1" />
+                <Enum name="map blue 0" CStyleName="map_blue_0" pascalStyleName="MapBlue0" />
+                <Enum name="map blue 1" CStyleName="map_blue_1" pascalStyleName="MapBlue1" />
+                <Enum name="map blue 2" CStyleName="map_blue_2" pascalStyleName="MapBlue2" />
+                <Enum name="map blue 3" CStyleName="map_blue_3" pascalStyleName="MapBlue3" />
+                <Enum name="vertex blue 0 blue light" CStyleName="vertex_blue_0_blue_light" pascalStyleName="VertexBlue0BlueLight" />
+                <Enum name="vertex blue 1 fade parallel" CStyleName="vertex_blue_1_fade_parallel" pascalStyleName="VertexBlue1FadeParallel" />
+                <Enum name="scratch blue 0" CStyleName="scratch_blue_0" pascalStyleName="ScratchBlue0" />
+                <Enum name="scratch blue 1" CStyleName="scratch_blue_1" pascalStyleName="ScratchBlue1" />
+                <Enum name="constant blue 0" CStyleName="constant_blue_0" pascalStyleName="ConstantBlue0" />
+                <Enum name="constant blue 1" CStyleName="constant_blue_1" pascalStyleName="ConstantBlue1" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="input_a_mapping_alpha" pascalStyleName="InputAMappingAlpha" name="input a mapping alpha">
+              <Options regolithID="enum:input_a_mapping_alpha" CStyleName="input_a_mapping_alpha" pascalStyleName="InputAMappingAlpha">
+                <Enum name="clamp x" CStyleName="clamp_x" pascalStyleName="ClampX" />
+                <Enum name="1 clamp x" CStyleName="_1_clamp_x" pascalStyleName="1ClampX" />
+                <Enum name="2" CStyleName="_2" pascalStyleName="2" />
+                <Enum name="1 2" CStyleName="_1_2" pascalStyleName="12" />
+                <Enum name="clamp x 1 2" CStyleName="clamp_x_1_2" pascalStyleName="ClampX12" />
+                <Enum name="1 2 clamp x" CStyleName="_1_2_clamp_x" pascalStyleName="12ClampX" />
+                <Enum name="x" CStyleName="x" pascalStyleName="X" />
+                <Enum name="x 1" CStyleName="x_1" pascalStyleName="X1" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="input_b_alpha" pascalStyleName="InputBAlpha" name="input b alpha">
+              <Options regolithID="enum:input_b_alpha" CStyleName="input_b_alpha" pascalStyleName="InputBAlpha">
+                <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                <Enum name="one half" CStyleName="one_half" pascalStyleName="OneHalf" />
+                <Enum name="negative one" CStyleName="negative_one" pascalStyleName="NegativeOne" />
+                <Enum name="negative one half" CStyleName="negative_one_half" pascalStyleName="NegativeOneHalf" />
+                <Enum name="map alpha 0" CStyleName="map_alpha_0" pascalStyleName="MapAlpha0" />
+                <Enum name="map alpha 1" CStyleName="map_alpha_1" pascalStyleName="MapAlpha1" />
+                <Enum name="map alpha 2" CStyleName="map_alpha_2" pascalStyleName="MapAlpha2" />
+                <Enum name="map alpha 3" CStyleName="map_alpha_3" pascalStyleName="MapAlpha3" />
+                <Enum name="vertex alpha 0 fade none" CStyleName="vertex_alpha_0_fade_none" pascalStyleName="VertexAlpha0FadeNone" />
+                <Enum name="vertex alpha 1 fade perpendicular" CStyleName="vertex_alpha_1_fade_perpendicular" pascalStyleName="VertexAlpha1FadePerpendicular" />
+                <Enum name="scratch alpha 0" CStyleName="scratch_alpha_0" pascalStyleName="ScratchAlpha0" />
+                <Enum name="scratch alpha 1" CStyleName="scratch_alpha_1" pascalStyleName="ScratchAlpha1" />
+                <Enum name="constant alpha 0" CStyleName="constant_alpha_0" pascalStyleName="ConstantAlpha0" />
+                <Enum name="constant alpha 1" CStyleName="constant_alpha_1" pascalStyleName="ConstantAlpha1" />
+                <Enum name="map blue 0" CStyleName="map_blue_0" pascalStyleName="MapBlue0" />
+                <Enum name="map blue 1" CStyleName="map_blue_1" pascalStyleName="MapBlue1" />
+                <Enum name="map blue 2" CStyleName="map_blue_2" pascalStyleName="MapBlue2" />
+                <Enum name="map blue 3" CStyleName="map_blue_3" pascalStyleName="MapBlue3" />
+                <Enum name="vertex blue 0 blue light" CStyleName="vertex_blue_0_blue_light" pascalStyleName="VertexBlue0BlueLight" />
+                <Enum name="vertex blue 1 fade parallel" CStyleName="vertex_blue_1_fade_parallel" pascalStyleName="VertexBlue1FadeParallel" />
+                <Enum name="scratch blue 0" CStyleName="scratch_blue_0" pascalStyleName="ScratchBlue0" />
+                <Enum name="scratch blue 1" CStyleName="scratch_blue_1" pascalStyleName="ScratchBlue1" />
+                <Enum name="constant blue 0" CStyleName="constant_blue_0" pascalStyleName="ConstantBlue0" />
+                <Enum name="constant blue 1" CStyleName="constant_blue_1" pascalStyleName="ConstantBlue1" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="input_b_mapping_alpha" pascalStyleName="InputBMappingAlpha" name="input b mapping alpha">
+              <Options regolithID="enum:input_b_mapping_alpha" CStyleName="input_b_mapping_alpha" pascalStyleName="InputBMappingAlpha">
+                <Enum name="clamp x" CStyleName="clamp_x" pascalStyleName="ClampX" />
+                <Enum name="1 clamp x" CStyleName="_1_clamp_x" pascalStyleName="1ClampX" />
+                <Enum name="2" CStyleName="_2" pascalStyleName="2" />
+                <Enum name="1 2" CStyleName="_1_2" pascalStyleName="12" />
+                <Enum name="clamp x 1 2" CStyleName="clamp_x_1_2" pascalStyleName="ClampX12" />
+                <Enum name="1 2 clamp x" CStyleName="_1_2_clamp_x" pascalStyleName="12ClampX" />
+                <Enum name="x" CStyleName="x" pascalStyleName="X" />
+                <Enum name="x 1" CStyleName="x_1" pascalStyleName="X1" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="input_c_alpha" pascalStyleName="InputCAlpha" name="input c alpha">
+              <Options regolithID="enum:input_c_alpha" CStyleName="input_c_alpha" pascalStyleName="InputCAlpha">
+                <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                <Enum name="one half" CStyleName="one_half" pascalStyleName="OneHalf" />
+                <Enum name="negative one" CStyleName="negative_one" pascalStyleName="NegativeOne" />
+                <Enum name="negative one half" CStyleName="negative_one_half" pascalStyleName="NegativeOneHalf" />
+                <Enum name="map alpha 0" CStyleName="map_alpha_0" pascalStyleName="MapAlpha0" />
+                <Enum name="map alpha 1" CStyleName="map_alpha_1" pascalStyleName="MapAlpha1" />
+                <Enum name="map alpha 2" CStyleName="map_alpha_2" pascalStyleName="MapAlpha2" />
+                <Enum name="map alpha 3" CStyleName="map_alpha_3" pascalStyleName="MapAlpha3" />
+                <Enum name="vertex alpha 0 fade none" CStyleName="vertex_alpha_0_fade_none" pascalStyleName="VertexAlpha0FadeNone" />
+                <Enum name="vertex alpha 1 fade perpendicular" CStyleName="vertex_alpha_1_fade_perpendicular" pascalStyleName="VertexAlpha1FadePerpendicular" />
+                <Enum name="scratch alpha 0" CStyleName="scratch_alpha_0" pascalStyleName="ScratchAlpha0" />
+                <Enum name="scratch alpha 1" CStyleName="scratch_alpha_1" pascalStyleName="ScratchAlpha1" />
+                <Enum name="constant alpha 0" CStyleName="constant_alpha_0" pascalStyleName="ConstantAlpha0" />
+                <Enum name="constant alpha 1" CStyleName="constant_alpha_1" pascalStyleName="ConstantAlpha1" />
+                <Enum name="map blue 0" CStyleName="map_blue_0" pascalStyleName="MapBlue0" />
+                <Enum name="map blue 1" CStyleName="map_blue_1" pascalStyleName="MapBlue1" />
+                <Enum name="map blue 2" CStyleName="map_blue_2" pascalStyleName="MapBlue2" />
+                <Enum name="map blue 3" CStyleName="map_blue_3" pascalStyleName="MapBlue3" />
+                <Enum name="vertex blue 0 blue light" CStyleName="vertex_blue_0_blue_light" pascalStyleName="VertexBlue0BlueLight" />
+                <Enum name="vertex blue 1 fade parallel" CStyleName="vertex_blue_1_fade_parallel" pascalStyleName="VertexBlue1FadeParallel" />
+                <Enum name="scratch blue 0" CStyleName="scratch_blue_0" pascalStyleName="ScratchBlue0" />
+                <Enum name="scratch blue 1" CStyleName="scratch_blue_1" pascalStyleName="ScratchBlue1" />
+                <Enum name="constant blue 0" CStyleName="constant_blue_0" pascalStyleName="ConstantBlue0" />
+                <Enum name="constant blue 1" CStyleName="constant_blue_1" pascalStyleName="ConstantBlue1" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="input_c_mapping_alpha" pascalStyleName="InputCMappingAlpha" name="input c mapping alpha">
+              <Options regolithID="enum:input_c_mapping_alpha" CStyleName="input_c_mapping_alpha" pascalStyleName="InputCMappingAlpha">
+                <Enum name="clamp x" CStyleName="clamp_x" pascalStyleName="ClampX" />
+                <Enum name="1 clamp x" CStyleName="_1_clamp_x" pascalStyleName="1ClampX" />
+                <Enum name="2" CStyleName="_2" pascalStyleName="2" />
+                <Enum name="1 2" CStyleName="_1_2" pascalStyleName="12" />
+                <Enum name="clamp x 1 2" CStyleName="clamp_x_1_2" pascalStyleName="ClampX12" />
+                <Enum name="1 2 clamp x" CStyleName="_1_2_clamp_x" pascalStyleName="12ClampX" />
+                <Enum name="x" CStyleName="x" pascalStyleName="X" />
+                <Enum name="x 1" CStyleName="x_1" pascalStyleName="X1" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="input_d_alpha" pascalStyleName="InputDAlpha" name="input d alpha">
+              <Options regolithID="enum:input_d_alpha" CStyleName="input_d_alpha" pascalStyleName="InputDAlpha">
+                <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                <Enum name="one half" CStyleName="one_half" pascalStyleName="OneHalf" />
+                <Enum name="negative one" CStyleName="negative_one" pascalStyleName="NegativeOne" />
+                <Enum name="negative one half" CStyleName="negative_one_half" pascalStyleName="NegativeOneHalf" />
+                <Enum name="map alpha 0" CStyleName="map_alpha_0" pascalStyleName="MapAlpha0" />
+                <Enum name="map alpha 1" CStyleName="map_alpha_1" pascalStyleName="MapAlpha1" />
+                <Enum name="map alpha 2" CStyleName="map_alpha_2" pascalStyleName="MapAlpha2" />
+                <Enum name="map alpha 3" CStyleName="map_alpha_3" pascalStyleName="MapAlpha3" />
+                <Enum name="vertex alpha 0 fade none" CStyleName="vertex_alpha_0_fade_none" pascalStyleName="VertexAlpha0FadeNone" />
+                <Enum name="vertex alpha 1 fade perpendicular" CStyleName="vertex_alpha_1_fade_perpendicular" pascalStyleName="VertexAlpha1FadePerpendicular" />
+                <Enum name="scratch alpha 0" CStyleName="scratch_alpha_0" pascalStyleName="ScratchAlpha0" />
+                <Enum name="scratch alpha 1" CStyleName="scratch_alpha_1" pascalStyleName="ScratchAlpha1" />
+                <Enum name="constant alpha 0" CStyleName="constant_alpha_0" pascalStyleName="ConstantAlpha0" />
+                <Enum name="constant alpha 1" CStyleName="constant_alpha_1" pascalStyleName="ConstantAlpha1" />
+                <Enum name="map blue 0" CStyleName="map_blue_0" pascalStyleName="MapBlue0" />
+                <Enum name="map blue 1" CStyleName="map_blue_1" pascalStyleName="MapBlue1" />
+                <Enum name="map blue 2" CStyleName="map_blue_2" pascalStyleName="MapBlue2" />
+                <Enum name="map blue 3" CStyleName="map_blue_3" pascalStyleName="MapBlue3" />
+                <Enum name="vertex blue 0 blue light" CStyleName="vertex_blue_0_blue_light" pascalStyleName="VertexBlue0BlueLight" />
+                <Enum name="vertex blue 1 fade parallel" CStyleName="vertex_blue_1_fade_parallel" pascalStyleName="VertexBlue1FadeParallel" />
+                <Enum name="scratch blue 0" CStyleName="scratch_blue_0" pascalStyleName="ScratchBlue0" />
+                <Enum name="scratch blue 1" CStyleName="scratch_blue_1" pascalStyleName="ScratchBlue1" />
+                <Enum name="constant blue 0" CStyleName="constant_blue_0" pascalStyleName="ConstantBlue0" />
+                <Enum name="constant blue 1" CStyleName="constant_blue_1" pascalStyleName="ConstantBlue1" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="input_d_mapping_alpha" pascalStyleName="InputDMappingAlpha" name="input d mapping alpha">
+              <Options regolithID="enum:input_d_mapping_alpha" CStyleName="input_d_mapping_alpha" pascalStyleName="InputDMappingAlpha">
+                <Enum name="clamp x" CStyleName="clamp_x" pascalStyleName="ClampX" />
+                <Enum name="1 clamp x" CStyleName="_1_clamp_x" pascalStyleName="1ClampX" />
+                <Enum name="2" CStyleName="_2" pascalStyleName="2" />
+                <Enum name="1 2" CStyleName="_1_2" pascalStyleName="12" />
+                <Enum name="clamp x 1 2" CStyleName="clamp_x_1_2" pascalStyleName="ClampX12" />
+                <Enum name="1 2 clamp x" CStyleName="_1_2_clamp_x" pascalStyleName="12ClampX" />
+                <Enum name="x" CStyleName="x" pascalStyleName="X" />
+                <Enum name="x 1" CStyleName="x_1" pascalStyleName="X1" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="output_ab_alpha" pascalStyleName="OutputAbAlpha" name="output ab alpha">
+              <Options regolithID="enum:output_ab_alpha" CStyleName="output_ab_alpha" pascalStyleName="OutputAbAlpha">
+                <Enum name="alpha discard" CStyleName="alpha_discard" pascalStyleName="AlphaDiscard" />
+                <Enum name="alpha scratch alpha 0 final alpha" CStyleName="alpha_scratch_alpha_0_final_alpha" pascalStyleName="AlphaScratchAlpha0FinalAlpha" />
+                <Enum name="alpha scratch alpha 1" CStyleName="alpha_scratch_alpha_1" pascalStyleName="AlphaScratchAlpha1" />
+                <Enum name="alpha vertex alpha 0 fog" CStyleName="alpha_vertex_alpha_0_fog" pascalStyleName="AlphaVertexAlpha0Fog" />
+                <Enum name="alpha vertex alpha 1" CStyleName="alpha_vertex_alpha_1" pascalStyleName="AlphaVertexAlpha1" />
+                <Enum name="alpha map alpha 0" CStyleName="alpha_map_alpha_0" pascalStyleName="AlphaMapAlpha0" />
+                <Enum name="alpha map alpha 1" CStyleName="alpha_map_alpha_1" pascalStyleName="AlphaMapAlpha1" />
+                <Enum name="alpha map alpha 2" CStyleName="alpha_map_alpha_2" pascalStyleName="AlphaMapAlpha2" />
+                <Enum name="alpha map alpha 3" CStyleName="alpha_map_alpha_3" pascalStyleName="AlphaMapAlpha3" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="output_cd_alpha" pascalStyleName="OutputCdAlpha" name="output cd alpha">
+              <Options regolithID="enum:output_cd_alpha" CStyleName="output_cd_alpha" pascalStyleName="OutputCdAlpha">
+                <Enum name="alpha discard" CStyleName="alpha_discard" pascalStyleName="AlphaDiscard" />
+                <Enum name="alpha scratch alpha 0 final alpha" CStyleName="alpha_scratch_alpha_0_final_alpha" pascalStyleName="AlphaScratchAlpha0FinalAlpha" />
+                <Enum name="alpha scratch alpha 1" CStyleName="alpha_scratch_alpha_1" pascalStyleName="AlphaScratchAlpha1" />
+                <Enum name="alpha vertex alpha 0 fog" CStyleName="alpha_vertex_alpha_0_fog" pascalStyleName="AlphaVertexAlpha0Fog" />
+                <Enum name="alpha vertex alpha 1" CStyleName="alpha_vertex_alpha_1" pascalStyleName="AlphaVertexAlpha1" />
+                <Enum name="alpha map alpha 0" CStyleName="alpha_map_alpha_0" pascalStyleName="AlphaMapAlpha0" />
+                <Enum name="alpha map alpha 1" CStyleName="alpha_map_alpha_1" pascalStyleName="AlphaMapAlpha1" />
+                <Enum name="alpha map alpha 2" CStyleName="alpha_map_alpha_2" pascalStyleName="AlphaMapAlpha2" />
+                <Enum name="alpha map alpha 3" CStyleName="alpha_map_alpha_3" pascalStyleName="AlphaMapAlpha3" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="output_ab_cd_mux_sum_alpha" pascalStyleName="OutputAbCdMuxSumAlpha" name="output ab cd mux sum alpha">
+              <Options regolithID="enum:output_ab_cd_mux_sum_alpha" CStyleName="output_ab_cd_mux_sum_alpha" pascalStyleName="OutputAbCdMuxSumAlpha">
+                <Enum name="alpha discard" CStyleName="alpha_discard" pascalStyleName="AlphaDiscard" />
+                <Enum name="alpha scratch alpha 0 final alpha" CStyleName="alpha_scratch_alpha_0_final_alpha" pascalStyleName="AlphaScratchAlpha0FinalAlpha" />
+                <Enum name="alpha scratch alpha 1" CStyleName="alpha_scratch_alpha_1" pascalStyleName="AlphaScratchAlpha1" />
+                <Enum name="alpha vertex alpha 0 fog" CStyleName="alpha_vertex_alpha_0_fog" pascalStyleName="AlphaVertexAlpha0Fog" />
+                <Enum name="alpha vertex alpha 1" CStyleName="alpha_vertex_alpha_1" pascalStyleName="AlphaVertexAlpha1" />
+                <Enum name="alpha map alpha 0" CStyleName="alpha_map_alpha_0" pascalStyleName="AlphaMapAlpha0" />
+                <Enum name="alpha map alpha 1" CStyleName="alpha_map_alpha_1" pascalStyleName="AlphaMapAlpha1" />
+                <Enum name="alpha map alpha 2" CStyleName="alpha_map_alpha_2" pascalStyleName="AlphaMapAlpha2" />
+                <Enum name="alpha map alpha 3" CStyleName="alpha_map_alpha_3" pascalStyleName="AlphaMapAlpha3" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="output_mapping_alpha" pascalStyleName="OutputMappingAlpha" name="output mapping alpha">
+              <Options regolithID="enum:output_mapping_alpha" CStyleName="output_mapping_alpha" pascalStyleName="OutputMappingAlpha">
+                <Enum name="color identity" CStyleName="color_identity" pascalStyleName="ColorIdentity" />
+                <Enum name="color scale by 1 2" CStyleName="color_scale_by_1_2" pascalStyleName="ColorScaleBy12" />
+                <Enum name="color scale by 2" CStyleName="color_scale_by_2" pascalStyleName="ColorScaleBy2" />
+                <Enum name="color scale by 4" CStyleName="color_scale_by_4" pascalStyleName="ColorScaleBy4" />
+                <Enum name="color bias by 1 2" CStyleName="color_bias_by_1_2" pascalStyleName="ColorBiasBy12" />
+                <Enum name="color expand normal" CStyleName="color_expand_normal" pascalStyleName="ColorExpandNormal" />
+              </Options>
+            </ShortEnum>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -27,63 +27,69 @@
 import bpy
 import bmesh
 
-from mathutils import Vector
-from ....global_functions import mesh_processing, global_functions
-from .format import SurfaceFlags
+from math import radians
+from enum import Flag, Enum, auto
+from mathutils import Matrix, Vector
+from ....global_functions import global_functions
 
-def build_collision(context, armature, COLLISION, game_version):
+class SurfaceFlags(Flag):
+    two_sided = auto()
+    invisible = auto()
+    climbable = auto()
+    breakable = auto()
+
+def build_collision(context, armature, COLLISION, fix_rotations):
+    collision_root = COLLISION["Data"]
+
     collection = context.collection
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
-
-    bone_list = armature.data.bones.keys()
-
-    for node_idx, node in enumerate(COLLISION.nodes):
-        parent_name = node.name
-        for bsp_idx, bsp in enumerate(node.bsps):
-            if len(bsp.surfaces) > 0:
+    for node in collision_root["nodes"]:
+        node_name = node["name"]
+        for bsp_idx, bsp in enumerate(node["bsps"]):
+            if len(bsp["surfaces"]) > 0:
                 active_region_permutations = []
 
-                region = COLLISION.regions[node.region]
-                region_name = region.name
-                permutation_name = "base"
-                if game_version == "retail":
-                    permutation_name = region.permutations[bsp_idx].name
-
+                region_index = node["region"]
+                region_element = collision_root["regions"][region_index]
+                permutation_element =  region_element["permutations"][bsp_idx]
+                region_name = region_element["name"]
+                permutation_name = permutation_element["name"]
                 if region_name == "__unnamed":
                     region_name = "unnamed"
 
                 if permutation_name == "__base":
                     permutation_name = "base"
 
-                object_name = '@%s %s %s' % (region_name, permutation_name, node.name)
+                object_name = '@%s %s %s' % (region_name, permutation_name, node["name"])
                 bm = bmesh.new()
 
                 mesh = bpy.data.meshes.new(object_name)
                 object_mesh = bpy.data.objects.new(object_name, mesh)
+                object_mesh.color = (1, 1, 1, 0)
                 collection.objects.link(object_mesh)
 
-                for surface_idx, surface in enumerate(bsp.surfaces):
-                    edge_index = surface.first_edge
+                for surface_idx, surface in enumerate(bsp["surfaces"]):
+                    edge_index = surface["first edge"]
                     surface_edges = []
                     vert_indices = []
                     while edge_index not in surface_edges:
                         surface_edges.append(edge_index)
-                        edge = bsp.edges[edge_index]
-                        if edge.left_surface == surface_idx:
-                            vert_indices.append(bm.verts.new(bsp.vertices[edge.start_vertex].translation))
-                            edge_index = edge.forward_edge
+                        edge = bsp["edges"][edge_index]
+                        if edge["left surface"] == surface_idx:
+                            vert_indices.append(bm.verts.new(Vector(bsp["vertices"][edge["start vertex"]]["point"]) * 100))
+                            edge_index = edge["forward edge"]
 
                         else:
-                            vert_indices.append(bm.verts.new(bsp.vertices[edge.end_vertex].translation))
-                            edge_index = edge.reverse_edge
+                            vert_indices.append(bm.verts.new(Vector(bsp["vertices"][edge["end vertex"]]["point"]) * 100))
+                            edge_index = edge["reverse edge"]
 
                     bm.faces.new(vert_indices)
 
                 bm.faces.ensure_lookup_table()
-                for surface_idx, surface in enumerate(bsp.surfaces):
-                    ngon_material_index = surface.material
+                for surface_idx, surface in enumerate(bsp["surfaces"]):
+                    ngon_material_index = surface["material"]
                     if not ngon_material_index == -1:
-                        mat = COLLISION.materials[ngon_material_index]
+                        mat = collision_root["materials"][ngon_material_index]
 
                     current_region_permutation = region_name
 
@@ -94,17 +100,18 @@ def build_collision(context, armature, COLLISION, game_version):
                     if not ngon_material_index == -1:
                         material_list = []
 
-                        material_name = mat.name
-                        if SurfaceFlags.two_sided in SurfaceFlags(surface.flags):
+                        material_name = mat["name"]
+                        surface_flags = SurfaceFlags(surface["flags"])
+                        if SurfaceFlags.two_sided in surface_flags:
                             material_name += "%"
 
-                        if SurfaceFlags.invisible in SurfaceFlags(surface.flags):
+                        if SurfaceFlags.invisible in surface_flags:
                             material_name += "*"
 
-                        if SurfaceFlags.climbable in SurfaceFlags(surface.flags):
+                        if SurfaceFlags.climbable in surface_flags:
                             material_name += "^"
 
-                        if SurfaceFlags.breakable in SurfaceFlags(surface.flags):
+                        if SurfaceFlags.breakable in surface_flags:
                             material_name += "-"
 
                         mat = bpy.data.materials.get(material_name)
@@ -134,31 +141,33 @@ def build_collision(context, armature, COLLISION, game_version):
 
                 object_mesh.parent = armature
                 object_mesh.parent_type = "BONE"
-                object_mesh.parent_bone = parent_name
-                object_mesh.matrix_world = armature.pose.bones[parent_name].matrix
+                object_mesh.parent_bone = node_name
+
+                transform_matrix = armature.pose.bones[node_name].matrix
+                if fix_rotations:
+                    transform_matrix = armature.pose.bones[node_name].matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')
+
+                object_mesh.matrix_world = transform_matrix
 
             else:
                 active_region_permutations = []
 
-                region = COLLISION.regions[node.region]
-                region_name = region.name
-                permutation_name = "base"
-                if game_version == "retail":
-                    permutation_name = region.permutations[bsp_idx].name
-
+                region = collision_root["regions"][node["region"]]
+                region_name = region["name"]
+                permutation_name = region["permutations"][bsp_idx]["name"]
                 if region_name == "__unnamed":
                     region_name = "unnamed"
 
                 if permutation_name == "__base":
                     permutation_name = "base"
 
-                object_name = '@%s %s %s' % (region_name, permutation_name, node.name)
+                object_name = '@%s %s %s' % (region_name, permutation_name, node["name"])
                 bm = bmesh.new()
 
                 mesh = bpy.data.meshes.new(object_name)
                 object_mesh = bpy.data.objects.new(object_name, mesh)
+                object_mesh.color = (1, 1, 1, 0)
                 collection.objects.link(object_mesh)
-
 
                 vert_indices = [bm.verts.new(Vector((0,0,0))), bm.verts.new(Vector((1,0,1))), bm.verts.new(Vector((1,0,0)))]
                 bm.faces.new(vert_indices)
@@ -201,5 +210,10 @@ def build_collision(context, armature, COLLISION, game_version):
 
                 object_mesh.parent = armature
                 object_mesh.parent_type = "BONE"
-                object_mesh.parent_bone = parent_name
-                object_mesh.matrix_world = armature.pose.bones[parent_name].matrix
+                object_mesh.parent_bone = node_name
+
+                transform_matrix = armature.pose.bones[node_name].matrix
+                if fix_rotations:
+                    transform_matrix = armature.pose.bones[node_name].matrix @ Matrix.Rotation(radians(90.0), 4, 'Z')
+
+                object_mesh.matrix_world = transform_matrix

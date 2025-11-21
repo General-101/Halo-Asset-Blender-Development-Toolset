@@ -1,0 +1,23 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="snde" name="sound_environment" version="1">
+  <Layout regolithID="block:sound_environment" internalName="sound_environment_block" name="sound_environment">
+    <FieldSet version="0" sizeofValue="72" sizeofSource="sizeof(struct sound_environment_group)" isLatest="true">
+      <LongInteger CStyleName="unknown" pascalStyleName="Unknown" name="unknown" cacheOnly="true" />
+      <ShortInteger CStyleName="priority" pascalStyleName="Priority" name="priority" />
+      <Pad name="pad" length="2" />
+      <Real CStyleName="room_intensity" pascalStyleName="RoomIntensity" name="room intensity" />
+      <Real CStyleName="room_intensity_hf" pascalStyleName="RoomIntensityHf" name="room intensity hf" />
+      <Real CStyleName="room_rolloff" pascalStyleName="RoomRolloff" name="room rolloff" />
+      <Real CStyleName="decay_time" pascalStyleName="DecayTime" name="decay time" />
+      <Real CStyleName="decay_hf_ratio" pascalStyleName="DecayHfRatio" name="decay hf ratio" />
+      <Real CStyleName="reflections_intensity" pascalStyleName="ReflectionsIntensity" name="reflections intensity" />
+      <Real CStyleName="reflections_delay" pascalStyleName="ReflectionsDelay" name="reflections delay" />
+      <Real CStyleName="reverb_intensity" pascalStyleName="ReverbIntensity" name="reverb intensity" />
+      <Real CStyleName="reverb_delay" pascalStyleName="ReverbDelay" name="reverb delay" />
+      <Real CStyleName="diffusion" pascalStyleName="Diffusion" name="diffusion" />
+      <Real CStyleName="density" pascalStyleName="Density" name="density" />
+      <Real CStyleName="hf_reference" pascalStyleName="HfReference" name="hf reference" />
+      <Pad name="pad" length="16" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

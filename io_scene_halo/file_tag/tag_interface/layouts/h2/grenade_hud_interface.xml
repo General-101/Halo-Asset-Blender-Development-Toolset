@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="grhi" name="grenade_hud_interface" version="1">
+  <Layout regolithID="block:grenade_hud_interface" internalName="grenade_hud_interface_block" name="grenade_hud_interface">
+    <FieldSet version="0" sizeofValue="504" sizeofSource="sizeof(struct grenade_hud_interface_definition)" isLatest="true">
+      <Custom name="GRENADE_HUD_INTERFACE_VIEW_CUSTOM_ID" tag="ghis" />
+      <Explanation name="Grenade hud screen alignment" />
+      <ShortEnum CStyleName="anchor" pascalStyleName="Anchor" name="anchor">
+        <Options regolithID="enum:hud_anchor" CStyleName="hud_anchor" pascalStyleName="HudAnchor">
+          <Enum name="top left" CStyleName="top_left" pascalStyleName="TopLeft" />
+          <Enum name="top right" CStyleName="top_right" pascalStyleName="TopRight" />
+          <Enum name="bottom left" CStyleName="bottom_left" pascalStyleName="BottomLeft" />
+          <Enum name="bottom right" CStyleName="bottom_right" pascalStyleName="BottomRight" />
+          <Enum name="center" CStyleName="center" pascalStyleName="Center" />
+          <Enum name="crosshair" CStyleName="crosshair" pascalStyleName="Crosshair" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(long)*8" length="32" />
+      <Explanation name="Grenade hud background" />
+      <Point2D name="anchor offset" />
+      <Real name="width scale" />
+      <Real name="height scale" />
+      <WordFlags name="scaling flags">
+        <Options regolithID="enum:hud_scaling_flags" CStyleName="hud_scaling_flags" pascalStyleName="HudScalingFlags">
+          <Bit name="don't scale offset" CStyleName="dont_scale_offset_bit" pascalStyleName="DontScaleOffsetBit" />
+          <Bit name="don't scale size" CStyleName="dont_scale_size_bit" pascalStyleName="DontScaleSizeBit" />
+        </Options>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(long)*5" length="20" />
+      <TagReference name="interface bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <ArgbColor name="default color" />
+      <ArgbColor name="flashing color" />
+      <Real name="flash period" />
+      <Real name="flash delay" description="time between flashes" />
+      <ShortInteger name="number of flashes" />
+      <WordFlags name="flash flags">
+        <Options regolithID="enum:hud_flash_flags" CStyleName="hud_flash_flags" pascalStyleName="HudFlashFlags">
+          <Bit name="reverse default/flashing colors" CStyleName="reverse_defaultflashing_colors_bit" pascalStyleName="ReverseDefaultflashingColorsBit" />
+        </Options>
+      </WordFlags>
+      <Real name="flash length" description="time of each flash" />
+      <ArgbColor name="disabled color" />
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <ShortInteger name="sequence index" />
+      <Pad sizeOfSource="1*sizeof(short)" length="2" />
+      <Block name="multitex overlay" maxElementCount="30" maxElementCountSource="MAXIMUM_NUMBER_OF_MULTITEXTURE_OVERLAYS">
+        <LayoutXRef>block:global_hud_multitexture_overlay_definition</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <Explanation name="Total grenades background" />
+      <Point2D name="anchor offset" />
+      <Real name="width scale" />
+      <Real name="height scale" />
+      <WordFlags name="scaling flags">
+        <OptionsXRef>enum:hud_scaling_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(long)*5" length="20" />
+      <TagReference name="interface bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <ArgbColor name="default color" />
+      <ArgbColor name="flashing color" />
+      <Real name="flash period" />
+      <Real name="flash delay" description="time between flashes" />
+      <ShortInteger name="number of flashes" />
+      <WordFlags name="flash flags">
+        <OptionsXRef>enum:hud_flash_flags</OptionsXRef>
+      </WordFlags>
+      <Real name="flash length" description="time of each flash" />
+      <ArgbColor name="disabled color" />
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <ShortInteger name="sequence index" />
+      <Pad sizeOfSource="1*sizeof(short)" length="2" />
+      <Block name="multitex overlay" maxElementCount="30" maxElementCountSource="MAXIMUM_NUMBER_OF_MULTITEXTURE_OVERLAYS">
+        <LayoutXRef>block:global_hud_multitexture_overlay_definition</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <Explanation name="Total grenades numbers" />
+      <Point2D name="anchor offset" />
+      <Real name="width scale" />
+      <Real name="height scale" />
+      <WordFlags name="scaling flags">
+        <OptionsXRef>enum:hud_scaling_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(long)*5" length="20" />
+      <ArgbColor name="default color" />
+      <ArgbColor name="flashing color" />
+      <Real name="flash period" />
+      <Real name="flash delay" description="time between flashes" />
+      <ShortInteger name="number of flashes" />
+      <WordFlags name="flash flags">
+        <OptionsXRef>enum:hud_flash_flags</OptionsXRef>
+      </WordFlags>
+      <Real name="flash length" description="time of each flash" />
+      <ArgbColor name="disabled color" />
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <CharInteger CStyleName="maximum_number_of_digits" pascalStyleName="MaximumNumberOfDigits" name="maximum number of digits" />
+      <ByteFlags name="flags">
+        <Options regolithID="enum:hud_number_flags" CStyleName="hud_number_flags" pascalStyleName="HudNumberFlags">
+          <Bit name="show leading zeros" CStyleName="show_leading_zeros_bit" pascalStyleName="ShowLeadingZerosBit" />
+          <Bit name="only show when zoomed" CStyleName="only_show_when_zoomed_bit" pascalStyleName="OnlyShowWhenZoomedBit" />
+          <Bit name="draw a trailing m" CStyleName="draw_a_trailing_m_bit" pascalStyleName="DrawATrailingMBit" />
+        </Options>
+      </ByteFlags>
+      <CharInteger CStyleName="number_of_fractional_digits" pascalStyleName="NumberOfFractionalDigits" name="number of fractional digits" />
+      <Pad sizeOfSource="1*sizeof(byte)" length="1" />
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <ShortInteger CStyleName="flash_cutoff" pascalStyleName="FlashCutoff" name="flash cutoff" />
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Explanation name="Total grenades overlays" />
+      <TagReference CStyleName="overlay_bitmap" pascalStyleName="OverlayBitmap" name="Overlay bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <Block CStyleName="overlays" pascalStyleName="Overlays" name="Overlays" maxElementCount="16" maxElementCountSource="MAXIMUM_NUMBER_OF_WEAPON_PANEL_OVERLAYS">
+        <Layout regolithID="block:grenade_hud_overlay" internalName="grenade_hud_overlay_block" name="grenade_hud_overlay_block">
+          <FieldSet version="0" sizeofValue="136" sizeofSource="sizeof(struct weapon_hud_overlay_item)" isLatest="true">
+            <Point2D CStyleName="anchor_offset" pascalStyleName="AnchorOffset" name="anchor offset" />
+            <Real CStyleName="width_scale" pascalStyleName="WidthScale" name="width scale" />
+            <Real CStyleName="height_scale" pascalStyleName="HeightScale" name="height scale" />
+            <WordFlags CStyleName="scaling_flags" pascalStyleName="ScalingFlags" name="scaling flags">
+              <OptionsXRef>enum:hud_scaling_flags</OptionsXRef>
+            </WordFlags>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="sizeof(long)*5" length="20" />
+            <ArgbColor CStyleName="default_color" pascalStyleName="DefaultColor" name="default color" />
+            <ArgbColor CStyleName="flashing_color" pascalStyleName="FlashingColor" name="flashing color" />
+            <Real CStyleName="flash_period" pascalStyleName="FlashPeriod" name="flash period" />
+            <Real CStyleName="flash_delay" pascalStyleName="FlashDelay" name="flash delay" description="time between flashes" />
+            <ShortInteger CStyleName="number_of_flashes" pascalStyleName="NumberOfFlashes" name="number of flashes" />
+            <WordFlags CStyleName="flash_flags" pascalStyleName="FlashFlags" name="flash flags">
+              <OptionsXRef>enum:hud_flash_flags</OptionsXRef>
+            </WordFlags>
+            <Real CStyleName="flash_length" pascalStyleName="FlashLength" name="flash length" description="time of each flash" />
+            <ArgbColor CStyleName="disabled_color" pascalStyleName="DisabledColor" name="disabled color" />
+            <Pad sizeOfSource="1*sizeof(long)" length="4" />
+            <Real CStyleName="frame_rate" pascalStyleName="FrameRate" name="frame rate" />
+            <ShortInteger CStyleName="sequence_index" pascalStyleName="SequenceIndex" name="sequence index" />
+            <WordFlags CStyleName="type" pascalStyleName="Type" name="type">
+              <Options regolithID="enum:hud_grenade_overlay_type" CStyleName="hud_grenade_overlay_type" pascalStyleName="HudGrenadeOverlayType">
+                <Bit name="show on flashing" CStyleName="show_on_flashing_bit" pascalStyleName="ShowOnFlashingBit" />
+                <Bit name="show on empty" CStyleName="show_on_empty_bit" pascalStyleName="ShowOnEmptyBit" />
+                <Bit name="show on default" CStyleName="show_on_default_bit" pascalStyleName="ShowOnDefaultBit" />
+                <Bit name="show always" CStyleName="show_always_bit" pascalStyleName="ShowAlwaysBit" />
+              </Options>
+            </WordFlags>
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:hud_grenade_overlay_flags" CStyleName="hud_grenade_overlay_flags" pascalStyleName="HudGrenadeOverlayFlags">
+                <Bit name="flashes when active" CStyleName="flashes_when_active_bit" pascalStyleName="FlashesWhenActiveBit" />
+              </Options>
+            </LongFlags>
+            <Pad sizeOfSource="4*sizeof(long)" length="16" />
+            <Pad sizeOfSource="10*sizeof(long)" length="40" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="warning_sounds" pascalStyleName="WarningSounds" name="Warning sounds" maxElementCount="12" maxElementCountSource="MAXIMUM_NUMBER_OF_HUD_SOUNDS">
+        <Layout regolithID="block:grenade_hud_sound" internalName="grenade_hud_sound_block" name="grenade_hud_sound_block">
+          <FieldSet version="0" sizeofValue="56" sizeofSource="sizeof(struct sound_hud_element_definition)" isLatest="true">
+            <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+              <tag />
+            </TagReference>
+            <LongFlags CStyleName="latched_to" pascalStyleName="LatchedTo" name="latched to">
+              <Options regolithID="enum:hud_grenade_status" CStyleName="hud_grenade_status" pascalStyleName="HudGrenadeStatus">
+                <Bit name="low grenade count" CStyleName="low_grenade_count_bit" pascalStyleName="LowGrenadeCountBit" />
+                <Bit name="no grenades left" CStyleName="no_grenades_left_bit" pascalStyleName="NoGrenadesLeftBit" />
+                <Bit name="throw on no grenades" CStyleName="throw_on_no_grenades_bit" pascalStyleName="ThrowOnNoGrenadesBit" />
+              </Options>
+            </LongFlags>
+            <Real CStyleName="scale" pascalStyleName="Scale" name="scale" />
+            <Pad sizeOfSource="8*sizeof(long)" length="32" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="sizeof(long)*17" length="68" />
+      <Explanation name="Messaging information" />
+      <ShortInteger name="sequence index" description="sequence index into the global hud icon bitmap" />
+      <ShortInteger CStyleName="width_offset" pascalStyleName="WidthOffset" name="width offset" description="extra spacing beyond bitmap width for text alignment" />
+      <Point2D CStyleName="offset_from_reference_corner" pascalStyleName="OffsetFromReferenceCorner" name="offset from reference corner" />
+      <ArgbColor CStyleName="override_icon_color" pascalStyleName="OverrideIconColor" name="override icon color" />
+      <CharInteger CStyleName="frame_rate_030" pascalStyleName="FrameRate030" name="frame rate [0,30]" />
+      <ByteFlags name="flags">
+        <Options regolithID="enum:hud_button_icon_flags" CStyleName="hud_button_icon_flags" pascalStyleName="HudButtonIconFlags">
+          <Bit name="use text from string_list instead" CStyleName="use_text_from_string_list_instead_bit" pascalStyleName="UseTextFromStringListInsteadBit" />
+          <Bit name="override default color" CStyleName="override_default_color_bit" pascalStyleName="OverrideDefaultColorBit" />
+          <Bit name="width offset is absolute icon width" CStyleName="width_offset_is_absolute_icon_width_bit" pascalStyleName="WidthOffsetIsAbsoluteIconWidthBit" />
+        </Options>
+      </ByteFlags>
+      <ShortInteger CStyleName="text_index" pascalStyleName="TextIndex" name="text index" />
+      <Pad sizeOfSource="sizeof(long)*12" length="48" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

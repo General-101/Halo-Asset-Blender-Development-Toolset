@@ -1,0 +1,552 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="udlg" name="dialogue" version="1">
+  <Layout regolithID="block:dialogue" internalName="dialogue_block" name="dialogue">
+    <FieldSet version="0" sizeofValue="4112" sizeofSource="sizeof(struct dialogue_group)" isLatest="true">
+      <Pad name="pad" length="2" />
+      <Pad name="pad" length="2" />
+      <Pad name="pad" length="12" />
+      <TagReference CStyleName="idle_noncombat" pascalStyleName="IdleNoncombat" name="idle noncombat">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="idle_combat" pascalStyleName="IdleCombat" name="idle combat">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="idle_flee" pascalStyleName="IdleFlee" name="idle flee">
+        <tag>sound</tag>
+      </TagReference>
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <TagReference CStyleName="pain_body_minor" pascalStyleName="PainBodyMinor" name="pain body minor">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="pain_body_major" pascalStyleName="PainBodyMajor" name="pain body major">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="pain_shield" pascalStyleName="PainShield" name="pain shield">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="pain_falling" pascalStyleName="PainFalling" name="pain falling">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="scream_fear" pascalStyleName="ScreamFear" name="scream fear">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="scream_pain" pascalStyleName="ScreamPain" name="scream pain">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="maimed_limb" pascalStyleName="MaimedLimb" name="maimed limb">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="maimed_head" pascalStyleName="MaimedHead" name="maimed head">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="death_quiet" pascalStyleName="DeathQuiet" name="death quiet">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="death_violent" pascalStyleName="DeathViolent" name="death violent">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="death_falling" pascalStyleName="DeathFalling" name="death falling">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="death_agonizing" pascalStyleName="DeathAgonizing" name="death agonizing">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="death_instant" pascalStyleName="DeathInstant" name="death instant">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="death_flying" pascalStyleName="DeathFlying" name="death flying">
+        <tag>sound</tag>
+      </TagReference>
+      <Pad name="pad" length="16" />
+      <TagReference CStyleName="damaged_friend" pascalStyleName="DamagedFriend" name="damaged friend">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="damaged_friend_player" pascalStyleName="DamagedFriendPlayer" name="damaged friend player">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="damaged_enemy" pascalStyleName="DamagedEnemy" name="damaged enemy">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="damaged_enemy_cm" pascalStyleName="DamagedEnemyCm" name="damaged enemy cm">
+        <tag>sound</tag>
+      </TagReference>
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <TagReference CStyleName="hurt_friend" pascalStyleName="HurtFriend" name="hurt friend">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="hurt_friend_re" pascalStyleName="HurtFriendRe" name="hurt friend re">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="hurt_friend_player" pascalStyleName="HurtFriendPlayer" name="hurt friend player">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="hurt_enemy" pascalStyleName="HurtEnemy" name="hurt enemy">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="hurt_enemy_re" pascalStyleName="HurtEnemyRe" name="hurt enemy re">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="hurt_enemy_cm" pascalStyleName="HurtEnemyCm" name="hurt enemy cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="hurt_enemy_bullet" pascalStyleName="HurtEnemyBullet" name="hurt enemy bullet">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="hurt_enemy_needler" pascalStyleName="HurtEnemyNeedler" name="hurt enemy needler">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="hurt_enemy_plasma" pascalStyleName="HurtEnemyPlasma" name="hurt enemy plasma">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="hurt_enemy_sniper" pascalStyleName="HurtEnemySniper" name="hurt enemy sniper">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="hurt_enemy_grenade" pascalStyleName="HurtEnemyGrenade" name="hurt enemy grenade">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="hurt_enemy_explosion" pascalStyleName="HurtEnemyExplosion" name="hurt enemy explosion">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="hurt_enemy_melee" pascalStyleName="HurtEnemyMelee" name="hurt enemy melee">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="hurt_enemy_flame" pascalStyleName="HurtEnemyFlame" name="hurt enemy flame">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="hurt_enemy_shotgun" pascalStyleName="HurtEnemyShotgun" name="hurt enemy shotgun">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="hurt_enemy_vehicle" pascalStyleName="HurtEnemyVehicle" name="hurt enemy vehicle">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="hurt_enemy_mountedweapon" pascalStyleName="HurtEnemyMountedweapon" name="hurt enemy mountedweapon">
+        <tag>sound</tag>
+      </TagReference>
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <TagReference CStyleName="killed_friend" pascalStyleName="KilledFriend" name="killed friend">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_friend_cm" pascalStyleName="KilledFriendCm" name="killed friend cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_friend_player" pascalStyleName="KilledFriendPlayer" name="killed friend player">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_friend_player_cm" pascalStyleName="KilledFriendPlayerCm" name="killed friend player cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy" pascalStyleName="KilledEnemy" name="killed enemy">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_cm" pascalStyleName="KilledEnemyCm" name="killed enemy cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_player" pascalStyleName="KilledEnemyPlayer" name="killed enemy player">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_player_cm" pascalStyleName="KilledEnemyPlayerCm" name="killed enemy player cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_covenant" pascalStyleName="KilledEnemyCovenant" name="killed enemy covenant">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_covenant_cm" pascalStyleName="KilledEnemyCovenantCm" name="killed enemy covenant cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_floodcombat" pascalStyleName="KilledEnemyFloodcombat" name="killed enemy floodcombat">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_floodcombat_cm" pascalStyleName="KilledEnemyFloodcombatCm" name="killed enemy floodcombat cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_floodcarrier" pascalStyleName="KilledEnemyFloodcarrier" name="killed enemy floodcarrier">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_floodcarrier_cm" pascalStyleName="KilledEnemyFloodcarrierCm" name="killed enemy floodcarrier cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_sentinel" pascalStyleName="KilledEnemySentinel" name="killed enemy sentinel">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_sentinel_cm" pascalStyleName="KilledEnemySentinelCm" name="killed enemy sentinel cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_bullet" pascalStyleName="KilledEnemyBullet" name="killed enemy bullet">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_needler" pascalStyleName="KilledEnemyNeedler" name="killed enemy needler">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_plasma" pascalStyleName="KilledEnemyPlasma" name="killed enemy plasma">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_sniper" pascalStyleName="KilledEnemySniper" name="killed enemy sniper">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_grenade" pascalStyleName="KilledEnemyGrenade" name="killed enemy grenade">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_explosion" pascalStyleName="KilledEnemyExplosion" name="killed enemy explosion">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_melee" pascalStyleName="KilledEnemyMelee" name="killed enemy melee">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_flame" pascalStyleName="KilledEnemyFlame" name="killed enemy flame">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_shotgun" pascalStyleName="KilledEnemyShotgun" name="killed enemy shotgun">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_vehicle" pascalStyleName="KilledEnemyVehicle" name="killed enemy vehicle">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killed_enemy_mountedweapon" pascalStyleName="KilledEnemyMountedweapon" name="killed enemy mountedweapon">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="killing_spree" pascalStyleName="KillingSpree" name="killing spree">
+        <tag>sound</tag>
+      </TagReference>
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <TagReference CStyleName="player_kill_cm" pascalStyleName="PlayerKillCm" name="player kill cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="player_kill_bullet_cm" pascalStyleName="PlayerKillBulletCm" name="player kill bullet cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="player_kill_needler_cm" pascalStyleName="PlayerKillNeedlerCm" name="player kill needler cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="player_kill_plasma_cm" pascalStyleName="PlayerKillPlasmaCm" name="player kill plasma cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="player_kill_sniper_cm" pascalStyleName="PlayerKillSniperCm" name="player kill sniper cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="anyone_kill_grenade_cm" pascalStyleName="AnyoneKillGrenadeCm" name="anyone kill grenade cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="player_kill_explosion_cm" pascalStyleName="PlayerKillExplosionCm" name="player kill explosion cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="player_kill_melee_cm" pascalStyleName="PlayerKillMeleeCm" name="player kill melee cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="player_kill_flame_cm" pascalStyleName="PlayerKillFlameCm" name="player kill flame cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="player_kill_shotgun_cm" pascalStyleName="PlayerKillShotgunCm" name="player kill shotgun cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="player_kill_vehicle_cm" pascalStyleName="PlayerKillVehicleCm" name="player kill vehicle cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="player_kill_mountedweapon_cm" pascalStyleName="PlayerKillMountedweaponCm" name="player kill mountedweapon cm">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="player_killling_spree_cm" pascalStyleName="PlayerKilllingSpreeCm" name="player killling spree cm">
+        <tag>sound</tag>
+      </TagReference>
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <TagReference CStyleName="friend_died" pascalStyleName="FriendDied" name="friend died">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="friend_player_died" pascalStyleName="FriendPlayerDied" name="friend player died">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="friend_killed_by_friend" pascalStyleName="FriendKilledByFriend" name="friend killed by friend">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="friend_killed_by_friendly_player" pascalStyleName="FriendKilledByFriendlyPlayer" name="friend killed by friendly player">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="friend_killed_by_enemy" pascalStyleName="FriendKilledByEnemy" name="friend killed by enemy">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="friend_killed_by_enemy_player" pascalStyleName="FriendKilledByEnemyPlayer" name="friend killed by enemy player">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="friend_killed_by_covenant" pascalStyleName="FriendKilledByCovenant" name="friend killed by covenant">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="friend_killed_by_flood" pascalStyleName="FriendKilledByFlood" name="friend killed by flood">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="friend_killed_by_sentinel" pascalStyleName="FriendKilledBySentinel" name="friend killed by sentinel">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="friend_betrayed" pascalStyleName="FriendBetrayed" name="friend betrayed">
+        <tag>sound</tag>
+      </TagReference>
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <TagReference CStyleName="new_combat_alone" pascalStyleName="NewCombatAlone" name="new combat alone">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="new_enemy_recent_combat" pascalStyleName="NewEnemyRecentCombat" name="new enemy recent combat">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="old_enemy_sighted" pascalStyleName="OldEnemySighted" name="old enemy sighted">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="unexpected_enemy" pascalStyleName="UnexpectedEnemy" name="unexpected enemy">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="dead_friend_found" pascalStyleName="DeadFriendFound" name="dead friend found">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="alliance_broken" pascalStyleName="AllianceBroken" name="alliance broken">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="alliance_reformed" pascalStyleName="AllianceReformed" name="alliance reformed">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="grenade_throwing" pascalStyleName="GrenadeThrowing" name="grenade throwing">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="grenade_sighted" pascalStyleName="GrenadeSighted" name="grenade sighted">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="grenade_startle" pascalStyleName="GrenadeStartle" name="grenade startle">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="grenade_danger_enemy" pascalStyleName="GrenadeDangerEnemy" name="grenade danger enemy">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="grenade_danger_self" pascalStyleName="GrenadeDangerSelf" name="grenade danger self">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="grenade_danger_friend" pascalStyleName="GrenadeDangerFriend" name="grenade danger friend">
+        <tag>sound</tag>
+      </TagReference>
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <TagReference CStyleName="new_combat_group_re" pascalStyleName="NewCombatGroupRe" name="new combat group re">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="new_combat_nearby_re" pascalStyleName="NewCombatNearbyRe" name="new combat nearby re">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="alert_friend" pascalStyleName="AlertFriend" name="alert friend">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="alert_friend_re" pascalStyleName="AlertFriendRe" name="alert friend re">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="alert_lost_contact" pascalStyleName="AlertLostContact" name="alert lost contact">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="alert_lost_contact_re" pascalStyleName="AlertLostContactRe" name="alert lost contact re">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="blocked" pascalStyleName="Blocked" name="blocked">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="blocked_re" pascalStyleName="BlockedRe" name="blocked re">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="search_start" pascalStyleName="SearchStart" name="search start">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="search_query" pascalStyleName="SearchQuery" name="search query">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="search_query_re" pascalStyleName="SearchQueryRe" name="search query re">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="search_report" pascalStyleName="SearchReport" name="search report">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="search_abandon" pascalStyleName="SearchAbandon" name="search abandon">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="search_group_abandon" pascalStyleName="SearchGroupAbandon" name="search group abandon">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="group_uncover" pascalStyleName="GroupUncover" name="group uncover">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="group_uncover_re" pascalStyleName="GroupUncoverRe" name="group uncover re">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="advance" pascalStyleName="Advance" name="advance">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="advance_re" pascalStyleName="AdvanceRe" name="advance re">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="retreat" pascalStyleName="Retreat" name="retreat">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="retreat_re" pascalStyleName="RetreatRe" name="retreat re">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="cover" pascalStyleName="Cover" name="cover">
+        <tag>sound</tag>
+      </TagReference>
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <TagReference CStyleName="sighted_friend_player" pascalStyleName="SightedFriendPlayer" name="sighted friend player">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="shooting" pascalStyleName="Shooting" name="shooting">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="shooting_vehicle" pascalStyleName="ShootingVehicle" name="shooting vehicle">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="shooting_berserk" pascalStyleName="ShootingBerserk" name="shooting berserk">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="shooting_group" pascalStyleName="ShootingGroup" name="shooting group">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="shooting_traitor" pascalStyleName="ShootingTraitor" name="shooting traitor">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="taunt" pascalStyleName="Taunt" name="taunt">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="taunt_re" pascalStyleName="TauntRe" name="taunt re">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="flee" pascalStyleName="Flee" name="flee">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="flee_re" pascalStyleName="FleeRe" name="flee re">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="flee_leader_died" pascalStyleName="FleeLeaderDied" name="flee leader died">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="attempted_flee" pascalStyleName="AttemptedFlee" name="attempted flee">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="attempted_flee_re" pascalStyleName="AttemptedFleeRe" name="attempted flee re">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="lost_contact" pascalStyleName="LostContact" name="lost contact">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="hiding_finished" pascalStyleName="HidingFinished" name="hiding finished">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="vehicle_entry" pascalStyleName="VehicleEntry" name="vehicle entry">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="vehicle_exit" pascalStyleName="VehicleExit" name="vehicle exit">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="vehicle_woohoo" pascalStyleName="VehicleWoohoo" name="vehicle woohoo">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="vehicle_scared" pascalStyleName="VehicleScared" name="vehicle scared">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="vehicle_collision" pascalStyleName="VehicleCollision" name="vehicle collision">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="partially_sighted" pascalStyleName="PartiallySighted" name="partially sighted">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="nothing_there" pascalStyleName="NothingThere" name="nothing there">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="pleading" pascalStyleName="Pleading" name="pleading">
+        <tag>sound</tag>
+      </TagReference>
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <TagReference CStyleName="surprise" pascalStyleName="Surprise" name="surprise">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="berserk" pascalStyleName="Berserk" name="berserk">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="melee_attack" pascalStyleName="MeleeAttack" name="melee attack">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="dive" pascalStyleName="Dive" name="dive">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="uncover_exclamation" pascalStyleName="UncoverExclamation" name="uncover exclamation">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="leap_attack" pascalStyleName="LeapAttack" name="leap attack">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="resurrection" pascalStyleName="Resurrection" name="resurrection">
+        <tag>sound</tag>
+      </TagReference>
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <TagReference CStyleName="celebration" pascalStyleName="Celebration" name="celebration">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="check_body_enemy" pascalStyleName="CheckBodyEnemy" name="check body enemy">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="check_body_friend" pascalStyleName="CheckBodyFriend" name="check body friend">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="shooting_dead_enemy" pascalStyleName="ShootingDeadEnemy" name="shooting dead enemy">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="shooting_dead_enemy_player" pascalStyleName="ShootingDeadEnemyPlayer" name="shooting dead enemy player">
+        <tag>sound</tag>
+      </TagReference>
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <TagReference CStyleName="alone" pascalStyleName="Alone" name="alone">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="unscathed" pascalStyleName="Unscathed" name="unscathed">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="seriously_wounded" pascalStyleName="SeriouslyWounded" name="seriously wounded">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="seriously_wounded_re" pascalStyleName="SeriouslyWoundedRe" name="seriously wounded re">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="massacre" pascalStyleName="Massacre" name="massacre">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="massacre_re" pascalStyleName="MassacreRe" name="massacre re">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="rout" pascalStyleName="Rout" name="rout">
+        <tag>sound</tag>
+      </TagReference>
+      <TagReference CStyleName="rout_re" pascalStyleName="RoutRe" name="rout re">
+        <tag>sound</tag>
+      </TagReference>
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="752" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

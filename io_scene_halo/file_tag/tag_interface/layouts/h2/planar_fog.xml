@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="fog " name="planar_fog" version="1">
+  <Layout regolithID="block:planar_fog" internalName="planar_fog_block" name="planar_fog">
+    <FieldSet version="0" sizeofValue="132" sizeofSource="sizeof(struct s_planar_fog_definition)" isLatest="true">
+      <Explanation name="PLANAR FOG" description="Please don't use these flags unless you know what you're doing! Come talk to Bernie first." />
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:planar_fog_flags" CStyleName="planar_fog_flags" pascalStyleName="PlanarFogFlags">
+          <Bit name="render only submerged geometry" CStyleName="render_only_submerged_geometry_bit" pascalStyleName="RenderOnlySubmergedGeometryBit" />
+          <Bit name="extend infinitely while visible" CStyleName="extend_infinitely_while_visible_bit" pascalStyleName="ExtendInfinitelyWhileVisibleBit" />
+          <Bit name="don't floodfill" CStyleName="dont_floodfill_bit" pascalStyleName="DontFloodfillBit" />
+          <Bit name="aggressive floodfill" CStyleName="aggressive_floodfill_bit" pascalStyleName="AggressiveFloodfillBit" />
+          <Bit name="do not render" CStyleName="do_not_render_bit" pascalStyleName="DoNotRenderBit" />
+          <Bit name="do not render unless submerged" CStyleName="do_not_render_unless_submerged_bit" pascalStyleName="DoNotRenderUnlessSubmergedBit" />
+        </Options>
+      </WordFlags>
+      <ShortInteger CStyleName="priority" pascalStyleName="Priority" name="priority" />
+      <StringId CStyleName="global_material_name" pascalStyleName="GlobalMaterialName" name="global material name" tag="sted" />
+      <Pad sizeOfSource="sizeof(c_global_material_type)" length="2" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <UselessPad length="72" />
+      <Explanation name="DENSITY" />
+      <UselessPad length="4" />
+      <RealFraction CStyleName="maximum_density" pascalStyleName="MaximumDensity" name="maximum density" units="[0,1]" description="planar fog density is clamped to this value" />
+      <UselessPad length="4" />
+      <Real CStyleName="opaque_distance" pascalStyleName="OpaqueDistance" name="opaque distance" units="world units" description="the fog becomes opaque (maximum density) at this distance from the viewer" />
+      <UselessPad length="4" />
+      <Real CStyleName="opaque_depth" pascalStyleName="OpaqueDepth" name="opaque depth" units="world units" description="the fog becomes opaque at this distance below fog plane" />
+      <Explanation name="DENSITY (ADVANCED CONTROLS)" />
+      <RealBounds CStyleName="atmospheric_planar_depth" pascalStyleName="AtmosphericPlanarDepth" name="atmospheric-planar depth" units="world units" description="distances above fog plane where atmospheric fog supercedes planar fog and visa-versa" />
+      <Real CStyleName="eye_offset_scale" pascalStyleName="EyeOffsetScale" name="eye offset scale" units="[-1,1]" description="negative numbers are bad, mmmkay?" />
+      <UselessPad length="32" />
+      <Explanation name="COLOR" />
+      <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+      <UselessPad length="100" />
+      <Block CStyleName="patchy_fog" pascalStyleName="PatchyFog" name="patchy fog" maxElementCount="1">
+        <Layout regolithID="block:planar_fog_patchy_fog" internalName="planar_fog_patchy_fog_block" name="planar_fog_patchy_fog_block">
+          <FieldSet version="0" sizeofValue="60" sizeofSource="sizeof(s_planar_fog_patchy_fog)" isLatest="true">
+            <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+            <Pad sizeOfSource="sizeof(real_rgb_color)" length="12" />
+            <RealFractionBounds CStyleName="density" pascalStyleName="Density" name="density" units="[0,1]" />
+            <RealBounds CStyleName="distance" pascalStyleName="Distance" name="distance" units="world units" />
+            <UselessPad length="16" />
+            <RealFraction CStyleName="min_depth_fraction" pascalStyleName="MinDepthFraction" name="min depth fraction" units="[0,1]" description="in range (0,max_depth) world units, where patchy fog starts fading in" />
+            <UselessPad length="12" />
+            <TagReference CStyleName="patchy_fog" pascalStyleName="PatchyFog" name="patchy fog">
+              <tag>fpch</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="SOUND" />
+      <TagReference CStyleName="background_sound" pascalStyleName="BackgroundSound" name="background sound">
+        <tag>lsnd</tag>
+      </TagReference>
+      <TagReference CStyleName="sound_environment" pascalStyleName="SoundEnvironment" name="sound environment">
+        <tag>snde</tag>
+      </TagReference>
+      <Real CStyleName="environment_damping_factor" pascalStyleName="EnvironmentDampingFactor" name="environment damping factor" description="scales the surrounding background sound by this much" />
+      <Real CStyleName="background_sound_gain" pascalStyleName="BackgroundSoundGain" name="background sound gain" description="scale for fog background sound" />
+      <TagReference CStyleName="enter_sound" pascalStyleName="EnterSound" name="enter sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="exit_sound" pascalStyleName="ExitSound" name="exit sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <UselessPad length="80" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

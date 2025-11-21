@@ -1,0 +1,820 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="phmo" name="physics_model" version="2">
+  <Layout regolithID="block:physics_model" internalName="physics_model_block" name="physics_model">
+    <FieldSet version="0" sizeofValue="312" sizeofSource="sizeof(struct s_physics_model_definition_v1)">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:physics_model_flags" CStyleName="physics_model_flags" pascalStyleName="PhysicsModelFlags">
+          <Bit name="unused" CStyleName="unused0_bit" pascalStyleName="Unused0Bit" />
+        </Options>
+      </LongFlags>
+      <Real CStyleName="mass" pascalStyleName="Mass" name="mass" />
+      <Pad sizeOfSource="14*sizeof(real)" length="56" />
+      <Block CStyleName="rigid_bodies" pascalStyleName="RigidBodies" name="rigid bodies" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_rigid_bodies_per_physics_model">
+        <Layout regolithID="block:rigid_bodies" internalName="rigid_bodies_block" name="rigid_bodies_block">
+          <FieldSet version="0" alignment="4" sizeofValue="112" sizeofSource="sizeof(s_physics_model_rigid_body_v1)">
+            <ShortBlockIndex CStyleName="node" pascalStyleName="Node" name="node" readOnly="true" />
+            <ShortBlockIndex CStyleName="region" pascalStyleName="Region" name="region" readOnly="true" />
+            <CustomShortBlockIndex CStyleName="permutation" pascalStyleName="Permutation" name="permutation" readOnly="true" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:rigid_body_flags" CStyleName="rigid_body_flags" pascalStyleName="RigidBodyFlags">
+                <Bit name="no collisions w/self" CStyleName="no_collisions_wself_bit" pascalStyleName="NoCollisionsWselfBit" />
+                <Bit name="only collide w/env" CStyleName="only_collide_wenv_bit" pascalStyleName="OnlyCollideWenvBit" />
+                <Bit name="disable effects" description="this rigid body will not generate impact effects unless it hits another dynamic rigid body that does" CStyleName="disable_effects_bit" pascalStyleName="DisableEffectsBit" />
+                <Bit name="does not interact w/environment" description="set this flag if this rigid bodies won't touch the environment, this allows us to open up some optimizations" CStyleName="does_not_interact_wenvironment_bit" pascalStyleName="DoesNotInteractWenvironmentBit" />
+                <Bit name="best early mover body" description="if you have either of the early mover flags set in the object definitoin this body will be choosen as the one to make every thing local to, otherwise I pick :-)" CStyleName="best_early_mover_body_bit" pascalStyleName="BestEarlyMoverBodyBit" />
+                <Bit name="has no phantom power version" description="don't check this flag without talking to eamon" CStyleName="has_no_phantom_power_version_bit" pascalStyleName="HasNoPhantomPowerVersionBit" />
+              </Options>
+            </WordFlags>
+            <ShortEnum CStyleName="motion_type" pascalStyleName="MotionType" name="motion type">
+              <Options regolithID="enum:rigid_body_motion_type" CStyleName="rigid_body_motion_type" pascalStyleName="RigidBodyMotionType">
+                <Enum name="sphere" CStyleName="sphere" pascalStyleName="Sphere" />
+                <Enum name="stabilized sphere" CStyleName="stabilized_sphere" pascalStyleName="StabilizedSphere" />
+                <Enum name="box" CStyleName="box" pascalStyleName="Box" />
+                <Enum name="stabilized box" CStyleName="stabilized_box" pascalStyleName="StabilizedBox" />
+                <Enum name="keyframed" CStyleName="keyframed" pascalStyleName="Keyframed" />
+                <Enum name="fixed" CStyleName="fixed" pascalStyleName="Fixed" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(real)" length="4" />
+            <Real CStyleName="linear_damping" pascalStyleName="LinearDamping" name="linear damping" description="this goes from 0-10 (10 is really, really high)" />
+            <Real CStyleName="angular_damping" pascalStyleName="AngularDamping" name="angular damping" description="this goes from 0-10 (10 is really, really high)" />
+            <Ptr length="4" />
+            <Real CStyleName="mass" pascalStyleName="Mass" name="mass" units="kg*" />
+            <RealVector3D CStyleName="center_of_mass" pascalStyleName="CenterOfMass" name="center of mass" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="intertia_tensor_x" pascalStyleName="IntertiaTensorX" name="intertia tensor x" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="intertia_tensor_y" pascalStyleName="IntertiaTensorY" name="intertia tensor y" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="intertia_tensor_z" pascalStyleName="IntertiaTensorZ" name="intertia tensor z" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="center_off_mass_offset" pascalStyleName="CenterOffMassOffset" name="center off mass offset" />
+            <Pad sizeOfSource="sizeof(real)" length="4" />
+          </FieldSet>
+          <FieldSet version="1" alignment="4" sizeofValue="144" sizeofSource="sizeof(s_physics_model_rigid_body)" isLatest="true">
+            <ShortBlockIndex CStyleName="node" pascalStyleName="Node" name="node" readOnly="true" blockReference="block:nodes" />
+            <ShortBlockIndex CStyleName="region" pascalStyleName="Region" name="region" readOnly="true" blockReference="block:regions" />
+            <CustomShortBlockIndex CStyleName="permutattion" pascalStyleName="Permutattion" name="permutattion" readOnly="true" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <RealPoint3D CStyleName="bouding_sphere_offset" pascalStyleName="BoudingSphereOffset" name="bouding sphere offset" readOnly="true" />
+            <Real CStyleName="bounding_sphere_radius" pascalStyleName="BoundingSphereRadius" name="bounding sphere radius" readOnly="true" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:rigid_body_flags</OptionsXRef>
+            </WordFlags>
+            <ShortEnum CStyleName="motion_type" pascalStyleName="MotionType" name="motion type">
+              <OptionsXRef>enum:rigid_body_motion_type</OptionsXRef>
+            </ShortEnum>
+            <ShortBlockIndex CStyleName="no_phantom_power_alt" pascalStyleName="NoPhantomPowerAlt" name="no phantom power alt" blockReference="block:rigid_bodies" />
+            <ShortEnum CStyleName="size" pascalStyleName="Size" name="size">
+              <Options regolithID="enum:size" CStyleName="size" pascalStyleName="Size">
+                <Enum name="default" CStyleName="default_value" pascalStyleName="Default" />
+                <Enum name="tiny" CStyleName="tiny" pascalStyleName="Tiny" />
+                <Enum name="small" CStyleName="small" pascalStyleName="Small" />
+                <Enum name="medium" CStyleName="medium" pascalStyleName="Medium" />
+                <Enum name="large" CStyleName="large" pascalStyleName="Large" />
+                <Enum name="huge" CStyleName="huge" pascalStyleName="Huge" />
+                <Enum name="extra huge" CStyleName="extra_huge" pascalStyleName="ExtraHuge" />
+              </Options>
+            </ShortEnum>
+            <Real CStyleName="inertia_tensor_scale" pascalStyleName="InertiaTensorScale" name="inertia tensor scale" description="0.0 defaults to 1.0" />
+            <Real CStyleName="linear_damping" pascalStyleName="LinearDamping" name="linear damping" description="this goes from 0-10 (10 is really, really high)" />
+            <Real CStyleName="angular_damping" pascalStyleName="AngularDamping" name="angular damping" description="this goes from 0-10 (10 is really, really high)" />
+            <RealVector3D CStyleName="center_off_mass_offset" pascalStyleName="CenterOffMassOffset" name="center off mass offset" />
+            <Ptr length="4" />
+            <Real CStyleName="mass" pascalStyleName="Mass" name="mass" units="kg*" />
+            <Pad tag="pd64" length="12" />
+            <RealVector3D CStyleName="center_of_mass" pascalStyleName="CenterOfMass" name="center of mass" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="intertia_tensor_x" pascalStyleName="IntertiaTensorX" name="intertia tensor x" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="intertia_tensor_y" pascalStyleName="IntertiaTensorY" name="intertia tensor y" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="intertia_tensor_z" pascalStyleName="IntertiaTensorZ" name="intertia tensor z" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <Real CStyleName="bounding_sphere_pad" pascalStyleName="BoundingSpherePad" name="bounding sphere pad" description="the bounding sphere for this rigid body will be outset by this much" />
+            <Pad sizeOfSource="3*sizeof(real)" length="12" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="materials" pascalStyleName="Materials" name="materials" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_materials_per_physics_model">
+        <Layout regolithID="block:physics_model_material" internalName="materials_block" name="materials_block">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_physics_model_material)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <StringId CStyleName="global_material_name" pascalStyleName="GlobalMaterialName" name="global material name" tag="sted" />
+            <ShortBlockIndex CStyleName="phantom_type" pascalStyleName="PhantomType" name="phantom type" blockReference="block:phantom_types" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:physics_model_material_flags" CStyleName="physics_model_material_flags" pascalStyleName="PhysicsModelMaterialFlags">
+                <Bit name="does not collide with fixed bodies" CStyleName="does_not_collide_with_fixed_bodies_bit" pascalStyleName="DoesNotCollideWithFixedBodiesBit" />
+              </Options>
+            </WordFlags>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="spheres" pascalStyleName="Spheres" name="spheres" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <LayoutXRef>block:spheres</LayoutXRef>
+      </Block>
+      <Block CStyleName="pills" pascalStyleName="Pills" name="pills" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <LayoutXRef>block:pills</LayoutXRef>
+      </Block>
+      <Block CStyleName="boxes" pascalStyleName="Boxes" name="boxes" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <Layout regolithID="block:boxes" internalName="boxes_block" name="boxes_block">
+          <FieldSet version="0" alignment="4" sizeofValue="144" sizeofSource="sizeof(s_physics_model_box)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <ShortBlockIndex CStyleName="material" pascalStyleName="Material" name="material" readOnly="true" blockReference="block:physics_model_material" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:shape_flags</OptionsXRef>
+            </WordFlags>
+            <Real CStyleName="relative_mass_scale" pascalStyleName="RelativeMassScale" name="relative mass scale" />
+            <RealFraction CStyleName="friction" pascalStyleName="Friction" name="friction" />
+            <RealFraction CStyleName="restitution" pascalStyleName="Restitution" name="restitution" />
+            <Real CStyleName="volume" pascalStyleName="Volume" name="volume " readOnly="true" />
+            <Real CStyleName="mass" pascalStyleName="Mass" name="mass" readOnly="true" />
+            <Skip sizeOfSource="sizeof(short)" length="2" />
+            <ShortBlockIndex CStyleName="phantom" pascalStyleName="Phantom" name="phantom" readOnly="true" blockReference="block:phantoms" />
+            <Ptr length="4" />
+            <ShortInteger name="size" readOnly="true" />
+            <ShortInteger name="count" readOnly="true" />
+            <Pad tag="pd64" length="4" />
+            <Skip sizeOfSource="sizeof(int)" length="4" />
+            <Pad tag="pd64" length="4" />
+            <Real CStyleName="radius" pascalStyleName="Radius" name="radius" readOnly="true" />
+            <Pad tag="pd64" length="4" />
+            <RealVector3D CStyleName="half_extents" pascalStyleName="HalfExtents" name="half extents" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <Ptr length="4" />
+            <ShortInteger name="size" readOnly="true" />
+            <ShortInteger name="count" readOnly="true" />
+            <Pad tag="pd64" length="4" />
+            <Skip sizeOfSource="sizeof(int)" length="4" />
+            <Pad tag="pd64" length="4" />
+            <Ptr length="4" />
+            <RealVector3D CStyleName="rotation_i" pascalStyleName="RotationI" name="rotation i" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="rotation_j" pascalStyleName="RotationJ" name="rotation j" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="rotation_k" pascalStyleName="RotationK" name="rotation k" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="translation" pascalStyleName="Translation" name="translation" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="triangles" pascalStyleName="Triangles" name="triangles" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <Layout regolithID="block:triangles" internalName="triangles_block" name="triangles_block">
+          <FieldSet version="0" alignment="4" sizeofValue="96" sizeofSource="sizeof(s_physics_model_triangle)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <ShortBlockIndex CStyleName="material" pascalStyleName="Material" name="material" readOnly="true" blockReference="block:physics_model_material" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:shape_flags</OptionsXRef>
+            </WordFlags>
+            <Real CStyleName="relative_mass_scale" pascalStyleName="RelativeMassScale" name="relative mass scale" />
+            <RealFraction CStyleName="friction" pascalStyleName="Friction" name="friction" />
+            <RealFraction CStyleName="restitution" pascalStyleName="Restitution" name="restitution" />
+            <Real CStyleName="volume" pascalStyleName="Volume" name="volume " readOnly="true" />
+            <Real CStyleName="mass" pascalStyleName="Mass" name="mass" readOnly="true" />
+            <Skip sizeOfSource="sizeof(short)" length="2" />
+            <ShortBlockIndex CStyleName="phantom" pascalStyleName="Phantom" name="phantom" readOnly="true" blockReference="block:phantoms" />
+            <Ptr length="4" />
+            <ShortInteger CStyleName="size" pascalStyleName="Size" name="size" readOnly="true" />
+            <ShortInteger CStyleName="count" pascalStyleName="Count" name="count" readOnly="true" />
+            <Pad tag="pd64" length="4" />
+            <Skip sizeOfSource="sizeof(int)" length="4" />
+            <Pad tag="pd64" length="4" />
+            <Real CStyleName="radius" pascalStyleName="Radius" name="radius" readOnly="true" />
+            <Pad tag="pd64" length="4" />
+            <RealVector3D CStyleName="point_a" pascalStyleName="PointA" name="point a" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="point_b" pascalStyleName="PointB" name="point b" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="point_c" pascalStyleName="PointC" name="point c" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="polyhedra" pascalStyleName="Polyhedra" name="polyhedra" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <Layout regolithID="block:polyhedra" internalName="polyhedra_block" name="polyhedra_block">
+          <FieldSet version="0" alignment="4" sizeofValue="256" sizeofSource="sizeof(s_physics_model_polyhedron)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <ShortBlockIndex CStyleName="material" pascalStyleName="Material" name="material" readOnly="true" blockReference="block:physics_model_material" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:shape_flags</OptionsXRef>
+            </WordFlags>
+            <Real CStyleName="relative_mass_scale" pascalStyleName="RelativeMassScale" name="relative mass scale" />
+            <RealFraction CStyleName="friction" pascalStyleName="Friction" name="friction" />
+            <RealFraction CStyleName="restitution" pascalStyleName="Restitution" name="restitution" />
+            <Real CStyleName="volume" pascalStyleName="Volume" name="volume " readOnly="true" />
+            <Real CStyleName="mass" pascalStyleName="Mass" name="mass" readOnly="true" />
+            <Skip sizeOfSource="sizeof(short)" length="2" />
+            <ShortBlockIndex CStyleName="phantom" pascalStyleName="Phantom" name="phantom" readOnly="true" blockReference="block:phantoms" />
+            <Ptr length="4" />
+            <ShortInteger CStyleName="size" pascalStyleName="Size" name="size" readOnly="true" />
+            <ShortInteger CStyleName="count" pascalStyleName="Count" name="count" readOnly="true" />
+            <Pad tag="pd64" length="4" />
+            <Skip sizeOfSource="sizeof(int)" length="4" />
+            <Pad tag="pd64" length="4" />
+            <Real CStyleName="radius" pascalStyleName="Radius" name="radius" readOnly="true" />
+            <Pad tag="pd64" length="4" />
+            <RealVector3D CStyleName="aabb_half_extents" pascalStyleName="AabbHalfExtents" name="aabb half extents" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="aabb_center" pascalStyleName="AabbCenter" name="aabb center" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <Ptr length="4" />
+            <LongInteger CStyleName="four_vectors_size" pascalStyleName="FourVectorsSize" name="four vectors size" readOnly="true" />
+            <LongInteger CStyleName="four_vectors_capacity" pascalStyleName="FourVectorsCapacity" name="four vectors capacity" readOnly="true" />
+            <Pad tag="pd32" length="4" />
+            <Array CStyleName="four_vectors_storage" pascalStyleName="FourVectorsStorage" name="four vectors storage" readOnly="true" count="3">
+              <RealVector3D CStyleName="four_vectors_x" pascalStyleName="FourVectorsX" name="four vectors x" readOnly="true" />
+              <Skip sizeOfSource="sizeof(real)" length="4" />
+              <RealVector3D CStyleName="four_vectors_y" pascalStyleName="FourVectorsY" name="four vectors y" readOnly="true" />
+              <Skip sizeOfSource="sizeof(real)" length="4" />
+              <RealVector3D CStyleName="four_vectors_z" pascalStyleName="FourVectorsZ" name="four vectors z" readOnly="true" />
+              <Skip sizeOfSource="sizeof(real)" length="4" />
+            </Array>
+            <LongInteger CStyleName="num_vertices" pascalStyleName="NumVertices" name="num vertices" readOnly="true" />
+            <Pad tag="pd64" length="4" />
+            <Ptr length="4" />
+            <LongInteger CStyleName="plane_equations_size" pascalStyleName="PlaneEquationsSize" name="plane equations size" readOnly="true" />
+            <LongInteger CStyleName="plane_equations_capacity" pascalStyleName="PlaneEquationsCapacity" name="plane equations capacity" readOnly="true" />
+            <Pad tag="pd64" length="8" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="ALL THESE WORLDS ARE YOURS, EXCEPT EUROPA..." description="Attempt no landings there.  And you can't edit anything below this point, so why even look at it?" />
+      <Block CStyleName="polyhedron_four_vectors" pascalStyleName="PolyhedronFourVectors" name="polyhedron four vectors" readOnly="true" maxElementCount="4096" maxElementCountSource="k_maximum_four_vectors_per_physics_model">
+        <Layout regolithID="block:polyhedron_four_vectors" internalName="polyhedron_four_vectors_block" name="polyhedron_four_vectors_block">
+          <FieldSet version="0" alignment="4" sizeofValue="48" sizeofSource="3*sizeof(hkVector4)" isLatest="true">
+            <RealVector3D CStyleName="four_vectors_x" pascalStyleName="FourVectorsX" name="four vectors x" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="four_vectors_y" pascalStyleName="FourVectorsY" name="four vectors y" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="four_vectors_z" pascalStyleName="FourVectorsZ" name="four vectors z" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="polyhedron_plane_equations" pascalStyleName="PolyhedronPlaneEquations" name="polyhedron plane equations" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_plane_equations_per_physics_model">
+        <Layout regolithID="block:polyhedron_plane_equations" internalName="polyhedron_plane_equations_block" name="polyhedron_plane_equations_block">
+          <FieldSet version="0" alignment="4" sizeofValue="16" sizeofSource="sizeof(hkVector4)" isLatest="true">
+            <Skip sizeOfSource="sizeof(hkVector4)" length="16" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="mass_distributions" pascalStyleName="MassDistributions" name="mass distributions" readOnly="true" maxElementCount="256" maxElementCountSource="k_maximum_inertia_tensors_per_physics_model">
+        <Layout regolithID="block:mass_distributions" internalName="mass_distributions_block" name="mass_distributions_block">
+          <FieldSet version="0" alignment="4" sizeofValue="64" sizeofSource="sizeof(s_physics_model_mass_distribution)" isLatest="true">
+            <RealVector3D CStyleName="center_of_mass" pascalStyleName="CenterOfMass" name="center of mass" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="inertia_tensor_i" pascalStyleName="InertiaTensorI" name="inertia tensor i" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="inertia_tensor_j" pascalStyleName="InertiaTensorJ" name="inertia tensor j" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <RealVector3D CStyleName="inertia_tensor_k" pascalStyleName="InertiaTensorK" name="inertia tensor k" readOnly="true" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="lists" pascalStyleName="Lists" name="lists" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_rigid_bodies_per_physics_model">
+        <Layout regolithID="block:lists" internalName="lists_block" name="lists_block">
+          <FieldSet version="0" sizeofValue="56" sizeofSource="sizeof(s_physics_model_list)" isLatest="true">
+            <Ptr length="4" />
+            <ShortInteger CStyleName="size" pascalStyleName="Size" name="size" readOnly="true" />
+            <ShortInteger CStyleName="count" pascalStyleName="Count" name="count" readOnly="true" />
+            <Pad tag="pd64" length="4" />
+            <Skip sizeOfSource="sizeof(int)" length="4" />
+            <Pad tag="pd64" length="4" />
+            <Ptr length="4" />
+            <LongInteger CStyleName="child_shapes_size" pascalStyleName="ChildShapesSize" name="child shapes size" readOnly="true" />
+            <LongInteger CStyleName="child_shapes_capacity" pascalStyleName="ChildShapesCapacity" name="child shapes capacity" readOnly="true" />
+            <Array CStyleName="child_shapes_storage" pascalStyleName="ChildShapesStorage" name="child shapes storage" readOnly="true" count="4">
+              <Ptr length="4" />
+              <Pad sizeOfSource="sizeof(int)" length="4" />
+              <Pad tag="pd64" length="4" />
+            </Array>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="list_shapes" pascalStyleName="ListShapes" name="list shapes" readOnly="true" maxElementCount="256" maxElementCountSource="k_maximum_list_shapes_per_physics_model">
+        <Layout regolithID="block:list_shapes" internalName="list_shapes_block" name="list_shapes_block">
+          <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(hkListShape::ChildInfo)" isLatest="true">
+            <Ptr length="4" />
+            <Pad sizeOfSource="sizeof(int)" length="4" />
+            <Pad tag="pd64" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="mopps" pascalStyleName="Mopps" name="mopps" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_rigid_bodies_per_physics_model">
+        <Layout regolithID="block:mopps" internalName="mopps_block" name="mopps_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_physics_model_mopp)" isLatest="true">
+            <Ptr length="4" />
+            <ShortInteger CStyleName="size" pascalStyleName="Size" name="size" readOnly="true" />
+            <ShortInteger CStyleName="count" pascalStyleName="Count" name="count" readOnly="true" />
+            <Pad tag="pd64" length="4" />
+            <Skip sizeOfSource="sizeof(int)" length="4" />
+            <Pad tag="pd64" length="4" />
+            <Ptr length="4" />
+            <Ptr length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Data CStyleName="mopp_codes" pascalStyleName="MoppCodes" name="mopp codes" readOnly="true" />
+      <Block CStyleName="hinge_constraints" pascalStyleName="HingeConstraints" name="hinge constraints" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_constraints_per_physics_model">
+        <Layout regolithID="block:hinge_constraints" internalName="hinge_constraints_block" name="hinge_constraints_block">
+          <FieldSet version="0" sizeofValue="120" sizeofSource="sizeof(s_physics_model_hinge_constraint)" isLatest="true">
+            <Struct CStyleName="constraint_bodies" pascalStyleName="ConstraintBodies" name="constraint bodies" readOnly="true">
+              <Layout regolithID="structure:constraint_bodies" Name="constraint bodies" tag="csbs" internalName="constraint_bodies_struct" backingBlockInternalName="constraint_bodies_struct_block">
+                <FieldSet version="0" sizeofValue="116" sizeofSource="sizeof(s_physics_model_constraint_bodies)" sizeofOverride="116" isLatest="true">
+                  <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+                  <ShortBlockIndex CStyleName="node_a" pascalStyleName="NodeA" name="node a" readOnly="true" blockReference="block:nodes" />
+                  <ShortBlockIndex CStyleName="node_b" pascalStyleName="NodeB" name="node b" readOnly="true" blockReference="block:nodes" />
+                  <Real CStyleName="a_scale" pascalStyleName="AScale" name="a scale" readOnly="true" />
+                  <RealVector3D CStyleName="a_forward" pascalStyleName="AForward" name="a forward" readOnly="true" />
+                  <RealVector3D CStyleName="a_left" pascalStyleName="ALeft" name="a left" readOnly="true" />
+                  <RealVector3D CStyleName="a_up" pascalStyleName="AUp" name="a up" readOnly="true" />
+                  <RealPoint3D CStyleName="a_position" pascalStyleName="APosition" name="a position" readOnly="true" />
+                  <Real CStyleName="b_scale" pascalStyleName="BScale" name="b scale" readOnly="true" />
+                  <RealVector3D CStyleName="b_forward" pascalStyleName="BForward" name="b forward" readOnly="true" />
+                  <RealVector3D CStyleName="b_left" pascalStyleName="BLeft" name="b left" readOnly="true" />
+                  <RealVector3D CStyleName="b_up" pascalStyleName="BUp" name="b up" readOnly="true" />
+                  <RealPoint3D CStyleName="b_position" pascalStyleName="BPosition" name="b position" readOnly="true" />
+                  <ShortBlockIndex CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" readOnly="true" blockReference="block:physics_model_node_constraint_edge" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Pad sizeOfSource="sizeof(long)" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="ragdoll_constraints" pascalStyleName="RagdollConstraints" name="ragdoll constraints" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_constraints_per_physics_model">
+        <Layout regolithID="block:ragdoll_constraints" internalName="ragdoll_constraints_block" name="ragdoll_constraints_block">
+          <FieldSet version="0" sizeofValue="148" sizeofSource="sizeof(s_physics_model_ragdoll_constraint)" isLatest="true">
+            <Struct CStyleName="constraint_bodies" pascalStyleName="ConstraintBodies" name="constraint bodies" readOnly="true">
+              <LayoutXRef>structure:constraint_bodies</LayoutXRef>
+            </Struct>
+            <Pad sizeOfSource="sizeof(s_physics_model_ragdoll_constraint::c_physics_model_ragdoll_constraint_flags)" length="4" />
+            <Real CStyleName="min_twist" pascalStyleName="MinTwist" name="min twist" readOnly="true" />
+            <Real CStyleName="max_twist" pascalStyleName="MaxTwist" name="max twist" readOnly="true" />
+            <Real CStyleName="min_cone" pascalStyleName="MinCone" name="min cone" readOnly="true" />
+            <Real CStyleName="max_cone" pascalStyleName="MaxCone" name="max cone" readOnly="true" />
+            <Real CStyleName="min_plane" pascalStyleName="MinPlane" name="min plane" readOnly="true" />
+            <Real CStyleName="max_plane" pascalStyleName="MaxPlane" name="max plane" readOnly="true" />
+            <Real CStyleName="max_friciton_torque" pascalStyleName="MaxFricitonTorque" name="max friciton torque" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="regions" pascalStyleName="Regions" name="regions" readOnly="true" maxElementCount="16" maxElementCountSource="MAXIMUM_REGIONS_PER_MODEL">
+        <Layout regolithID="block:regions" internalName="regions_block" name="regions_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_physics_model_region)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations" maxElementCount="32" maxElementCountSource="MAXIMUM_PERMUTATIONS_PER_MODEL_REGION">
+              <Layout regolithID="block:permutations" internalName="permutations_block" name="permutations_block">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_physics_model_permutation)" isLatest="true">
+                  <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+                  <Block CStyleName="rigid_bodies" pascalStyleName="RigidBodies" name="rigid bodies" maxElementCount="64" maxElementCountSource="k_maximum_rigid_bodies_per_physics_model">
+                    <Layout regolithID="block:rigid_body_indices" internalName="rigid_body_indices_block" name="rigid_body_indices_block">
+                      <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(short)" isLatest="true">
+                        <ShortBlockIndex CStyleName="rigid_body" pascalStyleName="RigidBody" name="rigid body" blockNameSource="true" readOnly="true" blockReference="block:rigid_bodies" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes" readOnly="true" maxElementCount="255" maxElementCountSource="MAXIMUM_NODES_PER_MODEL">
+        <Layout regolithID="block:nodes" internalName="nodes_block" name="nodes_block">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_physics_model_node)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:node_flags" CStyleName="node_flags" pascalStyleName="NodeFlags">
+                <Bit name="does not animate" CStyleName="does_not_animate_bit" pascalStyleName="DoesNotAnimateBit" />
+              </Options>
+            </WordFlags>
+            <ShortBlockIndex CStyleName="parent" pascalStyleName="Parent" name="parent" readOnly="true" blockReference="block:nodes" />
+            <ShortBlockIndex CStyleName="sibling" pascalStyleName="Sibling" name="sibling" readOnly="true" blockReference="block:nodes" />
+            <ShortBlockIndex CStyleName="child" pascalStyleName="Child" name="child" readOnly="true" blockReference="block:nodes" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="import_info" pascalStyleName="ImportInfo" name="import info" readOnly="true" maxElementCount="1">
+        <LayoutXRef>block:global_tag_import_info</LayoutXRef>
+      </Block>
+      <Block CStyleName="errors" pascalStyleName="Errors" name="errors" readOnly="true" maxElementCount="64" maxElementCountSource="MAXIMUM_ERROR_REPORT_CATEGORIES">
+        <LayoutXRef>block:global_error_report_categories</LayoutXRef>
+      </Block>
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="396" sizeofSource="sizeof(struct s_physics_model_definition)">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:physics_model_flags</OptionsXRef>
+      </LongFlags>
+      <Real CStyleName="mass" pascalStyleName="Mass" name="mass" />
+      <Real CStyleName="low_freq_deactivation_scale" pascalStyleName="LowFreqDeactivationScale" name="low freq. deactivation scale" description="0 is default (1). LESS than 1 deactivates less aggressively. GREATER than 1 is more agressive." />
+      <Real CStyleName="high_freq_deactivation_scale" pascalStyleName="HighFreqDeactivationScale" name="high freq. deactivation scale" description="0 is default (1). LESS than 1 deactivates less aggressively. GREATER than 1 is more agressive." />
+      <Pad sizeOfSource="6*sizeof(real)" length="24" />
+      <Block CStyleName="phantom_types" pascalStyleName="PhantomTypes" name="phantom types" maxElementCount="16" maxElementCountSource="k_maximum_phantom_types_per_physics_model">
+        <Layout regolithID="block:phantom_types" internalName="phantom_types_block" name="phantom_types_block">
+          <FieldSet version="0" sizeofValue="104" sizeofSource="sizeof(s_physics_model_phantom_type_v0)">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:phantom_flags" CStyleName="phantom_flags" pascalStyleName="PhantomFlags">
+                <Bit name="generates effects" CStyleName="generates_effects_bit" pascalStyleName="GeneratesEffectsBit" />
+                <Bit name="use acc as force" CStyleName="use_acc_as_force_bit" pascalStyleName="UseAccAsForceBit" />
+                <Bit name="negates gravity" CStyleName="negates_gravity_bit" pascalStyleName="NegatesGravityBit" />
+                <Bit name="ignores players" CStyleName="ignores_players_bit" pascalStyleName="IgnoresPlayersBit" />
+                <Bit name="ignores bipeds" CStyleName="ignores_bipeds_bit" pascalStyleName="IgnoresBipedsBit" />
+              </Options>
+            </WordFlags>
+            <CharEnum CStyleName="minimum_size" pascalStyleName="MinimumSize" name="minimum size">
+              <OptionsXRef>enum:size</OptionsXRef>
+            </CharEnum>
+            <CharEnum CStyleName="maximum_size" pascalStyleName="MaximumSize" name="maximum size">
+              <OptionsXRef>enum:size</OptionsXRef>
+            </CharEnum>
+            <StringId CStyleName="marker_name" pascalStyleName="MarkerName" name="marker name" description="you don't need this if you're just generating effects.  If empty it defaults to the up of the object" />
+            <StringId CStyleName="alignment_marker_name" pascalStyleName="AlignmentMarkerName" name="alignment marker name" description="you don't need this if you're just generating effects.  If empty it defaults to &quot;marker name&quot;" />
+            <Pad sizeOfSource="4*sizeof(real)" length="16" />
+            <Real CStyleName="linear_dead_radius" pascalStyleName="LinearDeadRadius" name="linear dead radius" description="radius from linear motion origin in which acceleration is dead." />
+            <Explanation name="Linear Motion" description="0 - means do nothing&#xA;CENTER: motion towards marker position &#xA;AXIS: motion towards marker axis, such that object is on the axis&#xA;DIRECTION: motion along marker direction" />
+            <Real CStyleName="center_acc" pascalStyleName="CenterAcc" name="center acc" />
+            <Real CStyleName="center_max_vel" pascalStyleName="CenterMaxVel" name="center max vel" />
+            <Real CStyleName="axis_acc" pascalStyleName="AxisAcc" name="axis acc" />
+            <Real CStyleName="axis_max_vel" pascalStyleName="AxisMaxVel" name="axis max vel" />
+            <Real CStyleName="direction_acc" pascalStyleName="DirectionAcc" name="direction acc" />
+            <Real CStyleName="direction_max_vel" pascalStyleName="DirectionMaxVel" name="direction max vel" />
+            <Pad sizeOfSource="8*sizeof(real)" length="32" />
+            <Explanation name="Angular Motion" description="0 - means do nothing&#xA;ALIGNMENT: algin objects in the phantom with the marker&#xA;SPIN: spin the object about the marker axis" />
+            <Explanation name="ANGULAR ACC NOT YET IMPLEMENTED" />
+            <Real CStyleName="alignment_acc" pascalStyleName="AlignmentAcc" name="alignment acc" />
+            <Real CStyleName="alignment_max_vel" pascalStyleName="AlignmentMaxVel" name="alignment max vel" />
+            <Real CStyleName="spin_acc" pascalStyleName="SpinAcc" name="spin acc" />
+            <Real CStyleName="spin_max_vel" pascalStyleName="SpinMaxVel" name="spin max vel" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="104" sizeofSource="sizeof(s_physics_model_phantom_type)" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:phantom_types_flags" CStyleName="phantom_types_flags" pascalStyleName="PhantomTypesFlags">
+                <Bit name="generates effects" CStyleName="generates_effects_bit" pascalStyleName="GeneratesEffectsBit" />
+                <Bit name="use acc as force" CStyleName="use_acc_as_force_bit" pascalStyleName="UseAccAsForceBit" />
+                <Bit name="negates gravity" CStyleName="negates_gravity_bit" pascalStyleName="NegatesGravityBit" />
+                <Bit name="ignores players" CStyleName="ignores_players_bit" pascalStyleName="IgnoresPlayersBit" />
+                <Bit name="ignores nonplayers" CStyleName="ignores_nonplayers_bit" pascalStyleName="IgnoresNonplayersBit" />
+                <Bit name="ignores bipeds" CStyleName="ignores_bipeds_bit" pascalStyleName="IgnoresBipedsBit" />
+                <Bit name="ignores vehicles" CStyleName="ignores_vehicles_bit" pascalStyleName="IgnoresVehiclesBit" />
+                <Bit name="ignores weapons" CStyleName="ignores_weapons_bit" pascalStyleName="IgnoresWeaponsBit" />
+                <Bit name="ignores equipment" CStyleName="ignores_equipment_bit" pascalStyleName="IgnoresEquipmentBit" />
+                <Bit name="ignores garbage" CStyleName="ignores_garbage_bit" pascalStyleName="IgnoresGarbageBit" />
+                <Bit name="ignores projectiles" CStyleName="ignores_projectiles_bit" pascalStyleName="IgnoresProjectilesBit" />
+                <Bit name="ignores scenery" CStyleName="ignores_scenery_bit" pascalStyleName="IgnoresSceneryBit" />
+                <Bit name="ignores machines" CStyleName="ignores_machines_bit" pascalStyleName="IgnoresMachinesBit" />
+                <Bit name="ignores controls" CStyleName="ignores_controls_bit" pascalStyleName="IgnoresControlsBit" />
+                <Bit name="ignores light fixtures" CStyleName="ignores_light_fixtures_bit" pascalStyleName="IgnoresLightFixturesBit" />
+                <Bit name="ignores sound scenery" CStyleName="ignores_sound_scenery_bit" pascalStyleName="IgnoresSoundSceneryBit" />
+                <Bit name="ignores crates" CStyleName="ignores_crates_bit" pascalStyleName="IgnoresCratesBit" />
+                <Bit name="ignores creatures" CStyleName="ignores_creatures_bit" pascalStyleName="IgnoresCreaturesBit" />
+                <Bit CStyleName="unnamed_18_bit" pascalStyleName="Unnamed18Bit" />
+                <Bit CStyleName="unnamed_19_bit" pascalStyleName="Unnamed19Bit" />
+                <Bit CStyleName="unnamed_20_bit" pascalStyleName="Unnamed20Bit" />
+                <Bit CStyleName="unnamed_21_bit" pascalStyleName="Unnamed21Bit" />
+                <Bit CStyleName="unnamed_22_bit" pascalStyleName="Unnamed22Bit" />
+                <Bit CStyleName="unnamed_23_bit" pascalStyleName="Unnamed23Bit" />
+                <Bit name="localizes physics" CStyleName="localizes_physics_bit" pascalStyleName="LocalizesPhysicsBit" />
+                <Bit name="disable linear damping" CStyleName="disable_linear_damping_bit" pascalStyleName="DisableLinearDampingBit" />
+                <Bit name="disable angular damping" CStyleName="disable_angular_damping_bit" pascalStyleName="DisableAngularDampingBit" />
+                <Bit name="ignores dead bipeds" CStyleName="ignores_dead_bipeds_bit" pascalStyleName="IgnoresDeadBipedsBit" />
+              </Options>
+            </LongFlags>
+            <CharEnum CStyleName="minimum_size" pascalStyleName="MinimumSize" name="minimum size">
+              <OptionsXRef>enum:size</OptionsXRef>
+            </CharEnum>
+            <CharEnum CStyleName="maximum_size" pascalStyleName="MaximumSize" name="maximum size">
+              <OptionsXRef>enum:size</OptionsXRef>
+            </CharEnum>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <StringId CStyleName="marker_name" pascalStyleName="MarkerName" name="marker name" description="you don't need this if you're just generating effects.  If empty it defaults to the up of the object" />
+            <StringId CStyleName="alignment_marker_name" pascalStyleName="AlignmentMarkerName" name="alignment marker name" description="you don't need this if you're just generating effects.  If empty it defaults to &quot;marker name&quot;" />
+            <Explanation name="Linear Motion" description="0 - means do nothing&#xA;CENTER: motion towards marker position &#xA;AXIS: motion towards marker axis, such that object is on the axis&#xA;DIRECTION: motion along marker direction" />
+            <Pad sizeOfSource="2*sizeof(real)" length="8" />
+            <Real CStyleName="hookes_law_e" pascalStyleName="HookesLawE" name="hookes law e" description="0 if you don't want this to behave like spring.  1 is a good starting point if you do." />
+            <Real CStyleName="linear_dead_radius" pascalStyleName="LinearDeadRadius" name="linear dead radius" description="radius from linear motion origin in which acceleration is dead." />
+            <Real CStyleName="center_acc" pascalStyleName="CenterAcc" name="center acc" />
+            <Real CStyleName="center_max_vel" pascalStyleName="CenterMaxVel" name="center max vel" />
+            <Real CStyleName="axis_acc" pascalStyleName="AxisAcc" name="axis acc" />
+            <Real CStyleName="axis_max_vel" pascalStyleName="AxisMaxVel" name="axis max vel" />
+            <Real CStyleName="direction_acc" pascalStyleName="DirectionAcc" name="direction acc" />
+            <Real CStyleName="direction_max_vel" pascalStyleName="DirectionMaxVel" name="direction max vel" />
+            <Pad sizeOfSource="7*sizeof(real)" length="28" />
+            <Explanation name="Angular Motion" description="0 - means do nothing&#xA;ALIGNMENT: algin objects in the phantom with the marker&#xA;SPIN: spin the object about the marker axis" />
+            <Real CStyleName="alignment_hookes_law_e" pascalStyleName="AlignmentHookesLawE" name="alignment hookes law e" description="0 if you don't want this to behave like spring.  1 is a good starting point if you do." />
+            <Real CStyleName="alignment_acc" pascalStyleName="AlignmentAcc" name="alignment acc" />
+            <Real CStyleName="alignment_max_vel" pascalStyleName="AlignmentMaxVel" name="alignment max vel" />
+            <Pad sizeOfSource="2*sizeof(real)" length="8" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="node_edges" pascalStyleName="NodeEdges" name="node edges" readOnly="true" maxElementCount="4096" maxElementCountSource="k_maximum_node_constraint_edges_per_physics_model">
+        <Layout regolithID="block:physics_model_node_constraint_edge" internalName="physics_model_node_constraint_edge_block" name="physics_model_node_constraint_edge_block">
+          <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(s_physics_model_node_constraint_edge)" isLatest="true">
+            <Pad sizeOfSource="2*sizeof(c_global_material_type)" length="4" />
+            <ShortBlockIndex CStyleName="node_a" pascalStyleName="NodeA" name="node a" readOnly="true" blockReference="block:nodes" />
+            <ShortBlockIndex CStyleName="node_b" pascalStyleName="NodeB" name="node b" readOnly="true" blockReference="block:nodes" />
+            <Block CStyleName="constraints" pascalStyleName="Constraints" name="constraints" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_constraints_per_physics_model">
+              <Layout regolithID="block:physics_model_constraint_edge_constraint" internalName="physics_model_constraint_edge_constraint_block" name="physics_model_constraint_edge_constraint_block">
+                <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_physics_model_node_constraint_edge_constraint)" isLatest="true">
+                  <ShortEnum CStyleName="type" pascalStyleName="Type" name="type" readOnly="true">
+                    <Options regolithID="enum:physics_model_constraint_edge_constraint_type" CStyleName="physics_model_constraint_edge_constraint_type" pascalStyleName="PhysicsModelConstraintEdgeConstraintType">
+                      <Enum name="hinge" CStyleName="hinge" pascalStyleName="Hinge" />
+                      <Enum name="limited hinge" CStyleName="limited_hinge" pascalStyleName="LimitedHinge" />
+                      <Enum name="ragdoll" CStyleName="ragdoll" pascalStyleName="Ragdoll" />
+                      <Enum name="stiff spring" CStyleName="stiff_spring" pascalStyleName="StiffSpring" />
+                      <Enum name="ball and socket" CStyleName="ball_and_socket" pascalStyleName="BallAndSocket" />
+                      <Enum name="prismatic" CStyleName="prismatic" pascalStyleName="Prismatic" />
+                    </Options>
+                  </ShortEnum>
+                  <CustomShortBlockIndex CStyleName="index" pascalStyleName="Index" name="index" readOnly="true" />
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:physics_model_constraint_edge_constraint_flags" CStyleName="physics_model_constraint_edge_constraint_flags" pascalStyleName="PhysicsModelConstraintEdgeConstraintFlags">
+                      <Bit name="is rigid" description="this constraint makes the edge rigid until it is loosened by damage" CStyleName="is_rigid_bit" pascalStyleName="IsRigidBit" />
+                      <Bit name="disable effects" description="this constraint will not generate impact effects" CStyleName="disable_effects_bit" pascalStyleName="DisableEffectsBit" />
+                    </Options>
+                  </LongFlags>
+                  <Real CStyleName="friction" pascalStyleName="Friction" name="friction" description="0 is the default (takes what it was set in max) anything else overrides that value" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <StringId CStyleName="node_a_material" pascalStyleName="NodeAMaterial" name="node a material" description="if you don't fill this out we will pluck the material from the first primitive, of the first rigid body attached to node a" tag="sted" />
+            <StringId CStyleName="node_b_material" pascalStyleName="NodeBMaterial" name="node b material" description="if you don't fill this out we will pluck the material from the first primitive, of the first rigid body attached to node b, if node b is none we use whatever material a has" tag="sted" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="rigid_bodies" pascalStyleName="RigidBodies" name="rigid bodies" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_rigid_bodies_per_physics_model">
+        <LayoutXRef>block:rigid_bodies</LayoutXRef>
+      </Block>
+      <Block CStyleName="materials" pascalStyleName="Materials" name="materials" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_materials_per_physics_model">
+        <LayoutXRef>block:physics_model_material</LayoutXRef>
+      </Block>
+      <Block CStyleName="spheres" pascalStyleName="Spheres" name="spheres" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <LayoutXRef>block:spheres</LayoutXRef>
+      </Block>
+      <Block CStyleName="multi_spheres" pascalStyleName="MultiSpheres" name="multi spheres" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <Layout regolithID="block:multi_spheres" internalName="multi_spheres_block" name="multi_spheres_block">
+          <FieldSet version="0" alignment="4" sizeofValue="176" sizeofSource="sizeof(s_physics_model_multi_sphere)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <ShortBlockIndex CStyleName="material" pascalStyleName="Material" name="material" readOnly="true" blockReference="block:physics_model_material" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:shape_flags</OptionsXRef>
+            </WordFlags>
+            <Real CStyleName="relative_mass_scale" pascalStyleName="RelativeMassScale" name="relative mass scale" />
+            <RealFraction CStyleName="friction" pascalStyleName="Friction" name="friction" />
+            <RealFraction CStyleName="restitution" pascalStyleName="Restitution" name="restitution" />
+            <Real CStyleName="volume" pascalStyleName="Volume" name="volume " readOnly="true" />
+            <Real CStyleName="mass" pascalStyleName="Mass" name="mass" readOnly="true" />
+            <Skip sizeOfSource="sizeof(short)" length="2" />
+            <ShortBlockIndex CStyleName="phantom" pascalStyleName="Phantom" name="phantom" readOnly="true" blockReference="block:phantoms" />
+            <Ptr length="4" />
+            <ShortInteger CStyleName="size" pascalStyleName="Size" name="size" readOnly="true" />
+            <ShortInteger CStyleName="count" pascalStyleName="Count" name="count" readOnly="true" />
+            <Pad tag="pd64" length="4" />
+            <Skip sizeOfSource="sizeof(int)" length="4" />
+            <Pad tag="pd64" length="4" />
+            <LongInteger CStyleName="num_spheres" pascalStyleName="NumSpheres" name="num spheres" readOnly="true" />
+            <Pad tag="pd64" length="4" />
+            <Array CStyleName="four_vectors_storage" pascalStyleName="FourVectorsStorage" name="four vectors storage" readOnly="true" count="8">
+              <RealVector3D CStyleName="sphere" pascalStyleName="Sphere" name="sphere" readOnly="true" />
+              <Skip sizeOfSource="sizeof(real)" length="4" />
+            </Array>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="pills" pascalStyleName="Pills" name="pills" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <LayoutXRef>block:pills</LayoutXRef>
+      </Block>
+      <Block CStyleName="boxes" pascalStyleName="Boxes" name="boxes" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <LayoutXRef>block:boxes</LayoutXRef>
+      </Block>
+      <Block CStyleName="triangles" pascalStyleName="Triangles" name="triangles" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <LayoutXRef>block:triangles</LayoutXRef>
+      </Block>
+      <Block CStyleName="polyhedra" pascalStyleName="Polyhedra" name="polyhedra" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <LayoutXRef>block:polyhedra</LayoutXRef>
+      </Block>
+      <Explanation name="ALL THESE WORLDS ARE YOURS, EXCEPT EUROPA..." description="Attempt no landings there.  And you can't edit anything below this point, so why even look at it?" />
+      <Block CStyleName="polyhedron_four_vectors" pascalStyleName="PolyhedronFourVectors" name="polyhedron four vectors" readOnly="true" maxElementCount="4096" maxElementCountSource="k_maximum_four_vectors_per_physics_model">
+        <LayoutXRef>block:polyhedron_four_vectors</LayoutXRef>
+      </Block>
+      <Block CStyleName="polyhedron_plane_equations" pascalStyleName="PolyhedronPlaneEquations" name="polyhedron plane equations" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_plane_equations_per_physics_model">
+        <LayoutXRef>block:polyhedron_plane_equations</LayoutXRef>
+      </Block>
+      <Block CStyleName="mass_distributions" pascalStyleName="MassDistributions" name="mass distributions" readOnly="true" maxElementCount="256" maxElementCountSource="k_maximum_inertia_tensors_per_physics_model">
+        <LayoutXRef>block:mass_distributions</LayoutXRef>
+      </Block>
+      <Block CStyleName="lists" pascalStyleName="Lists" name="lists" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_rigid_bodies_per_physics_model">
+        <LayoutXRef>block:lists</LayoutXRef>
+      </Block>
+      <Block CStyleName="list_shapes" pascalStyleName="ListShapes" name="list shapes" readOnly="true" maxElementCount="256" maxElementCountSource="k_maximum_list_shapes_per_physics_model">
+        <LayoutXRef>block:list_shapes</LayoutXRef>
+      </Block>
+      <Block CStyleName="mopps" pascalStyleName="Mopps" name="mopps" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_rigid_bodies_per_physics_model">
+        <LayoutXRef>block:mopps</LayoutXRef>
+      </Block>
+      <Data CStyleName="mopp_codes" pascalStyleName="MoppCodes" name="mopp codes" readOnly="true" />
+      <Block CStyleName="hinge_constraints" pascalStyleName="HingeConstraints" name="hinge constraints" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_constraints_per_physics_model">
+        <LayoutXRef>block:hinge_constraints</LayoutXRef>
+      </Block>
+      <Block CStyleName="ragdoll_constraints" pascalStyleName="RagdollConstraints" name="ragdoll constraints" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_constraints_per_physics_model">
+        <LayoutXRef>block:ragdoll_constraints</LayoutXRef>
+      </Block>
+      <Block CStyleName="regions" pascalStyleName="Regions" name="regions" readOnly="true" maxElementCount="16" maxElementCountSource="MAXIMUM_REGIONS_PER_MODEL">
+        <LayoutXRef>block:regions</LayoutXRef>
+      </Block>
+      <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes" readOnly="true" maxElementCount="255" maxElementCountSource="MAXIMUM_NODES_PER_MODEL">
+        <LayoutXRef>block:nodes</LayoutXRef>
+      </Block>
+      <Block CStyleName="import_info" pascalStyleName="ImportInfo" name="import info" readOnly="true" maxElementCount="1">
+        <LayoutXRef>block:global_tag_import_info</LayoutXRef>
+      </Block>
+      <Block CStyleName="errors" pascalStyleName="Errors" name="errors" readOnly="true" maxElementCount="64" maxElementCountSource="MAXIMUM_ERROR_REPORT_CATEGORIES">
+        <LayoutXRef>block:global_error_report_categories</LayoutXRef>
+      </Block>
+      <Block CStyleName="point_to_path_curves" pascalStyleName="PointToPathCurves" name="point to path curves" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_rigid_bodies_per_physics_model">
+        <Layout regolithID="block:point_to_path_curve" internalName="point_to_path_curve_block" name="point_to_path_curve_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_physics_model_point_to_path_curve)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <ShortBlockIndex CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" readOnly="true" blockReference="block:nodes" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Block CStyleName="points" pascalStyleName="Points" name="points" readOnly="true" maxElementCount="1024">
+              <Layout regolithID="block:point_to_path_curve_point" internalName="point_to_path_curve_point_block" name="point_to_path_curve_point_block">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_physics_model_point_to_path_curve_point)" isLatest="true">
+                  <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" readOnly="true" />
+                  <Real CStyleName="t_value" pascalStyleName="TValue" name="t value" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="limited_hinge_constraints" pascalStyleName="LimitedHingeConstraints" name="limited hinge constraints" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_constraints_per_physics_model">
+        <Layout regolithID="block:limited_hinge_constraints" internalName="limited_hinge_constraints_block" name="limited_hinge_constraints_block">
+          <FieldSet version="0" sizeofValue="132" sizeofSource="sizeof(s_physics_model_limited_hinge_constraint)" isLatest="true">
+            <Struct CStyleName="constraint_bodies" pascalStyleName="ConstraintBodies" name="constraint bodies" readOnly="true">
+              <LayoutXRef>structure:constraint_bodies</LayoutXRef>
+            </Struct>
+            <Pad sizeOfSource="sizeof(long)" length="4" />
+            <Real CStyleName="limit_friction" pascalStyleName="LimitFriction" name="limit friction" readOnly="true" />
+            <Real CStyleName="limit_min_angle" pascalStyleName="LimitMinAngle" name="limit min angle" readOnly="true" />
+            <Real CStyleName="limit_max_angle" pascalStyleName="LimitMaxAngle" name="limit max angle" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="ball_and_socket_constraints" pascalStyleName="BallAndSocketConstraints" name="ball and socket constraints" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_constraints_per_physics_model">
+        <Layout regolithID="block:ball_and_socket_constraints" internalName="ball_and_socket_constraints_block" name="ball_and_socket_constraints_block">
+          <FieldSet version="0" sizeofValue="120" sizeofSource="sizeof(s_physics_model_ball_and_socket_constraint)" isLatest="true">
+            <Struct CStyleName="constraint_bodies" pascalStyleName="ConstraintBodies" name="constraint bodies" readOnly="true">
+              <LayoutXRef>structure:constraint_bodies</LayoutXRef>
+            </Struct>
+            <Pad sizeOfSource="sizeof(long)" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="stiff_spring_constraints" pascalStyleName="StiffSpringConstraints" name="stiff spring constraints" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_constraints_per_physics_model">
+        <Layout regolithID="block:stiff_spring_constraints" internalName="stiff_spring_constraints_block" name="stiff_spring_constraints_block">
+          <FieldSet version="0" sizeofValue="124" sizeofSource="sizeof(s_physics_model_stiff_spring_constraint)" isLatest="true">
+            <Struct CStyleName="constraint_bodies" pascalStyleName="ConstraintBodies" name="constraint bodies" readOnly="true">
+              <LayoutXRef>structure:constraint_bodies</LayoutXRef>
+            </Struct>
+            <Pad sizeOfSource="sizeof(long)" length="4" />
+            <Real CStyleName="spring_length" pascalStyleName="SpringLength" name="spring_length" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="prismatic_constraints" pascalStyleName="PrismaticConstraints" name="prismatic constraints" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_constraints_per_physics_model">
+        <Layout regolithID="block:prismatic_constraints" internalName="prismatic_constraints_block" name="prismatic_constraints_block">
+          <FieldSet version="0" sizeofValue="132" sizeofSource="sizeof(s_physics_model_prismatic_constraint)" isLatest="true">
+            <Struct CStyleName="constraint_bodies" pascalStyleName="ConstraintBodies" name="constraint bodies" readOnly="true">
+              <LayoutXRef>structure:constraint_bodies</LayoutXRef>
+            </Struct>
+            <Pad sizeOfSource="sizeof(long)" length="4" />
+            <Real CStyleName="min_limit" pascalStyleName="MinLimit" name="min_limit" readOnly="true" />
+            <Real CStyleName="max_limit" pascalStyleName="MaxLimit" name="max_limit" readOnly="true" />
+            <Real CStyleName="max_friction_force" pascalStyleName="MaxFrictionForce" name="max_friction_force" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="phantoms" pascalStyleName="Phantoms" name="phantoms" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_phantoms_per_physics_model">
+        <Layout regolithID="block:phantoms" internalName="phantoms_block" name="phantoms_block">
+          <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(s_physics_model_phantom)" isLatest="true">
+            <Ptr length="4" />
+            <ShortInteger name="size" readOnly="true" />
+            <ShortInteger name="count" readOnly="true" />
+            <Pad tag="pd64" length="4" />
+            <Skip sizeOfSource="sizeof(int)" length="4" />
+            <Pad tag="pd64" length="4" />
+            <Ptr length="4" />
+            <Ptr length="4" />
+            <Ptr length="4" />
+            <ShortInteger name="size" readOnly="true" />
+            <ShortInteger name="count" readOnly="true" />
+            <Pad tag="pd64" length="4" />
+            <Skip sizeOfSource="sizeof(int)" length="4" />
+            <Pad tag="pd64" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+    <FieldSet version="2" sizeofValue="396" sizeofSource="sizeof(struct s_physics_model_definition)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:physics_model_flags</OptionsXRef>
+      </LongFlags>
+      <Real CStyleName="mass" pascalStyleName="Mass" name="mass" />
+      <Real CStyleName="low_freq_deactivation_scale" pascalStyleName="LowFreqDeactivationScale" name="low freq. deactivation scale" description="0 is default (1). LESS than 1 deactivates less aggressively. GREATER than 1 is more agressive." />
+      <Real CStyleName="high_freq_deactivation_scale" pascalStyleName="HighFreqDeactivationScale" name="high freq. deactivation scale" description="0 is default (1). LESS than 1 deactivates less aggressively. GREATER than 1 is more agressive." />
+      <Pad sizeOfSource="6*sizeof(real)" length="24" />
+      <Block CStyleName="phantom_types" pascalStyleName="PhantomTypes" name="phantom types" maxElementCount="16" maxElementCountSource="k_maximum_phantom_types_per_physics_model">
+        <LayoutXRef>block:phantom_types</LayoutXRef>
+      </Block>
+      <Block CStyleName="node_edges" pascalStyleName="NodeEdges" name="node edges" readOnly="true" maxElementCount="4096" maxElementCountSource="k_maximum_node_constraint_edges_per_physics_model">
+        <LayoutXRef>block:physics_model_node_constraint_edge</LayoutXRef>
+      </Block>
+      <Block CStyleName="rigid_bodies" pascalStyleName="RigidBodies" name="rigid bodies" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_rigid_bodies_per_physics_model">
+        <LayoutXRef>block:rigid_bodies</LayoutXRef>
+      </Block>
+      <Block CStyleName="materials" pascalStyleName="Materials" name="materials" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_materials_per_physics_model">
+        <LayoutXRef>block:physics_model_material</LayoutXRef>
+      </Block>
+      <Block CStyleName="spheres" pascalStyleName="Spheres" name="spheres" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <LayoutXRef>block:spheres</LayoutXRef>
+      </Block>
+      <Block CStyleName="multi_spheres" pascalStyleName="MultiSpheres" name="multi spheres" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <LayoutXRef>block:multi_spheres</LayoutXRef>
+      </Block>
+      <Block CStyleName="pills" pascalStyleName="Pills" name="pills" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <LayoutXRef>block:pills</LayoutXRef>
+      </Block>
+      <Block CStyleName="boxes" pascalStyleName="Boxes" name="boxes" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <LayoutXRef>block:boxes</LayoutXRef>
+      </Block>
+      <Block CStyleName="triangles" pascalStyleName="Triangles" name="triangles" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <LayoutXRef>block:triangles</LayoutXRef>
+      </Block>
+      <Block CStyleName="polyhedra" pascalStyleName="Polyhedra" name="polyhedra" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_shapes_per_physics_model">
+        <LayoutXRef>block:polyhedra</LayoutXRef>
+      </Block>
+      <Explanation name="ALL THESE WORLDS ARE YOURS, EXCEPT EUROPA..." description="Attempt no landings there.  And you can't edit anything below this point, so why even look at it?" />
+      <Block CStyleName="polyhedron_four_vectors" pascalStyleName="PolyhedronFourVectors" name="polyhedron four vectors" readOnly="true" maxElementCount="4096" maxElementCountSource="k_maximum_four_vectors_per_physics_model">
+        <LayoutXRef>block:polyhedron_four_vectors</LayoutXRef>
+      </Block>
+      <Block CStyleName="polyhedron_plane_equations" pascalStyleName="PolyhedronPlaneEquations" name="polyhedron plane equations" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_plane_equations_per_physics_model">
+        <LayoutXRef>block:polyhedron_plane_equations</LayoutXRef>
+      </Block>
+      <Block CStyleName="mass_distributions" pascalStyleName="MassDistributions" name="mass distributions" readOnly="true" maxElementCount="256" maxElementCountSource="k_maximum_inertia_tensors_per_physics_model">
+        <LayoutXRef>block:mass_distributions</LayoutXRef>
+      </Block>
+      <Block CStyleName="lists" pascalStyleName="Lists" name="lists" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_rigid_bodies_per_physics_model">
+        <LayoutXRef>block:lists</LayoutXRef>
+      </Block>
+      <Block CStyleName="list_shapes" pascalStyleName="ListShapes" name="list shapes" readOnly="true" maxElementCount="256" maxElementCountSource="k_maximum_list_shapes_per_physics_model">
+        <LayoutXRef>block:list_shapes</LayoutXRef>
+      </Block>
+      <Block CStyleName="mopps" pascalStyleName="Mopps" name="mopps" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_rigid_bodies_per_physics_model">
+        <LayoutXRef>block:mopps</LayoutXRef>
+      </Block>
+      <Data CStyleName="mopp_codes" pascalStyleName="MoppCodes" name="mopp codes" readOnly="true" />
+      <Block CStyleName="hinge_constraints" pascalStyleName="HingeConstraints" name="hinge constraints" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_constraints_per_physics_model">
+        <LayoutXRef>block:hinge_constraints</LayoutXRef>
+      </Block>
+      <Block CStyleName="ragdoll_constraints" pascalStyleName="RagdollConstraints" name="ragdoll constraints" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_constraints_per_physics_model">
+        <LayoutXRef>block:ragdoll_constraints</LayoutXRef>
+      </Block>
+      <Block CStyleName="regions" pascalStyleName="Regions" name="regions" readOnly="true" maxElementCount="16" maxElementCountSource="MAXIMUM_REGIONS_PER_MODEL">
+        <LayoutXRef>block:regions</LayoutXRef>
+      </Block>
+      <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes" readOnly="true" maxElementCount="255" maxElementCountSource="MAXIMUM_NODES_PER_MODEL">
+        <LayoutXRef>block:nodes</LayoutXRef>
+      </Block>
+      <Block CStyleName="import_info" pascalStyleName="ImportInfo" name="import info" readOnly="true" maxElementCount="1">
+        <LayoutXRef>block:global_tag_import_info</LayoutXRef>
+      </Block>
+      <Block CStyleName="errors" pascalStyleName="Errors" name="errors" readOnly="true" maxElementCount="64" maxElementCountSource="MAXIMUM_ERROR_REPORT_CATEGORIES">
+        <LayoutXRef>block:global_error_report_categories</LayoutXRef>
+      </Block>
+      <Block CStyleName="point_to_path_curves" pascalStyleName="PointToPathCurves" name="point to path curves" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_rigid_bodies_per_physics_model">
+        <LayoutXRef>block:point_to_path_curve</LayoutXRef>
+      </Block>
+      <Block CStyleName="limited_hinge_constraints" pascalStyleName="LimitedHingeConstraints" name="limited hinge constraints" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_constraints_per_physics_model">
+        <LayoutXRef>block:limited_hinge_constraints</LayoutXRef>
+      </Block>
+      <Block CStyleName="ball_and_socket_constraints" pascalStyleName="BallAndSocketConstraints" name="ball and socket constraints" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_constraints_per_physics_model">
+        <LayoutXRef>block:ball_and_socket_constraints</LayoutXRef>
+      </Block>
+      <Block CStyleName="stiff_spring_constraints" pascalStyleName="StiffSpringConstraints" name="stiff spring constraints" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_constraints_per_physics_model">
+        <LayoutXRef>block:stiff_spring_constraints</LayoutXRef>
+      </Block>
+      <Block CStyleName="prismatic_constraints" pascalStyleName="PrismaticConstraints" name="prismatic constraints" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_constraints_per_physics_model">
+        <LayoutXRef>block:prismatic_constraints</LayoutXRef>
+      </Block>
+      <Block CStyleName="phantoms" pascalStyleName="Phantoms" name="phantoms" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_phantoms_per_physics_model">
+        <LayoutXRef>block:phantoms</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

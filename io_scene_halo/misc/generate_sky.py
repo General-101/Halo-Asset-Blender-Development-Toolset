@@ -232,6 +232,7 @@ def generate_sky(context, report, longitude_slices, lattitude_slices, dome_radiu
             object_mesh = bpy.data.objects.get(name)
             if object_mesh is None:
                 object_mesh = bpy.data.objects.new(name, light_data)
+                object_mesh.color = (1, 1, 1, 0)
                 context.collection.objects.link(object_mesh)
 
             object_mesh.rotation_euler = rot_tuple
@@ -252,6 +253,7 @@ def generate_sky(context, report, longitude_slices, lattitude_slices, dome_radiu
     object_mesh = bpy.data.objects.get(name)
     if object_mesh is None:
         object_mesh = bpy.data.objects.new(name, light_data)
+        object_mesh.color = (1, 1, 1, 0)
         context.collection.objects.link(object_mesh)
 
     object_mesh.rotation_euler = sun_transform

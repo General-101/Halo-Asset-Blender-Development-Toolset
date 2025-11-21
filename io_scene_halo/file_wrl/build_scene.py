@@ -296,6 +296,7 @@ def build_scene(context, WRL, report):
         face_idx = 0
         mesh = bpy.data.meshes.new(error)
         object_mesh = bpy.data.objects.new(error, mesh)
+        object_mesh.color = (1, 1, 1, 0)
         context.collection.objects.link(object_mesh)
         bm = bmesh.new()
         for object in  object_list:

@@ -1,0 +1,587 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="wigl" name="user_interface_shared_globals_definition" version="1">
+  <Layout regolithID="block:user_interface_shared_globals_definition" internalName="user_interface_shared_globals_definition_block" name="user_interface_shared_globals_definition">
+    <FieldSet version="0" sizeofValue="652" sizeofSource="sizeof(s_user_interface_shared_globals)" isLatest="true">
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(real_argb_color)" length="16" />
+      <Pad sizeOfSource="sizeof(rectangle2d)" length="8" />
+      <Pad sizeOfSource="sizeof(rectangle2d)" length="8" />
+      <Pad sizeOfSource="2*sizeof(rectangle2d)" length="16" />
+      <Pad sizeOfSource="sizeof(rectangle2d)" length="8" />
+      <Pad sizeOfSource="sizeof(rectangle2d)" length="8" />
+      <Explanation name="UI Rendering Globals" description="miscellaneous rendering globals, more below..." />
+      <Real CStyleName="overlayed_screen_alpha_mod" pascalStyleName="OverlayedScreenAlphaMod" name="overlayed screen alpha mod" />
+      <ShortInteger CStyleName="inc_text_update_period" pascalStyleName="IncTextUpdatePeriod" name="inc. text update period" units="milliseconds" />
+      <ShortInteger CStyleName="inc_text_block_character" pascalStyleName="IncTextBlockCharacter" name="inc. text block character" units="ASCII code" />
+      <Real CStyleName="callout_text_scale" pascalStyleName="CalloutTextScale" name="callout text scale" />
+      <RealArgbColor CStyleName="progress_bar_color" pascalStyleName="ProgressBarColor" name="progress bar color" />
+      <Real CStyleName="near_clip_plane_distance" pascalStyleName="NearClipPlaneDistance" name="near clip plane distance" units="objects closer than this are not drawn" />
+      <Real CStyleName="projection_plane_distance" pascalStyleName="ProjectionPlaneDistance" name="projection plane distance" units="distance at which objects are rendered when z=0 (normal size)" />
+      <Real CStyleName="far_clip_plane_distance" pascalStyleName="FarClipPlaneDistance" name="far clip plane distance" units="objects farther than this are not drawn" />
+      <Explanation name="Overlayed UI Color" description="This is the color of the overlayed ui effect; the alpha component is the maximum opacity" />
+      <RealArgbColor CStyleName="overlayed_interface_color" pascalStyleName="OverlayedInterfaceColor" name="overlayed interface color" />
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <Explanation name="Displayed Errors" description="For each error condition displayed in the UI, set the title and description string ids here" />
+      <Block CStyleName="errors" pascalStyleName="Errors" name="errors" maxElementCount="100" maxElementCountSource="k_maximum_error_category_count">
+        <Layout regolithID="block:ui_error_category" internalName="ui_error_category_block" name="ui_error_category_block">
+          <FieldSet version="0" sizeofValue="52" sizeofSource="sizeof(s_ui_error_category)" isLatest="true">
+            <StringId CStyleName="category_name" pascalStyleName="CategoryName" name="category name" blockNameSource="true" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:ui_error_flags" CStyleName="ui_error_flags" pascalStyleName="UiErrorFlags">
+                <Bit name="use large dialog" CStyleName="use_large_dialog_bit" pascalStyleName="UseLargeDialogBit" />
+              </Options>
+            </WordFlags>
+            <CharEnum CStyleName="default_button" pascalStyleName="DefaultButton" name="default button">
+              <Options regolithID="enum:ui_error_default_button" CStyleName="ui_error_default_button" pascalStyleName="UiErrorDefaultButton">
+                <Enum name="no default" CStyleName="no_default" pascalStyleName="NoDefault" />
+                <Enum name="default ok" CStyleName="default_ok" pascalStyleName="DefaultOk" />
+                <Enum name="default cancel" CStyleName="default_cancel" pascalStyleName="DefaultCancel" />
+              </Options>
+            </CharEnum>
+            <Pad sizeOfSource="sizeof(byte)" length="1" />
+            <TagReference CStyleName="string_tag" pascalStyleName="StringTag" name="string tag">
+              <tag>unic</tag>
+            </TagReference>
+            <StringId CStyleName="default_title" pascalStyleName="DefaultTitle" name="default title" />
+            <StringId CStyleName="default_message" pascalStyleName="DefaultMessage" name="default message" />
+            <StringId CStyleName="default_ok" pascalStyleName="DefaultOk" name="default ok" />
+            <StringId CStyleName="default_cancel" pascalStyleName="DefaultCancel" name="default cancel" />
+            <Block CStyleName="error_block" pascalStyleName="ErrorBlock" name="error block" maxElementCount="100" maxElementCountSource="k_ui_maximum_error_per_category_count">
+              <Layout regolithID="block:ui_error" internalName="ui_error_block" name="ui_error_block">
+                <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(s_ui_error)" isLatest="true">
+                  <LongEnum CStyleName="error" pascalStyleName="Error" name="error">
+                    <Options regolithID="enum:ui_error" CStyleName="ui_error" pascalStyleName="UiError">
+                      <Enum name="error_unknown" CStyleName="error_unknown" pascalStyleName="ErrorUnknown" />
+                      <Enum name="error_generic" CStyleName="error_generic" pascalStyleName="ErrorGeneric" />
+                      <Enum name="error_generic_networking" CStyleName="error_generic_networking" pascalStyleName="ErrorGenericNetworking" />
+                      <Enum name="error_system_link_generic_join_failure" CStyleName="error_system_link_generic_join_failure" pascalStyleName="ErrorSystemLinkGenericJoinFailure" />
+                      <Enum name="error_system_link_no_network_connection" CStyleName="error_system_link_no_network_connection" pascalStyleName="ErrorSystemLinkNoNetworkConnection" />
+                      <Enum name="error_system_link_connection_lost" CStyleName="error_system_link_connection_lost" pascalStyleName="ErrorSystemLinkConnectionLost" />
+                      <Enum name="error_network_game_oos" CStyleName="error_network_game_oos" pascalStyleName="ErrorNetworkGameOos" />
+                      <Enum name="error_xbox_live_sign_out_confirmation" CStyleName="error_xbox_live_sign_out_confirmation" pascalStyleName="ErrorXboxLiveSignOutConfirmation" />
+                      <Enum name="error_confirm_revert_to_last_save" CStyleName="error_confirm_revert_to_last_save" pascalStyleName="ErrorConfirmRevertToLastSave" />
+                      <Enum name="error_confirm_quit_without_save" CStyleName="error_confirm_quit_without_save" pascalStyleName="ErrorConfirmQuitWithoutSave" />
+                      <Enum name="error_confirm_delete_player_profile" CStyleName="error_confirm_delete_player_profile" pascalStyleName="ErrorConfirmDeletePlayerProfile" />
+                      <Enum name="error_confirm_delete_variant_file" CStyleName="error_confirm_delete_variant_file" pascalStyleName="ErrorConfirmDeleteVariantFile" />
+                      <Enum name="error_player_profile_creation_failed" CStyleName="error_player_profile_creation_failed" pascalStyleName="ErrorPlayerProfileCreationFailed" />
+                      <Enum name="error_variant_profile_creation_failed" CStyleName="error_variant_profile_creation_failed" pascalStyleName="ErrorVariantProfileCreationFailed" />
+                      <Enum name="error_playlist_creation_failed" CStyleName="error_playlist_creation_failed" pascalStyleName="ErrorPlaylistCreationFailed" />
+                      <Enum name="error_core_file_load_failed" CStyleName="error_core_file_load_failed" pascalStyleName="ErrorCoreFileLoadFailed" />
+                      <Enum name="error_mu_removed_during_player_profile_save" CStyleName="error_mu_removed_during_player_profile_save" pascalStyleName="ErrorMuRemovedDuringPlayerProfileSave" />
+                      <Enum name="error_mu_removed_during_variant_save" CStyleName="error_mu_removed_during_variant_save" pascalStyleName="ErrorMuRemovedDuringVariantSave" />
+                      <Enum name="error_mu_removed_during_playlist_save" CStyleName="error_mu_removed_during_playlist_save" pascalStyleName="ErrorMuRemovedDuringPlaylistSave" />
+                      <Enum name="error_message_saving_to_mu" CStyleName="error_message_saving_to_mu" pascalStyleName="ErrorMessageSavingToMu" />
+                      <Enum name="error_message_saving_file" CStyleName="error_message_saving_file" pascalStyleName="ErrorMessageSavingFile" />
+                      <Enum name="error_message_creating_player_profile" CStyleName="error_message_creating_player_profile" pascalStyleName="ErrorMessageCreatingPlayerProfile" />
+                      <Enum name="error_message_creating_variant_profile" CStyleName="error_message_creating_variant_profile" pascalStyleName="ErrorMessageCreatingVariantProfile" />
+                      <Enum name="error_message_saving_checkpoint" CStyleName="error_message_saving_checkpoint" pascalStyleName="ErrorMessageSavingCheckpoint" />
+                      <Enum name="error_failed_to_load_player_profile" CStyleName="error_failed_to_load_player_profile" pascalStyleName="ErrorFailedToLoadPlayerProfile" />
+                      <Enum name="error_failed_to_load_variant" CStyleName="error_failed_to_load_variant" pascalStyleName="ErrorFailedToLoadVariant" />
+                      <Enum name="error_failed_to_load_playlist" CStyleName="error_failed_to_load_playlist" pascalStyleName="ErrorFailedToLoadPlaylist" />
+                      <Enum name="error_failed_to_load_save_game" CStyleName="error_failed_to_load_save_game" pascalStyleName="ErrorFailedToLoadSaveGame" />
+                      <Enum name="error_controller1_removed" CStyleName="error_controller1_removed" pascalStyleName="ErrorController1Removed" />
+                      <Enum name="error_controller2_removed" CStyleName="error_controller2_removed" pascalStyleName="ErrorController2Removed" />
+                      <Enum name="error_controller3_removed" CStyleName="error_controller3_removed" pascalStyleName="ErrorController3Removed" />
+                      <Enum name="error_controller4_removed" CStyleName="error_controller4_removed" pascalStyleName="ErrorController4Removed" />
+                      <Enum name="error_need_more_free_blocks_to_save" CStyleName="error_need_more_free_blocks_to_save" pascalStyleName="ErrorNeedMoreFreeBlocksToSave" />
+                      <Enum name="error_maximum_saved_game_files_already_exist" CStyleName="error_maximum_saved_game_files_already_exist" pascalStyleName="ErrorMaximumSavedGameFilesAlreadyExist" />
+                      <Enum name="error_dirty_disk" CStyleName="error_dirty_disk" pascalStyleName="ErrorDirtyDisk" />
+                      <Enum name="error_xblive_cannot_access_service" CStyleName="error_xblive_cannot_access_service" pascalStyleName="ErrorXbliveCannotAccessService" />
+                      <Enum name="error_xblive_title_update_required" CStyleName="error_xblive_title_update_required" pascalStyleName="ErrorXbliveTitleUpdateRequired" />
+                      <Enum name="error_xblive_servers_too_busy" CStyleName="error_xblive_servers_too_busy" pascalStyleName="ErrorXbliveServersTooBusy" />
+                      <Enum name="error_xblive_duplicate_logon" CStyleName="error_xblive_duplicate_logon" pascalStyleName="ErrorXbliveDuplicateLogon" />
+                      <Enum name="error_xblive_account_management_required" CStyleName="error_xblive_account_management_required" pascalStyleName="ErrorXbliveAccountManagementRequired" />
+                      <Enum name="error_warning_xblive_recommended_messages_available" CStyleName="error_warning_xblive_recommended_messages_available" pascalStyleName="ErrorWarningXbliveRecommendedMessagesAvailable" />
+                      <Enum name="error_xblive_invalid_match_session" CStyleName="error_xblive_invalid_match_session" pascalStyleName="ErrorXbliveInvalidMatchSession" />
+                      <Enum name="error_warning_xblive_poor_network_performance" CStyleName="error_warning_xblive_poor_network_performance" pascalStyleName="ErrorWarningXblivePoorNetworkPerformance" />
+                      <Enum name="error_not_enough_open_slots_to_join_match_session" CStyleName="error_not_enough_open_slots_to_join_match_session" pascalStyleName="ErrorNotEnoughOpenSlotsToJoinMatchSession" />
+                      <Enum name="error_xblive_corrupt_download_content" CStyleName="error_xblive_corrupt_download_content" pascalStyleName="ErrorXbliveCorruptDownloadContent" />
+                      <Enum name="error_confirm_xblive_corrupt_saved_game_file_removal" CStyleName="error_confirm_xblive_corrupt_saved_game_file_removal" pascalStyleName="ErrorConfirmXbliveCorruptSavedGameFileRemoval" />
+                      <Enum name="error_xblive_invalid_user_account" CStyleName="error_xblive_invalid_user_account" pascalStyleName="ErrorXbliveInvalidUserAccount" />
+                      <Enum name="error_confirm_boot_clan_member" CStyleName="error_confirm_boot_clan_member" pascalStyleName="ErrorConfirmBootClanMember" />
+                      <Enum name="error_confirm_controller_sign_out" CStyleName="error_confirm_controller_sign_out" pascalStyleName="ErrorConfirmControllerSignOut" />
+                      <Enum name="error_beta_xblive_service_qos_report" CStyleName="error_beta_xblive_service_qos_report" pascalStyleName="ErrorBetaXbliveServiceQosReport" />
+                      <Enum name="error_beta_feature_disabled" CStyleName="error_beta_feature_disabled" pascalStyleName="ErrorBetaFeatureDisabled" />
+                      <Enum name="error_beta_network_connection_required" CStyleName="error_beta_network_connection_required" pascalStyleName="ErrorBetaNetworkConnectionRequired" />
+                      <Enum name="error_confirm_friend_removal" CStyleName="error_confirm_friend_removal" pascalStyleName="ErrorConfirmFriendRemoval" />
+                      <Enum name="error_confirm_boot_to_dash" CStyleName="error_confirm_boot_to_dash" pascalStyleName="ErrorConfirmBootToDash" />
+                      <Enum name="error_confirm_launch_xdemos" CStyleName="error_confirm_launch_xdemos" pascalStyleName="ErrorConfirmLaunchXdemos" />
+                      <Enum name="error_confirm_exit_game_session" CStyleName="error_confirm_exit_game_session" pascalStyleName="ErrorConfirmExitGameSession" />
+                      <Enum name="error_xblive_connection_to_xbox_live_lost" CStyleName="error_xblive_connection_to_xbox_live_lost" pascalStyleName="ErrorXbliveConnectionToXboxLiveLost" />
+                      <Enum name="error_xblive_message_send_failure" CStyleName="error_xblive_message_send_failure" pascalStyleName="ErrorXbliveMessageSendFailure" />
+                      <Enum name="error_network_link_lost" CStyleName="error_network_link_lost" pascalStyleName="ErrorNetworkLinkLost" />
+                      <Enum name="error_network_link_required" CStyleName="error_network_link_required" pascalStyleName="ErrorNetworkLinkRequired" />
+                      <Enum name="error_xblive_invalid_passcode" CStyleName="error_xblive_invalid_passcode" pascalStyleName="ErrorXbliveInvalidPasscode" />
+                      <Enum name="error_join_aborted" CStyleName="error_join_aborted" pascalStyleName="ErrorJoinAborted" />
+                      <Enum name="error_join_session_not_found" CStyleName="error_join_session_not_found" pascalStyleName="ErrorJoinSessionNotFound" />
+                      <Enum name="error_join_qos_failure" CStyleName="error_join_qos_failure" pascalStyleName="ErrorJoinQosFailure" />
+                      <Enum name="error_join_data_decode_failure" CStyleName="error_join_data_decode_failure" pascalStyleName="ErrorJoinDataDecodeFailure" />
+                      <Enum name="error_join_game_full" CStyleName="error_join_game_full" pascalStyleName="ErrorJoinGameFull" />
+                      <Enum name="error_join_game_closed" CStyleName="error_join_game_closed" pascalStyleName="ErrorJoinGameClosed" />
+                      <Enum name="error_join_version_mismatch" CStyleName="error_join_version_mismatch" pascalStyleName="ErrorJoinVersionMismatch" />
+                      <Enum name="error_join_failed_unknown_reason" CStyleName="error_join_failed_unknown_reason" pascalStyleName="ErrorJoinFailedUnknownReason" />
+                      <Enum name="error_join_failed_friend_in_matchmade_game" CStyleName="error_join_failed_friend_in_matchmade_game" pascalStyleName="ErrorJoinFailedFriendInMatchmadeGame" />
+                      <Enum name="error_player_profile_name_must_be_unique" CStyleName="error_player_profile_name_must_be_unique" pascalStyleName="ErrorPlayerProfileNameMustBeUnique" />
+                      <Enum name="error_variant_name_must_be_unique" CStyleName="error_variant_name_must_be_unique" pascalStyleName="ErrorVariantNameMustBeUnique" />
+                      <Enum name="error_playlist_name_must_be_unique" CStyleName="error_playlist_name_must_be_unique" pascalStyleName="ErrorPlaylistNameMustBeUnique" />
+                      <Enum name="error_saved_film_name_must_be_unique" CStyleName="error_saved_film_name_must_be_unique" pascalStyleName="ErrorSavedFilmNameMustBeUnique" />
+                      <Enum name="error_no_free_slots_player_profile" CStyleName="error_no_free_slots_player_profile" pascalStyleName="ErrorNoFreeSlotsPlayerProfile" />
+                      <Enum name="error_no_free_slots_variant" CStyleName="error_no_free_slots_variant" pascalStyleName="ErrorNoFreeSlotsVariant" />
+                      <Enum name="error_no_free_slots_playlist" CStyleName="error_no_free_slots_playlist" pascalStyleName="ErrorNoFreeSlotsPlaylist" />
+                      <Enum name="error_no_free_slots_saved_film" CStyleName="error_no_free_slots_saved_film" pascalStyleName="ErrorNoFreeSlotsSavedFilm" />
+                      <Enum name="error_need_more_space_for_player_profile" CStyleName="error_need_more_space_for_player_profile" pascalStyleName="ErrorNeedMoreSpaceForPlayerProfile" />
+                      <Enum name="error_need_more_space_for_variant" CStyleName="error_need_more_space_for_variant" pascalStyleName="ErrorNeedMoreSpaceForVariant" />
+                      <Enum name="error_need_more_space_for_playlist" CStyleName="error_need_more_space_for_playlist" pascalStyleName="ErrorNeedMoreSpaceForPlaylist" />
+                      <Enum name="error_need_more_space_for_saved_film" CStyleName="error_need_more_space_for_saved_film" pascalStyleName="ErrorNeedMoreSpaceForSavedFilm" />
+                      <Enum name="error_cannot_set_privileges_on_member_whose_data_not_known" CStyleName="error_cannot_set_privileges_on_member_whose_data_not_known" pascalStyleName="ErrorCannotSetPrivilegesOnMemberWhoseDataNotKnown" />
+                      <Enum name="error_cant_delete_default_profile" CStyleName="error_cant_delete_default_profile" pascalStyleName="ErrorCantDeleteDefaultProfile" />
+                      <Enum name="error_cant_delete_default_variant" CStyleName="error_cant_delete_default_variant" pascalStyleName="ErrorCantDeleteDefaultVariant" />
+                      <Enum name="error_cant_delete_default_playlist" CStyleName="error_cant_delete_default_playlist" pascalStyleName="ErrorCantDeleteDefaultPlaylist" />
+                      <Enum name="error_cant_delete_default_saved_film" CStyleName="error_cant_delete_default_saved_film" pascalStyleName="ErrorCantDeleteDefaultSavedFilm" />
+                      <Enum name="error_cant_delete_profile_in_use" CStyleName="error_cant_delete_profile_in_use" pascalStyleName="ErrorCantDeleteProfileInUse" />
+                      <Enum name="error_player_profile_name_must_have_alphanumeric_characters" CStyleName="error_player_profile_name_must_have_alphanumeric_characters" pascalStyleName="ErrorPlayerProfileNameMustHaveAlphanumericCharacters" />
+                      <Enum name="error_variant_name_must_have_alphanumeric_characters" CStyleName="error_variant_name_must_have_alphanumeric_characters" pascalStyleName="ErrorVariantNameMustHaveAlphanumericCharacters" />
+                      <Enum name="error_playlist_name_must_have_alphanumeric_characters" CStyleName="error_playlist_name_must_have_alphanumeric_characters" pascalStyleName="ErrorPlaylistNameMustHaveAlphanumericCharacters" />
+                      <Enum name="error_saved_film_name_must_have_alphanumeric_characters" CStyleName="error_saved_film_name_must_have_alphanumeric_characters" pascalStyleName="ErrorSavedFilmNameMustHaveAlphanumericCharacters" />
+                      <Enum name="error_teams_not_a_member" CStyleName="error_teams_not_a_member" pascalStyleName="ErrorTeamsNotAMember" />
+                      <Enum name="error_teams_insufficient_privileges" CStyleName="error_teams_insufficient_privileges" pascalStyleName="ErrorTeamsInsufficientPrivileges" />
+                      <Enum name="error_teams_server_busy" CStyleName="error_teams_server_busy" pascalStyleName="ErrorTeamsServerBusy" />
+                      <Enum name="error_teams_team_full" CStyleName="error_teams_team_full" pascalStyleName="ErrorTeamsTeamFull" />
+                      <Enum name="error_teams_member_pending" CStyleName="error_teams_member_pending" pascalStyleName="ErrorTeamsMemberPending" />
+                      <Enum name="error_teams_too_many_requests" CStyleName="error_teams_too_many_requests" pascalStyleName="ErrorTeamsTooManyRequests" />
+                      <Enum name="error_teams_user_already_exists" CStyleName="error_teams_user_already_exists" pascalStyleName="ErrorTeamsUserAlreadyExists" />
+                      <Enum name="error_teams_user_not_found" CStyleName="error_teams_user_not_found" pascalStyleName="ErrorTeamsUserNotFound" />
+                      <Enum name="error_teams_user_teams_full" CStyleName="error_teams_user_teams_full" pascalStyleName="ErrorTeamsUserTeamsFull" />
+                      <Enum name="error_teams_no_task" CStyleName="error_teams_no_task" pascalStyleName="ErrorTeamsNoTask" />
+                      <Enum name="error_teams_too_many_teams" CStyleName="error_teams_too_many_teams" pascalStyleName="ErrorTeamsTooManyTeams" />
+                      <Enum name="error_teams_team_already_exists" CStyleName="error_teams_team_already_exists" pascalStyleName="ErrorTeamsTeamAlreadyExists" />
+                      <Enum name="error_teams_team_not_found" CStyleName="error_teams_team_not_found" pascalStyleName="ErrorTeamsTeamNotFound" />
+                      <Enum name="error_teams_name_contains_bad_words" CStyleName="error_teams_name_contains_bad_words" pascalStyleName="ErrorTeamsNameContainsBadWords" />
+                      <Enum name="error_teams_description_contains_bad_words" CStyleName="error_teams_description_contains_bad_words" pascalStyleName="ErrorTeamsDescriptionContainsBadWords" />
+                      <Enum name="error_teams_motto_contains_bad_words" CStyleName="error_teams_motto_contains_bad_words" pascalStyleName="ErrorTeamsMottoContainsBadWords" />
+                      <Enum name="error_teams_url_contains_bad_words" CStyleName="error_teams_url_contains_bad_words" pascalStyleName="ErrorTeamsUrlContainsBadWords" />
+                      <Enum name="error_teams_no_admin" CStyleName="error_teams_no_admin" pascalStyleName="ErrorTeamsNoAdmin" />
+                      <Enum name="error_teams_cannot_set_privileges_on_member_whose_data_not_known" CStyleName="error_teams_cannot_set_privileges_on_member_whose_data_not_known" pascalStyleName="ErrorTeamsCannotSetPrivilegesOnMemberWhoseDataNotKnown" />
+                      <Enum name="error_live_unknown" CStyleName="error_live_unknown" pascalStyleName="ErrorLiveUnknown" />
+                      <Enum name="error confirm_delete_profile" CStyleName="error_confirm_delete_profile" pascalStyleName="ErrorConfirmDeleteProfile" />
+                      <Enum name="error confirm_delete_playlist" CStyleName="error_confirm_delete_playlist" pascalStyleName="ErrorConfirmDeletePlaylist" />
+                      <Enum name="error confirm_delete_saved_film" CStyleName="error_confirm_delete_saved_film" pascalStyleName="ErrorConfirmDeleteSavedFilm" />
+                      <Enum name="error confirm_live_sign_out" CStyleName="error_confirm_live_sign_out" pascalStyleName="ErrorConfirmLiveSignOut" />
+                      <Enum name="error confirm_confirm_friend_removal" CStyleName="error_confirm_confirm_friend_removal" pascalStyleName="ErrorConfirmConfirmFriendRemoval" />
+                      <Enum name="error confirm_promotion_to_superuser" CStyleName="error_confirm_promotion_to_superuser" pascalStyleName="ErrorConfirmPromotionToSuperuser" />
+                      <Enum name="error warn_no_more_clan_superusers" CStyleName="error_warn_no_more_clan_superusers" pascalStyleName="ErrorWarnNoMoreClanSuperusers" />
+                      <Enum name="error confirm_corrupt_profile" CStyleName="error_confirm_corrupt_profile" pascalStyleName="ErrorConfirmCorruptProfile" />
+                      <Enum name="error confirm_xbox_live_sign_out" CStyleName="error_confirm_xbox_live_sign_out" pascalStyleName="ErrorConfirmXboxLiveSignOut" />
+                      <Enum name="error confirm_corrupt_game_variant" CStyleName="error_confirm_corrupt_game_variant" pascalStyleName="ErrorConfirmCorruptGameVariant" />
+                      <Enum name="error confirm_leave_clan" CStyleName="error_confirm_leave_clan" pascalStyleName="ErrorConfirmLeaveClan" />
+                      <Enum name="error confirm_corrupt_playlist" CStyleName="error_confirm_corrupt_playlist" pascalStyleName="ErrorConfirmCorruptPlaylist" />
+                      <Enum name="error_cant_join_gameinvite_without_signon" CStyleName="error_cant_join_gameinvite_without_signon" pascalStyleName="ErrorCantJoinGameinviteWithoutSignon" />
+                      <Enum name="error confirm_proceed_to_crossgame_invite" CStyleName="error_confirm_proceed_to_crossgame_invite" pascalStyleName="ErrorConfirmProceedToCrossgameInvite" />
+                      <Enum name="error confirm_decline_crossgame_invite" CStyleName="error_confirm_decline_crossgame_invite" pascalStyleName="ErrorConfirmDeclineCrossgameInvite" />
+                      <Enum name="error warn_insert_cd_for_crossgame_invite" CStyleName="error_warn_insert_cd_for_crossgame_invite" pascalStyleName="ErrorWarnInsertCdForCrossgameInvite" />
+                      <Enum name="error need more space for saved game" CStyleName="error_need_more_space_for_saved_game" pascalStyleName="ErrorNeedMoreSpaceForSavedGame" />
+                      <Enum name="error saved game cannot be loaded" CStyleName="error_saved_game_cannot_be_loaded" pascalStyleName="ErrorSavedGameCannotBeLoaded" />
+                      <Enum name="error confirm controller signout with guests" CStyleName="error_confirm_controller_signout_with_guests" pascalStyleName="ErrorConfirmControllerSignoutWithGuests" />
+                      <Enum name="error warning party closed" CStyleName="error_warning_party_closed" pascalStyleName="ErrorWarningPartyClosed" />
+                      <Enum name="error warning party required" CStyleName="error_warning_party_required" pascalStyleName="ErrorWarningPartyRequired" />
+                      <Enum name="error warning party full" CStyleName="error_warning_party_full" pascalStyleName="ErrorWarningPartyFull" />
+                      <Enum name="error warning player in mm game" CStyleName="error_warning_player_in_mm_game" pascalStyleName="ErrorWarningPlayerInMmGame" />
+                      <Enum name="error xblive failed to sign in" CStyleName="error_xblive_failed_to_sign_in" pascalStyleName="ErrorXbliveFailedToSignIn" />
+                      <Enum name="error cant sign out master with guests" CStyleName="error_cant_sign_out_master_with_guests" pascalStyleName="ErrorCantSignOutMasterWithGuests" />
+                      <Enum name="error obsolete dot command" CStyleName="error_obsolete_dot_command" pascalStyleName="ErrorObsoleteDotCommand" />
+                      <Enum name="error not unlocked" CStyleName="error_not_unlocked" pascalStyleName="ErrorNotUnlocked" />
+                      <Enum name="confirm leave lobby" CStyleName="confirm_leave_lobby" pascalStyleName="ConfirmLeaveLobby" />
+                      <Enum name="error confirm party leader leave matchmaking" CStyleName="error_confirm_party_leader_leave_matchmaking" pascalStyleName="ErrorConfirmPartyLeaderLeaveMatchmaking" />
+                      <Enum name="error confirm single box leave matchmaking" CStyleName="error_confirm_single_box_leave_matchmaking" pascalStyleName="ErrorConfirmSingleBoxLeaveMatchmaking" />
+                      <Enum name="error invalid clan name" CStyleName="error_invalid_clan_name" pascalStyleName="ErrorInvalidClanName" />
+                      <Enum name="error player list full" CStyleName="error_player_list_full" pascalStyleName="ErrorPlayerListFull" />
+                      <Enum name="error blocked by player" CStyleName="error_blocked_by_player" pascalStyleName="ErrorBlockedByPlayer" />
+                      <Enum name="error friend pending" CStyleName="error_friend_pending" pascalStyleName="ErrorFriendPending" />
+                      <Enum name="error too many requests" CStyleName="error_too_many_requests" pascalStyleName="ErrorTooManyRequests" />
+                      <Enum name="error player already in list" CStyleName="error_player_already_in_list" pascalStyleName="ErrorPlayerAlreadyInList" />
+                      <Enum name="error gamertag not found" CStyleName="error_gamertag_not_found" pascalStyleName="ErrorGamertagNotFound" />
+                      <Enum name="error cannot message self" CStyleName="error_cannot_message_self" pascalStyleName="ErrorCannotMessageSelf" />
+                      <Enum name="error warning last overlord cant leave clan" CStyleName="error_warning_last_overlord_cant_leave_clan" pascalStyleName="ErrorWarningLastOverlordCantLeaveClan" />
+                      <Enum name="error confirm boot player" CStyleName="error_confirm_boot_player" pascalStyleName="ErrorConfirmBootPlayer" />
+                      <Enum name="error confirm party member leave pcr" CStyleName="error_confirm_party_member_leave_pcr" pascalStyleName="ErrorConfirmPartyMemberLeavePcr" />
+                      <Enum name="error cannot sign in during countdown" CStyleName="error_cannot_sign_in_during_countdown" pascalStyleName="ErrorCannotSignInDuringCountdown" />
+                      <Enum name="error xbl invalid user" CStyleName="error_xbl_invalid_user" pascalStyleName="ErrorXblInvalidUser" />
+                      <Enum name="error xbl user not authorized" CStyleName="error_xbl_user_not_authorized" pascalStyleName="ErrorXblUserNotAuthorized" />
+                      <Enum name="OBSOLETE" CStyleName="obsolete" pascalStyleName="Obsolete" />
+                      <Enum name="OBSOLETE2" CStyleName="obsolete2" pascalStyleName="Obsolete2" />
+                      <Enum name="error xbl banned xbox" CStyleName="error_xbl_banned_xbox" pascalStyleName="ErrorXblBannedXbox" />
+                      <Enum name="error xbl banned user" CStyleName="error_xbl_banned_user" pascalStyleName="ErrorXblBannedUser" />
+                      <Enum name="error xbl banned title" CStyleName="error_xbl_banned_title" pascalStyleName="ErrorXblBannedTitle" />
+                      <Enum name="error confirm exit game session leader" CStyleName="error_confirm_exit_game_session_leader" pascalStyleName="ErrorConfirmExitGameSessionLeader" />
+                      <Enum name="error message objectionable content" CStyleName="error_message_objectionable_content" pascalStyleName="ErrorMessageObjectionableContent" />
+                      <Enum name="error confirm enter downloader" CStyleName="error_confirm_enter_downloader" pascalStyleName="ErrorConfirmEnterDownloader" />
+                      <Enum name="error confirm block user" CStyleName="error_confirm_block_user" pascalStyleName="ErrorConfirmBlockUser" />
+                      <Enum name="error confirm negative feedback" CStyleName="error_confirm_negative_feedback" pascalStyleName="ErrorConfirmNegativeFeedback" />
+                      <Enum name="error confirm change clan member level" CStyleName="error_confirm_change_clan_member_level" pascalStyleName="ErrorConfirmChangeClanMemberLevel" />
+                      <Enum name="error blank gamertag" CStyleName="error_blank_gamertag" pascalStyleName="ErrorBlankGamertag" />
+                      <Enum name="confirm save &amp; quit game" CStyleName="confirm_save__quit_game" pascalStyleName="ConfirmSaveQuitGame" />
+                      <Enum name="error cant join during matchmaking" CStyleName="error_cant_join_during_matchmaking" pascalStyleName="ErrorCantJoinDuringMatchmaking" />
+                      <Enum name="error confirm restart level" CStyleName="error_confirm_restart_level" pascalStyleName="ErrorConfirmRestartLevel" />
+                      <Enum name="matchmaking failure generic" CStyleName="matchmaking_failure_generic" pascalStyleName="MatchmakingFailureGeneric" />
+                      <Enum name="matchmaking failure missing content" CStyleName="matchmaking_failure_missing_content" pascalStyleName="MatchmakingFailureMissingContent" />
+                      <Enum name="matchmaking failure aborted" CStyleName="matchmaking_failure_aborted" pascalStyleName="MatchmakingFailureAborted" />
+                      <Enum name="matchmaking failure membership changed" CStyleName="matchmaking_failure_membership_changed" pascalStyleName="MatchmakingFailureMembershipChanged" />
+                      <Enum name="confirm end game session" CStyleName="confirm_end_game_session" pascalStyleName="ConfirmEndGameSession" />
+                      <Enum name="confirm exit game session only player" CStyleName="confirm_exit_game_session_only_player" pascalStyleName="ConfirmExitGameSessionOnlyPlayer" />
+                      <Enum name="confirm exit game session xbox live ranked leader" CStyleName="confirm_exit_game_session_xbox_live_ranked_leader" pascalStyleName="ConfirmExitGameSessionXboxLiveRankedLeader" />
+                      <Enum name="confirm exit game session xbox live ranked" CStyleName="confirm_exit_game_session_xbox_live_ranked" pascalStyleName="ConfirmExitGameSessionXboxLiveRanked" />
+                      <Enum name="confirm exit game session xbox live leader" CStyleName="confirm_exit_game_session_xbox_live_leader" pascalStyleName="ConfirmExitGameSessionXboxLiveLeader" />
+                      <Enum name="confirm exit game session xbox live only player" CStyleName="confirm_exit_game_session_xbox_live_only_player" pascalStyleName="ConfirmExitGameSessionXboxLiveOnlyPlayer" />
+                      <Enum name="confirm exit game session xbox live" CStyleName="confirm_exit_game_session_xbox_live" pascalStyleName="ConfirmExitGameSessionXboxLive" />
+                      <Enum name="recipient's list full" CStyleName="recipients_list_full" pascalStyleName="RecipientsListFull" />
+                      <Enum name="confirm quit campaign (no save)" CStyleName="confirm_quit_campaign_no_save" pascalStyleName="ConfirmQuitCampaignNoSave" />
+                      <Enum name="xblive connection to xbox live lost save and quit" CStyleName="xblive_connection_to_xbox_live_lost_save_and_quit" pascalStyleName="XbliveConnectionToXboxLiveLostSaveAndQuit" />
+                      <Enum name="booted from session" CStyleName="booted_from_session" pascalStyleName="BootedFromSession" />
+                      <Enum name="confirm_exit_game_session_xbox_live_guest" CStyleName="confirm_exit_game_session_xbox_live_guest" pascalStyleName="ConfirmExitGameSessionXboxLiveGuest" />
+                      <Enum name="confirm_exit_game_session_xbox_live_ranked_only_player" CStyleName="confirm_exit_game_session_xbox_live_ranked_only_player" pascalStyleName="ConfirmExitGameSessionXboxLiveRankedOnlyPlayer" />
+                      <Enum name="confirm_exit_game_session_xbox_live_unranked_only_player" CStyleName="confirm_exit_game_session_xbox_live_unranked_only_player" pascalStyleName="ConfirmExitGameSessionXboxLiveUnrankedOnlyPlayer" />
+                      <Enum name="confirm_exit_game_session_xbox_live_unranked_leader" CStyleName="confirm_exit_game_session_xbox_live_unranked_leader" pascalStyleName="ConfirmExitGameSessionXboxLiveUnrankedLeader" />
+                      <Enum name="confirm_exit_game_session_xbox_live_unranked" CStyleName="confirm_exit_game_session_xbox_live_unranked" pascalStyleName="ConfirmExitGameSessionXboxLiveUnranked" />
+                      <Enum name="cant join friend while in matchmade game" CStyleName="cant_join_friend_while_in_matchmade_game" pascalStyleName="CantJoinFriendWhileInMatchmadeGame" />
+                      <Enum name="map load failure" CStyleName="map_load_failure" pascalStyleName="MapLoadFailure" />
+                      <Enum name="confirm campaign without achievements" CStyleName="confirm_campaign_without_achievements" pascalStyleName="ConfirmCampaignWithoutAchievements" />
+                      <Enum name="no live menu branch without signin" CStyleName="no_live_menu_branch_without_signin" pascalStyleName="NoLiveMenuBranchWithoutSignin" />
+                      <Enum name="map out of hard disk space" CStyleName="map_out_of_hard_disk_space" pascalStyleName="MapOutOfHardDiskSpace" />
+                      <Enum name="device not supported" CStyleName="device_not_supported" pascalStyleName="DeviceNotSupported" />
+                      <Enum name="error_achievements_interrupted" CStyleName="error_achievements_interrupted" pascalStyleName="ErrorAchievementsInterrupted" />
+                      <Enum name="confirm_lose_progress" CStyleName="confirm_lose_progress" pascalStyleName="ConfirmLoseProgress" />
+                      <Enum name="error_beta_achievements_disabled" CStyleName="error_beta_achievements_disabled" pascalStyleName="ErrorBetaAchievementsDisabled" />
+                      <Enum name="error_cannot_connect_versions_wrong" CStyleName="error_cannot_connect_versions_wrong" pascalStyleName="ErrorCannotConnectVersionsWrong" />
+                      <Enum name="confirm_booted_from_session" CStyleName="confirm_booted_from_session" pascalStyleName="ConfirmBootedFromSession" />
+                      <Enum name="confirm_boot_player_from_squad" CStyleName="confirm_boot_player_from_squad" pascalStyleName="ConfirmBootPlayerFromSquad" />
+                      <Enum name="confirm_leave_system_link_lobby" CStyleName="confirm_leave_system_link_lobby" pascalStyleName="ConfirmLeaveSystemLinkLobby" />
+                      <Enum name="confirm_party_member_leave_matchmaking" CStyleName="confirm_party_member_leave_matchmaking" pascalStyleName="ConfirmPartyMemberLeaveMatchmaking" />
+                      <Enum name="confirm_quit_single_player" CStyleName="confirm_quit_single_player" pascalStyleName="ConfirmQuitSinglePlayer" />
+                      <Enum name="error_controller_removed" CStyleName="error_controller_removed" pascalStyleName="ErrorControllerRemoved" />
+                      <Enum name="error_download_in_progress" CStyleName="error_download_in_progress" pascalStyleName="ErrorDownloadInProgress" />
+                      <Enum name="error_download_fail" CStyleName="error_download_fail" pascalStyleName="ErrorDownloadFail" />
+                      <Enum name="error_failed_to_load_map" CStyleName="error_failed_to_load_map" pascalStyleName="ErrorFailedToLoadMap" />
+                      <Enum name="error_feature_requires_gold" CStyleName="error_feature_requires_gold" pascalStyleName="ErrorFeatureRequiresGold" />
+                      <Enum name="error_keyboard_mapping" CStyleName="error_keyboard_mapping" pascalStyleName="ErrorKeyboardMapping" />
+                      <Enum name="error_keyboard_removed" CStyleName="error_keyboard_removed" pascalStyleName="ErrorKeyboardRemoved" />
+                      <Enum name="error_live_game_unavailable" CStyleName="error_live_game_unavailable" pascalStyleName="ErrorLiveGameUnavailable" />
+                      <Enum name="error_map_missing" CStyleName="error_map_missing" pascalStyleName="ErrorMapMissing" />
+                      <Enum name="error_matchmaking_failed_generic" CStyleName="error_matchmaking_failed_generic" pascalStyleName="ErrorMatchmakingFailedGeneric" />
+                      <Enum name="error_matchmaking_failed_missing_content" CStyleName="error_matchmaking_failed_missing_content" pascalStyleName="ErrorMatchmakingFailedMissingContent" />
+                      <Enum name="error_mouse_removed" CStyleName="error_mouse_removed" pascalStyleName="ErrorMouseRemoved" />
+                      <Enum name="error_party_not_all_on_live" CStyleName="error_party_not_all_on_live" pascalStyleName="ErrorPartyNotAllOnLive" />
+                      <Enum name="error_party_subnet_not_shared" CStyleName="error_party_subnet_not_shared" pascalStyleName="ErrorPartySubnetNotShared" />
+                      <Enum name="error_required_game_update" CStyleName="error_required_game_update" pascalStyleName="ErrorRequiredGameUpdate" />
+                      <Enum name="error_saved_game_cannot_be_saved" CStyleName="error_saved_game_cannot_be_saved" pascalStyleName="ErrorSavedGameCannotBeSaved" />
+                      <Enum name="error_sound_microphone_not_supported" CStyleName="error_sound_microphone_not_supported" pascalStyleName="ErrorSoundMicrophoneNotSupported" />
+                      <Enum name="error_system_link_direct_IP" CStyleName="error_system_link_direct_ip" pascalStyleName="ErrorSystemLinkDirectIp" />
+                      <Enum name="error_text_chat_muted" CStyleName="error_text_chat_muted" pascalStyleName="ErrorTextChatMuted" />
+                      <Enum name="error_text_chat_parental_controls" CStyleName="error_text_chat_parental_controls" pascalStyleName="ErrorTextChatParentalControls" />
+                      <Enum name="error_update_start" CStyleName="error_update_start" pascalStyleName="ErrorUpdateStart" />
+                      <Enum name="error_update_fail" CStyleName="error_update_fail" pascalStyleName="ErrorUpdateFail" />
+                      <Enum name="error_update_fail_blocks" CStyleName="error_update_fail_blocks" pascalStyleName="ErrorUpdateFailBlocks" />
+                      <Enum name="error_update_exists" CStyleName="error_update_exists" pascalStyleName="ErrorUpdateExists" />
+                      <Enum name="error_insert_original" CStyleName="error_insert_original" pascalStyleName="ErrorInsertOriginal" />
+                      <Enum name="error_update_fail_network_lost" CStyleName="error_update_fail_network_lost" pascalStyleName="ErrorUpdateFailNetworkLost" />
+                      <Enum name="error_update_mp_out_of_sync" CStyleName="error_update_mp_out_of_sync" pascalStyleName="ErrorUpdateMpOutOfSync" />
+                      <Enum name="error_update_must_upgrade" CStyleName="error_update_must_upgrade" pascalStyleName="ErrorUpdateMustUpgrade" />
+                      <Enum name="error_voice_gold_required" CStyleName="error_voice_gold_required" pascalStyleName="ErrorVoiceGoldRequired" />
+                      <Enum name="error_voice_parental_controls" CStyleName="error_voice_parental_controls" pascalStyleName="ErrorVoiceParentalControls" />
+                      <Enum name="error_warning_xblive_poor_network_perofrmance" CStyleName="error_warning_xblive_poor_network_perofrmance" pascalStyleName="ErrorWarningXblivePoorNetworkPerofrmance" />
+                      <Enum name="error_you_missing_map" CStyleName="error_you_missing_map" pascalStyleName="ErrorYouMissingMap" />
+                      <Enum name="error_someone_missing_map" CStyleName="error_someone_missing_map" pascalStyleName="ErrorSomeoneMissingMap" />
+                      <Enum name="error_tnp_no_source" CStyleName="error_tnp_no_source" pascalStyleName="ErrorTnpNoSource" />
+                      <Enum name="error_tnp_disk_read" CStyleName="error_tnp_disk_read" pascalStyleName="ErrorTnpDiskRead" />
+                      <Enum name="error_tnp_no_engine_running" CStyleName="error_tnp_no_engine_running" pascalStyleName="ErrorTnpNoEngineRunning" />
+                      <Enum name="error_tnp_signature_verification" CStyleName="error_tnp_signature_verification" pascalStyleName="ErrorTnpSignatureVerification" />
+                      <Enum name="error_tnp_drive_removed" CStyleName="error_tnp_drive_removed" pascalStyleName="ErrorTnpDriveRemoved" />
+                      <Enum name="error_tnp_disk_full" CStyleName="error_tnp_disk_full" pascalStyleName="ErrorTnpDiskFull" />
+                      <Enum name="error_tnp_permissions" CStyleName="error_tnp_permissions" pascalStyleName="ErrorTnpPermissions" />
+                      <Enum name="error_tnp_unknown" CStyleName="error_tnp_unknown" pascalStyleName="ErrorTnpUnknown" />
+                      <Enum name="continue_install" CStyleName="continue_install" pascalStyleName="ContinueInstall" />
+                      <Enum name="cancel_install" CStyleName="cancel_install" pascalStyleName="CancelInstall" />
+                      <Enum name="error_confirm_upsell_gold" CStyleName="error_confirm_upsell_gold" pascalStyleName="ErrorConfirmUpsellGold" />
+                      <Enum name="error_add_to_favorites" CStyleName="error_add_to_favorites" pascalStyleName="ErrorAddToFavorites" />
+                      <Enum name="error_remove_from_favorites" CStyleName="error_remove_from_favorites" pascalStyleName="ErrorRemoveFromFavorites" />
+                      <Enum name="error_updating_favorites" CStyleName="error_updating_favorites" pascalStyleName="ErrorUpdatingFavorites" />
+                      <Enum name="choose existing checkpoint location" CStyleName="choose_existing_checkpoint_location" pascalStyleName="ChooseExistingCheckpointLocation" />
+                      <Enum name="choose new checkpoint location (checkpoints exist on live and local)" CStyleName="choose_new_checkpoint_location_checkpoints_exist_on_live_and_local" pascalStyleName="ChooseNewCheckpointLocationCheckpointsExistOnLiveAndLocal" />
+                      <Enum name="choose new checkpoint location (checkpoints exist on live)" CStyleName="choose_new_checkpoint_location_checkpoints_exist_on_live" pascalStyleName="ChooseNewCheckpointLocationCheckpointsExistOnLive" />
+                      <Enum name="choose new checkpoint location (checkpoints exist locally)" CStyleName="choose_new_checkpoint_location_checkpoints_exist_locally" pascalStyleName="ChooseNewCheckpointLocationCheckpointsExistLocally" />
+                      <Enum name="error_download_map" CStyleName="error_download_map" pascalStyleName="ErrorDownloadMap" />
+                      <Enum name="error_want_to_download_map" CStyleName="error_want_to_download_map" pascalStyleName="ErrorWantToDownloadMap" />
+                      <Enum name="error_ok_download_map" CStyleName="error_ok_download_map" pascalStyleName="ErrorOkDownloadMap" />
+                      <Enum name="dont_download_map" CStyleName="dont_download_map" pascalStyleName="DontDownloadMap" />
+                      <Enum name="not_gold_no_map_download" CStyleName="not_gold_no_map_download" pascalStyleName="NotGoldNoMapDownload" />
+                      <Enum name="error_map_download_connection_lost" CStyleName="error_map_download_connection_lost" pascalStyleName="ErrorMapDownloadConnectionLost" />
+                      <Enum name="error_map_download_collision" CStyleName="error_map_download_collision" pascalStyleName="ErrorMapDownloadCollision" />
+                      <Enum name="error_map_download_disk_write_error" CStyleName="error_map_download_disk_write_error" pascalStyleName="ErrorMapDownloadDiskWriteError" />
+                      <Enum name="error_matchmaking_failed_no_games" CStyleName="error_matchmaking_failed_no_games" pascalStyleName="ErrorMatchmakingFailedNoGames" />
+                      <Enum name="error_matchmaking_failed_timeout" CStyleName="error_matchmaking_failed_timeout" pascalStyleName="ErrorMatchmakingFailedTimeout" />
+                      <Enum name="error_live_checkpoint_connection_dropped" CStyleName="error_live_checkpoint_connection_dropped" pascalStyleName="ErrorLiveCheckpointConnectionDropped" />
+                      <Enum name="error_live_checkpoint_hash_mismatch" CStyleName="error_live_checkpoint_hash_mismatch" pascalStyleName="ErrorLiveCheckpointHashMismatch" />
+                      <Enum name="error_join_gold_game_not_allowed" CStyleName="error_join_gold_game_not_allowed" pascalStyleName="ErrorJoinGoldGameNotAllowed" />
+                      <Enum name="error_join_locked_game_not_allowed" CStyleName="error_join_locked_game_not_allowed" pascalStyleName="ErrorJoinLockedGameNotAllowed" />
+                      <Enum name="error_system_link_port_in_use" CStyleName="error_system_link_port_in_use" pascalStyleName="ErrorSystemLinkPortInUse" />
+                      <Enum name="error_invite_requires_signin" CStyleName="error_invite_requires_signin" pascalStyleName="ErrorInviteRequiresSignin" />
+                      <Enum name="error_overwrite_custom_keyboard_mappings" CStyleName="error_overwrite_custom_keyboard_mappings" pascalStyleName="ErrorOverwriteCustomKeyboardMappings" />
+                      <Enum name="error_profile_version_mismatch" CStyleName="error_profile_version_mismatch" pascalStyleName="ErrorProfileVersionMismatch" />
+                      <Enum name="error_profane_map_name" CStyleName="error_profane_map_name" pascalStyleName="ErrorProfaneMapName" />
+                      <Enum name="error_profane_variant_name" CStyleName="error_profane_variant_name" pascalStyleName="ErrorProfaneVariantName" />
+                      <Enum name="demo_version_no_more_for_you" CStyleName="demo_version_no_more_for_you" pascalStyleName="DemoVersionNoMoreForYou" />
+                      <Enum name="error_no_fullscreen_res" CStyleName="error_no_fullscreen_res" pascalStyleName="ErrorNoFullscreenRes" />
+                      <Enum name="error_install_not_complete" CStyleName="error_install_not_complete" pascalStyleName="ErrorInstallNotComplete" />
+                      <Enum name="error_lan_fail_download_map" CStyleName="error_lan_fail_download_map" pascalStyleName="ErrorLanFailDownloadMap" />
+                      <Enum name="error_locater_service_failed" CStyleName="error_locater_service_failed" pascalStyleName="ErrorLocaterServiceFailed" />
+                      <Enum name="error_double_mapping_actions" CStyleName="error_double_mapping_actions" pascalStyleName="ErrorDoubleMappingActions" />
+                      <Enum name="error_no_multiplayer_achievements_for_silver" CStyleName="error_no_multiplayer_achievements_for_silver" pascalStyleName="ErrorNoMultiplayerAchievementsForSilver" />
+                      <Enum name="error_map_download_in_game" CStyleName="error_map_download_in_game" pascalStyleName="ErrorMapDownloadInGame" />
+                      <Enum name="error_locator_service_timed_out" CStyleName="error_locator_service_timed_out" pascalStyleName="ErrorLocatorServiceTimedOut" />
+                      <Enum name="error_connection_to_host_lost" CStyleName="error_connection_to_host_lost" pascalStyleName="ErrorConnectionToHostLost" />
+                      <Enum name="error_map_download_profane_name" CStyleName="error_map_download_profane_name" pascalStyleName="ErrorMapDownloadProfaneName" />
+                    </Options>
+                  </LongEnum>
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <OptionsXRef>enum:ui_error_flags</OptionsXRef>
+                  </WordFlags>
+                  <CharEnum CStyleName="default_button" pascalStyleName="DefaultButton" name="default button">
+                    <OptionsXRef>enum:ui_error_default_button</OptionsXRef>
+                  </CharEnum>
+                  <Pad sizeOfSource="sizeof(byte)" length="1" />
+                  <StringId CStyleName="title" pascalStyleName="Title" name="title" />
+                  <StringId CStyleName="message" pascalStyleName="Message" name="message" />
+                  <StringId CStyleName="ok" pascalStyleName="Ok" name="ok" />
+                  <StringId CStyleName="cancel" pascalStyleName="Cancel" name="cancel" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="Cursor Sound" description="This is the sound that plays as you tab through items" />
+      <TagReference name="sound tag">
+        <tag>snd!</tag>
+      </TagReference>
+      <Explanation name="Selection Sound" description="This is the sound that plays when an item is selected" />
+      <TagReference name="sound tag">
+        <tag>snd!</tag>
+      </TagReference>
+      <Explanation name="Error Sound" description="This is the sound that plays to alert the user that something went wrong" />
+      <TagReference name="sound tag">
+        <tag>snd!</tag>
+      </TagReference>
+      <Explanation name="Advancing Sound" description="This is the sound that plays when advancing to a new screen" />
+      <TagReference name="sound tag">
+        <tag>snd!</tag>
+      </TagReference>
+      <Explanation name="Retreating Sound" description="This is the sound that plays when retreating to a previous screen" />
+      <TagReference name="sound tag">
+        <tag>snd!</tag>
+      </TagReference>
+      <Explanation name="Initial Login Sound" description="This is the sound that plays when advancing past the initial login screen" />
+      <TagReference name="sound tag">
+        <tag>snd!</tag>
+      </TagReference>
+      <Explanation name="VKBD Cursor Sound" description="This is the sound that plays when cursoring in the vkeyboard" />
+      <TagReference name="sound tag">
+        <tag>snd!</tag>
+      </TagReference>
+      <Explanation name="VKBD Character Insertion Sound" description="This is the sound that plays when selecting buttons in the vkeyboard" />
+      <TagReference name="sound tag">
+        <tag>snd!</tag>
+      </TagReference>
+      <Explanation name="Online Notification Sound" description="This is the sound that plays when you receive an online notification" />
+      <TagReference name="sound tag">
+        <tag>snd!</tag>
+      </TagReference>
+      <Explanation name="Tabbed View Pane Tabbing Sound" description="This is the sound that plays when tabbing thru views in a tabbed view pane (eg, online menu)" />
+      <TagReference name="sound tag">
+        <tag>snd!</tag>
+      </TagReference>
+      <Explanation name="Pregame Countdown Timer Sound" description="This is the sound that plays as the countdown timer progresses" />
+      <TagReference name="sound tag">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference>
+        <tag>snd!</tag>
+      </TagReference>
+      <Explanation name="Matchmaking Advance Sound" description="This is the sound that plays as matchmaking enters the final stage" />
+      <TagReference name="sound tag">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference>
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference>
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference>
+        <tag>snd!</tag>
+      </TagReference>
+      <Explanation name="Global Bitmaps" description="Sprite sequences for global ui bitmaps, as follows:&#xA;1) vkeyboard cursor&#xA;" />
+      <TagReference CStyleName="global_bitmaps_tag" pascalStyleName="GlobalBitmapsTag" name="global bitmaps tag">
+        <tag>bitm</tag>
+      </TagReference>
+      <Explanation name="Global Text Strings" description="Global UI Text goes here" />
+      <TagReference CStyleName="unicode_string_list_tag" pascalStyleName="UnicodeStringListTag" name="unicode string list tag">
+        <tag>unic</tag>
+      </TagReference>
+      <Explanation name="Screen Animations" description="Animations used by screen definitions for transitions and ambient animating" />
+      <Block CStyleName="screen_animations" pascalStyleName="ScreenAnimations" name="screen animations" maxElementCount="64" maxElementCountSource="k_maximum_number_of_widget_animations_per_screen">
+        <Layout regolithID="block:animation_reference" internalName="animation_reference_block" name="animation_reference_block">
+          <FieldSet version="0" sizeofValue="56" sizeofSource="sizeof(s_animation_reference)" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:animation_reference_flags" CStyleName="animation_reference_flags" pascalStyleName="AnimationReferenceFlags">
+                <Bit name="unused" CStyleName="unused0_bit" pascalStyleName="Unused0Bit" />
+              </Options>
+            </LongFlags>
+            <Explanation name="Primary Intro Transition" description="Defines the primary intro transitional animation" />
+            <LongInteger name="animation period" units="milliseconds" />
+            <Block name="keyframes" maxElementCount="64" maxElementCountSource="k_maximum_number_of_animation_keyframe_blocks">
+              <LayoutXRef>block:screen_animation_keyframe_reference</LayoutXRef>
+            </Block>
+            <UselessPad length="4" />
+            <UselessPad length="12" />
+            <Explanation name="Primary Outro Transition" description="Defines the primary outro transitional animation" />
+            <LongInteger name="animation period" units="milliseconds" />
+            <Block name="keyframes" maxElementCount="64" maxElementCountSource="k_maximum_number_of_animation_keyframe_blocks">
+              <LayoutXRef>block:screen_animation_keyframe_reference</LayoutXRef>
+            </Block>
+            <UselessPad length="4" />
+            <UselessPad length="12" />
+            <Explanation name="Ambient Animation" description="Defines the ambient animation" />
+            <LongInteger name="animation period" units="milliseconds" />
+            <ShortEnum CStyleName="ambient_animation_looping_style" pascalStyleName="AmbientAnimationLoopingStyle" name="ambient animation looping style">
+              <Options regolithID="enum:ambient_animation_looping_style" CStyleName="ambient_animation_looping_style" pascalStyleName="AmbientAnimationLoopingStyle">
+                <Enum name="NONE" CStyleName="none" pascalStyleName="None" />
+                <Enum name="reverse loop" CStyleName="reverse_loop" pascalStyleName="ReverseLoop" />
+                <Enum name="loop" CStyleName="loop" pascalStyleName="Loop" />
+                <Enum name="don't loop" CStyleName="dont_loop" pascalStyleName="DontLoop" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Block name="keyframes" maxElementCount="64" maxElementCountSource="k_maximum_number_of_animation_keyframe_blocks">
+              <LayoutXRef>block:screen_animation_keyframe_reference</LayoutXRef>
+            </Block>
+            <UselessPad length="16" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="Polygonal Shape Groups" description="Define the various groups of shape-objects for use on any ui screens here" />
+      <Block CStyleName="shape_groups" pascalStyleName="ShapeGroups" name="shape groups" maxElementCount="64" maxElementCountSource="k_maximum_number_of_shapes_per_group">
+        <Layout regolithID="block:shape_group_reference" internalName="shape_group_reference_block" name="shape_group_reference_block">
+          <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(struct s_shape_group_reference)" isLatest="true">
+            <Explanation name="Unused Debug Geometry Shapes" description="This is the old way" />
+            <Block CStyleName="shapes" pascalStyleName="Shapes" name="shapes" maxElementCount="32" maxElementCountSource="k_maximum_number_of_shape_blocks">
+              <Layout regolithID="block:shape_block_reference" internalName="shape_block_reference_block" name="shape_block_reference_block">
+                <FieldSet version="0" sizeofValue="52" sizeofSource="sizeof(s_shape_block_reference)" isLatest="true">
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:shape_block_reference_flags" CStyleName="shape_block_reference_flags" pascalStyleName="ShapeBlockReferenceFlags">
+                      <Bit name="unused" CStyleName="unused0_bit" pascalStyleName="Unused0Bit" />
+                    </Options>
+                  </LongFlags>
+                  <ShortEnum CStyleName="animation_index" pascalStyleName="AnimationIndex" name="animation index">
+                    <OptionsXRef>enum:text_block_animation_index</OptionsXRef>
+                  </ShortEnum>
+                  <ShortInteger CStyleName="intro_animation_delay_milliseconds" pascalStyleName="IntroAnimationDelayMilliseconds" name="intro animation delay milliseconds" />
+                  <RealArgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+                  <Block CStyleName="points" pascalStyleName="Points" name="points" maxElementCount="16" maxElementCountSource="k_maximum_points_per_shape">
+                    <Layout regolithID="block:point_block_reference" internalName="point_block_reference_block" name="point_block_reference_block">
+                      <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(s_point_block_reference)" isLatest="true">
+                        <Point2D CStyleName="coordinates" pascalStyleName="Coordinates" name="coordinates" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <ShortInteger CStyleName="render_depth_bias" pascalStyleName="RenderDepthBias" name="render depth bias" />
+                  <Pad sizeOfSource="sizeof(short)+3*sizeof(long)" length="14" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Explanation name="Model-Light Groups" description="Specify commonly used model/light groups here" />
+            <Block CStyleName="model_scene_blocks" pascalStyleName="ModelSceneBlocks" name="model scene blocks" maxElementCount="32" maxElementCountSource="k_maximum_object_scenes_per_screen">
+              <LayoutXRef>block:ui_model_scene_reference</LayoutXRef>
+            </Block>
+            <Explanation name="Bitmaps" description="Specify more flavor bitmaps here" />
+            <Block CStyleName="bitmap_blocks" pascalStyleName="BitmapBlocks" name="bitmap blocks" maxElementCount="64" maxElementCountSource="k_maximum_number_of_bitmap_blocks">
+              <LayoutXRef>block:bitmap_block_reference</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="Persistant Background Animations" description="These are the animations used by elements that live in the persistant background" />
+      <Block CStyleName="animations" pascalStyleName="Animations" name="animations" maxElementCount="100" maxElementCountSource="k_maximum_number_of_persisant_animations">
+        <Layout regolithID="block:persistent_background_animation" internalName="persistent_background_animation_block" name="persistent_background_animation_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_persistant_animation_reference)" isLatest="true">
+            <Pad sizeOfSource="sizeof(long)" length="4" />
+            <LongInteger CStyleName="animation_period" pascalStyleName="AnimationPeriod" name="animation period" units="milliseconds" />
+            <Block CStyleName="interpolated_keyframes" pascalStyleName="InterpolatedKeyframes" name="interpolated keyframes" maxElementCount="64" maxElementCountSource="k_maximum_number_of_animation_keyframe_blocks">
+              <Layout regolithID="block:background_animation_keyframe_reference" internalName="background_animation_keyframe_reference_block" name="background_animation_keyframe_reference_block">
+                <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_animation_keyframe_reference)" isLatest="true">
+                  <LongInteger CStyleName="start_transition_index" pascalStyleName="StartTransitionIndex" name="start transition index" />
+                  <Real CStyleName="alpha" pascalStyleName="Alpha" name="alpha" />
+                  <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="List Skins" description="These define the visual appearances (skins) available for UI lists&#xA;They are expected to be entered in the following order:&#xA;0) default&#xA;1) squad lobby player list&#xA;2) settings list&#xA;3) playlist entry list&#xA;4) variants list&#xA;5) game browser list&#xA;6) online player menu&#xA;7) game setup menu&#xA;8) playlist contents display&#xA;9) profile picker&#xA;10) mp map list&#xA;11) main menu&#xA;" />
+      <Block CStyleName="list_item_skins" pascalStyleName="ListItemSkins" name="list item skins" maxElementCount="32" maxElementCountSource="k_maximum_number_of_list_item_skins">
+        <Layout regolithID="block:list_skin_reference" internalName="list_skin_reference_block" name="list_skin_reference_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_user_interface_list_skin_reference)" isLatest="true">
+            <TagReference CStyleName="list_item_skins" pascalStyleName="ListItemSkins" name="list item skins">
+              <tag>skin</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="Additional UI Strings" description="These are for specific purposes as noted" />
+      <TagReference CStyleName="button_key_type_strings" pascalStyleName="ButtonKeyTypeStrings" name="button key type strings">
+        <tag>unic</tag>
+      </TagReference>
+      <TagReference CStyleName="game_type_strings" pascalStyleName="GameTypeStrings" name="game type strings">
+        <tag>unic</tag>
+      </TagReference>
+      <TagReference>
+        <tag />
+      </TagReference>
+      <Explanation name="Skill to rank mapping table" />
+      <Block CStyleName="skill_mappings" pascalStyleName="SkillMappings" name="skill mappings" maxElementCount="65535" maxElementCountSource="UNSIGNED_SHORT_MAX">
+        <Layout regolithID="block:skill_to_rank_mapping" internalName="skill_to_rank_mapping_block" name="skill_to_rank_mapping_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(s_skill_to_rank_mapping)" isLatest="true">
+            <ShortBounds CStyleName="skill_bounds" pascalStyleName="SkillBounds" name="skill bounds" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="WINDOW PARAMETERS" description="Various settings for different sized UI windows" />
+      <ShortEnum CStyleName="full_screen_header_text_font" pascalStyleName="FullScreenHeaderTextFont" name="full screen header text font">
+        <OptionsXRef>enum:ui_text_style</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="large_dialog_header_text_font" pascalStyleName="LargeDialogHeaderTextFont" name="large dialog header text font">
+        <OptionsXRef>enum:ui_text_style</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="half_dialog_header_text_font" pascalStyleName="HalfDialogHeaderTextFont" name="half dialog header text font">
+        <OptionsXRef>enum:ui_text_style</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="qtr_dialog_header_text_font" pascalStyleName="QtrDialogHeaderTextFont" name="qtr dialog header text font">
+        <OptionsXRef>enum:ui_text_style</OptionsXRef>
+      </ShortEnum>
+      <RealArgbColor CStyleName="default_text_color" pascalStyleName="DefaultTextColor" name="default text color" />
+      <Rectangle2D CStyleName="full_screen_header_text_bounds" pascalStyleName="FullScreenHeaderTextBounds" name="full screen header text bounds" />
+      <Rectangle2D CStyleName="full_screen_button_key_text_bounds" pascalStyleName="FullScreenButtonKeyTextBounds" name="full screen button key text bounds" />
+      <Rectangle2D CStyleName="large_dialog_header_text_bounds" pascalStyleName="LargeDialogHeaderTextBounds" name="large dialog header text bounds" />
+      <Rectangle2D CStyleName="large_dialog_button_key_text_bounds" pascalStyleName="LargeDialogButtonKeyTextBounds" name="large dialog button key text bounds" />
+      <Rectangle2D CStyleName="half_dialog_header_text_bounds" pascalStyleName="HalfDialogHeaderTextBounds" name="half dialog header text bounds" />
+      <Rectangle2D CStyleName="half_dialog_button_key_text_bounds" pascalStyleName="HalfDialogButtonKeyTextBounds" name="half dialog button key text bounds" />
+      <Rectangle2D CStyleName="qtr_dialog_header_text_bounds" pascalStyleName="QtrDialogHeaderTextBounds" name="qtr dialog header text bounds" />
+      <Rectangle2D CStyleName="qtr_dialog_button_key_text_bounds" pascalStyleName="QtrDialogButtonKeyTextBounds" name="qtr dialog button key text bounds" />
+      <Explanation name="Main menu music" description="Looping sound that plays while the main menu is active" />
+      <TagReference CStyleName="main_menu_music" pascalStyleName="MainMenuMusic" name="main menu music">
+        <tag>lsnd</tag>
+      </TagReference>
+      <LongInteger CStyleName="music_fade_time" pascalStyleName="MusicFadeTime" name="music fade time" units="milliseconds" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

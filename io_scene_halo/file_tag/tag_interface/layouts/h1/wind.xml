@@ -1,0 +1,13 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="wind" name="wind" version="1">
+  <Layout regolithID="block:wind" internalName="wind_block" name="wind">
+    <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(struct wind_group)" isLatest="true">
+      <RealBounds CStyleName="velocity" pascalStyleName="Velocity" name="velocity" />
+      <RealEulerAngles2D CStyleName="variation_area" pascalStyleName="VariationArea" name="variation area" />
+      <Real CStyleName="local_variation_weight" pascalStyleName="LocalVariationWeight" name="local variation weight" />
+      <Real CStyleName="local_variation_rate" pascalStyleName="LocalVariationRate" name="local variation rate" />
+      <Real CStyleName="damping" pascalStyleName="Damping" name="damping" />
+      <Pad name="pad" length="36" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

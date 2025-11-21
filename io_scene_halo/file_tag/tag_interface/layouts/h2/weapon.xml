@@ -1,0 +1,1166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="weap" parent="item" name="weapon" version="2">
+  <Layout regolithID="block:weapon" internalName="weapon_block" name="weapon">
+    <FieldSet version="0" sizeofValue="1068" sizeofSource="sizeof(_weapon_definition_v1)" parentVersion="0">
+      <LongFlags CStyleName="weapon_flags" pascalStyleName="WeaponFlags" name="flags">
+        <Options regolithID="enum:weapon_flags" CStyleName="weapon_flags" pascalStyleName="WeaponFlags">
+          <Bit name="unused0" expertOnly="true" CStyleName="unused0_bit" pascalStyleName="Unused0Bit" />
+          <Bit name="unused1" expertOnly="true" CStyleName="unused1_bit" pascalStyleName="Unused1Bit" />
+          <Bit name="unused2" expertOnly="true" CStyleName="unused2_bit" pascalStyleName="Unused2Bit" />
+          <Bit name="must be readied" CStyleName="must_be_readied_bit" pascalStyleName="MustBeReadiedBit" />
+          <Bit name="doesn't count toward maximum" CStyleName="doesnt_count_toward_maximum_bit" pascalStyleName="DoesntCountTowardMaximumBit" />
+          <Bit name="aim assists only when zoomed" CStyleName="aim_assists_only_when_zoomed_bit" pascalStyleName="AimAssistsOnlyWhenZoomedBit" />
+          <Bit name="prevents grenade throwing" CStyleName="prevents_grenade_throwing_bit" pascalStyleName="PreventsGrenadeThrowingBit" />
+          <Bit name="unused7" expertOnly="true" CStyleName="unused7_bit" pascalStyleName="Unused7Bit" />
+          <Bit name="unused8" expertOnly="true" CStyleName="unused8_bit" pascalStyleName="Unused8Bit" />
+          <Bit name="prevents melee attack" CStyleName="prevents_melee_attack_bit" pascalStyleName="PreventsMeleeAttackBit" />
+          <Bit name="detonates when dropped" CStyleName="detonates_when_dropped_bit" pascalStyleName="DetonatesWhenDroppedBit" />
+          <Bit name="cannot fire at maximum age" CStyleName="cannot_fire_at_maximum_age_bit" pascalStyleName="CannotFireAtMaximumAgeBit" />
+          <Bit name="secondary trigger overrides grenades" CStyleName="secondary_trigger_overrides_grenades_bit" pascalStyleName="SecondaryTriggerOverridesGrenadesBit" />
+          <Bit name="unused13" expertOnly="true" CStyleName="unused13_bit" pascalStyleName="Unused13Bit" />
+          <Bit name="unused14" expertOnly="true" CStyleName="unused14_bit" pascalStyleName="Unused14Bit" />
+          <Bit name="AIs use weapon melee damage" CStyleName="ais_use_weapon_melee_damage_bit" pascalStyleName="AisUseWeaponMeleeDamageBit" />
+          <Bit name="forces no binoculars" CStyleName="forces_no_binoculars_bit" pascalStyleName="ForcesNoBinocularsBit" />
+          <Bit name="loop fp firing animation" CStyleName="loop_fp_firing_animation_bit" pascalStyleName="LoopFpFiringAnimationBit" />
+          <Bit name="prevents sprinting" CStyleName="prevents_sprinting_bit" pascalStyleName="PreventsSprintingBit" />
+          <Bit name="cannot fire while boosting" CStyleName="cannot_fire_while_boosting_bit" pascalStyleName="CannotFireWhileBoostingBit" />
+          <Bit name="prevents driving" CStyleName="prevents_driving_bit" pascalStyleName="PreventsDrivingBit" />
+          <Bit name="prevents gunning" CStyleName="prevents_gunning_bit" pascalStyleName="PreventsGunningBit" />
+          <Bit name="can be dual wielded" CStyleName="can_be_dual_wielded_bit" pascalStyleName="CanBeDualWieldedBit" />
+          <Bit name="can only be dual wielded" CStyleName="can_only_be_dual_wielded_bit" pascalStyleName="CanOnlyBeDualWieldedBit" />
+          <Bit name="melee only" CStyleName="melee_only_bit" pascalStyleName="MeleeOnlyBit" />
+          <Bit name="cant fire if parent dead" CStyleName="cant_fire_if_parent_dead_bit" pascalStyleName="CantFireIfParentDeadBit" />
+          <Bit name="weapon ages with each kill" CStyleName="weapon_ages_with_each_kill_bit" pascalStyleName="WeaponAgesWithEachKillBit" />
+          <Bit name="weapon uses old dual fire error code" CStyleName="weapon_uses_old_dual_fire_error_code_bit" pascalStyleName="WeaponUsesOldDualFireErrorCodeBit" />
+          <Bit name="primary trigger melee attacks" CStyleName="primary_trigger_melee_attacks_bit" pascalStyleName="PrimaryTriggerMeleeAttacksBit" />
+          <Bit name="cannot be used by player" CStyleName="cannot_be_used_by_player_bit" pascalStyleName="CannotBeUsedByPlayerBit" />
+          <Bit name="prevents crouching" CStyleName="prevents_crouching_bit" pascalStyleName="PreventsCrouchingBit" />
+          <Bit name="uses 3rd person camera" CStyleName="uses_3rd_person_camera_bit" pascalStyleName="Uses3rdPersonCameraBit" />
+        </Options>
+      </LongFlags>
+      <OldStringId />
+      <ShortEnum CStyleName="secondary_trigger_mode" pascalStyleName="SecondaryTriggerMode" name="secondary trigger mode">
+        <Options regolithID="enum:weapon_secondary_trigger_mode" CStyleName="weapon_secondary_trigger_mode" pascalStyleName="WeaponSecondaryTriggerMode">
+          <Enum name="normal" CStyleName="normal" pascalStyleName="Normal" />
+          <Enum name="slaved to primary" CStyleName="slaved_to_primary" pascalStyleName="SlavedToPrimary" />
+          <Enum name="inhibits primary" CStyleName="inhibits_primary" pascalStyleName="InhibitsPrimary" />
+          <Enum name="loads alterate ammunition" CStyleName="loads_alterate_ammunition" pascalStyleName="LoadsAlterateAmmunition" />
+          <Enum name="loads multiple primary ammunition" CStyleName="loads_multiple_primary_ammunition" pascalStyleName="LoadsMultiplePrimaryAmmunition" />
+        </Options>
+      </ShortEnum>
+      <ShortInteger CStyleName="maximum_alternate_shots_loaded" pascalStyleName="MaximumAlternateShotsLoaded" name="maximum alternate shots loaded" description="if the second trigger loads alternate ammunition, this is the maximum number of shots that can be loaded at a time" />
+      <Pad sizeOfSource="sizeof(long) * 2" length="8" />
+      <Real CStyleName="ready_time" pascalStyleName="ReadyTime" name="ready time" units="seconds" />
+      <TagReference CStyleName="ready_effect" pascalStyleName="ReadyEffect" name="ready effect">
+        <tag />
+      </TagReference>
+      <RealFraction CStyleName="heat_recovery_threshold" pascalStyleName="HeatRecoveryThreshold" name="heat recovery threshold" units="[0,1]" description="the heat value a weapon must return to before leaving the overheated state, once it has become overheated in the first place" />
+      <RealFraction CStyleName="overheated_threshold" pascalStyleName="OverheatedThreshold" name="overheated threshold" units="[0,1]" description="the heat value over which a weapon first becomes overheated (should be greater than the heat recovery threshold)" />
+      <RealFraction CStyleName="heat_detonation_threshold" pascalStyleName="HeatDetonationThreshold" name="heat detonation threshold" units="[0,1]" description="the heat value above which the weapon has a chance of exploding each time it is fired" />
+      <RealFraction CStyleName="heat_detonation_fraction" pascalStyleName="HeatDetonationFraction" name="heat detonation fraction" units="[0,1]" description="the percent chance (between 0.0 and 1.0) the weapon will explode when fired over the heat detonation threshold" />
+      <RealFraction CStyleName="heat_loss_per_second" pascalStyleName="HeatLossPerSecond" name="heat loss per second" units="[0,1]" description="the amount of heat lost each second when the weapon is not being fired" />
+      <RealFraction CStyleName="heat_illumination" pascalStyleName="HeatIllumination" name="heat illumination" units="[0,1]" description="the amount of illumination given off when the weapon is overheated" />
+      <RealFraction CStyleName="overheated_heat_loss_per_second" pascalStyleName="OverheatedHeatLossPerSecond" name="overheated heat loss per second" units="[0,1]" description="the amount of heat lost each second when the weapon is not being fired" />
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <TagReference CStyleName="overheated" pascalStyleName="Overheated" name="overheated">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="detonation" pascalStyleName="Detonation" name="detonation">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="player_melee_damage" pascalStyleName="PlayerMeleeDamage" name="player melee damage">
+        <tag>jpt!</tag>
+      </TagReference>
+      <TagReference CStyleName="player_melee_response" pascalStyleName="PlayerMeleeResponse" name="player melee response">
+        <tag>jpt!</tag>
+      </TagReference>
+      <Struct CStyleName="melee_aim_assist" pascalStyleName="MeleeAimAssist" name="melee aim assist">
+        <Layout regolithID="structure:melee_aim_assist" tag="masd" internalName="melee_aim_assist_struct" backingBlockInternalName="melee_aim_assist_struct_block" name="melee_aim_assist_struct">
+          <FieldSet version="0" sizeofValue="0" sizeofSource="0" />
+          <FieldSet version="1" sizeofValue="20" sizeofSource="sizeof(melee_aim_assist_parameters)" isLatest="true">
+            <Angle CStyleName="magnetism_angle" pascalStyleName="MagnetismAngle" name="magnetism angle" units="degrees" description="the maximum angle that magnetism works at full strength" />
+            <Real CStyleName="magnetism_range" pascalStyleName="MagnetismRange" name="magnetism range" units="world units" description="the maximum distance that magnetism works at full strength" />
+            <UselessPad length="8" />
+            <Real CStyleName="throttle_magnitude" pascalStyleName="ThrottleMagnitude" name="throttle magnitude" />
+            <Real CStyleName="throttle_minimum_distance" pascalStyleName="ThrottleMinimumDistance" name="throttle minimum distance" />
+            <Angle CStyleName="throttle_maximum_adjustment_angle" pascalStyleName="ThrottleMaximumAdjustmentAngle" name="throttle maximum adjustment angle" units="degrees" />
+            <UselessPad length="4" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Struct CStyleName="melee_damage_parameters" pascalStyleName="MeleeDamageParameters" name="melee damage parameters">
+        <Layout regolithID="structure:melee_damage_parameters" tag="mdps" internalName="melee_damage_parameters_struct" backingBlockInternalName="melee_damage_parameters_struct_block" name="melee_damage_parameters_struct">
+          <FieldSet version="0" sizeofValue="0" sizeofSource="0" />
+          <FieldSet version="1" sizeofValue="140" sizeofSource="sizeof(s_melee_damage_parameters)" isLatest="true">
+            <RealEulerAngles2D CStyleName="damage_pyramid_angles" pascalStyleName="DamagePyramidAngles" name="damage pyramid angles" />
+            <Real CStyleName="damage_pyramid_depth" pascalStyleName="DamagePyramidDepth" name="damage pyramid depth" />
+            <Explanation name="melee combo damage" />
+            <TagReference CStyleName="_1st_hit_melee_damage" pascalStyleName="1stHitMeleeDamage" name="1st hit melee damage">
+              <tag>jpt!</tag>
+            </TagReference>
+            <TagReference CStyleName="_1st_hit_melee_response" pascalStyleName="1stHitMeleeResponse" name="1st hit melee response">
+              <tag>jpt!</tag>
+            </TagReference>
+            <TagReference CStyleName="_2nd_hit_melee_damage" pascalStyleName="2ndHitMeleeDamage" name="2nd hit melee damage">
+              <tag>jpt!</tag>
+            </TagReference>
+            <TagReference CStyleName="_2nd_hit_melee_response" pascalStyleName="2ndHitMeleeResponse" name="2nd hit melee response">
+              <tag>jpt!</tag>
+            </TagReference>
+            <TagReference CStyleName="_3rd_hit_melee_damage" pascalStyleName="3rdHitMeleeDamage" name="3rd hit melee damage">
+              <tag>jpt!</tag>
+            </TagReference>
+            <TagReference CStyleName="_3rd_hit_melee_response" pascalStyleName="3rdHitMeleeResponse" name="3rd hit melee response">
+              <tag>jpt!</tag>
+            </TagReference>
+            <TagReference CStyleName="lunge_melee_damage" pascalStyleName="LungeMeleeDamage" name="lunge melee damage" description="this is only important for the energy sword">
+              <tag>jpt!</tag>
+            </TagReference>
+            <TagReference CStyleName="lunge_melee_response" pascalStyleName="LungeMeleeResponse" name="lunge melee response" description="this is only important for the energy sword">
+              <tag>jpt!</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <CharEnum CStyleName="melee_damage_reporting_type" pascalStyleName="MeleeDamageReportingType" name="melee damage reporting type">
+        <OptionsXRef>enum:weapon_damage_type</OptionsXRef>
+      </CharEnum>
+      <Pad sizeOfSource="sizeof(byte)*3" length="3" />
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <TagReference CStyleName="actor_firing_parameters" pascalStyleName="ActorFiringParameters" name="actor firing parameters">
+        <tag>char</tag>
+      </TagReference>
+      <Real CStyleName="near_reticle_range" pascalStyleName="NearReticleRange" name="near reticle range" units="world units" description="the range at which the closer of the two static target reticles will be drawn" />
+      <Real CStyleName="far_reticle_range" pascalStyleName="FarReticleRange" name="far reticle range" units="world units" description="the range at which the farther of the two static target reticles will be drawn" />
+      <Real CStyleName="intersection_reticle_range" pascalStyleName="IntersectionReticleRange" name="intersection reticle range" description="the maximum range at which the dynamic target reticle will be drawn" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <ShortInteger CStyleName="magnification_levels" pascalStyleName="MagnificationLevels" name="magnification levels" description="the number of magnification levels this weapon allows" />
+      <RealBounds CStyleName="magnification_range" pascalStyleName="MagnificationRange" name="magnification range" />
+      <Struct CStyleName="weapon_aim_assist" pascalStyleName="WeaponAimAssist" name="weapon aim assist">
+        <Layout regolithID="structure:aim_assist" tag="easd" internalName="aim_assist_struct" backingBlockInternalName="aim_assist_struct_block" name="aim_assist_struct">
+          <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(struct aim_assist_parameters)" isLatest="true">
+            <Angle CStyleName="autoaim_angle" pascalStyleName="AutoaimAngle" name="autoaim angle" units="degrees" description="the maximum angle that autoaim works at full strength" />
+            <Real CStyleName="autoaim_range" pascalStyleName="AutoaimRange" name="autoaim range" units="world units" description="the maximum distance that autoaim works at full strength" />
+            <Angle CStyleName="magnetism_angle" pascalStyleName="MagnetismAngle" name="magnetism angle" units="degrees" description="the maximum angle that magnetism works at full strength" />
+            <Real CStyleName="magnetism_range" pascalStyleName="MagnetismRange" name="magnetism range" units="world units" description="the maximum distance that magnetism works at full strength" />
+            <Angle CStyleName="deviation_angle" pascalStyleName="DeviationAngle" name="deviation angle" units="degrees" description="the maximum angle that a projectile is allowed to deviate from the gun barrel" />
+            <Pad sizeOfSource="sizeof(dword)" length="4" />
+            <Pad sizeOfSource="sizeof(real)*3" length="12" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <ShortEnum CStyleName="movement_penalized" pascalStyleName="MovementPenalized" name="movement penalized">
+        <Options regolithID="enum:weapon_movement_penalized" CStyleName="weapon_movement_penalized" pascalStyleName="WeaponMovementPenalized">
+          <Enum name="always" CStyleName="always" pascalStyleName="Always" />
+          <Enum name="when zoomed" CStyleName="when_zoomed" pascalStyleName="WhenZoomed" />
+          <Enum name="when zoomed or reloading" CStyleName="when_zoomed_or_reloading" pascalStyleName="WhenZoomedOrReloading" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Real CStyleName="forward_movement_penalty" pascalStyleName="ForwardMovementPenalty" name="forward movement penalty" description="percent slowdown to forward movement for units carrying this weapon" />
+      <Real CStyleName="sideways_movement_penalty" pascalStyleName="SidewaysMovementPenalty" name="sideways movement penalty" description="percent slowdown to sideways and backward movement for units carrying this weapon" />
+      <Pad sizeOfSource="sizeof(real)" length="4" />
+      <Pad sizeOfSource="2*sizeof(real)" length="8" />
+      <Real CStyleName="ai_scariness" pascalStyleName="AiScariness" name="AI scariness" />
+      <Real CStyleName="light_power_on_time" pascalStyleName="LightPowerOnTime" name="light power-on time" units="seconds" />
+      <Real CStyleName="light_power_off_time" pascalStyleName="LightPowerOffTime" name="light power-off time" units="seconds" />
+      <TagReference CStyleName="light_power_on_effect" pascalStyleName="LightPowerOnEffect" name="light power-on effect">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="light_power_off_effect" pascalStyleName="LightPowerOffEffect" name="light power-off effect">
+        <tag />
+      </TagReference>
+      <Real CStyleName="age_heat_recovery_penalty" pascalStyleName="AgeHeatRecoveryPenalty" name="age heat recovery penalty" description="how much the weapon's heat recovery is penalized as it ages" />
+      <Real CStyleName="age_rate_of_fire_penalty" pascalStyleName="AgeRateOfFirePenalty" name="age rate of fire penalty" description="how much the weapon's rate of fire is penalized as it ages" />
+      <RealFraction CStyleName="age_misfire_start" pascalStyleName="AgeMisfireStart" name="age misfire start" units="[0,1]" description="the age threshold when the weapon begins to misfire" />
+      <RealFraction CStyleName="age_misfire_chance" pascalStyleName="AgeMisfireChance" name="age misfire chance" units="[0,1]" description="at age 1.0, the misfire chance per shot" />
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <Explanation name="interface" />
+      <TagReference CStyleName="first_person_model" pascalStyleName="FirstPersonModel" name="first person model">
+        <tag>mode</tag>
+      </TagReference>
+      <TagReference CStyleName="first_person_animations" pascalStyleName="FirstPersonAnimations" name="first person animations">
+        <tag>jmad</tag>
+      </TagReference>
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <Pad sizeOfSource="sizeof(long)*4" length="16" />
+      <TagReference CStyleName="pickup_sound" pascalStyleName="PickupSound" name="pickup sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="zoom_in_sound" pascalStyleName="ZoomInSound" name="zoom-in sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="zoom_out_sound" pascalStyleName="ZoomOutSound" name="zoom-out sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <Block maxElementCount="0">
+        <LayoutXRef>block:g_null</LayoutXRef>
+      </Block>
+      <Real CStyleName="active_camo_ding" pascalStyleName="ActiveCamoDing" name="active camo ding" description="how much to decrease active camo when a round is fired" />
+      <Real CStyleName="active_camo_regrowth_rate" pascalStyleName="ActiveCamoRegrowthRate" name="active camo regrowth rate" description="how fast to increase active camo (per tick) when a round is fired" />
+      <StringId CStyleName="handle_node" pascalStyleName="HandleNode" name="handle node" description="the node that get's attached to the unit's hand" />
+      <StringId CStyleName="weapon_class" pascalStyleName="WeaponClass" name="weapon class" />
+      <StringId CStyleName="weapon_name" pascalStyleName="WeaponName" name="weapon name" />
+      <ShortEnum CStyleName="multiplayer_weapon_type" pascalStyleName="MultiplayerWeaponType" name="multiplayer weapon type">
+        <Options regolithID="enum:multiplayer_weapon_type" CStyleName="multiplayer_weapon_type" pascalStyleName="MultiplayerWeaponType">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="ctf flag" CStyleName="ctf_flag" pascalStyleName="CtfFlag" />
+          <Enum name="oddball ball" CStyleName="oddball_ball" pascalStyleName="OddballBall" />
+          <Enum name="headhunter head" CStyleName="headhunter_head" pascalStyleName="HeadhunterHead" />
+          <Enum name="juggernaut powerup" CStyleName="juggernaut_powerup" pascalStyleName="JuggernautPowerup" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="weapon_type" pascalStyleName="WeaponType" name="weapon type">
+        <Options regolithID="enum:weapon_type" CStyleName="weapon_type" pascalStyleName="WeaponType">
+          <Enum name="undefined" CStyleName="undefined" pascalStyleName="Undefined" />
+          <Enum name="shotgun" CStyleName="shotgun" pascalStyleName="Shotgun" />
+          <Enum name="needler" CStyleName="needler" pascalStyleName="Needler" />
+          <Enum name="plasma pistol" CStyleName="plasma_pistol" pascalStyleName="PlasmaPistol" />
+          <Enum name="plasma rifle" CStyleName="plasma_rifle" pascalStyleName="PlasmaRifle" />
+          <Enum name="rocket launcher" CStyleName="rocket_launcher" pascalStyleName="RocketLauncher" />
+        </Options>
+      </ShortEnum>
+      <Block CStyleName="weapon_predicted_resources" pascalStyleName="WeaponPredictedResources" name="predicted resources" maxElementCount="2048">
+        <LayoutXRef>block:predicted_resource</LayoutXRef>
+      </Block>
+      <Block CStyleName="magazines" pascalStyleName="Magazines" name="magazines" maxElementCount="2" maxElementCountSource="MAXIMUM_NUMBER_OF_MAGAZINES_PER_WEAPON">
+        <Layout regolithID="block:magazines" internalName="magazines" name="magazines">
+          <FieldSet version="0" sizeofValue="112" sizeofSource="sizeof(weapon_magazine_definition_v1)">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:magazines_flags" CStyleName="magazines_flags" pascalStyleName="MagazinesFlags">
+                <Bit name="wastes rounds when reloaded" CStyleName="wastes_rounds_when_reloaded_bit" pascalStyleName="WastesRoundsWhenReloadedBit" />
+                <Bit name="every round must be chambered" CStyleName="every_round_must_be_chambered_bit" pascalStyleName="EveryRoundMustBeChamberedBit" />
+              </Options>
+            </LongFlags>
+            <ShortInteger CStyleName="rounds_recharged" pascalStyleName="RoundsRecharged" name="rounds recharged" units="per second" />
+            <ShortInteger CStyleName="rounds_total_initial" pascalStyleName="RoundsTotalInitial" name="rounds total initial" />
+            <ShortInteger CStyleName="rounds_total_maximum" pascalStyleName="RoundsTotalMaximum" name="rounds total maximum" />
+            <ShortInteger CStyleName="rounds_loaded_maximum" pascalStyleName="RoundsLoadedMaximum" name="rounds loaded maximum" />
+            <Pad sizeOfSource="4*sizeof(short)" length="8" />
+            <Real CStyleName="reload_time" pascalStyleName="ReloadTime" name="reload time" units="seconds" description="the length of time it takes to load a single magazine into the weapon" />
+            <ShortInteger CStyleName="rounds_reloaded" pascalStyleName="RoundsReloaded" name="rounds reloaded" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Real CStyleName="chamber_time" pascalStyleName="ChamberTime" name="chamber time" units="seconds" description="the length of time it takes to chamber the next round" />
+            <Pad sizeOfSource="2*sizeof(long)" length="8" />
+            <Pad sizeOfSource="2*sizeof(rectangle2d)" length="16" />
+            <TagReference CStyleName="reloading_effect" pascalStyleName="ReloadingEffect" name="reloading effect">
+              <tag />
+            </TagReference>
+            <TagReference CStyleName="chambering_effect" pascalStyleName="ChamberingEffect" name="chambering effect">
+              <tag />
+            </TagReference>
+            <Pad sizeOfSource="3*sizeof(long)" length="12" />
+            <Block CStyleName="magazines" pascalStyleName="Magazines" name="magazines" maxElementCount="8" maxElementCountSource="MAXIMUM_NUMBER_OF_MAGAZINE_OBJECTS_PER_MAGAZINE">
+              <Layout regolithID="block:magazine_objects" internalName="magazine_objects" name="magazine_objects">
+                <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(weapon_ammunition_object_v1)">
+                  <ShortInteger CStyleName="rounds" pascalStyleName="Rounds" name="rounds" />
+                  <Pad sizeOfSource="5*sizeof(word)" length="10" />
+                  <TagReference CStyleName="equipment" pascalStyleName="Equipment" name="equipment" blockNameSource="true">
+                    <tag>eqip</tag>
+                  </TagReference>
+                </FieldSet>
+                <FieldSet version="1" sizeofValue="20" sizeofSource="sizeof(weapon_ammunition_object)" isLatest="true">
+                  <ShortInteger CStyleName="rounds" pascalStyleName="Rounds" name="rounds" />
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <TagReference CStyleName="equipment" pascalStyleName="Equipment" name="equipment" blockNameSource="true">
+                    <tag>eqip</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="128" sizeofSource="sizeof(weapon_magazine_definition)" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:magazines_flags</OptionsXRef>
+            </LongFlags>
+            <ShortInteger CStyleName="rounds_recharged" pascalStyleName="RoundsRecharged" name="rounds recharged" units="per second" />
+            <ShortInteger CStyleName="rounds_total_initial" pascalStyleName="RoundsTotalInitial" name="rounds total initial" />
+            <ShortInteger CStyleName="rounds_total_maximum" pascalStyleName="RoundsTotalMaximum" name="rounds total maximum" />
+            <ShortInteger CStyleName="rounds_loaded_maximum" pascalStyleName="RoundsLoadedMaximum" name="rounds loaded maximum" />
+            <Pad sizeOfSource="2*sizeof(short)" length="4" />
+            <UselessPad length="4" />
+            <Real CStyleName="reload_time" pascalStyleName="ReloadTime" name="reload time" units="seconds" description="the length of time it takes to load a single magazine into the weapon" />
+            <ShortInteger CStyleName="rounds_reloaded" pascalStyleName="RoundsReloaded" name="rounds reloaded" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Real CStyleName="chamber_time" pascalStyleName="ChamberTime" name="chamber time" units="seconds" description="the length of time it takes to chamber the next round" />
+            <Pad sizeOfSource="2*sizeof(long)" length="8" />
+            <Pad sizeOfSource="2*sizeof(rectangle2d)" length="16" />
+            <TagReference CStyleName="reloading_effect" pascalStyleName="ReloadingEffect" name="reloading effect">
+              <tag />
+            </TagReference>
+            <TagReference CStyleName="reloading_damage_effect" pascalStyleName="ReloadingDamageEffect" name="reloading damage effect">
+              <tag>jpt!</tag>
+            </TagReference>
+            <TagReference CStyleName="chambering_effect" pascalStyleName="ChamberingEffect" name="chambering effect">
+              <tag />
+            </TagReference>
+            <TagReference CStyleName="chambering_damage_effect" pascalStyleName="ChamberingDamageEffect" name="chambering damage effect">
+              <tag>jpt!</tag>
+            </TagReference>
+            <UselessPad length="12" />
+            <Block CStyleName="magazines" pascalStyleName="Magazines" name="magazines" maxElementCount="8" maxElementCountSource="MAXIMUM_NUMBER_OF_MAGAZINE_OBJECTS_PER_MAGAZINE">
+              <LayoutXRef>block:magazine_objects</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="sizeof_member(_weapon_definition_v1, triggers)" length="12" />
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="1156" sizeofSource="sizeof(_weapon_definition_v2)" parentVersion="0">
+      <Explanation name="$$$ WEAPON $$$" description="All weapons should have 'primary trigger' and 'secondary trigger' markers as appropriate.&#xA;Blurred permutations are called '$primary-blur' and '$secondary-blur'." />
+      <LongFlags CStyleName="weapon_flags" pascalStyleName="WeaponFlags" name="flags">
+        <OptionsXRef>enum:weapon_flags</OptionsXRef>
+      </LongFlags>
+      <OldStringId />
+      <ShortEnum CStyleName="secondary_trigger_mode" pascalStyleName="SecondaryTriggerMode" name="secondary trigger mode">
+        <OptionsXRef>enum:weapon_secondary_trigger_mode</OptionsXRef>
+      </ShortEnum>
+      <ShortInteger CStyleName="maximum_alternate_shots_loaded" pascalStyleName="MaximumAlternateShotsLoaded" name="maximum alternate shots loaded" description="if the second trigger loads alternate ammunition, this is the maximum number of shots that can be loaded at a time" />
+      <Explanation name="old obsolete export to functions" />
+      <Pad sizeOfSource="sizeof(long) * 2" length="8" />
+      <Real CStyleName="ready_time" pascalStyleName="ReadyTime" name="ready time" units="seconds" />
+      <TagReference CStyleName="ready_effect" pascalStyleName="ReadyEffect" name="ready effect">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="ready_damage_effect" pascalStyleName="ReadyDamageEffect" name="ready damage effect">
+        <tag>jpt!</tag>
+      </TagReference>
+      <Explanation name="heat" />
+      <RealFraction CStyleName="heat_recovery_threshold" pascalStyleName="HeatRecoveryThreshold" name="heat recovery threshold" units="[0,1]" description="the heat value a weapon must return to before leaving the overheated state, once it has become overheated in the first place" />
+      <RealFraction CStyleName="overheated_threshold" pascalStyleName="OverheatedThreshold" name="overheated threshold" units="[0,1]" description="the heat value over which a weapon first becomes overheated (should be greater than the heat recovery threshold)" />
+      <RealFraction CStyleName="heat_detonation_threshold" pascalStyleName="HeatDetonationThreshold" name="heat detonation threshold" units="[0,1]" description="the heat value above which the weapon has a chance of exploding each time it is fired" />
+      <RealFraction CStyleName="heat_detonation_fraction" pascalStyleName="HeatDetonationFraction" name="heat detonation fraction" units="[0,1]" description="the percent chance (between 0.0 and 1.0) the weapon will explode when fired over the heat detonation threshold" />
+      <RealFraction CStyleName="heat_loss_per_second" pascalStyleName="HeatLossPerSecond" name="heat loss per second" units="[0,1]" description="the amount of heat lost each second when the weapon is not being fired" />
+      <RealFraction CStyleName="heat_illumination" pascalStyleName="HeatIllumination" name="heat illumination" units="[0,1]" description="the amount of illumination given off when the weapon is overheated" />
+      <RealFraction CStyleName="overheated_heat_loss_per_second" pascalStyleName="OverheatedHeatLossPerSecond" name="overheated heat loss per second" units="[0,1]" description="the amount of heat lost each second when the weapon is not being fired" />
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <TagReference CStyleName="overheated" pascalStyleName="Overheated" name="overheated">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="overheated_damage_effect" pascalStyleName="OverheatedDamageEffect" name="overheated damage effect">
+        <tag>jpt!</tag>
+      </TagReference>
+      <TagReference CStyleName="detonation" pascalStyleName="Detonation" name="detonation">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="weapon_detonation_damage_effect" pascalStyleName="WeaponDetonationDamageEffect" name="detonation damage effect">
+        <tag>jpt!</tag>
+      </TagReference>
+      <TagReference CStyleName="player_melee_damage" pascalStyleName="PlayerMeleeDamage" name="player melee damage">
+        <tag>jpt!</tag>
+      </TagReference>
+      <TagReference CStyleName="player_melee_response" pascalStyleName="PlayerMeleeResponse" name="player melee response">
+        <tag>jpt!</tag>
+      </TagReference>
+      <Explanation name="melee aim assist" description="magnetism angle: the maximum angle that magnetism works at full strength&#xA;magnetism range: the maximum distance that magnetism works at full strength&#xA;throttle magnitude: additional throttle to apply towards target when melee-ing w/ magnetism&#xA;throttle minimum distance: minimum distance to target that throttle magnetism kicks in&#xA;throttle maximum adjustment angle: maximum angle throttle magnetism will have an effect, relative to the players movement throttle&#xA;" />
+      <Struct CStyleName="melee_aim_assist" pascalStyleName="MeleeAimAssist" name="melee aim assist">
+        <LayoutXRef>structure:melee_aim_assist</LayoutXRef>
+      </Struct>
+      <Explanation name="melee damage parameters" description="damage pyramid angles: defines the frustum from the camera that the melee-attack uses to find targets&#xA;damage pyramid depth: how far the melee attack searches for a target" />
+      <Struct CStyleName="melee_damage_parameters" pascalStyleName="MeleeDamageParameters" name="melee damage parameters">
+        <LayoutXRef>structure:melee_damage_parameters</LayoutXRef>
+      </Struct>
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Explanation name="zoom" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <ShortInteger CStyleName="magnification_levels" pascalStyleName="MagnificationLevels" name="magnification levels" description="the number of magnification levels this weapon allows" />
+      <RealBounds CStyleName="magnification_range" pascalStyleName="MagnificationRange" name="magnification range" />
+      <Explanation name="weapon aim assist" />
+      <Struct CStyleName="weapon_aim_assist" pascalStyleName="WeaponAimAssist" name="weapon aim assist">
+        <LayoutXRef>structure:aim_assist</LayoutXRef>
+      </Struct>
+      <Explanation name="movement" />
+      <ShortEnum CStyleName="movement_penalized" pascalStyleName="MovementPenalized" name="movement penalized">
+        <OptionsXRef>enum:weapon_movement_penalized</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <RealFraction CStyleName="forward_movement_penalty" pascalStyleName="ForwardMovementPenalty" name="forward movement penalty" description="percent slowdown to forward movement for units carrying this weapon" />
+      <RealFraction CStyleName="sideways_movement_penalty" pascalStyleName="SidewaysMovementPenalty" name="sideways movement penalty" description="percent slowdown to sideways and backward movement for units carrying this weapon" />
+      <Pad sizeOfSource="sizeof(real)" length="4" />
+      <Explanation name="AI targeting parameters" />
+      <Pad sizeOfSource="2*sizeof(real)" length="8" />
+      <Real CStyleName="ai_scariness" pascalStyleName="AiScariness" name="AI scariness" />
+      <Explanation name="miscellaneous" />
+      <Real CStyleName="weapon_power_on_time" pascalStyleName="WeaponPowerOnTime" name="weapon power-on time" units="seconds" />
+      <Real CStyleName="weapon_power_off_time" pascalStyleName="WeaponPowerOffTime" name="weapon power-off time" units="seconds" />
+      <TagReference CStyleName="weapon_power_on_effect" pascalStyleName="WeaponPowerOnEffect" name="weapon power-on effect">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="weapon_power_off_effect" pascalStyleName="WeaponPowerOffEffect" name="weapon power-off effect">
+        <tag />
+      </TagReference>
+      <Pad sizeOfSource="sizeof(long)*8" length="32" />
+      <Real CStyleName="age_heat_recovery_penalty" pascalStyleName="AgeHeatRecoveryPenalty" name="age heat recovery penalty" description="how much the weapon's heat recovery is penalized as it ages" />
+      <Real CStyleName="age_rate_of_fire_penalty" pascalStyleName="AgeRateOfFirePenalty" name="age rate of fire penalty" description="how much the weapon's rate of fire is penalized as it ages" />
+      <RealFraction CStyleName="age_misfire_start" pascalStyleName="AgeMisfireStart" name="age misfire start" units="[0,1]" description="the age threshold when the weapon begins to misfire" />
+      <RealFraction CStyleName="age_misfire_chance" pascalStyleName="AgeMisfireChance" name="age misfire chance" units="[0,1]" description="at age 1.0, the misfire chance per shot" />
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <Explanation name="interface" />
+      <TagReference CStyleName="first_person_model" pascalStyleName="FirstPersonModel" name="first person model">
+        <tag>mode</tag>
+      </TagReference>
+      <TagReference CStyleName="first_person_animations" pascalStyleName="FirstPersonAnimations" name="first person animations">
+        <tag>jmad</tag>
+      </TagReference>
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <Pad sizeOfSource="sizeof(long)*4" length="16" />
+      <TagReference CStyleName="pickup_sound" pascalStyleName="PickupSound" name="pickup sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="zoom_in_sound" pascalStyleName="ZoomInSound" name="zoom-in sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="zoom_out_sound" pascalStyleName="ZoomOutSound" name="zoom-out sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <Pad sizeOfSource="sizeof(struct tag_block)" length="12" />
+      <Real CStyleName="active_camo_ding" pascalStyleName="ActiveCamoDing" name="active camo ding" description="how much to decrease active camo when a round is fired" />
+      <Real CStyleName="active_camo_regrowth_rate" pascalStyleName="ActiveCamoRegrowthRate" name="active camo regrowth rate" description="how fast to increase active camo (per tick) when a round is fired" />
+      <StringId CStyleName="handle_node" pascalStyleName="HandleNode" name="handle node" description="the node that get's attached to the unit's hand" />
+      <Explanation name="weapon labels" />
+      <StringId CStyleName="weapon_class" pascalStyleName="WeaponClass" name="weapon class" />
+      <StringId CStyleName="weapon_name" pascalStyleName="WeaponName" name="weapon name" />
+      <ShortEnum CStyleName="multiplayer_weapon_type" pascalStyleName="MultiplayerWeaponType" name="multiplayer weapon type">
+        <OptionsXRef>enum:multiplayer_weapon_type</OptionsXRef>
+      </ShortEnum>
+      <Explanation name="more miscellaneous" />
+      <ShortEnum CStyleName="weapon_type" pascalStyleName="WeaponType" name="weapon type">
+        <OptionsXRef>enum:weapon_type</OptionsXRef>
+      </ShortEnum>
+      <Struct CStyleName="tracking" pascalStyleName="Tracking" name="tracking">
+        <Layout regolithID="structure:weapon_tracking" tag="wtsf" internalName="weapon_tracking_struct" backingBlockInternalName="weapon_tracking_struct_block" name="weapon_tracking_struct">
+          <FieldSet version="0" sizeofValue="0" sizeofSource="0" />
+          <FieldSet version="1" sizeofValue="4" sizeofSource="sizeof(word)*2" isLatest="true">
+            <ShortEnum CStyleName="tracking_type" pascalStyleName="TrackingType" name="tracking type">
+              <Options regolithID="enum:weapon_tracking_type" CStyleName="weapon_tracking_type" pascalStyleName="WeaponTrackingType">
+                <Enum name="no tracking" CStyleName="no_tracking" pascalStyleName="NoTracking" />
+                <Enum name="human tracking" CStyleName="human_tracking" pascalStyleName="HumanTracking" />
+                <Enum name="plasma tracking" CStyleName="plasma_tracking" pascalStyleName="PlasmaTracking" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Block CStyleName="weapon_predicted_resources" pascalStyleName="WeaponPredictedResources" name="predicted resources" maxElementCount="2048">
+        <LayoutXRef>block:predicted_resource</LayoutXRef>
+      </Block>
+      <Block CStyleName="magazines" pascalStyleName="Magazines" name="magazines" maxElementCount="2" maxElementCountSource="MAXIMUM_NUMBER_OF_MAGAZINES_PER_WEAPON">
+        <LayoutXRef>block:magazines</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="sizeof(long)*3" length="12" />
+      <Block CStyleName="new_triggers" pascalStyleName="NewTriggers" name="new triggers" maxElementCount="2" maxElementCountSource="k_weapon_trigger_count">
+        <Layout regolithID="block:weapon_triggers" internalName="weapon_triggers" name="weapon_triggers">
+          <FieldSet version="0" sizeofValue="80" sizeofSource="sizeof(struct weapon_trigger_definition)" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:weapon_trigger_autofire_flags" CStyleName="weapon_trigger_autofire_flags" pascalStyleName="WeaponTriggerAutofireFlags">
+                <Bit name="autofire single action only" CStyleName="autofire_single_action_only_bit" pascalStyleName="AutofireSingleActionOnlyBit" />
+              </Options>
+            </LongFlags>
+            <ShortEnum CStyleName="input" pascalStyleName="Input" name="input">
+              <Options regolithID="enum:weapon_trigger_input" CStyleName="weapon_trigger_input" pascalStyleName="WeaponTriggerInput">
+                <Enum name="right trigger" CStyleName="right_trigger" pascalStyleName="RightTrigger" />
+                <Enum name="left trigger" CStyleName="left_trigger" pascalStyleName="LeftTrigger" />
+                <Enum name="melee attack" CStyleName="melee_attack" pascalStyleName="MeleeAttack" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="behavior" pascalStyleName="Behavior" name="behavior">
+              <Options regolithID="enum:weapon_trigger_behavior" CStyleName="weapon_trigger_behavior" pascalStyleName="WeaponTriggerBehavior">
+                <Enum name="spew" CStyleName="spew" pascalStyleName="Spew" />
+                <Enum name="latch" CStyleName="latch" pascalStyleName="Latch" />
+                <Enum name="latch-autofire" CStyleName="latch_autofire" pascalStyleName="LatchAutofire" />
+                <Enum name="charge" CStyleName="charge" pascalStyleName="Charge" />
+                <Enum name="latch-zoom" CStyleName="latch_zoom" pascalStyleName="LatchZoom" />
+                <Enum name="latch-rocketlauncher" CStyleName="latch_rocketlauncher" pascalStyleName="LatchRocketlauncher" />
+              </Options>
+            </ShortEnum>
+            <ShortBlockIndex CStyleName="primary_barrel" pascalStyleName="PrimaryBarrel" name="primary barrel" blockReference="block:weapon_barrels" />
+            <ShortBlockIndex CStyleName="secondary_barrel" pascalStyleName="SecondaryBarrel" name="secondary barrel" blockReference="block:weapon_barrels" />
+            <ShortEnum CStyleName="prediction" pascalStyleName="Prediction" name="prediction">
+              <Options regolithID="enum:weapon_trigger_prediction" CStyleName="weapon_trigger_prediction" pascalStyleName="WeaponTriggerPrediction">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="spew" CStyleName="spew" pascalStyleName="Spew" />
+                <Enum name="charge" CStyleName="charge" pascalStyleName="Charge" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <UselessPad length="28" />
+            <Struct CStyleName="autofire" pascalStyleName="Autofire" name="autofire">
+              <Layout regolithID="structure:weapon_trigger_autofire" tag="wtas" internalName="weapon_trigger_autofire_struct" backingBlockInternalName="weapon_trigger_autofire_struct_block" name="weapon_trigger_autofire_struct">
+                <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct weapon_trigger_definition::s_autofire_fields)" isLatest="true">
+                  <Explanation name="AUTOFIRE" />
+                  <Real CStyleName="autofire_time" pascalStyleName="AutofireTime" name="autofire time" />
+                  <Real CStyleName="autofire_throw" pascalStyleName="AutofireThrow" name="autofire throw" />
+                  <ShortEnum CStyleName="secondary_action" pascalStyleName="SecondaryAction" name="secondary action">
+                    <Options regolithID="enum:weapon_trigger_autofire_action" CStyleName="weapon_trigger_autofire_action" pascalStyleName="WeaponTriggerAutofireAction">
+                      <Enum name="fire" CStyleName="fire" pascalStyleName="Fire" />
+                      <Enum name="charge" CStyleName="charge" pascalStyleName="Charge" />
+                      <Enum name="track" CStyleName="track" pascalStyleName="Track" />
+                      <Enum name="fire other" CStyleName="fire_other" pascalStyleName="FireOther" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="primary_action" pascalStyleName="PrimaryAction" name="primary action">
+                    <OptionsXRef>enum:weapon_trigger_autofire_action</OptionsXRef>
+                  </ShortEnum>
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Struct CStyleName="charging" pascalStyleName="Charging" name="charging">
+              <Layout regolithID="structure:weapon_trigger_charging" tag="wtcs" internalName="weapon_trigger_charging_struct" backingBlockInternalName="weapon_trigger_charging_struct_block" name="weapon_trigger_charging_struct">
+                <FieldSet version="0" sizeofValue="52" sizeofSource="sizeof(struct weapon_trigger_definition::s_charging_fields)" isLatest="true">
+                  <Explanation name="CHARGING" />
+                  <Real CStyleName="charging_time" pascalStyleName="ChargingTime" name="charging time" units="seconds" description="the amount of time it takes for this trigger to become fully charged" />
+                  <Real CStyleName="charged_time" pascalStyleName="ChargedTime" name="charged time" units="seconds" description="the amount of time this trigger can be charged before becoming overcharged" />
+                  <ShortEnum CStyleName="overcharged_action" pascalStyleName="OverchargedAction" name="overcharged action">
+                    <Options regolithID="enum:weapon_trigger_overcharged_action" CStyleName="weapon_trigger_overcharged_action" pascalStyleName="WeaponTriggerOverchargedAction">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="explode" CStyleName="explode" pascalStyleName="Explode" />
+                      <Enum name="discharge" CStyleName="discharge" pascalStyleName="Discharge" />
+                    </Options>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <Real CStyleName="charged_illumination" pascalStyleName="ChargedIllumination" name="charged illumination" units="[0,1]" description="the amount of illumination given off when the weapon is fully charged" />
+                  <Real CStyleName="spew_time" pascalStyleName="SpewTime" name="spew time" units="seconds" description="length of time the weapon will spew (fire continuously) while discharging" />
+                  <TagReference CStyleName="charging_effect" pascalStyleName="ChargingEffect" name="charging effect" description="the charging effect is created once when the trigger begins to charge">
+                    <tag />
+                  </TagReference>
+                  <TagReference CStyleName="charging_damage_effect" pascalStyleName="ChargingDamageEffect" name="charging damage effect" description="the charging effect is created once when the trigger begins to charge">
+                    <tag>jpt!</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="barrels" pascalStyleName="Barrels" name="barrels" maxElementCount="2" maxElementCountSource="k_weapon_barrel_count">
+        <Layout regolithID="block:weapon_barrels" internalName="weapon_barrels" name="weapon_barrels">
+          <FieldSet version="0" sizeofValue="312" sizeofSource="sizeof(weapon_barrel_definition_v1)">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:weapon_barrels_flags" CStyleName="weapon_barrels_flags" pascalStyleName="WeaponBarrelsFlags">
+                <Bit name="tracks fired projectile" description="poo poo ca ca pee pee" CStyleName="tracks_fired_projectile_bit" pascalStyleName="TracksFiredProjectileBit" />
+                <Bit name="random firing effects" description="rather than being chosen sequentially, firing effects are picked randomly" CStyleName="random_firing_effects_bit" pascalStyleName="RandomFiringEffectsBit" />
+                <Bit name="can fire with partial ammo" description="allows a weapon to be fired as long as there is a non-zero amount of ammunition loaded" CStyleName="can_fire_with_partial_ammo_bit" pascalStyleName="CanFireWithPartialAmmoBit" />
+                <Bit name="projectiles use weapon origin" description="instead of coming out of the magic first person camera origin, the projectiles for this weapon actually come out of the gun" CStyleName="projectiles_use_weapon_origin_bit" pascalStyleName="ProjectilesUseWeaponOriginBit" />
+                <Bit name="ejects during chamber" description="this trigger's ejection port is started during the key frame of its chamber animation" CStyleName="ejects_during_chamber_bit" pascalStyleName="EjectsDuringChamberBit" />
+                <Bit name="use error when unzoomed" CStyleName="use_error_when_unzoomed_bit" pascalStyleName="UseErrorWhenUnzoomedBit" />
+                <Bit name="projectile vector cannot be adjusted" description="projectiles fired by this weapon cannot have their direction adjusted by the AI to hit the target" CStyleName="projectile_vector_cannot_be_adjusted_bit" pascalStyleName="ProjectileVectorCannotBeAdjustedBit" />
+                <Bit name="projectiles have identical error" CStyleName="projectiles_have_identical_error_bit" pascalStyleName="ProjectilesHaveIdenticalErrorBit" />
+                <Bit name="projectiles fire parallel" description="If there are multiple guns for this trigger, the projectiles emerge in parallel beams (rather than independant aiming)" CStyleName="projectiles_fire_parallel_bit" pascalStyleName="ProjectilesFireParallelBit" />
+                <Bit name="cant fire when others firing" CStyleName="cant_fire_when_others_firing_bit" pascalStyleName="CantFireWhenOthersFiringBit" />
+                <Bit name="cant fire when others recovering" CStyleName="cant_fire_when_others_recovering_bit" pascalStyleName="CantFireWhenOthersRecoveringBit" />
+                <Bit name="don't clear fire bit after recovering" CStyleName="dont_clear_fire_bit_after_recovering_bit" pascalStyleName="DontClearFireBitAfterRecoveringBit" />
+                <Bit name="stagger fire across multiple markers" CStyleName="stagger_fire_across_multiple_markers_bit" pascalStyleName="StaggerFireAcrossMultipleMarkersBit" />
+                <Bit name="fires locked projectiles" CStyleName="fires_locked_projectiles_bit" pascalStyleName="FiresLockedProjectilesBit" />
+                <Bit name="can fire at maximum age" CStyleName="can_fire_at_maximum_age_bit" pascalStyleName="CanFireAtMaximumAgeBit" />
+              </Options>
+            </LongFlags>
+            <RealBounds CStyleName="rounds_per_second" pascalStyleName="RoundsPerSecond" name="rounds per second" description="the number of firing effects created per second" />
+            <Real name="acceleration time" units="seconds" description="the continuous firing time it takes for the weapon to achieve its final rounds per second" />
+            <Real name="deceleration time" units="seconds" description="the continuous idle time it takes for the weapon to return from its final rounds per second to its initial" />
+            <RealFraction CStyleName="blurred_rate_of_fire" pascalStyleName="BlurredRateOfFire" name="blurred rate of fire" description="a percentage between 0 and 1 which controls how soon in its firing animation the weapon blurs" />
+            <ShortBounds CStyleName="shots_per_fire" pascalStyleName="ShotsPerFire" name="shots per fire" description="allows designer caps to the shots you can fire from one firing action" />
+            <Real CStyleName="fire_recovery_time" pascalStyleName="FireRecoveryTime" name="fire recovery time" units="seconds" description="how long after a set of shots it takes before the barrel can fire again" />
+            <RealFraction CStyleName="soft_recovery_fraction" pascalStyleName="SoftRecoveryFraction" name="soft recovery fraction" description="how much of the recovery allows shots to be queued" />
+            <ShortBlockIndex CStyleName="magazine" pascalStyleName="Magazine" name="magazine" description="the magazine from which this trigger draws its ammunition" />
+            <ShortInteger CStyleName="rounds_per_shot" pascalStyleName="RoundsPerShot" name="rounds per shot" description="the number of rounds expended to create a single firing effect" />
+            <ShortInteger CStyleName="minimum_rounds_loaded" pascalStyleName="MinimumRoundsLoaded" name="minimum rounds loaded" description="the minimum number of rounds necessary to fire the weapon" />
+            <ShortInteger CStyleName="rounds_between_tracers" pascalStyleName="RoundsBetweenTracers" name="rounds between tracers" description="the number of non-tracer rounds fired between tracers" />
+            <StringId CStyleName="optional_barrel_marker_name" pascalStyleName="OptionalBarrelMarkerName" name="optional barrel marker name" />
+            <Pad sizeOfSource="1*sizeof(short)" length="2" />
+            <ShortEnum CStyleName="firing_noise" pascalStyleName="FiringNoise" name="firing noise" description="how loud this weapon appears to the AI">
+              <OptionsXRef>enum:unit_firing_noise_level</OptionsXRef>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(long)*2" length="8" />
+            <Real name="acceleration time" units="seconds" description="the continuous firing time it takes for the weapon to achieve its final error" />
+            <Real name="deceleration time" units="seconds" description="the continuous idle time it takes for the weapon to return to its initial error" />
+            <RealBounds CStyleName="damage_error" pascalStyleName="DamageError" name="damage error" description="the range of angles (in degrees) that a damaged weapon will skew fire" />
+            <Real name="acceleration time" units="seconds" description="the continuous firing time it takes for the weapon to achieve its final error" />
+            <Real name="deceleration time" units="seconds" description="the continuous idle time it takes for the weapon to return to its initial error" />
+            <Pad sizeOfSource="sizeof(real)*2" length="8" />
+            <Angle name="minimum error" units="degrees" />
+            <AngleBounds name="error angle" units="degrees" />
+            <RealFraction CStyleName="dual_wield_damage_scale" pascalStyleName="DualWieldDamageScale" name="dual wield damage scale" />
+            <Pad sizeOfSource="sizeof(long)*5" length="20" />
+            <ShortEnum CStyleName="distribution_function" pascalStyleName="DistributionFunction" name="distribution function">
+              <Options regolithID="enum:weapon_barrel_distribution_function" CStyleName="weapon_barrel_distribution_function" pascalStyleName="WeaponBarrelDistributionFunction">
+                <Enum name="point" CStyleName="point" pascalStyleName="Point" />
+                <Enum name="horizontal fan" CStyleName="horizontal_fan" pascalStyleName="HorizontalFan" />
+              </Options>
+            </ShortEnum>
+            <ShortInteger CStyleName="projectiles_per_shot" pascalStyleName="ProjectilesPerShot" name="projectiles per shot" />
+            <Real CStyleName="distribution_angle" pascalStyleName="DistributionAngle" name="distribution angle" units="degrees" />
+            <Pad sizeOfSource="1*sizeof(real)" length="4" />
+            <Angle name="minimum error" units="degrees" />
+            <AngleBounds name="error angle" units="degrees" />
+            <RealPoint3D CStyleName="first_person_offset" pascalStyleName="FirstPersonOffset" name="first person offset" units="world units" description="+x is forward, +z is up, +y is left" />
+            <CharEnum CStyleName="damage_effect_reporting_type" pascalStyleName="DamageEffectReportingType" name="damage effect reporting type">
+              <OptionsXRef>enum:weapon_damage_type</OptionsXRef>
+            </CharEnum>
+            <Pad sizeOfSource="sizeof(byte)*3" length="3" />
+            <TagReference CStyleName="projectile" pascalStyleName="Projectile" name="projectile">
+              <tag>proj</tag>
+            </TagReference>
+            <Struct CStyleName="eh" pascalStyleName="Eh" name="eh">
+              <Layout regolithID="structure:weapon_barrel_damage_effect" tag="wbde" internalName="weapon_barrel_damage_effect_struct" backingBlockInternalName="weapon_barrel_damage_effect_struct_block" name="weapon_barrel_damage_effect_struct">
+                <FieldSet version="0" sizeofValue="0" sizeofSource="0" />
+                <FieldSet version="1" sizeofValue="16" sizeofSource="sizeof(struct tag_reference)" isLatest="true">
+                  <TagReference CStyleName="damage_effect" pascalStyleName="DamageEffect" name="damage effect">
+                    <tag>jpt!</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Real CStyleName="ejection_port_recovery_time" pascalStyleName="EjectionPortRecoveryTime" name="ejection port recovery time" description="the amount of time (in seconds) it takes for the ejection port to transition from 1.0 (open) to 0.0 (closed) after a shot has been fired" />
+            <Real CStyleName="illumination_recovery_time" pascalStyleName="IlluminationRecoveryTime" name="illumination recovery time" description="the amount of time (in seconds) it takes the illumination function to transition from 1.0 (bright) to 0.0 (dark) after a shot has been fired" />
+            <Pad sizeOfSource="3*sizeof(long)" length="12" />
+            <RealFraction CStyleName="heat_generated_per_round" pascalStyleName="HeatGeneratedPerRound" name="heat generated per round" units="[0,1]" description="the amount of heat generated each time the trigger is fired" />
+            <RealFraction CStyleName="age_generated_per_round" pascalStyleName="AgeGeneratedPerRound" name="age generated per round" units="[0,1]" description="the amount the weapon ages each time the trigger is fired" />
+            <Pad sizeOfSource="1*sizeof(long)" length="4" />
+            <Real CStyleName="overload_time" pascalStyleName="OverloadTime" name="overload time" units="seconds" description="the next trigger fires this often while holding down this trigger" />
+            <Pad sizeOfSource="2*sizeof(real)" length="8" />
+            <AngleBounds CStyleName="angle_change_per_shot" pascalStyleName="AngleChangePerShot" name="angle change per shot" description="angle change per shot of the weapon during firing" />
+            <Real name="acceleration time" units="seconds" description="the continuous firing time it takes for the weapon to achieve its final angle change per shot" />
+            <Real name="deceleration time" units="seconds" description="the continuous idle time it takes for the weapon to return to its initial angle change per shot" />
+            <ShortEnum CStyleName="angle_change_function" pascalStyleName="AngleChangeFunction" name="angle change function" description="function used to scale between initial and final angle change per shot">
+              <OptionsXRef>enum:function_angle_change_function</OptionsXRef>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="2*sizeof(real)" length="8" />
+            <ShortEnum CStyleName="prediction_type" pascalStyleName="PredictionType" name="prediction type">
+              <Options regolithID="enum:weapon_barrels_prediction_type" CStyleName="weapon_barrels_prediction_type" pascalStyleName="WeaponBarrelsPredictionType">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="continuous" CStyleName="continuous" pascalStyleName="Continuous" />
+                <Enum name="instant" CStyleName="instant" pascalStyleName="Instant" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="6*sizeof(real)" length="24" />
+            <Block CStyleName="firing_effects" pascalStyleName="FiringEffects" name="firing effects" description="firing effects determine what happens when this trigger is fired" maxElementCount="3" maxElementCountSource="k_weapon_barrel_effect_count">
+              <Layout regolithID="block:barrel_firing_effect" internalName="barrel_firing_effect_block" name="barrel_firing_effect_block">
+                <FieldSet version="0" sizeofValue="132" sizeofSource="sizeof(barrel_firing_effect_v1)">
+                  <ShortInteger CStyleName="shot_count_lower_bound" pascalStyleName="ShotCountLowerBound" name="shot count lower bound" description="the minimum number of times this firing effect will be used, once it has been chosen" />
+                  <ShortInteger CStyleName="shot_count_upper_bound" pascalStyleName="ShotCountUpperBound" name="shot count upper bound" description="the maximum number of times this firing effect will be used, once it has been chosen" />
+                  <Pad sizeOfSource="8*sizeof(long)" length="32" />
+                  <TagReference CStyleName="firing_effect" pascalStyleName="FiringEffect" name="firing effect" description="this effect is used when the weapon is loaded and fired normally" blockNameSource="true">
+                    <tag />
+                  </TagReference>
+                  <TagReference CStyleName="misfire_effect" pascalStyleName="MisfireEffect" name="misfire effect" description="this effect is used when the weapon is loaded but fired while overheated">
+                    <tag />
+                  </TagReference>
+                  <TagReference CStyleName="empty_effect" pascalStyleName="EmptyEffect" name="empty effect" description="this effect is used when the weapon is not loaded">
+                    <tag />
+                  </TagReference>
+                  <TagReference CStyleName="firing_damage" pascalStyleName="FiringDamage" name="firing damage" description="this effect is used when the weapon is loaded and fired normally">
+                    <tag>jpt!</tag>
+                  </TagReference>
+                  <TagReference CStyleName="misfire_damage" pascalStyleName="MisfireDamage" name="misfire damage" description="this effect is used when the weapon is loaded but fired while overheated">
+                    <tag>jpt!</tag>
+                  </TagReference>
+                  <TagReference CStyleName="empty_damage" pascalStyleName="EmptyDamage" name="empty damage" description="this effect is used when the weapon is not loaded">
+                    <tag>jpt!</tag>
+                  </TagReference>
+                </FieldSet>
+                <FieldSet version="1" sizeofValue="100" sizeofSource="sizeof(barrel_firing_effect)" isLatest="true">
+                  <ShortInteger CStyleName="shot_count_lower_bound" pascalStyleName="ShotCountLowerBound" name="shot count lower bound" description="the minimum number of times this firing effect will be used, once it has been chosen" />
+                  <ShortInteger CStyleName="shot_count_upper_bound" pascalStyleName="ShotCountUpperBound" name="shot count upper bound" description="the maximum number of times this firing effect will be used, once it has been chosen" />
+                  <TagReference CStyleName="firing_effect" pascalStyleName="FiringEffect" name="firing effect" description="this effect is used when the weapon is loaded and fired normally" blockNameSource="true">
+                    <tag />
+                  </TagReference>
+                  <TagReference CStyleName="misfire_effect" pascalStyleName="MisfireEffect" name="misfire effect" description="this effect is used when the weapon is loaded but fired while overheated">
+                    <tag />
+                  </TagReference>
+                  <TagReference CStyleName="empty_effect" pascalStyleName="EmptyEffect" name="empty effect" description="this effect is used when the weapon is not loaded">
+                    <tag />
+                  </TagReference>
+                  <TagReference CStyleName="firing_damage" pascalStyleName="FiringDamage" name="firing damage" description="this effect is used when the weapon is loaded and fired normally">
+                    <tag>jpt!</tag>
+                  </TagReference>
+                  <TagReference CStyleName="misfire_damage" pascalStyleName="MisfireDamage" name="misfire damage" description="this effect is used when the weapon is loaded but fired while overheated">
+                    <tag>jpt!</tag>
+                  </TagReference>
+                  <TagReference CStyleName="empty_damage" pascalStyleName="EmptyDamage" name="empty damage" description="this effect is used when the weapon is not loaded">
+                    <tag>jpt!</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="252" sizeofSource="sizeof(weapon_barrel_definition_v2)">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:weapon_barrels_flags</OptionsXRef>
+            </LongFlags>
+            <Explanation name="firing" />
+            <RealBounds CStyleName="rounds_per_second" pascalStyleName="RoundsPerSecond" name="rounds per second" description="the number of firing effects created per second" />
+            <Real name="acceleration time" units="seconds" description="the continuous firing time it takes for the weapon to achieve its final rounds per second" />
+            <Real name="deceleration time" units="seconds" description="the continuous idle time it takes for the weapon to return from its final rounds per second to its initial" />
+            <RealFraction CStyleName="blurred_rate_of_fire" pascalStyleName="BlurredRateOfFire" name="blurred rate of fire" description="a percentage between 0 and 1 which controls how soon in its firing animation the weapon blurs" />
+            <ShortBounds CStyleName="shots_per_fire" pascalStyleName="ShotsPerFire" name="shots per fire" description="allows designer caps to the shots you can fire from one firing action" />
+            <Real CStyleName="fire_recovery_time" pascalStyleName="FireRecoveryTime" name="fire recovery time" units="seconds" description="how long after a set of shots it takes before the barrel can fire again" />
+            <RealFraction CStyleName="soft_recovery_fraction" pascalStyleName="SoftRecoveryFraction" name="soft recovery fraction" description="how much of the recovery allows shots to be queued" />
+            <ShortBlockIndex CStyleName="magazine" pascalStyleName="Magazine" name="magazine" description="the magazine from which this trigger draws its ammunition" />
+            <ShortInteger CStyleName="rounds_per_shot" pascalStyleName="RoundsPerShot" name="rounds per shot" description="the number of rounds expended to create a single firing effect" />
+            <ShortInteger CStyleName="minimum_rounds_loaded" pascalStyleName="MinimumRoundsLoaded" name="minimum rounds loaded" description="the minimum number of rounds necessary to fire the weapon" />
+            <ShortInteger CStyleName="rounds_between_tracers" pascalStyleName="RoundsBetweenTracers" name="rounds between tracers" description="the number of non-tracer rounds fired between tracers" />
+            <StringId CStyleName="optional_barrel_marker_name" pascalStyleName="OptionalBarrelMarkerName" name="optional barrel marker name" />
+            <Explanation name="prediction properties" description="what the behavior of this barrel is in a predicted network game" />
+            <ShortEnum CStyleName="prediction_type" pascalStyleName="PredictionType" name="prediction type">
+              <OptionsXRef>enum:weapon_barrels_prediction_type</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="firing_noise" pascalStyleName="FiringNoise" name="firing noise" description="how loud this weapon appears to the AI">
+              <OptionsXRef>enum:unit_firing_noise_level</OptionsXRef>
+            </ShortEnum>
+            <Explanation name="error" />
+            <Real name="acceleration time" units="seconds" description="the continuous firing time it takes for the weapon to achieve its final error" />
+            <Real name="deceleration time" units="seconds" description="the continuous idle time it takes for the weapon to return to its initial error" />
+            <RealBounds CStyleName="damage_error" pascalStyleName="DamageError" name="damage error" description="the range of angles (in degrees) that a damaged weapon will skew fire" />
+            <Explanation name="dual weapon error" />
+            <Real name="acceleration time" units="seconds" description="the continuous firing time it takes for the weapon to achieve its final error" />
+            <Real name="deceleration time" units="seconds" description="the continuous idle time it takes for the weapon to return to its initial error" />
+            <Pad sizeOfSource="sizeof(real)*2" length="8" />
+            <Angle name="minimum error" units="degrees" />
+            <AngleBounds name="error angle" units="degrees" />
+            <RealFraction CStyleName="dual_wield_damage_scale" pascalStyleName="DualWieldDamageScale" name="dual wield damage scale" />
+            <Explanation name="projectile" />
+            <ShortEnum CStyleName="distribution_function" pascalStyleName="DistributionFunction" name="distribution function">
+              <OptionsXRef>enum:weapon_barrel_distribution_function</OptionsXRef>
+            </ShortEnum>
+            <ShortInteger CStyleName="projectiles_per_shot" pascalStyleName="ProjectilesPerShot" name="projectiles per shot" />
+            <Real CStyleName="distribution_angle" pascalStyleName="DistributionAngle" name="distribution angle" units="degrees" />
+            <Angle name="minimum error" units="degrees" />
+            <AngleBounds name="error angle" units="degrees" />
+            <RealPoint3D CStyleName="first_person_offset" pascalStyleName="FirstPersonOffset" name="first person offset" units="world units" description="+x is forward, +z is up, +y is left" />
+            <CharEnum CStyleName="damage_effect_reporting_type" pascalStyleName="DamageEffectReportingType" name="damage effect reporting type">
+              <OptionsXRef>enum:weapon_damage_type</OptionsXRef>
+            </CharEnum>
+            <Pad sizeOfSource="sizeof(byte)*3" length="3" />
+            <TagReference CStyleName="projectile" pascalStyleName="Projectile" name="projectile">
+              <tag>proj</tag>
+            </TagReference>
+            <Struct CStyleName="eh" pascalStyleName="Eh" name="eh">
+              <LayoutXRef>structure:weapon_barrel_damage_effect</LayoutXRef>
+            </Struct>
+            <Explanation name="misc" />
+            <Real CStyleName="ejection_port_recovery_time" pascalStyleName="EjectionPortRecoveryTime" name="ejection port recovery time" description="the amount of time (in seconds) it takes for the ejection port to transition from 1.0 (open) to 0.0 (closed) after a shot has been fired" />
+            <Real CStyleName="illumination_recovery_time" pascalStyleName="IlluminationRecoveryTime" name="illumination recovery time" description="the amount of time (in seconds) it takes the illumination function to transition from 1.0 (bright) to 0.0 (dark) after a shot has been fired" />
+            <RealFraction CStyleName="heat_generated_per_round" pascalStyleName="HeatGeneratedPerRound" name="heat generated per round" units="[0,1]" description="the amount of heat generated each time the trigger is fired" />
+            <RealFraction CStyleName="age_generated_per_round" pascalStyleName="AgeGeneratedPerRound" name="age generated per round" units="[0,1]" description="the amount the weapon ages each time the trigger is fired" />
+            <Real CStyleName="overload_time" pascalStyleName="OverloadTime" name="overload time" units="seconds" description="the next trigger fires this often while holding down this trigger" />
+            <Explanation name="angle change (recoil)" />
+            <AngleBounds CStyleName="angle_change_per_shot" pascalStyleName="AngleChangePerShot" name="angle change per shot" description="angle change per shot of the weapon during firing" />
+            <Real name="acceleration time" units="seconds" description="the continuous firing time it takes for the weapon to achieve its final angle change per shot" />
+            <Real name="deceleration time" units="seconds" description="the continuous idle time it takes for the weapon to return to its initial angle change per shot" />
+            <ShortEnum CStyleName="angle_change_function" pascalStyleName="AngleChangeFunction" name="angle change function" description="function used to scale between initial and final angle change per shot">
+              <OptionsXRef>enum:function_angle_change_function</OptionsXRef>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="2*sizeof(real)" length="8" />
+            <Pad sizeOfSource="6*sizeof(real)" length="24" />
+            <Block CStyleName="firing_effects" pascalStyleName="FiringEffects" name="firing effects" description="firing effects determine what happens when this trigger is fired" maxElementCount="3" maxElementCountSource="k_weapon_barrel_effect_count">
+              <LayoutXRef>block:barrel_firing_effect</LayoutXRef>
+            </Block>
+          </FieldSet>
+          <FieldSet version="2" sizeofValue="256" sizeofSource="sizeof(weapon_barrel_definition)" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:weapon_barrels_flags</OptionsXRef>
+            </LongFlags>
+            <Explanation name="firing" />
+            <RealBounds CStyleName="rounds_per_second" pascalStyleName="RoundsPerSecond" name="rounds per second" description="the number of firing effects created per second" />
+            <Real name="acceleration time" units="seconds" description="the continuous firing time it takes for the weapon to achieve its final rounds per second" />
+            <Real name="deceleration time" units="seconds" description="the continuous idle time it takes for the weapon to return from its final rounds per second to its initial" />
+            <RealFraction CStyleName="barrel_spin_scale" pascalStyleName="BarrelSpinScale" name="barrel spin scale" description="scale the barrel spin speed by this amount" />
+            <RealFraction CStyleName="blurred_rate_of_fire" pascalStyleName="BlurredRateOfFire" name="blurred rate of fire" description="a percentage between 0 and 1 which controls how soon in its firing animation the weapon blurs" />
+            <ShortBounds CStyleName="shots_per_fire" pascalStyleName="ShotsPerFire" name="shots per fire" description="allows designer caps to the shots you can fire from one firing action" />
+            <Real CStyleName="fire_recovery_time" pascalStyleName="FireRecoveryTime" name="fire recovery time" units="seconds" description="how long after a set of shots it takes before the barrel can fire again" />
+            <RealFraction CStyleName="soft_recovery_fraction" pascalStyleName="SoftRecoveryFraction" name="soft recovery fraction" description="how much of the recovery allows shots to be queued" />
+            <ShortBlockIndex CStyleName="magazine" pascalStyleName="Magazine" name="magazine" description="the magazine from which this trigger draws its ammunition" blockReference="block:magazines" />
+            <ShortInteger CStyleName="rounds_per_shot" pascalStyleName="RoundsPerShot" name="rounds per shot" description="the number of rounds expended to create a single firing effect" />
+            <ShortInteger CStyleName="minimum_rounds_loaded" pascalStyleName="MinimumRoundsLoaded" name="minimum rounds loaded" description="the minimum number of rounds necessary to fire the weapon" />
+            <ShortInteger CStyleName="rounds_between_tracers" pascalStyleName="RoundsBetweenTracers" name="rounds between tracers" description="the number of non-tracer rounds fired between tracers" />
+            <StringId CStyleName="optional_barrel_marker_name" pascalStyleName="OptionalBarrelMarkerName" name="optional barrel marker name" />
+            <Explanation name="prediction properties" description="what the behavior of this barrel is in a predicted network game" />
+            <ShortEnum CStyleName="prediction_type" pascalStyleName="PredictionType" name="prediction type">
+              <OptionsXRef>enum:weapon_barrels_prediction_type</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="firing_noise" pascalStyleName="FiringNoise" name="firing noise" description="how loud this weapon appears to the AI">
+              <OptionsXRef>enum:unit_firing_noise_level</OptionsXRef>
+            </ShortEnum>
+            <Explanation name="error" />
+            <Real name="acceleration time" units="seconds" description="the continuous firing time it takes for the weapon to achieve its final error" />
+            <Real name="deceleration time" units="seconds" description="the continuous idle time it takes for the weapon to return to its initial error" />
+            <RealBounds CStyleName="damage_error" pascalStyleName="DamageError" name="damage error" description="the range of angles (in degrees) that a damaged weapon will skew fire" />
+            <Explanation name="dual weapon error" />
+            <Real name="acceleration time" units="seconds" description="the continuous firing time it takes for the weapon to achieve its final error" />
+            <Real name="deceleration time" units="seconds" description="the continuous idle time it takes for the weapon to return to its initial error" />
+            <Pad sizeOfSource="sizeof(real)*2" length="8" />
+            <Angle name="minimum error" units="degrees" />
+            <AngleBounds name="error angle" units="degrees" />
+            <RealFraction CStyleName="dual_wield_damage_scale" pascalStyleName="DualWieldDamageScale" name="dual wield damage scale" />
+            <Explanation name="projectile" />
+            <ShortEnum CStyleName="distribution_function" pascalStyleName="DistributionFunction" name="distribution function">
+              <OptionsXRef>enum:weapon_barrel_distribution_function</OptionsXRef>
+            </ShortEnum>
+            <ShortInteger CStyleName="projectiles_per_shot" pascalStyleName="ProjectilesPerShot" name="projectiles per shot" />
+            <Real CStyleName="distribution_angle" pascalStyleName="DistributionAngle" name="distribution angle" units="degrees" />
+            <Angle name="minimum error" units="degrees" />
+            <AngleBounds name="error angle" units="degrees" />
+            <RealPoint3D CStyleName="first_person_offset" pascalStyleName="FirstPersonOffset" name="first person offset" units="world units" description="+x is forward, +z is up, +y is left" />
+            <CharEnum CStyleName="damage_effect_reporting_type" pascalStyleName="DamageEffectReportingType" name="damage effect reporting type">
+              <OptionsXRef>enum:weapon_damage_type</OptionsXRef>
+            </CharEnum>
+            <Pad sizeOfSource="sizeof(byte)*3" length="3" />
+            <TagReference CStyleName="projectile" pascalStyleName="Projectile" name="projectile">
+              <tag>proj</tag>
+            </TagReference>
+            <Struct CStyleName="eh" pascalStyleName="Eh" name="eh">
+              <LayoutXRef>structure:weapon_barrel_damage_effect</LayoutXRef>
+            </Struct>
+            <Explanation name="misc" />
+            <Real CStyleName="ejection_port_recovery_time" pascalStyleName="EjectionPortRecoveryTime" name="ejection port recovery time" description="the amount of time (in seconds) it takes for the ejection port to transition from 1.0 (open) to 0.0 (closed) after a shot has been fired" />
+            <Real CStyleName="illumination_recovery_time" pascalStyleName="IlluminationRecoveryTime" name="illumination recovery time" description="the amount of time (in seconds) it takes the illumination function to transition from 1.0 (bright) to 0.0 (dark) after a shot has been fired" />
+            <RealFraction CStyleName="heat_generated_per_round" pascalStyleName="HeatGeneratedPerRound" name="heat generated per round" units="[0,1]" description="the amount of heat generated each time the trigger is fired" />
+            <RealFraction CStyleName="age_generated_per_round" pascalStyleName="AgeGeneratedPerRound" name="age generated per round" units="[0,1]" description="the amount the weapon ages each time the trigger is fired" />
+            <Real CStyleName="overload_time" pascalStyleName="OverloadTime" name="overload time" units="seconds" description="the next trigger fires this often while holding down this trigger" />
+            <Explanation name="angle change (recoil)" />
+            <AngleBounds CStyleName="angle_change_per_shot" pascalStyleName="AngleChangePerShot" name="angle change per shot" description="angle change per shot of the weapon during firing" />
+            <Real name="acceleration time" units="seconds" description="the continuous firing time it takes for the weapon to achieve its final angle change per shot" />
+            <Real name="deceleration time" units="seconds" description="the continuous idle time it takes for the weapon to return to its initial angle change per shot" />
+            <ShortEnum CStyleName="angle_change_function" pascalStyleName="AngleChangeFunction" name="angle change function" description="function used to scale between initial and final angle change per shot">
+              <OptionsXRef>enum:function_angle_change_function</OptionsXRef>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="2*sizeof(real)" length="8" />
+            <Pad sizeOfSource="6*sizeof(real)" length="24" />
+            <Block CStyleName="firing_effects" pascalStyleName="FiringEffects" name="firing effects" description="firing effects determine what happens when this trigger is fired" maxElementCount="3" maxElementCountSource="k_weapon_barrel_effect_count">
+              <LayoutXRef>block:barrel_firing_effect</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="sizeof(real)*2" length="8" />
+    </FieldSet>
+    <FieldSet version="2" sizeofValue="1200" sizeofSource="sizeof(_weapon_definition_v3)" parentVersion="0">
+      <Explanation name="$$$ WEAPON $$$" description="All weapons should have 'primary trigger' and 'secondary trigger' markers as appropriate.&#xA;Blurred permutations are called '$primary-blur' and '$secondary-blur'." />
+      <LongFlags CStyleName="weapon_flags" pascalStyleName="WeaponFlags" name="flags">
+        <OptionsXRef>enum:weapon_flags</OptionsXRef>
+      </LongFlags>
+      <OldStringId />
+      <ShortEnum CStyleName="secondary_trigger_mode" pascalStyleName="SecondaryTriggerMode" name="secondary trigger mode">
+        <OptionsXRef>enum:weapon_secondary_trigger_mode</OptionsXRef>
+      </ShortEnum>
+      <ShortInteger CStyleName="maximum_alternate_shots_loaded" pascalStyleName="MaximumAlternateShotsLoaded" name="maximum alternate shots loaded" description="if the second trigger loads alternate ammunition, this is the maximum number of shots that can be loaded at a time" />
+      <Real CStyleName="turn_on_time" pascalStyleName="TurnOnTime" name="turn on time" description="how long after being readied it takes this weapon to switch its 'turned_on' attachment to 1.0" />
+      <Explanation name="old obsolete export to functions" />
+      <Pad sizeOfSource="sizeof(long) * 1" length="4" />
+      <Real CStyleName="ready_time" pascalStyleName="ReadyTime" name="ready time" units="seconds" />
+      <TagReference CStyleName="ready_effect" pascalStyleName="ReadyEffect" name="ready effect">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="ready_damage_effect" pascalStyleName="ReadyDamageEffect" name="ready damage effect">
+        <tag>jpt!</tag>
+      </TagReference>
+      <Explanation name="heat" />
+      <RealFraction CStyleName="heat_recovery_threshold" pascalStyleName="HeatRecoveryThreshold" name="heat recovery threshold" units="[0,1]" description="the heat value a weapon must return to before leaving the overheated state, once it has become overheated in the first place" />
+      <RealFraction CStyleName="overheated_threshold" pascalStyleName="OverheatedThreshold" name="overheated threshold" units="[0,1]" description="the heat value over which a weapon first becomes overheated (should be greater than the heat recovery threshold)" />
+      <RealFraction CStyleName="heat_detonation_threshold" pascalStyleName="HeatDetonationThreshold" name="heat detonation threshold" units="[0,1]" description="the heat value above which the weapon has a chance of exploding each time it is fired" />
+      <RealFraction CStyleName="heat_detonation_fraction" pascalStyleName="HeatDetonationFraction" name="heat detonation fraction" units="[0,1]" description="the percent chance (between 0.0 and 1.0) the weapon will explode when fired over the heat detonation threshold" />
+      <RealFraction CStyleName="heat_loss_per_second" pascalStyleName="HeatLossPerSecond" name="heat loss per second" units="[0,1]" description="the amount of heat lost each second when the weapon is not being fired" />
+      <RealFraction CStyleName="heat_illumination" pascalStyleName="HeatIllumination" name="heat illumination" units="[0,1]" description="the amount of illumination given off when the weapon is overheated" />
+      <RealFraction CStyleName="overheated_heat_loss_per_second" pascalStyleName="OverheatedHeatLossPerSecond" name="overheated heat loss per second" units="[0,1]" description="the amount of heat lost each second when the weapon is not being fired" />
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <TagReference CStyleName="overheated" pascalStyleName="Overheated" name="overheated">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="overheated_damage_effect" pascalStyleName="OverheatedDamageEffect" name="overheated damage effect">
+        <tag>jpt!</tag>
+      </TagReference>
+      <TagReference CStyleName="detonation" pascalStyleName="Detonation" name="detonation">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="weapon_detonation_damage_effect" pascalStyleName="WeaponDetonationDamageEffect" name="detonation damage effect">
+        <tag>jpt!</tag>
+      </TagReference>
+      <TagReference CStyleName="player_melee_damage" pascalStyleName="PlayerMeleeDamage" name="player melee damage">
+        <tag>jpt!</tag>
+      </TagReference>
+      <TagReference CStyleName="player_melee_response" pascalStyleName="PlayerMeleeResponse" name="player melee response">
+        <tag>jpt!</tag>
+      </TagReference>
+      <Explanation name="melee aim assist" description="magnetism angle: the maximum angle that magnetism works at full strength&#xA;magnetism range: the maximum distance that magnetism works at full strength&#xA;throttle magnitude: additional throttle to apply towards target when melee-ing w/ magnetism&#xA;throttle minimum distance: minimum distance to target that throttle magnetism kicks in&#xA;throttle maximum adjustment angle: maximum angle throttle magnetism will have an effect, relative to the players movement throttle&#xA;" />
+      <Struct CStyleName="melee_aim_assist" pascalStyleName="MeleeAimAssist" name="melee aim assist">
+        <LayoutXRef>structure:melee_aim_assist</LayoutXRef>
+      </Struct>
+      <Explanation name="melee damage parameters" description="damage pyramid angles: defines the frustum from the camera that the melee-attack uses to find targets&#xA;damage pyramid depth: how far the melee attack searches for a target" />
+      <Struct CStyleName="melee_damage_parameters" pascalStyleName="MeleeDamageParameters" name="melee damage parameters">
+        <LayoutXRef>structure:melee_damage_parameters</LayoutXRef>
+      </Struct>
+      <CharEnum CStyleName="melee_damage_reporting_type" pascalStyleName="MeleeDamageReportingType" name="melee damage reporting type">
+        <OptionsXRef>enum:weapon_damage_type</OptionsXRef>
+      </CharEnum>
+      <Pad sizeOfSource="sizeof(byte)*3" length="3" />
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Explanation name="zoom" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <ShortInteger CStyleName="magnification_levels" pascalStyleName="MagnificationLevels" name="magnification levels" description="the number of magnification levels this weapon allows" />
+      <RealBounds CStyleName="magnification_range" pascalStyleName="MagnificationRange" name="magnification range" />
+      <Explanation name="weapon aim assist" />
+      <Struct CStyleName="weapon_aim_assist" pascalStyleName="WeaponAimAssist" name="weapon aim assist">
+        <LayoutXRef>structure:aim_assist</LayoutXRef>
+      </Struct>
+      <Explanation name="movement" />
+      <ShortEnum CStyleName="movement_penalized" pascalStyleName="MovementPenalized" name="movement penalized">
+        <OptionsXRef>enum:weapon_movement_penalized</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <RealFraction CStyleName="forward_movement_penalty" pascalStyleName="ForwardMovementPenalty" name="forward movement penalty" description="percent slowdown to forward movement for units carrying this weapon" />
+      <RealFraction CStyleName="sideways_movement_penalty" pascalStyleName="SidewaysMovementPenalty" name="sideways movement penalty" description="percent slowdown to sideways and backward movement for units carrying this weapon" />
+      <Pad sizeOfSource="sizeof(real)" length="4" />
+      <Explanation name="AI targeting parameters" />
+      <Pad sizeOfSource="2*sizeof(real)" length="8" />
+      <Real CStyleName="ai_scariness" pascalStyleName="AiScariness" name="AI scariness" />
+      <Explanation name="miscellaneous" />
+      <Real CStyleName="weapon_power_on_time" pascalStyleName="WeaponPowerOnTime" name="weapon power-on time" units="seconds" />
+      <Real CStyleName="weapon_power_off_time" pascalStyleName="WeaponPowerOffTime" name="weapon power-off time" units="seconds" />
+      <TagReference CStyleName="weapon_power_on_effect" pascalStyleName="WeaponPowerOnEffect" name="weapon power-on effect">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="weapon_power_off_effect" pascalStyleName="WeaponPowerOffEffect" name="weapon power-off effect">
+        <tag />
+      </TagReference>
+      <Pad sizeOfSource="sizeof(long)*8" length="32" />
+      <Real CStyleName="age_heat_recovery_penalty" pascalStyleName="AgeHeatRecoveryPenalty" name="age heat recovery penalty" description="how much the weapon's heat recovery is penalized as it ages" />
+      <Real CStyleName="age_rate_of_fire_penalty" pascalStyleName="AgeRateOfFirePenalty" name="age rate of fire penalty" description="how much the weapon's rate of fire is penalized as it ages" />
+      <RealFraction CStyleName="age_misfire_start" pascalStyleName="AgeMisfireStart" name="age misfire start" units="[0,1]" description="the age threshold when the weapon begins to misfire" />
+      <RealFraction CStyleName="age_misfire_chance" pascalStyleName="AgeMisfireChance" name="age misfire chance" units="[0,1]" description="at age 1.0, the misfire chance per shot" />
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <TagReference CStyleName="pickup_sound" pascalStyleName="PickupSound" name="pickup sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="zoom_in_sound" pascalStyleName="ZoomInSound" name="zoom-in sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="zoom_out_sound" pascalStyleName="ZoomOutSound" name="zoom-out sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <Real CStyleName="active_camo_ding" pascalStyleName="ActiveCamoDing" name="active camo ding" description="how much to decrease active camo when a round is fired" />
+      <Real CStyleName="active_camo_regrowth_rate" pascalStyleName="ActiveCamoRegrowthRate" name="active camo regrowth rate" description="how fast to increase active camo (per tick) when a round is fired" />
+      <StringId CStyleName="handle_node" pascalStyleName="HandleNode" name="handle node" description="the node that get's attached to the unit's hand" />
+      <Explanation name="weapon labels" />
+      <StringId CStyleName="weapon_class" pascalStyleName="WeaponClass" name="weapon class" />
+      <StringId CStyleName="weapon_name" pascalStyleName="WeaponName" name="weapon name" />
+      <ShortEnum CStyleName="multiplayer_weapon_type" pascalStyleName="MultiplayerWeaponType" name="multiplayer weapon type">
+        <OptionsXRef>enum:multiplayer_weapon_type</OptionsXRef>
+      </ShortEnum>
+      <Explanation name="more miscellaneous" />
+      <ShortEnum CStyleName="weapon_type" pascalStyleName="WeaponType" name="weapon type">
+        <OptionsXRef>enum:weapon_type</OptionsXRef>
+      </ShortEnum>
+      <Struct CStyleName="tracking" pascalStyleName="Tracking" name="tracking">
+        <LayoutXRef>structure:weapon_tracking</LayoutXRef>
+      </Struct>
+      <Struct CStyleName="player_interface" pascalStyleName="PlayerInterface" name="player interface">
+        <Layout regolithID="structure:weapon_interface" tag="wItS" internalName="weapon_interface_struct" backingBlockInternalName="weapon_interface_struct_block" name="weapon_interface_struct">
+          <FieldSet version="0" sizeofValue="44" sizeofSource="sizeof(struct weapon_interface_definition_new)" isLatest="true">
+            <Explanation name="interface" />
+            <Struct CStyleName="shared_interface" pascalStyleName="SharedInterface" name="shared interface">
+              <Layout regolithID="structure:weapon_shared_interface" tag="wSiS" internalName="weapon_shared_interface_struct" backingBlockInternalName="weapon_shared_interface_struct_block" name="weapon_shared_interface_struct">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct tag_reference)" isLatest="true">
+                  <Pad sizeOfSource="sizeof(long)*4" length="16" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Block CStyleName="first_person" pascalStyleName="FirstPerson" name="first person" maxElementCount="4" maxElementCountSource="k_player_character_type_count">
+              <Layout regolithID="block:weapon_first_person_interface" internalName="weapon_first_person_interface_block" name="weapon_first_person_interface_block">
+                <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(struct weapon_first_person_interface_definition)" isLatest="true">
+                  <TagReference CStyleName="first_person_model" pascalStyleName="FirstPersonModel" name="first person model">
+                    <tag>mode</tag>
+                  </TagReference>
+                  <TagReference CStyleName="first_person_animations" pascalStyleName="FirstPersonAnimations" name="first person animations">
+                    <tag>jmad</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <TagReference CStyleName="new_hud_interface" pascalStyleName="NewHudInterface" name="new hud interface">
+              <tag>nhdt</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Block CStyleName="weapon_predicted_resources" pascalStyleName="WeaponPredictedResources" name="predicted resources" maxElementCount="2048">
+        <LayoutXRef>block:predicted_resource</LayoutXRef>
+      </Block>
+      <Block CStyleName="magazines" pascalStyleName="Magazines" name="magazines" maxElementCount="2" maxElementCountSource="MAXIMUM_NUMBER_OF_MAGAZINES_PER_WEAPON">
+        <LayoutXRef>block:magazines</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="sizeof(long)*3" length="12" />
+      <Block CStyleName="new_triggers" pascalStyleName="NewTriggers" name="new triggers" maxElementCount="2" maxElementCountSource="k_weapon_trigger_count">
+        <LayoutXRef>block:weapon_triggers</LayoutXRef>
+      </Block>
+      <Block CStyleName="barrels" pascalStyleName="Barrels" name="barrels" maxElementCount="2" maxElementCountSource="k_weapon_barrel_count">
+        <LayoutXRef>block:weapon_barrels</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="sizeof(real)*2" length="8" />
+      <Pad sizeOfSource="4*sizeof(long)" length="16" />
+      <Explanation name="first-person movement control" />
+      <Real CStyleName="max_movement_acceleration" pascalStyleName="MaxMovementAcceleration" name="max movement acceleration" />
+      <Real CStyleName="max_movement_velocity" pascalStyleName="MaxMovementVelocity" name="max movement velocity" />
+      <Real CStyleName="max_turning_acceleration" pascalStyleName="MaxTurningAcceleration" name="max turning acceleration" />
+      <Real CStyleName="max_turning_velocity" pascalStyleName="MaxTurningVelocity" name="max turning velocity" />
+      <Pad sizeOfSource="4*sizeof(long)" length="16" />
+      <TagReference CStyleName="deployed_vehicle" pascalStyleName="DeployedVehicle" name="deployed vehicle">
+        <tag>vehi</tag>
+      </TagReference>
+    </FieldSet>
+    <FieldSet version="3" sizeofValue="1128" sizeofSource="sizeof(_weapon_definition)" parentVersion="0" isLatest="true">
+      <Explanation name="$$$ WEAPON $$$" description="All weapons should have 'primary trigger' and 'secondary trigger' markers as appropriate.&#xA;Blurred permutations are called '$primary-blur' and '$secondary-blur'." />
+      <LongFlags CStyleName="weapon_flags" pascalStyleName="WeaponFlags" name="flags">
+        <OptionsXRef>enum:weapon_flags</OptionsXRef>
+      </LongFlags>
+      <OldStringId />
+      <ShortEnum CStyleName="secondary_trigger_mode" pascalStyleName="SecondaryTriggerMode" name="secondary trigger mode">
+        <OptionsXRef>enum:weapon_secondary_trigger_mode</OptionsXRef>
+      </ShortEnum>
+      <ShortInteger CStyleName="maximum_alternate_shots_loaded" pascalStyleName="MaximumAlternateShotsLoaded" name="maximum alternate shots loaded" description="if the second trigger loads alternate ammunition, this is the maximum number of shots that can be loaded at a time" />
+      <Real CStyleName="turn_on_time" pascalStyleName="TurnOnTime" name="turn on time" description="how long after being readied it takes this weapon to switch its 'turned_on' attachment to 1.0" />
+      <Explanation name="old obsolete export to functions" />
+      <Real CStyleName="ready_time" pascalStyleName="ReadyTime" name="ready time" units="seconds" />
+      <TagReference CStyleName="ready_effect" pascalStyleName="ReadyEffect" name="ready effect">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="ready_damage_effect" pascalStyleName="ReadyDamageEffect" name="ready damage effect">
+        <tag>jpt!</tag>
+      </TagReference>
+      <Explanation name="heat" />
+      <RealFraction CStyleName="heat_recovery_threshold" pascalStyleName="HeatRecoveryThreshold" name="heat recovery threshold" units="[0,1]" description="the heat value a weapon must return to before leaving the overheated state, once it has become overheated in the first place" />
+      <RealFraction CStyleName="overheated_threshold" pascalStyleName="OverheatedThreshold" name="overheated threshold" units="[0,1]" description="the heat value over which a weapon first becomes overheated (should be greater than the heat recovery threshold)" />
+      <RealFraction CStyleName="heat_detonation_threshold" pascalStyleName="HeatDetonationThreshold" name="heat detonation threshold" units="[0,1]" description="the heat value above which the weapon has a chance of exploding each time it is fired" />
+      <RealFraction CStyleName="heat_detonation_fraction" pascalStyleName="HeatDetonationFraction" name="heat detonation fraction" units="[0,1]" description="the percent chance (between 0.0 and 1.0) the weapon will explode when fired over the heat detonation threshold" />
+      <RealFraction CStyleName="heat_loss_per_second" pascalStyleName="HeatLossPerSecond" name="heat loss per second" units="[0,1]" description="the amount of heat lost each second when the weapon is not being fired" />
+      <RealFraction CStyleName="heat_illumination" pascalStyleName="HeatIllumination" name="heat illumination" units="[0,1]" description="the amount of illumination given off when the weapon is overheated" />
+      <RealFraction CStyleName="overheated_heat_loss_per_second" pascalStyleName="OverheatedHeatLossPerSecond" name="overheated heat loss per second" units="[0,1]" description="the amount of heat lost each second when the weapon is not being fired" />
+      <TagReference CStyleName="overheated" pascalStyleName="Overheated" name="overheated">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="overheated_damage_effect" pascalStyleName="OverheatedDamageEffect" name="overheated damage effect">
+        <tag>jpt!</tag>
+      </TagReference>
+      <TagReference CStyleName="detonation" pascalStyleName="Detonation" name="detonation">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="weapon_detonation_damage_effect" pascalStyleName="WeaponDetonationDamageEffect" name="detonation damage effect">
+        <tag>jpt!</tag>
+      </TagReference>
+      <TagReference CStyleName="player_melee_damage" pascalStyleName="PlayerMeleeDamage" name="player melee damage">
+        <tag>jpt!</tag>
+      </TagReference>
+      <TagReference CStyleName="player_melee_response" pascalStyleName="PlayerMeleeResponse" name="player melee response">
+        <tag>jpt!</tag>
+      </TagReference>
+      <Explanation name="melee aim assist" description="magnetism angle: the maximum angle that magnetism works at full strength&#xA;magnetism range: the maximum distance that magnetism works at full strength&#xA;throttle magnitude: additional throttle to apply towards target when melee-ing w/ magnetism&#xA;throttle minimum distance: minimum distance to target that throttle magnetism kicks in&#xA;throttle maximum adjustment angle: maximum angle throttle magnetism will have an effect, relative to the players movement throttle&#xA;" />
+      <Struct CStyleName="melee_aim_assist" pascalStyleName="MeleeAimAssist" name="melee aim assist">
+        <LayoutXRef>structure:melee_aim_assist</LayoutXRef>
+      </Struct>
+      <Explanation name="melee damage parameters" description="damage pyramid angles: defines the frustum from the camera that the melee-attack uses to find targets&#xA;damage pyramid depth: how far the melee attack searches for a target" />
+      <Struct CStyleName="melee_damage_parameters" pascalStyleName="MeleeDamageParameters" name="melee damage parameters">
+        <LayoutXRef>structure:melee_damage_parameters</LayoutXRef>
+      </Struct>
+      <CharEnum CStyleName="melee_damage_reporting_type" pascalStyleName="MeleeDamageReportingType" name="melee damage reporting type">
+        <OptionsXRef>enum:weapon_damage_type</OptionsXRef>
+      </CharEnum>
+      <Pad sizeOfSource="sizeof(byte)*1" length="1" />
+      <Explanation name="zoom" />
+      <ShortInteger CStyleName="magnification_levels" pascalStyleName="MagnificationLevels" name="magnification levels" description="the number of magnification levels this weapon allows" />
+      <RealBounds CStyleName="magnification_range" pascalStyleName="MagnificationRange" name="magnification range" />
+      <Explanation name="weapon aim assist" />
+      <Struct CStyleName="weapon_aim_assist" pascalStyleName="WeaponAimAssist" name="weapon aim assist">
+        <LayoutXRef>structure:aim_assist</LayoutXRef>
+      </Struct>
+      <Explanation name="movement" />
+      <ShortEnum CStyleName="movement_penalized" pascalStyleName="MovementPenalized" name="movement penalized">
+        <OptionsXRef>enum:weapon_movement_penalized</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <RealFraction CStyleName="forward_movement_penalty" pascalStyleName="ForwardMovementPenalty" name="forward movement penalty" description="percent slowdown to forward movement for units carrying this weapon" />
+      <RealFraction CStyleName="sideways_movement_penalty" pascalStyleName="SidewaysMovementPenalty" name="sideways movement penalty" description="percent slowdown to sideways and backward movement for units carrying this weapon" />
+      <UselessPad length="4" />
+      <Explanation name="AI targeting parameters" />
+      <Real CStyleName="ai_scariness" pascalStyleName="AiScariness" name="AI scariness" />
+      <Explanation name="miscellaneous" />
+      <Real CStyleName="weapon_power_on_time" pascalStyleName="WeaponPowerOnTime" name="weapon power-on time" units="seconds" />
+      <Real CStyleName="weapon_power_off_time" pascalStyleName="WeaponPowerOffTime" name="weapon power-off time" units="seconds" />
+      <TagReference CStyleName="weapon_power_on_effect" pascalStyleName="WeaponPowerOnEffect" name="weapon power-on effect">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="weapon_power_off_effect" pascalStyleName="WeaponPowerOffEffect" name="weapon power-off effect">
+        <tag />
+      </TagReference>
+      <Real CStyleName="age_heat_recovery_penalty" pascalStyleName="AgeHeatRecoveryPenalty" name="age heat recovery penalty" description="how much the weapon's heat recovery is penalized as it ages" />
+      <Real CStyleName="age_rate_of_fire_penalty" pascalStyleName="AgeRateOfFirePenalty" name="age rate of fire penalty" description="how much the weapon's rate of fire is penalized as it ages" />
+      <RealFraction CStyleName="age_misfire_start" pascalStyleName="AgeMisfireStart" name="age misfire start" units="[0,1]" description="the age threshold when the weapon begins to misfire" />
+      <RealFraction CStyleName="age_misfire_chance" pascalStyleName="AgeMisfireChance" name="age misfire chance" units="[0,1]" description="at age 1.0, the misfire chance per shot" />
+      <TagReference CStyleName="pickup_sound" pascalStyleName="PickupSound" name="pickup sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="zoom_in_sound" pascalStyleName="ZoomInSound" name="zoom-in sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="zoom_out_sound" pascalStyleName="ZoomOutSound" name="zoom-out sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <Real CStyleName="active_camo_ding" pascalStyleName="ActiveCamoDing" name="active camo ding" description="how much to decrease active camo when a round is fired" />
+      <Real CStyleName="active_camo_regrowth_rate" pascalStyleName="ActiveCamoRegrowthRate" name="active camo regrowth rate" description="how fast to increase active camo (per tick) when a round is fired" />
+      <StringId CStyleName="handle_node" pascalStyleName="HandleNode" name="handle node" description="the node that get's attached to the unit's hand" />
+      <Explanation name="weapon labels" />
+      <StringId CStyleName="weapon_class" pascalStyleName="WeaponClass" name="weapon class" />
+      <StringId CStyleName="weapon_name" pascalStyleName="WeaponName" name="weapon name" />
+      <ShortEnum CStyleName="multiplayer_weapon_type" pascalStyleName="MultiplayerWeaponType" name="multiplayer weapon type">
+        <OptionsXRef>enum:multiplayer_weapon_type</OptionsXRef>
+      </ShortEnum>
+      <Explanation name="more miscellaneous" />
+      <ShortEnum CStyleName="weapon_type" pascalStyleName="WeaponType" name="weapon type">
+        <OptionsXRef>enum:weapon_type</OptionsXRef>
+      </ShortEnum>
+      <Struct CStyleName="tracking" pascalStyleName="Tracking" name="tracking">
+        <LayoutXRef>structure:weapon_tracking</LayoutXRef>
+      </Struct>
+      <Struct CStyleName="player_interface" pascalStyleName="PlayerInterface" name="player interface">
+        <LayoutXRef>structure:weapon_interface</LayoutXRef>
+      </Struct>
+      <Block CStyleName="weapon_predicted_resources" pascalStyleName="WeaponPredictedResources" name="predicted resources" maxElementCount="2048">
+        <LayoutXRef>block:predicted_resource</LayoutXRef>
+      </Block>
+      <Block CStyleName="magazines" pascalStyleName="Magazines" name="magazines" maxElementCount="2" maxElementCountSource="MAXIMUM_NUMBER_OF_MAGAZINES_PER_WEAPON">
+        <LayoutXRef>block:magazines</LayoutXRef>
+      </Block>
+      <Block CStyleName="new_triggers" pascalStyleName="NewTriggers" name="new triggers" maxElementCount="2" maxElementCountSource="k_weapon_trigger_count">
+        <LayoutXRef>block:weapon_triggers</LayoutXRef>
+      </Block>
+      <Block CStyleName="barrels" pascalStyleName="Barrels" name="barrels" maxElementCount="2" maxElementCountSource="k_weapon_barrel_count">
+        <LayoutXRef>block:weapon_barrels</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="sizeof(real)*2" length="8" />
+      <UselessPad length="16" />
+      <Explanation name="first-person movement control" />
+      <Real CStyleName="max_movement_acceleration" pascalStyleName="MaxMovementAcceleration" name="max movement acceleration" />
+      <Real CStyleName="max_movement_velocity" pascalStyleName="MaxMovementVelocity" name="max movement velocity" />
+      <Real CStyleName="max_turning_acceleration" pascalStyleName="MaxTurningAcceleration" name="max turning acceleration" />
+      <Real CStyleName="max_turning_velocity" pascalStyleName="MaxTurningVelocity" name="max turning velocity" />
+      <TagReference CStyleName="deployed_vehicle" pascalStyleName="DeployedVehicle" name="deployed vehicle">
+        <tag>vehi</tag>
+      </TagReference>
+      <TagReference CStyleName="age_effect" pascalStyleName="AgeEffect" name="age effect">
+        <tag>effe</tag>
+      </TagReference>
+      <TagReference CStyleName="aged_weapon" pascalStyleName="AgedWeapon" name="aged weapon">
+        <tag>weap</tag>
+      </TagReference>
+      <RealVector3D CStyleName="first_person_weapon_offset" pascalStyleName="FirstPersonWeaponOffset" name="first person weapon offset" />
+      <RealVector2D CStyleName="first_person_scope_size" pascalStyleName="FirstPersonScopeSize" name="first person scope size" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

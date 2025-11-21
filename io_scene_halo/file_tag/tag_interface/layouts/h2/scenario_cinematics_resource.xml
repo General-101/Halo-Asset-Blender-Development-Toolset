@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="cin*" name="scenario_cinematics_resource" version="1">
+  <Layout regolithID="block:scenario_cinematics_resource" internalName="scenario_cinematics_resource_block" name="scenario_cinematics_resource">
+    <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(struct scenario_cinematics_resource_definition)" isLatest="true">
+      <Block CStyleName="flags" pascalStyleName="Flags" name="flags" maxElementCount="512" maxElementCountSource="MAXIMUM_CUTSCENE_FLAGS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_cutscene_flag</LayoutXRef>
+      </Block>
+      <Block CStyleName="camera_points" pascalStyleName="CameraPoints" name="camera points" maxElementCount="512" maxElementCountSource="MAXIMUM_CUTSCENE_CAMERA_POINTS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_cutscene_camera_point</LayoutXRef>
+      </Block>
+      <Block CStyleName="recorded_animations" pascalStyleName="RecordedAnimations" name="recorded animations" maxElementCount="1024" maxElementCountSource="MAXIMUM_RECORDED_ANIMATIONS_PER_MAP">
+        <LayoutXRef>block:recorded_animation</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="dgr*" name="scenario_devices_resource" version="1">
+  <Layout regolithID="block:scenario_devices_resource" internalName="scenario_devices_resource_block" name="scenario_devices_resource">
+    <FieldSet version="0" sizeofValue="144" sizeofSource="sizeof(struct scenario_devices_resource_definition)" isLatest="true">
+      <Block CStyleName="names" pascalStyleName="Names" name="names" maxElementCount="640" maxElementCountSource="MAXIMUM_OBJECT_NAMES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_object_names</LayoutXRef>
+      </Block>
+      <Block CStyleName="going_away" pascalStyleName="GoingAway" name="going away" readOnly="true" expertOnly="true" maxElementCount="4096" maxElementCountSource="MAXIMUM_ENVIRONMENT_OBJECTS_PER_SCENARIO">
+        <LayoutXRef>block:dont_use_me_scenario_environment_object</LayoutXRef>
+      </Block>
+      <Block CStyleName="structure_references" pascalStyleName="StructureReferences" name="structure references" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_structure_bsp_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="device_groups" pascalStyleName="DeviceGroups" name="device groups" maxElementCount="128" maxElementCountSource="MAXIMUM_DEVICE_GROUPS_PER_SCENARIO">
+        <LayoutXRef>block:device_group</LayoutXRef>
+      </Block>
+      <Block CStyleName="machines" pascalStyleName="Machines" name="machines" maxElementCount="400" maxElementCountSource="MAXIMUM_MACHINE_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_machine</LayoutXRef>
+      </Block>
+      <Block CStyleName="machine_palette" pascalStyleName="MachinePalette" name="machine palette" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_machine_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="controls" pascalStyleName="Controls" name="controls" maxElementCount="100" maxElementCountSource="MAXIMUM_CONTROL_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_control</LayoutXRef>
+      </Block>
+      <Block CStyleName="control_palette" pascalStyleName="ControlPalette" name="control palette" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_control_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="light_fixtures" pascalStyleName="LightFixtures" name="light fixtures" maxElementCount="500" maxElementCountSource="MAXIMUM_LIGHT_FIXTURE_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_light_fixture</LayoutXRef>
+      </Block>
+      <Block CStyleName="light_fixture_palette" pascalStyleName="LightFixturePalette" name="light fixture palette" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_light_fixture_palette</LayoutXRef>
+      </Block>
+      <LongInteger CStyleName="next_machine_id_salt" pascalStyleName="NextMachineIdSalt" name="next machine id salt" readOnly="true" />
+      <LongInteger CStyleName="next_control_id_salt" pascalStyleName="NextControlIdSalt" name="next control id salt" readOnly="true" />
+      <LongInteger CStyleName="next_light_fixture_id_salt" pascalStyleName="NextLightFixtureIdSalt" name="next light fixture id salt" readOnly="true" />
+      <Block CStyleName="editor_folders" pascalStyleName="EditorFolders" name="editor folders" readOnly="true" maxElementCount="32767" maxElementCountSource="k_maximum_scenario_editor_folders">
+        <LayoutXRef>block:g_scenario_editor_folder</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

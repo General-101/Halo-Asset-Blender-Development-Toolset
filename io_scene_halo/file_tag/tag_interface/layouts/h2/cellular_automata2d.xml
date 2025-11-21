@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="whip" name="cellular_automata2d" version="1">
+  <Layout regolithID="block:cellular_automata2d" internalName="cellular_automata2d_block" name="cellular_automata2d">
+    <FieldSet version="0" sizeofValue="556" sizeofSource="sizeof(struct ca2d_definition)" isLatest="true">
+      <Explanation name="properties" />
+      <ShortInteger CStyleName="updates_per_second" pascalStyleName="UpdatesPerSecond" name="updates per second" units="Hz" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Real CStyleName="dead_cell_penalty" pascalStyleName="DeadCellPenalty" name="dead cell penalty" />
+      <Real CStyleName="live_cell_bonus" pascalStyleName="LiveCellBonus" name="live cell bonus" />
+      <Pad sizeOfSource="20*sizeof(long)" length="80" />
+      <Explanation name="height map" />
+      <ShortInteger name="width" units="cells" />
+      <ShortInteger name="height" units="cells" />
+      <Real name="cell width" units="world units" />
+      <Real name="height" units="world units" />
+      <RealVector2D name="velocity" units="cells/update" />
+      <Pad sizeOfSource="7*sizeof(long)" length="28" />
+      <OldStringId name="marker" />
+      <LongFlags CStyleName="interpolation_flags" pascalStyleName="InterpolationFlags" name="interpolation flags">
+        <OptionsXRef>enum:color_interpolation_flags</OptionsXRef>
+      </LongFlags>
+      <RealRgbColor CStyleName="base_color" pascalStyleName="BaseColor" name="base color" />
+      <RealRgbColor CStyleName="peak_color" pascalStyleName="PeakColor" name="peak color" />
+      <Pad sizeOfSource="19*sizeof(long)" length="76" />
+      <Explanation name="detail map" />
+      <ShortInteger name="width" units="cells" />
+      <ShortInteger name="height" units="cells" />
+      <Real name="cell width" units="world units" />
+      <RealVector2D name="velocity" units="cells/update" />
+      <Pad sizeOfSource="12*sizeof(long)" length="48" />
+      <OldStringId name="marker" />
+      <ShortInteger CStyleName="texture_width" pascalStyleName="TextureWidth" name="texture width" units="cells" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Pad sizeOfSource="12*sizeof(long)" length="48" />
+      <TagReference CStyleName="texture" pascalStyleName="Texture" name="texture">
+        <tag>bitm</tag>
+      </TagReference>
+      <Pad sizeOfSource="40*sizeof(long)" length="160" />
+      <Block CStyleName="rules" pascalStyleName="Rules" name="rules" maxElementCount="16" maxElementCountSource="MAXIMUM_RULES_PER_CA">
+        <Layout regolithID="block:rules" internalName="rules_block" name="rules_block">
+          <FieldSet version="0" sizeofValue="88" sizeofSource="sizeof(struct ca2d_rule)" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+            <RealRgbColor CStyleName="tint_color" pascalStyleName="TintColor" name="tint color" />
+            <Pad sizeOfSource="8*sizeof(long)" length="32" />
+            <Block CStyleName="states" pascalStyleName="States" name="states" maxElementCount="16" maxElementCountSource="MAXIMUM_STATES_PER_RULE">
+              <Layout regolithID="block:states" internalName="states_block" name="states_block">
+                <FieldSet version="0" sizeofValue="96" sizeofSource="sizeof(struct ca2d_rule_state)" isLatest="true">
+                  <String CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+                  <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+                  <ShortInteger CStyleName="counts_as" pascalStyleName="CountsAs" name="counts as" units="neighbors" />
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <Real CStyleName="initial_placement_weight" pascalStyleName="InitialPlacementWeight" name="initial placement weight" />
+                  <Pad sizeOfSource="6*sizeof(long)" length="24" />
+                  <ShortBlockIndex CStyleName="zero" pascalStyleName="Zero" name="zero" blockReference="block:states" />
+                  <ShortBlockIndex CStyleName="one" pascalStyleName="One" name="one" blockReference="block:states" />
+                  <ShortBlockIndex CStyleName="two" pascalStyleName="Two" name="two" blockReference="block:states" />
+                  <ShortBlockIndex CStyleName="three" pascalStyleName="Three" name="three" blockReference="block:states" />
+                  <ShortBlockIndex CStyleName="four" pascalStyleName="Four" name="four" blockReference="block:states" />
+                  <ShortBlockIndex CStyleName="five" pascalStyleName="Five" name="five" blockReference="block:states" />
+                  <ShortBlockIndex CStyleName="six" pascalStyleName="Six" name="six" blockReference="block:states" />
+                  <ShortBlockIndex CStyleName="seven" pascalStyleName="Seven" name="seven" blockReference="block:states" />
+                  <ShortBlockIndex CStyleName="eight" pascalStyleName="Eight" name="eight" blockReference="block:states" />
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="/**/" name="scenario_comments_resource" version="1">
+  <Layout regolithID="block:scenario_comments_resource" internalName="scenario_comments_resource_block" name="scenario_comments_resource">
+    <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_scenario_comment_flags_resource)" isLatest="true">
+      <Block CStyleName="comments" pascalStyleName="Comments" name="comments" maxElementCount="65536" maxElementCountSource="MAXIMUM_EDITOR_COMMENTS">
+        <LayoutXRef>block:editor_comment</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

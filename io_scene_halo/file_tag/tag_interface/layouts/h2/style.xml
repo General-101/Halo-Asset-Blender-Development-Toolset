@@ -1,0 +1,260 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="styl" name="style" version="1">
+  <Layout regolithID="block:style" internalName="style_block" name="style">
+    <FieldSet version="0" sizeofValue="100" sizeofSource="sizeof(struct style_definition)" isLatest="true">
+      <String CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+      <Explanation name="Combat status decay options" description="Controls how combat status is allowed to be automatically reduced in the absence of combat stimuli. 'Latch at X' means that once the level of x is attained (and/or surpassed) the combat status never falls below it" />
+      <ShortEnum CStyleName="combat_status_decay_options" pascalStyleName="CombatStatusDecayOptions" name="Combat status decay options">
+        <Options regolithID="enum:style_combat_status_latch_level" CStyleName="style_combat_status_latch_level" pascalStyleName="StyleCombatStatusLatchLevel">
+          <Enum name="Latch at Idle" CStyleName="latch_at_idle" pascalStyleName="LatchAtIdle" />
+          <Enum name="Latch at Alert" CStyleName="latch_at_alert" pascalStyleName="LatchAtAlert" />
+          <Enum name="Latch at Combat" CStyleName="latch_at_combat" pascalStyleName="LatchAtCombat" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Explanation name="Atittude" description="Indicates general stance for style. This matches the property blocks in the character definition (e.g. defense properties)" />
+      <ShortEnum CStyleName="attitude" pascalStyleName="Attitude" name="Attitude">
+        <OptionsXRef>enum:vocalization_attitude</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <CharEnum CStyleName="engage_attitude" pascalStyleName="EngageAttitude" name="engage attitude">
+        <Options regolithID="enum:style_attitude" CStyleName="style_attitude" pascalStyleName="StyleAttitude">
+          <Enum name="Default" CStyleName="default_value" pascalStyleName="Default" />
+          <Enum name="Normal" CStyleName="normal" pascalStyleName="Normal" />
+          <Enum name="Timid" CStyleName="timid" pascalStyleName="Timid" />
+          <Enum name="Aggressive" CStyleName="aggressive" pascalStyleName="Aggressive" />
+        </Options>
+      </CharEnum>
+      <CharEnum CStyleName="evasion_attitude" pascalStyleName="EvasionAttitude" name="evasion attitude">
+        <OptionsXRef>enum:style_attitude</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="cover_attitude" pascalStyleName="CoverAttitude" name="cover attitude">
+        <OptionsXRef>enum:style_attitude</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="search_attitude" pascalStyleName="SearchAttitude" name="search attitude">
+        <OptionsXRef>enum:style_attitude</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="presearch_attitude" pascalStyleName="PresearchAttitude" name="presearch attitude">
+        <OptionsXRef>enum:style_attitude</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="retreat_attitude" pascalStyleName="RetreatAttitude" name="retreat attitude">
+        <OptionsXRef>enum:style_attitude</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="charge_attitude" pascalStyleName="ChargeAttitude" name="charge attitude">
+        <OptionsXRef>enum:style_attitude</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="ready_attitude" pascalStyleName="ReadyAttitude" name="ready attitude">
+        <OptionsXRef>enum:style_attitude</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="idle_attitude" pascalStyleName="IdleAttitude" name="idle attitude">
+        <OptionsXRef>enum:style_attitude</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="weapon_attitude" pascalStyleName="WeaponAttitude" name="weapon attitude">
+        <OptionsXRef>enum:style_attitude</OptionsXRef>
+      </CharEnum>
+      <CharEnum CStyleName="swarm_attitude" pascalStyleName="SwarmAttitude" name="swarm attitude">
+        <OptionsXRef>enum:style_attitude</OptionsXRef>
+      </CharEnum>
+      <Pad sizeOfSource="1*sizeof(char)" length="1" />
+      <UselessPad length="24" />
+      <Explanation name="Style Behavior Control" description="Check the appropriate box to turn on/off the given behavior" />
+      <LongFlags CStyleName="style_control" pascalStyleName="StyleControl" name="Style control">
+        <Options regolithID="enum:style_control" CStyleName="style_control" pascalStyleName="StyleControl">
+          <Bit name="New behaviors default to ON" CStyleName="new_behaviors_default_to_on_bit" pascalStyleName="NewBehaviorsDefaultToOnBit" />
+        </Options>
+      </LongFlags>
+      <LongFlags CStyleName="behaviors1" pascalStyleName="Behaviors1" name="Behaviors1">
+        <Options regolithID="enum:style_behavior1" CStyleName="style_behavior1" pascalStyleName="StyleBehavior1">
+          <Bit name="------GENERAL------" CStyleName="_______general_______bit" pascalStyleName="GeneralBit" />
+          <Bit name="root" CStyleName="root_bit" pascalStyleName="RootBit" />
+          <Bit name="null" CStyleName="null_bit" pascalStyleName="NullBit" />
+          <Bit name="null_discrete" CStyleName="null_discrete_bit" pascalStyleName="NullDiscreteBit" />
+          <Bit name="obey" CStyleName="obey_bit" pascalStyleName="ObeyBit" />
+          <Bit name="guard" CStyleName="guard_bit" pascalStyleName="GuardBit" />
+          <Bit name="follow behavior" CStyleName="follow_behavior_bit" pascalStyleName="FollowBehaviorBit" />
+          <Bit name="ready" CStyleName="ready_bit" pascalStyleName="ReadyBit" />
+          <Bit name="smash_obstacle" CStyleName="smash_obstacle_bit" pascalStyleName="SmashObstacleBit" />
+          <Bit name="destroy_obstacle" CStyleName="destroy_obstacle_bit" pascalStyleName="DestroyObstacleBit" />
+          <Bit name="perch" CStyleName="perch_bit" pascalStyleName="PerchBit" />
+          <Bit name="cover_friend" CStyleName="cover_friend_bit" pascalStyleName="CoverFriendBit" />
+          <Bit name="blind_panic" CStyleName="blind_panic_bit" pascalStyleName="BlindPanicBit" />
+          <Bit name="------ENGAGE------" CStyleName="_______engage_______bit" pascalStyleName="EngageBit" />
+          <Bit name="engage" CStyleName="engage_bit" pascalStyleName="Unnamed14Bit" />
+          <Bit name="fight" CStyleName="fight_bit" pascalStyleName="FightBit" />
+          <Bit name="melee_charge" CStyleName="melee_charge_bit" pascalStyleName="MeleeChargeBit" />
+          <Bit name="melee_leaping_charge" CStyleName="melee_leaping_charge_bit" pascalStyleName="MeleeLeapingChargeBit" />
+          <Bit name="surprise" CStyleName="surprise_bit" pascalStyleName="SurpriseBit" />
+          <Bit name="grenade_impulse" CStyleName="grenade_impulse_bit" pascalStyleName="GrenadeImpulseBit" />
+          <Bit name="anti_vehicle_grenade" CStyleName="anti_vehicle_grenade_bit" pascalStyleName="AntiVehicleGrenadeBit" />
+          <Bit name="stalk" CStyleName="stalk_bit" pascalStyleName="StalkBit" />
+          <Bit name="berserk_wander_impulse" CStyleName="berserk_wander_impulse_bit" pascalStyleName="BerserkWanderImpulseBit" />
+          <Bit name="------BERSERK------" CStyleName="_______berserk_______bit" pascalStyleName="BerserkBit" />
+          <Bit name="last_man_berserk" CStyleName="last_man_berserk_bit" pascalStyleName="LastManBerserkBit" />
+          <Bit name="stuck_with_grenade_berserk" CStyleName="stuck_with_grenade_berserk_bit" pascalStyleName="StuckWithGrenadeBerserkBit" />
+          <Bit name="------PRESEARCH------" CStyleName="_______presearch_______bit" pascalStyleName="PresearchBit" />
+          <Bit name="presearch" CStyleName="presearch_bit" pascalStyleName="Unnamed27Bit" />
+          <Bit name="presearch uncover" CStyleName="presearch_uncover_bit" pascalStyleName="PresearchUncoverBit" />
+          <Bit name="destroy_cover" CStyleName="destroy_cover_bit" pascalStyleName="DestroyCoverBit" />
+          <Bit name="suppressing fire" CStyleName="suppressing_fire_bit" pascalStyleName="SuppressingFireBit" />
+          <Bit name="grenade_uncover" CStyleName="grenade_uncover_bit" pascalStyleName="GrenadeUncoverBit" />
+        </Options>
+      </LongFlags>
+      <LongFlags CStyleName="behaviors2" pascalStyleName="Behaviors2" name="Behaviors2">
+        <Options regolithID="enum:style_behavior2" CStyleName="style_behavior2" pascalStyleName="StyleBehavior2">
+          <Bit name="leap_on_cover" CStyleName="leap_on_cover_bit" pascalStyleName="LeapOnCoverBit" />
+          <Bit name="------SEARCH------" CStyleName="_______search_______bit" pascalStyleName="SearchBit" />
+          <Bit name="search" CStyleName="search_bit" pascalStyleName="Unnamed2Bit" />
+          <Bit name="uncover" CStyleName="uncover_bit" pascalStyleName="UncoverBit" />
+          <Bit name="investigate" CStyleName="investigate_bit" pascalStyleName="InvestigateBit" />
+          <Bit name="pursuit_sync" CStyleName="pursuit_sync_bit" pascalStyleName="PursuitSyncBit" />
+          <Bit name="pursuit" CStyleName="pursuit_bit" pascalStyleName="PursuitBit" />
+          <Bit name="postsearch" CStyleName="postsearch_bit" pascalStyleName="PostsearchBit" />
+          <Bit name="coverme_investigate" CStyleName="coverme_investigate_bit" pascalStyleName="CovermeInvestigateBit" />
+          <Bit name="------SELF-DEFENSE------" CStyleName="_______self_defense_______bit" pascalStyleName="SelfDefenseBit" />
+          <Bit name="self_preservation" CStyleName="self_preservation_bit" pascalStyleName="SelfPreservationBit" />
+          <Bit name="cover" CStyleName="cover_bit" pascalStyleName="CoverBit" />
+          <Bit name="cover peek" CStyleName="cover_peek_bit" pascalStyleName="CoverPeekBit" />
+          <Bit name="avoid" CStyleName="avoid_bit" pascalStyleName="AvoidBit" />
+          <Bit name="evasion_impulse" CStyleName="evasion_impulse_bit" pascalStyleName="EvasionImpulseBit" />
+          <Bit name="dive_impulse" CStyleName="dive_impulse_bit" pascalStyleName="DiveImpulseBit" />
+          <Bit name="danger cover impulse" CStyleName="danger_cover_impulse_bit" pascalStyleName="DangerCoverImpulseBit" />
+          <Bit name="danger crouch impulse" CStyleName="danger_crouch_impulse_bit" pascalStyleName="DangerCrouchImpulseBit" />
+          <Bit name="proximity_melee" CStyleName="proximity_melee_bit" pascalStyleName="ProximityMeleeBit" />
+          <Bit name="proximity_self_preservation" CStyleName="proximity_self_preservation_bit" pascalStyleName="ProximitySelfPreservationBit" />
+          <Bit name="unreachable_enemy_cover" CStyleName="unreachable_enemy_cover_bit" pascalStyleName="UnreachableEnemyCoverBit" />
+          <Bit name="scary_target_cover" CStyleName="scary_target_cover_bit" pascalStyleName="ScaryTargetCoverBit" />
+          <Bit name="group_emerge" CStyleName="group_emerge_bit" pascalStyleName="GroupEmergeBit" />
+          <Bit name="------RETREAT------" CStyleName="_______retreat_______bit" pascalStyleName="RetreatBit" />
+          <Bit name="retreat" CStyleName="retreat_bit" pascalStyleName="Unnamed24Bit" />
+          <Bit name="retreat_grenade" CStyleName="retreat_grenade_bit" pascalStyleName="RetreatGrenadeBit" />
+          <Bit name="flee" CStyleName="flee_bit" pascalStyleName="FleeBit" />
+          <Bit name="cower" CStyleName="cower_bit" pascalStyleName="CowerBit" />
+          <Bit name="low_shield_retreat" CStyleName="low_shield_retreat_bit" pascalStyleName="LowShieldRetreatBit" />
+          <Bit name="scary_target_retreat" CStyleName="scary_target_retreat_bit" pascalStyleName="ScaryTargetRetreatBit" />
+          <Bit name="leader_dead_retreat" CStyleName="leader_dead_retreat_bit" pascalStyleName="LeaderDeadRetreatBit" />
+          <Bit name="peer_dead_retreat" CStyleName="peer_dead_retreat_bit" pascalStyleName="PeerDeadRetreatBit" />
+        </Options>
+      </LongFlags>
+      <LongFlags CStyleName="behaviors3" pascalStyleName="Behaviors3" name="Behaviors3">
+        <Options regolithID="enum:style_behavior3" CStyleName="style_behavior3" pascalStyleName="StyleBehavior3">
+          <Bit name="danger_retreat" CStyleName="danger_retreat_bit" pascalStyleName="DangerRetreatBit" />
+          <Bit name="proximity_retreat" CStyleName="proximity_retreat_bit" pascalStyleName="ProximityRetreatBit" />
+          <Bit name="charge when cornered" CStyleName="charge_when_cornered_bit" pascalStyleName="ChargeWhenCorneredBit" />
+          <Bit name="surprise_retreat" CStyleName="surprise_retreat_bit" pascalStyleName="SurpriseRetreatBit" />
+          <Bit name="overheated_weapon_retreat" CStyleName="overheated_weapon_retreat_bit" pascalStyleName="OverheatedWeaponRetreatBit" />
+          <Bit name="------AMBUSH------" CStyleName="_______ambush_______bit" pascalStyleName="AmbushBit" />
+          <Bit name="ambush" CStyleName="ambush_bit" pascalStyleName="Unnamed6Bit" />
+          <Bit name="coordinated_ambush" CStyleName="coordinated_ambush_bit" pascalStyleName="CoordinatedAmbushBit" />
+          <Bit name="proximity_ambush" CStyleName="proximity_ambush_bit" pascalStyleName="ProximityAmbushBit" />
+          <Bit name="vulnerable_enemy_ambush" CStyleName="vulnerable_enemy_ambush_bit" pascalStyleName="VulnerableEnemyAmbushBit" />
+          <Bit name="nowhere_to_run_ambush" CStyleName="nowhere_to_run_ambush_bit" pascalStyleName="NowhereToRunAmbushBit" />
+          <Bit name="------VEHICLE------" CStyleName="_______vehicle_______bit" pascalStyleName="VehicleBit" />
+          <Bit name="vehicle" CStyleName="vehicle_bit" pascalStyleName="Unnamed12Bit" />
+          <Bit name="enter_friendly_vehicle" CStyleName="enter_friendly_vehicle_bit" pascalStyleName="EnterFriendlyVehicleBit" />
+          <Bit name="re-enter_flipped_vehicle" CStyleName="re_enter_flipped_vehicle_bit" pascalStyleName="ReEnterFlippedVehicleBit" />
+          <Bit name="vehicle_entry_engage_impulse" CStyleName="vehicle_entry_engage_impulse_bit" pascalStyleName="VehicleEntryEngageImpulseBit" />
+          <Bit name="vehicle_board" CStyleName="vehicle_board_bit" pascalStyleName="VehicleBoardBit" />
+          <Bit name="vehicle_fight" CStyleName="vehicle_fight_bit" pascalStyleName="VehicleFightBit" />
+          <Bit name="vehicle_charge" CStyleName="vehicle_charge_bit" pascalStyleName="VehicleChargeBit" />
+          <Bit name="vehicle_ram_behavior" CStyleName="vehicle_ram_behavior_bit" pascalStyleName="VehicleRamBehaviorBit" />
+          <Bit name="vehicle_cover" CStyleName="vehicle_cover_bit" pascalStyleName="VehicleCoverBit" />
+          <Bit name="damage_vehicle_cover" CStyleName="damage_vehicle_cover_bit" pascalStyleName="DamageVehicleCoverBit" />
+          <Bit name="exposed_rear_cover_impulse" CStyleName="exposed_rear_cover_impulse_bit" pascalStyleName="ExposedRearCoverImpulseBit" />
+          <Bit name="player_endagered_cover_impulse" CStyleName="player_endagered_cover_impulse_bit" pascalStyleName="PlayerEndageredCoverImpulseBit" />
+          <Bit name="vehicle_avoid" CStyleName="vehicle_avoid_bit" pascalStyleName="VehicleAvoidBit" />
+          <Bit name="vehicle_pickup" CStyleName="vehicle_pickup_bit" pascalStyleName="VehiclePickupBit" />
+          <Bit name="vehicle_player_pickup" CStyleName="vehicle_player_pickup_bit" pascalStyleName="VehiclePlayerPickupBit" />
+          <Bit name="vehicle_exit_impulse" CStyleName="vehicle_exit_impulse_bit" pascalStyleName="VehicleExitImpulseBit" />
+          <Bit name="danger_vehicle_exit_impulse" CStyleName="danger_vehicle_exit_impulse_bit" pascalStyleName="DangerVehicleExitImpulseBit" />
+          <Bit name="vehicle_flip" CStyleName="vehicle_flip_bit" pascalStyleName="VehicleFlipBit" />
+          <Bit name="vehicle_turtle" CStyleName="vehicle_turtle_bit" pascalStyleName="VehicleTurtleBit" />
+          <Bit name="vehicle_engage_patrol_impulse" CStyleName="vehicle_engage_patrol_impulse_bit" pascalStyleName="VehicleEngagePatrolImpulseBit" />
+        </Options>
+      </LongFlags>
+      <LongFlags CStyleName="behaviors4" pascalStyleName="Behaviors4" name="Behaviors4">
+        <Options regolithID="enum:style_wander_behavior" CStyleName="style_wander_behavior" pascalStyleName="StyleWanderBehavior">
+          <Bit name="vehicle_engage_wander_impulse" CStyleName="vehicle_engage_wander_impulse_bit" pascalStyleName="VehicleEngageWanderImpulseBit" />
+          <Bit name="------POSTCOMBAT------" CStyleName="_______postcombat_______bit" pascalStyleName="PostcombatBit" />
+          <Bit name="postcombat" CStyleName="postcombat_bit" pascalStyleName="Unnamed2Bit" />
+          <Bit name="post_postcombat" CStyleName="post_postcombat_bit" pascalStyleName="PostPostcombatBit" />
+          <Bit name="check_friend" CStyleName="check_friend_bit" pascalStyleName="CheckFriendBit" />
+          <Bit name="shoot_corpse" CStyleName="shoot_corpse_bit" pascalStyleName="ShootCorpseBit" />
+          <Bit name="postcombat_approach" CStyleName="postcombat_approach_bit" pascalStyleName="PostcombatApproachBit" />
+          <Bit name="------ALERT------" CStyleName="_______alert_______bit" pascalStyleName="AlertBit" />
+          <Bit name="alert" CStyleName="alert_bit" pascalStyleName="Unnamed8Bit" />
+          <Bit name="------IDLE------" CStyleName="_______idle_______bit" pascalStyleName="IdleBit" />
+          <Bit name="idle" CStyleName="idle_bit" pascalStyleName="Unnamed10Bit" />
+          <Bit name="wander behavior" CStyleName="wander_behavior_bit" pascalStyleName="WanderBehaviorBit" />
+          <Bit name="flight_wander" CStyleName="flight_wander_bit" pascalStyleName="FlightWanderBit" />
+          <Bit name="patrol" CStyleName="patrol_bit" pascalStyleName="PatrolBit" />
+          <Bit name="fall_sleep" CStyleName="fall_sleep_bit" pascalStyleName="FallSleepBit" />
+          <Bit name="------BUGGERS------" CStyleName="_______buggers_______bit" pascalStyleName="BuggersBit" />
+          <Bit name="bugger_ground_uncover" CStyleName="bugger_ground_uncover_bit" pascalStyleName="BuggerGroundUncoverBit" />
+          <Bit name="------SWARMS------" CStyleName="_______swarms_______bit" pascalStyleName="SwarmsBit" />
+          <Bit name="swarm_root" CStyleName="swarm_root_bit" pascalStyleName="SwarmRootBit" />
+          <Bit name="swarm_attack" CStyleName="swarm_attack_bit" pascalStyleName="SwarmAttackBit" />
+          <Bit name="support_attack" CStyleName="support_attack_bit" pascalStyleName="SupportAttackBit" />
+          <Bit name="infect" CStyleName="infect_bit" pascalStyleName="InfectBit" />
+          <Bit name="scatter" CStyleName="scatter_bit" pascalStyleName="ScatterBit" />
+          <Bit name="eject parasite" CStyleName="eject_parasite_bit" pascalStyleName="EjectParasiteBit" />
+          <Bit name="flood_self_preservation" CStyleName="flood_self_preservation_bit" pascalStyleName="FloodSelfPreservationBit" />
+          <Bit name="juggernaut flurry" CStyleName="juggernaut_flurry_bit" pascalStyleName="JuggernautFlurryBit" />
+          <Bit name="------SENTINELS------" CStyleName="_______sentinels_______bit" pascalStyleName="SentinelsBit" />
+          <Bit name="enforcer weapon control" CStyleName="enforcer_weapon_control_bit" pascalStyleName="EnforcerWeaponControlBit" />
+          <Bit name="grapple" CStyleName="grapple_bit" pascalStyleName="GrappleBit" />
+          <Bit name="------SPECIAL------" CStyleName="_______special_______bit" pascalStyleName="SpecialBit" />
+          <Bit name="formation" CStyleName="formation_bit" pascalStyleName="FormationBit" />
+          <Bit name="grunt scared by elite" CStyleName="grunt_scared_by_elite_bit" pascalStyleName="GruntScaredByEliteBit" />
+        </Options>
+      </LongFlags>
+      <LongFlags CStyleName="behaviors5" pascalStyleName="Behaviors5" name="Behaviors5">
+        <Options regolithID="enum:style_behavior5" CStyleName="style_behavior5" pascalStyleName="StyleBehavior5">
+          <Bit name="stunned" CStyleName="stunned_bit" pascalStyleName="StunnedBit" />
+          <Bit name="cure_isolation" CStyleName="cure_isolation_bit" pascalStyleName="CureIsolationBit" />
+          <Bit name="deploy_turret" CStyleName="deploy_turret_bit" pascalStyleName="DeployTurretBit" />
+          <Bit CStyleName="unnamed_3_bit" pascalStyleName="Unnamed3Bit" />
+          <Bit CStyleName="unnamed_4_bit" pascalStyleName="Unnamed4Bit" />
+          <Bit CStyleName="unnamed_5_bit" pascalStyleName="Unnamed5Bit" />
+          <Bit CStyleName="unnamed_6_bit" pascalStyleName="Unnamed6Bit" />
+          <Bit CStyleName="unnamed_7_bit" pascalStyleName="Unnamed7Bit" />
+          <Bit CStyleName="unnamed_8_bit" pascalStyleName="Unnamed8Bit" />
+          <Bit CStyleName="unnamed_9_bit" pascalStyleName="Unnamed9Bit" />
+          <Bit CStyleName="unnamed_10_bit" pascalStyleName="Unnamed10Bit" />
+          <Bit CStyleName="unnamed_11_bit" pascalStyleName="Unnamed11Bit" />
+          <Bit CStyleName="unnamed_12_bit" pascalStyleName="Unnamed12Bit" />
+          <Bit CStyleName="unnamed_13_bit" pascalStyleName="Unnamed13Bit" />
+          <Bit CStyleName="unnamed_14_bit" pascalStyleName="Unnamed14Bit" />
+          <Bit CStyleName="unnamed_15_bit" pascalStyleName="Unnamed15Bit" />
+          <Bit CStyleName="unnamed_16_bit" pascalStyleName="Unnamed16Bit" />
+          <Bit CStyleName="unnamed_17_bit" pascalStyleName="Unnamed17Bit" />
+          <Bit CStyleName="unnamed_18_bit" pascalStyleName="Unnamed18Bit" />
+          <Bit CStyleName="unnamed_19_bit" pascalStyleName="Unnamed19Bit" />
+          <Bit CStyleName="unnamed_20_bit" pascalStyleName="Unnamed20Bit" />
+          <Bit CStyleName="unnamed_21_bit" pascalStyleName="Unnamed21Bit" />
+          <Bit CStyleName="unnamed_22_bit" pascalStyleName="Unnamed22Bit" />
+          <Bit CStyleName="unnamed_23_bit" pascalStyleName="Unnamed23Bit" />
+          <Bit CStyleName="unnamed_24_bit" pascalStyleName="Unnamed24Bit" />
+          <Bit CStyleName="unnamed_25_bit" pascalStyleName="Unnamed25Bit" />
+          <Bit CStyleName="unnamed_26_bit" pascalStyleName="Unnamed26Bit" />
+          <Bit CStyleName="unnamed_27_bit" pascalStyleName="Unnamed27Bit" />
+          <Bit CStyleName="unnamed_28_bit" pascalStyleName="Unnamed28Bit" />
+          <Bit CStyleName="unnamed_29_bit" pascalStyleName="Unnamed29Bit" />
+          <Bit CStyleName="unnamed_30_bit" pascalStyleName="Unnamed30Bit" />
+          <Bit CStyleName="unnamed_31_bit" pascalStyleName="Unnamed31Bit" />
+        </Options>
+      </LongFlags>
+      <UselessPad length="12" />
+      <Block CStyleName="special_movement" pascalStyleName="SpecialMovement" name="Special movement" maxElementCount="1">
+        <LayoutXRef>block:special_movement</LayoutXRef>
+      </Block>
+      <UselessPad length="60" />
+      <Block CStyleName="behavior_list" pascalStyleName="BehaviorList" name="Behavior list" maxElementCount="160" maxElementCountSource="LONG_BITS*5">
+        <Layout regolithID="block:behavior_names" internalName="behavior_names_block" name="behavior_names_block">
+          <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(struct style_behavior_name)" isLatest="true">
+            <String CStyleName="behavior_name" pascalStyleName="BehaviorName" name="behavior name" blockNameSource="true" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

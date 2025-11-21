@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="eqip" parent="item" name="equipment" version="2">
+  <Layout regolithID="block:equipment" internalName="equipment_block" name="equipment">
+    <FieldSet version="0" sizeofValue="436" sizeofSource="sizeof(struct _equipment_definition)" parentVersion="0" isLatest="true">
+      <ShortEnum CStyleName="powerup_type" pascalStyleName="PowerupType" name="powerup type">
+        <Options regolithID="enum:equipment_powerup_type" CStyleName="equipment_powerup_type" pascalStyleName="EquipmentPowerupType">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="double speed" CStyleName="double_speed" pascalStyleName="DoubleSpeed" />
+          <Enum name="over shield" CStyleName="over_shield" pascalStyleName="OverShield" />
+          <Enum name="active camouflage" CStyleName="active_camouflage" pascalStyleName="ActiveCamouflage" />
+          <Enum name="full-spectrum vision" CStyleName="full_spectrum_vision" pascalStyleName="FullSpectrumVision" />
+          <Enum name="health" CStyleName="health" pascalStyleName="Health" />
+          <Enum name="grenade" CStyleName="grenade" pascalStyleName="Grenade" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="grenade_type" pascalStyleName="GrenadeType" name="grenade type">
+        <OptionsXRef>enum:character_grenade_type</OptionsXRef>
+      </ShortEnum>
+      <Real CStyleName="powerup_time" pascalStyleName="PowerupTime" name="powerup time" units="seconds" />
+      <TagReference CStyleName="pickup_sound" pascalStyleName="PickupSound" name="pickup sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <UselessPad length="144" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

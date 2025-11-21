@@ -94,7 +94,7 @@ class ImportTag(Operator, ImportHelper):
 
     if (4, 1, 0) <= bpy.app.version:
         directory: StringProperty(
-            subtype='FILE_PATH', 
+            subtype='DIR_PATH', 
             options={'SKIP_SAVE'}
             )
         
@@ -158,7 +158,7 @@ if (4, 1, 0) <= bpy.app.version:
         bl_idname = "TAG_FH_import"
         bl_label = "File handler for tag import"
         bl_import_operator = "import_scene.tag"
-        bl_file_extensions = ".model;.gbxmodel;.model_collision_geometry;.model_animations;.physics;.scenario_structure_bsp;.scenario;.camera_track;.render_model;.shader_environment;.shader_model;.shader_transparent_meter;.shader_transparent_glass"
+        bl_file_extensions = ".model;.gbxmodel;.model_collision_geometry;.model_animations;.physics;.scenario_structure_bsp;.scenario;.camera_track;.render_model;.shader_environment;.shader_model;.shader_transparent_meter;.shader_transparent_glass;.shader;.shader_transparent_generic"
 
         @classmethod
         def poll_drop(cls, context):

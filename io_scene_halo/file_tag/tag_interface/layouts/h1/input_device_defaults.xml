@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="devc" name="input_device_defaults" version="1">
+  <Layout regolithID="block:input_device_defaults" internalName="input_device_defaults_block" name="input_device_defaults">
+    <FieldSet version="0" sizeofValue="44" sizeofSource="sizeof(struct input_device_defaults_group)" isLatest="true">
+      <ShortEnum CStyleName="device_type" pascalStyleName="DeviceType" name="device type">
+        <Options regolithID="enum:device_type" CStyleName="device_type" pascalStyleName="DeviceType">
+          <Enum name="mouse and keyboard" CStyleName="mouse_and_keyboard" pascalStyleName="MouseAndKeyboard" />
+          <Enum name="joysticks gamepads etc" CStyleName="joysticks_gamepads_etc" pascalStyleName="JoysticksGamepadsEtc" />
+          <Enum name="full profile definition" CStyleName="full_profile_definition" pascalStyleName="FullProfileDefinition" />
+        </Options>
+      </ShortEnum>
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="unused" CStyleName="unused_bit" pascalStyleName="UnusedBit" />
+        </Options>
+      </WordFlags>
+      <Data CStyleName="device_id" pascalStyleName="DeviceId" name="device id" />
+      <Data CStyleName="profile" pascalStyleName="Profile" name="profile" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

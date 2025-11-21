@@ -27,23 +27,46 @@
 import os
 import bpy
 
+from enum import Enum, auto
 from mathutils import Vector
 from .shader_helper import (
-    get_h2_bitmap, 
+    convert_to_blender_color, 
     get_output_material_node, 
     connect_inputs, 
     generate_image_node,
     get_shader_node,
     set_image_scale,
-    get_bitmap, 
     get_linked_node,
     get_fallback_shader_node,
-    is_group_valid
+    is_group_valid,
+    place_node
     )
 
 from ...global_functions import global_functions
-from ...global_functions.parse_tags import parse_tag
-from ...file_tag.h2.file_shader.format import AnimationTypeEnum, TypeEnum
+from ...file_tag.tag_interface import tag_interface, tag_common
+from ...file_tag.tag_interface.tag_postprocessing.h2 import unpack_function_buffer
+
+class TypeEnum(Enum):
+    bitmap = 0
+    _value = auto()
+    color = auto()
+    switch = auto()
+
+class AnimationTypeEnum(Enum):
+    bitmap_scale_uniform = 0
+    bitmap_scale_x = auto()
+    bitmap_scale_y = auto()
+    bitmap_scale_z = auto()
+    bitmap_translation_x = auto()
+    bitmap_translation_y = auto()
+    bitmap_translation_z = auto()
+    bitmap_rotation_angle = auto()
+    bitmap_rotation_axis_x = auto()
+    bitmap_rotation_axis_y = auto()
+    bitmap_rotation_axis_z = auto()
+    _value = auto()
+    color = auto()
+    bitmap_index = auto()
 
 class ParameterSettings():
     def __init__(self, name="", parameter_type=0, bitmap=None, translation=Vector(), scale=Vector(), rotation=Vector(), color=(0.0, 0.0, 0.0, 1.0), value=0.0):
@@ -69,108 +92,96 @@ def get_lightmap_factor(lightmap_type):
 
     return lightmap_factor
 
-def place_node(node, col=0, row=0, spacing=100):
-    width = getattr(node, 'width', 140)
-    height = getattr(node, 'height', 100)
-
-    x = -(col * (width + spacing))
-    y = -row * (height + spacing)
-
-    node.location = (x, y)
-
 def get_shader_parameters(shader, shader_template):
     parameters = []
-    for category in shader_template.categories:
-        for parameter in category.parameters:
+    for category in shader_template["categories"]:
+        for parameter in category["parameters"]:
             parameter_settings = ParameterSettings()
-            parameter_settings.name = parameter.name
-            parameter_settings.parameter_type = parameter.parameter_type
-            parameter_settings.bitmap = parameter.default_bitmap
-            parameter_settings.value = parameter.default_const_value
-            parameter_settings.color = global_functions.convert_color_space(parameter.default_const_color , False)
+            parameter_settings.name = parameter["name"]
+            parameter_settings.parameter_type = parameter["type"]
+            parameter_settings.bitmap = parameter["default bitmap"]
+            parameter_settings.value = parameter["default const value"]
+            parameter_settings.color = convert_to_blender_color(parameter["default const color"], True) 
             image_scale = 1.0
-            if not parameter.bitmap_scale == 0.0:
-                image_scale = parameter.bitmap_scale
+            if not parameter["bitmap scale"] == 0.0:
+                image_scale = parameter["bitmap scale"]
 
             parameter_settings.scale = Vector((image_scale, image_scale, image_scale))
 
             parameters.append(parameter_settings)
 
-    for parameter in shader.parameters:
+    for parameter in shader["parameters"]:
         for default_parameter in parameters:
-            if default_parameter.name == parameter.name:
-                default_parameter.parameter_type = parameter.type
-                default_parameter.bitmap = parameter.bitmap
-                default_parameter.value = parameter.const_value
-                default_parameter.color = global_functions.convert_color_space(parameter.const_color , False)
-                for animation_property in parameter.animation_properties:
-                    property_type = AnimationTypeEnum(animation_property.type)
-                    if property_type == AnimationTypeEnum.bitmap_scale_uniform and not animation_property.lower_bound == 0.0:
-                        default_parameter.scale = Vector((animation_property.lower_bound, animation_property.lower_bound, animation_property.lower_bound))
+            if default_parameter.name == parameter["name"]:
+                default_parameter.parameter_type = parameter["type"]
+                default_parameter.bitmap = parameter["bitmap"]
+                default_parameter.value = parameter["const value"]
+                default_parameter.color = convert_to_blender_color(parameter["const color"], True)
+                for animation_property in parameter["animation properties"]:
+                    property_type = AnimationTypeEnum(animation_property["type"]["value"])
+                    function_dict = unpack_function_buffer(animation_property["data"])
+                    value_a = function_dict["Color 0"]
+                    if property_type == AnimationTypeEnum.bitmap_scale_uniform and not value_a == 0.0:
+                        default_parameter.scale = Vector((value_a, value_a, value_a))
 
-                    elif property_type == AnimationTypeEnum.bitmap_scale_x and not animation_property.lower_bound == 0.0:
-                        default_parameter.scale[0] = animation_property.lower_bound
+                    elif property_type == AnimationTypeEnum.bitmap_scale_x and not value_a == 0.0:
+                        default_parameter.scale[0] = value_a
 
-                    elif property_type == AnimationTypeEnum.bitmap_scale_y and not animation_property.lower_bound == 0.0:
-                        default_parameter.scale[1] = animation_property.lower_bound
+                    elif property_type == AnimationTypeEnum.bitmap_scale_y and not value_a == 0.0:
+                        default_parameter.scale[1] = value_a
 
-                    elif property_type == AnimationTypeEnum.bitmap_scale_z and not animation_property.lower_bound == 0.0:
-                        default_parameter.scale[2] = animation_property.lower_bound
+                    elif property_type == AnimationTypeEnum.bitmap_scale_z and not value_a == 0.0:
+                        default_parameter.scale[2] = value_a
 
                     elif property_type == AnimationTypeEnum.color:
-                        default_parameter.color = global_functions.convert_color_space(animation_property.color_a , False)
+                        default_parameter.color = convert_to_blender_color(value_a, True)
 
                 break
 
     return parameters
 
-def generate_shader_simple(mat, shader, report):
+def generate_shader_simple(mat, shader_asset, asset_cache, report):
+    shader_data = shader_asset["Data"]
+
     mat.use_nodes = True
 
-    texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_data_path
-    for node in mat.node_tree.nodes:
-        mat.node_tree.nodes.remove(node)
-
     base_parameter = None
-    if len(shader.parameters) > 0:
-        for parameter in shader.parameters:
-            if base_parameter == None and len(parameter.bitmap.name) > 0:
+    if len(shader_data["parameters"]) > 0:
+        for parameter in shader_data["parameters"]:
+            if base_parameter == None and len(parameter["bitmap"]["path"]) > 0:
                 base_parameter = parameter
 
-            if parameter.name == "base_map":
+            if parameter["name"] == "base_map" and len(parameter["bitmap"]["path"]) > 0:
                 base_parameter = parameter
                 break
 
-    base_map = None
-    base_map_name = "White"
-    base_bitmap = None
-    if base_parameter:
-        base_map, base_map_name = get_bitmap(base_parameter.bitmap, texture_root)
-        base_bitmap = parse_tag(base_parameter.bitmap, report, "halo2", "retail")
-
     output_material_node = get_output_material_node(mat)
-    place_node(output_material_node)
+    if output_material_node is None:
+        place_node(output_material_node)
 
     bdsf_principled = get_linked_node(output_material_node, "Surface", "BSDF_PRINCIPLED")
     if bdsf_principled is None:
         bdsf_principled = mat.node_tree.nodes.new("ShaderNodeBsdfPrincipled")
+        place_node(bdsf_principled, 1)
         connect_inputs(mat.node_tree, bdsf_principled, "BSDF", output_material_node, "Surface")
 
-    place_node(output_material_node, 1)
+    if base_parameter is not None:
+        base_map_texture = generate_image_node(mat, base_parameter["bitmap"], 0, asset_cache, "halo2", report)
+        if base_map_texture:
+            base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
+            base_map_node.image = base_map_texture
+            base_map_node.image.alpha_mode = 'CHANNEL_PACKED'
+            place_node(base_map_node, 2)
+            connect_inputs(mat.node_tree, base_map_node, "Color", bdsf_principled, "Base Color")
 
-    base_node = generate_image_node(mat, base_map, base_bitmap, base_map_name)
-    if not base_node.image == None:
-        base_node.image.alpha_mode = 'CHANNEL_PACKED'
+def generate_shader(mat, shader_asset, template_asset, asset_cache, report):
+    shader_data = shader_asset["Data"]
+    template_data = template_asset["Data"]
 
-    place_node(output_material_node, 2)
-
-    connect_inputs(mat.node_tree, base_node, "Color", bdsf_principled, "Base Color")
-
-def generate_shader(mat, shader, shader_template, report):
     mat.use_nodes = True
 
-    shader_parameters = get_shader_parameters(shader, shader_template)
-    shader_template_name = os.path.basename(shader.template.name)
+    shader_parameters = get_shader_parameters(shader_data, template_data)
+    shader_template_name = os.path.basename(shader_data["template"]["path"])
 
     texture_root = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_data_path
     for node in mat.node_tree.nodes:
@@ -188,7 +199,7 @@ def generate_shader(mat, shader, shader_template, report):
         shader_node.name = shader_template_name.replace('_', ' ').title()
         place_node(shader_node, 1)
         connect_inputs(mat.node_tree, shader_node, "Shader", output_material_node, "Surface")
-        shader_node.inputs["Lightmap Factor"].default_value = get_lightmap_factor(shader.lightmap_type)
+        shader_node.inputs["Lightmap Factor"].default_value = get_lightmap_factor(shader_data["lightmap type"]["value"])
 
         row = 0
         for input_socket in shader_node.inputs:
@@ -196,49 +207,57 @@ def generate_shader(mat, shader, shader_template, report):
             halo_name = input_socket_name.replace(' ', '_').lower()
             for parameter in shader_parameters:
                 if halo_name == parameter.name:
-                    parameter_type = TypeEnum(parameter.parameter_type)
+                    parameter_type = TypeEnum(parameter.parameter_type["value"])
                     if parameter_type == TypeEnum.bitmap:
-                        parameter_map, parameter_name, parameter_bitmap = get_h2_bitmap(parameter.bitmap, texture_root, report)
-                        bitmap_node = generate_image_node(mat, parameter_map, parameter_bitmap, parameter_name)
-                        bitmap_node.name = input_socket_name
-                        place_node(bitmap_node, 2, row)
+                        bitmap_texture = generate_image_node(mat, parameter.bitmap, 0, asset_cache, "halo2", report)
+                        if bitmap_texture:
+                            tag_groups = tag_common.h2_tag_groups
+                            bitmap_asset = tag_interface.get_disk_asset(parameter.bitmap["path"], tag_groups.get(parameter.bitmap["group name"]))
+                            bitmap_data = bitmap_asset["Data"]
 
-                        is_bump = False
-                        is_detail = False
-                        is_noise = False
-                        if input_socket_name == "Bump Map":
-                            is_bump = True
-
-                        if "Detail" in input_socket_name:
-                            is_detail = True
-
-                        if "Noise" in input_socket_name:
-                            is_noise = True
-
-                        if is_bump:    
-                            bitmap_node.interpolation = 'Cubic'
-
-                        if not bitmap_node.image == None:
-                            if is_bump or is_detail:
-                                bitmap_node.image.colorspace_settings.name = 'Non-Color'
-                            elif is_noise:
-                                bitmap_node.image.colorspace_settings.name = 'Linear Rec.709'
-
+                            bitmap_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
+                            bitmap_node.image = bitmap_texture
                             bitmap_node.image.alpha_mode = 'CHANNEL_PACKED'
+                            bitmap_node.name = input_socket_name
 
-                        connect_inputs(mat.node_tree, bitmap_node, "Color", shader_node, input_socket_name)
-                        connect_inputs(mat.node_tree, bitmap_node, "Alpha", shader_node, "%s Alpha" % input_socket_name)
+                            place_node(bitmap_node, 2, row)
 
-                        set_image_scale(mat, bitmap_node, parameter.scale)
+                            is_bump = False
+                            is_detail = False
+                            is_noise = False
+                            if input_socket_name == "Bump Map":
+                                is_bump = True
 
-                        if is_bump and parameter_bitmap:
-                            height_value = 0.0
-                            if not parameter_bitmap.bump_height == 0.0:
-                                height_value = parameter_bitmap.bump_height
+                            if "Detail" in input_socket_name:
+                                is_detail = True
 
-                            shader_node.inputs["Bump Map Repeat"].default_value = height_value
+                            if "Noise" in input_socket_name:
+                                is_noise = True
 
-                        row += 1
+                            if is_bump:    
+                                bitmap_node.interpolation = 'Cubic'
+
+                            if not bitmap_node.image == None:
+                                if is_bump or is_detail:
+                                    bitmap_node.image.colorspace_settings.name = 'Non-Color'
+                                elif is_noise:
+                                    bitmap_node.image.colorspace_settings.name = 'Linear Rec.709'
+
+                                bitmap_node.image.alpha_mode = 'CHANNEL_PACKED'
+
+                            connect_inputs(mat.node_tree, bitmap_node, "Color", shader_node, input_socket_name)
+                            connect_inputs(mat.node_tree, bitmap_node, "Alpha", shader_node, "%s Alpha" % input_socket_name)
+
+                            set_image_scale(mat, bitmap_node, parameter.scale)
+
+                            if is_bump and bitmap_asset:
+                                height_value = 0.0
+                                if not bitmap_data["bump height"] == 0.0:
+                                    height_value = bitmap_data["bump height"]
+
+                                shader_node.inputs["Bump Map Repeat"].default_value = height_value
+
+                            row += 1
 
                     elif parameter_type == TypeEnum._value:
                         input_socket.default_value = parameter.value
@@ -247,8 +266,9 @@ def generate_shader(mat, shader, shader_template, report):
 
                     elif parameter_type == TypeEnum.color:
                         input_socket.default_value = parameter.color
+
                     elif parameter_type == TypeEnum.switch:
                         print("IF THIS APPEARS LET GENERAL KNOW.")
 
     else:
-        generate_shader_simple(mat, shader, report)
+        generate_shader_simple(mat, shader_asset, asset_cache, report)

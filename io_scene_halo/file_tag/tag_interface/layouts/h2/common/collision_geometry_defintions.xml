@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedLayouts>
+  <Layout regolithID="block:large_bsp3d_nodes" internalName="large_bsp3d_nodes_block" name="bsp3d node">
+    <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct large_bsp3d_node)" isLatest="true">
+      <LongInteger CStyleName="plane" pascalStyleName="Plane" name="plane" readOnly="true" />
+      <LongInteger CStyleName="back_child" pascalStyleName="BackChild" name="back child" readOnly="true" />
+      <LongInteger CStyleName="front_child" pascalStyleName="FrontChild" name="front child" readOnly="true" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:planes" internalName="planes_block" name="planes_block">
+    <FieldSet version="0" alignment="4" sizeofValue="16" sizeofSource="sizeof(real_plane3d)" isLatest="true">
+      <RealPlane3D CStyleName="plane" pascalStyleName="Plane" name="plane" readOnly="true" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:large_leaves" internalName="large_leaves_block" name="leaf">
+    <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct large_collision_leaf)" isLatest="true">
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags" readOnly="true">
+        <Options regolithID="enum:leaf_flags" CStyleName="leaf_flags" pascalStyleName="LeafFlags">
+          <Bit name="contains double-sided surfaces" CStyleName="contains_double_sided_surfaces_bit" pascalStyleName="ContainsDoubleSidedSurfacesBit" />
+        </Options>
+      </WordFlags>
+      <ShortInteger CStyleName="bsp2d_reference_count" pascalStyleName="Bsp2dReferenceCount" name="bsp2d reference count" readOnly="true" />
+      <LongInteger CStyleName="first_bsp2d_reference" pascalStyleName="FirstBsp2dReference" name="first bsp2d reference" readOnly="true" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:large_bsp2d_references" internalName="large_bsp2d_references_block" name="bsp2d reference">
+    <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct large_bsp2d_reference)" isLatest="true">
+      <LongInteger CStyleName="plane" pascalStyleName="Plane" name="plane" readOnly="true" />
+      <LongInteger CStyleName="bsp2d_node" pascalStyleName="Bsp2dNode" name="bsp2d node" readOnly="true" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:large_bsp2d_nodes" internalName="large_bsp2d_nodes_block" name="bsp2d node">
+    <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(struct large_bsp2d_node)" isLatest="true">
+      <RealPlane2D CStyleName="plane" pascalStyleName="Plane" name="plane" readOnly="true" />
+      <LongInteger CStyleName="left_child" pascalStyleName="LeftChild" name="left child" readOnly="true" />
+      <LongInteger CStyleName="right_child" pascalStyleName="RightChild" name="right child" readOnly="true" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:large_surfaces" internalName="large_surfaces_block" name="surface">
+    <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct large_collision_surface)" isLatest="true">
+      <LongInteger CStyleName="plane" pascalStyleName="Plane" name="plane" readOnly="true" />
+      <LongInteger CStyleName="first_edge" pascalStyleName="FirstEdge" name="first edge" readOnly="true" />
+      <ByteFlags CStyleName="flags" pascalStyleName="Flags" name="flags" readOnly="true">
+        <Options regolithID="enum:large_surface_flags" CStyleName="large_surface_flags" pascalStyleName="LargeSurfaceFlags">
+          <Bit name="two sided" CStyleName="two_sided_bit" pascalStyleName="TwoSidedBit" />
+          <Bit name="invisible" CStyleName="invisible_bit" pascalStyleName="InvisibleBit" />
+          <Bit name="climbable" CStyleName="climbable_bit" pascalStyleName="ClimbableBit" />
+          <Bit name="breakable" CStyleName="breakable_bit" pascalStyleName="BreakableBit" />
+          <Bit name="invalid" CStyleName="invalid_bit" pascalStyleName="InvalidBit" />
+          <Bit name="conveyor" CStyleName="conveyor_bit" pascalStyleName="ConveyorBit" />
+        </Options>
+      </ByteFlags>
+      <CharInteger CStyleName="breakable_surface" pascalStyleName="BreakableSurface" name="breakable surface" readOnly="true" />
+      <ShortInteger CStyleName="material" pascalStyleName="Material" name="material" readOnly="true" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:large_edges" internalName="large_edges_block" name="edge">
+    <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(struct large_collision_edge)" isLatest="true">
+      <LongInteger CStyleName="start_vertex" pascalStyleName="StartVertex" name="start vertex" readOnly="true" />
+      <LongInteger CStyleName="end_vertex" pascalStyleName="EndVertex" name="end vertex" readOnly="true" />
+      <LongInteger CStyleName="forward_edge" pascalStyleName="ForwardEdge" name="forward edge" readOnly="true" />
+      <LongInteger CStyleName="reverse_edge" pascalStyleName="ReverseEdge" name="reverse edge" readOnly="true" />
+      <LongInteger CStyleName="left_surface" pascalStyleName="LeftSurface" name="left surface" readOnly="true" />
+      <LongInteger CStyleName="right_surface" pascalStyleName="RightSurface" name="right surface" readOnly="true" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:large_vertices" internalName="large_vertices_block" name="vertex">
+    <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct large_collision_vertex)" isLatest="true">
+      <RealPoint3D CStyleName="point" pascalStyleName="Point" name="point" readOnly="true" />
+      <LongInteger CStyleName="first_edge" pascalStyleName="FirstEdge" name="first edge" readOnly="true" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:small_bsp3d_nodes" internalName="small_bsp3d_nodes_block" name="small_bsp3d_nodes_block">
+    <FieldSet version="0" alignment="3" sizeofValue="8" sizeofSource="sizeof(struct small_bsp3d_node)" isLatest="true">
+      <ShortInteger CStyleName="plane" pascalStyleName="Plane" name="plane" readOnly="true" />
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <ShortInteger CStyleName="back_child" pascalStyleName="BackChild" name="back child" readOnly="true" />
+      <ShortInteger CStyleName="front_child" pascalStyleName="FrontChild" name="front child" readOnly="true" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:leaves" internalName="leaves_block" name="leaves_block">
+    <FieldSet version="0" alignment="2" sizeofValue="4" sizeofSource="sizeof(struct collision_leaf)" isLatest="true">
+      <ByteFlags CStyleName="flags" pascalStyleName="Flags" name="flags" readOnly="true">
+        <OptionsXRef>enum:leaf_flags</OptionsXRef>
+      </ByteFlags>
+      <CharInteger CStyleName="bsp2d_reference_count" pascalStyleName="Bsp2dReferenceCount" name="bsp2d reference count" readOnly="true" />
+      <ShortInteger CStyleName="first_bsp2d_reference" pascalStyleName="FirstBsp2dReference" name="first bsp2d reference" readOnly="true" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:bsp2d_references" internalName="bsp2d_references_block" name="bsp2d_references_block">
+    <FieldSet version="0" alignment="2" sizeofValue="4" sizeofSource="sizeof(struct bsp2d_reference)" isLatest="true">
+      <ShortInteger CStyleName="plane" pascalStyleName="Plane" name="plane" readOnly="true" />
+      <ShortInteger CStyleName="bsp2d_node" pascalStyleName="Bsp2dNode" name="bsp2d node" readOnly="true" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:bsp2d_nodes" internalName="bsp2d_nodes_block" name="bsp2d_nodes_block">
+    <FieldSet version="0" alignment="4" sizeofValue="16" sizeofSource="sizeof(struct bsp2d_node)" isLatest="true">
+      <RealPlane2D CStyleName="plane" pascalStyleName="Plane" name="plane" readOnly="true" />
+      <ShortInteger CStyleName="left_child" pascalStyleName="LeftChild" name="left child" readOnly="true" />
+      <ShortInteger CStyleName="right_child" pascalStyleName="RightChild" name="right child" readOnly="true" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:surfaces" internalName="surfaces_block" name="surfaces_block">
+    <FieldSet version="0" alignment="3" sizeofValue="8" sizeofSource="sizeof(struct collision_surface)" isLatest="true">
+      <ShortInteger CStyleName="plane" pascalStyleName="Plane" name="plane" readOnly="true" />
+      <ShortInteger CStyleName="first_edge" pascalStyleName="FirstEdge" name="first edge" readOnly="true" unsigned="true" />
+      <ByteFlags CStyleName="flags" pascalStyleName="Flags" name="flags" readOnly="true">
+        <OptionsXRef>enum:large_surface_flags</OptionsXRef>
+      </ByteFlags>
+      <CharInteger CStyleName="breakable_surface" pascalStyleName="BreakableSurface" name="breakable surface" readOnly="true" />
+      <ShortInteger CStyleName="material" pascalStyleName="Material" name="material" readOnly="true" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:edges" internalName="edges_block" name="edges_block">
+    <FieldSet version="0" alignment="4" sizeofValue="16" sizeofSource="sizeof(struct stupid_edge)">
+      <ShortInteger CStyleName="start_vertex" pascalStyleName="StartVertex" name="start vertex" readOnly="true" unsigned="true" />
+      <ShortInteger CStyleName="end_vertex" pascalStyleName="EndVertex" name="end vertex" readOnly="true" unsigned="true" />
+      <ShortInteger CStyleName="forward_edge" pascalStyleName="ForwardEdge" name="forward edge" readOnly="true" unsigned="true" />
+      <ShortInteger CStyleName="reverse_edge" pascalStyleName="ReverseEdge" name="reverse edge" readOnly="true" unsigned="true" />
+      <ShortInteger CStyleName="left_surface" pascalStyleName="LeftSurface" name="left surface" readOnly="true" unsigned="true" />
+      <ShortInteger CStyleName="right_surface" pascalStyleName="RightSurface" name="right surface" readOnly="true" unsigned="true" />
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="12" sizeofSource="sizeof(struct collision_edge)" isLatest="true">
+      <ShortInteger CStyleName="start_vertex" pascalStyleName="StartVertex" name="start vertex" readOnly="true" unsigned="true" />
+      <ShortInteger CStyleName="end_vertex" pascalStyleName="EndVertex" name="end vertex" readOnly="true" unsigned="true" />
+      <ShortInteger CStyleName="forward_edge" pascalStyleName="ForwardEdge" name="forward edge" readOnly="true" unsigned="true" />
+      <ShortInteger CStyleName="reverse_edge" pascalStyleName="ReverseEdge" name="reverse edge" readOnly="true" unsigned="true" />
+      <ShortInteger CStyleName="left_surface" pascalStyleName="LeftSurface" name="left surface" readOnly="true" unsigned="true" />
+      <ShortInteger CStyleName="right_surface" pascalStyleName="RightSurface" name="right surface" readOnly="true" unsigned="true" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:vertices" internalName="vertices_block" name="vertices_block">
+    <FieldSet version="0" alignment="4" sizeofValue="16" sizeofSource="sizeof(struct collision_vertex)" isLatest="true">
+      <RealPoint3D CStyleName="point" pascalStyleName="Point" name="point" readOnly="true" />
+      <ShortInteger CStyleName="first_edge" pascalStyleName="FirstEdge" name="first edge" readOnly="true" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:bsp3d_nodes" internalName="bsp3d_nodes_block" name="bsp3d_nodes_block">
+    <FieldSet version="0" alignment="3" sizeofValue="8" sizeofSource="sizeof(struct bsp3d_node)" isLatest="true">
+      <Skip sizeOfSource="sizeof(struct bsp3d_node)" length="8" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="structure:global_collision_bsp" tag="cbsp" internalName="global_collision_bsp_struct" backingBlockInternalName="global_collision_bsp_struct_block" name="global_collision_bsp_struct">
+    <FieldSet version="0" sizeofValue="96" sizeofSource="sizeof(struct collision_bsp)" sizeofOverride="96">
+      <Block CStyleName="bsp3d_nodes" pascalStyleName="Bsp3dNodes" name="bsp3d nodes" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_NODES_PER_BSP3D">
+        <LayoutXRef>block:large_bsp3d_nodes</LayoutXRef>
+      </Block>
+      <Block CStyleName="planes" pascalStyleName="Planes" name="planes" readOnly="true" maxElementCount="65536" maxElementCountSource="MAXIMUM_PLANES_PER_BSP3D">
+        <LayoutXRef>block:planes</LayoutXRef>
+      </Block>
+      <Block CStyleName="leaves" pascalStyleName="Leaves" name="leaves" readOnly="true" maxElementCount="65536" maxElementCountSource="MAXIMUM_LEAVES_PER_BSP3D">
+        <LayoutXRef>block:large_leaves</LayoutXRef>
+      </Block>
+      <Block CStyleName="bsp2d_references" pascalStyleName="Bsp2dReferences" name="bsp2d references" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_BSP2D_REFERENCES_PER_COLLISION_BSP">
+        <LayoutXRef>block:large_bsp2d_references</LayoutXRef>
+      </Block>
+      <Block CStyleName="bsp2d_nodes" pascalStyleName="Bsp2dNodes" name="bsp2d nodes" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_NODES_PER_BSP2D">
+        <LayoutXRef>block:large_bsp2d_nodes</LayoutXRef>
+      </Block>
+      <Block CStyleName="surfaces" pascalStyleName="Surfaces" name="surfaces" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_SURFACES_PER_COLLISION_BSP">
+        <LayoutXRef>block:large_surfaces</LayoutXRef>
+      </Block>
+      <Block CStyleName="edges" pascalStyleName="Edges" name="edges" readOnly="true" maxElementCount="262144" maxElementCountSource="MAXIMUM_EDGES_PER_COLLISION_BSP">
+        <LayoutXRef>block:large_edges</LayoutXRef>
+      </Block>
+      <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_VERTICES_PER_COLLISION_BSP">
+        <LayoutXRef>block:large_vertices</LayoutXRef>
+      </Block>
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="96" sizeofSource="sizeof(struct collision_bsp)">
+      <Block CStyleName="bsp3d_nodes" pascalStyleName="Bsp3dNodes" name="bsp3d nodes" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_NODES_PER_BSP3D">
+        <LayoutXRef>block:small_bsp3d_nodes</LayoutXRef>
+      </Block>
+      <Block CStyleName="planes" pascalStyleName="Planes" name="planes" readOnly="true" maxElementCount="65536" maxElementCountSource="MAXIMUM_PLANES_PER_BSP3D">
+        <LayoutXRef>block:planes</LayoutXRef>
+      </Block>
+      <Block CStyleName="leaves" pascalStyleName="Leaves" name="leaves" readOnly="true" maxElementCount="65536" maxElementCountSource="MAXIMUM_LEAVES_PER_BSP3D">
+        <LayoutXRef>block:leaves</LayoutXRef>
+      </Block>
+      <Block CStyleName="bsp2d_references" pascalStyleName="Bsp2dReferences" name="bsp2d references" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_BSP2D_REFERENCES_PER_COLLISION_BSP">
+        <LayoutXRef>block:bsp2d_references</LayoutXRef>
+      </Block>
+      <Block CStyleName="bsp2d_nodes" pascalStyleName="Bsp2dNodes" name="bsp2d nodes" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_NODES_PER_BSP2D">
+        <LayoutXRef>block:bsp2d_nodes</LayoutXRef>
+      </Block>
+      <Block CStyleName="surfaces" pascalStyleName="Surfaces" name="surfaces" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_SURFACES_PER_COLLISION_BSP">
+        <LayoutXRef>block:surfaces</LayoutXRef>
+      </Block>
+      <Block CStyleName="edges" pascalStyleName="Edges" name="edges" readOnly="true" maxElementCount="262144" maxElementCountSource="MAXIMUM_EDGES_PER_COLLISION_BSP">
+        <LayoutXRef>block:edges</LayoutXRef>
+      </Block>
+      <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_VERTICES_PER_COLLISION_BSP">
+        <LayoutXRef>block:vertices</LayoutXRef>
+      </Block>
+    </FieldSet>
+    <FieldSet version="2" sizeofValue="96" sizeofSource="sizeof(struct collision_bsp)" isLatest="true">
+      <Block CStyleName="bsp3d_nodes" pascalStyleName="Bsp3dNodes" name="bsp3d nodes" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_NODES_PER_BSP3D">
+        <LayoutXRef>block:bsp3d_nodes</LayoutXRef>
+      </Block>
+      <Block CStyleName="planes" pascalStyleName="Planes" name="planes" readOnly="true" maxElementCount="65536" maxElementCountSource="MAXIMUM_PLANES_PER_BSP3D">
+        <LayoutXRef>block:planes</LayoutXRef>
+      </Block>
+      <Block CStyleName="leaves" pascalStyleName="Leaves" name="leaves" readOnly="true" maxElementCount="65536" maxElementCountSource="MAXIMUM_LEAVES_PER_BSP3D">
+        <LayoutXRef>block:leaves</LayoutXRef>
+      </Block>
+      <Block CStyleName="bsp2d_references" pascalStyleName="Bsp2dReferences" name="bsp2d references" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_BSP2D_REFERENCES_PER_COLLISION_BSP">
+        <LayoutXRef>block:bsp2d_references</LayoutXRef>
+      </Block>
+      <Block CStyleName="bsp2d_nodes" pascalStyleName="Bsp2dNodes" name="bsp2d nodes" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_NODES_PER_BSP2D">
+        <LayoutXRef>block:bsp2d_nodes</LayoutXRef>
+      </Block>
+      <Block CStyleName="surfaces" pascalStyleName="Surfaces" name="surfaces" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_SURFACES_PER_COLLISION_BSP">
+        <LayoutXRef>block:surfaces</LayoutXRef>
+      </Block>
+      <Block CStyleName="edges" pascalStyleName="Edges" name="edges" readOnly="true" maxElementCount="262144" maxElementCountSource="MAXIMUM_EDGES_PER_COLLISION_BSP">
+        <LayoutXRef>block:edges</LayoutXRef>
+      </Block>
+      <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_VERTICES_PER_COLLISION_BSP">
+        <LayoutXRef>block:vertices</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:collision_bsp_physics" internalName="collision_bsp_physics_block" name="collision_bsp_physics_block">
+    <FieldSet version="0" alignment="4" sizeofValue="128" sizeofSource="sizeof(s_collision_bsp_physics_definition)" isLatest="true">
+      <Ptr length="4" />
+      <ShortInteger name="size" readOnly="true" />
+      <ShortInteger name="count" readOnly="true" />
+      <Pad tag="pd64" length="4" />
+      <Skip sizeOfSource="sizeof(int)" length="4" />
+      <Pad tag="pd64" length="4" />
+      <Ptr length="4" />
+      <Skip sizeOfSource="2*sizeof(hkVector4)" length="32" />
+      <Pad sizeOfSource="16" length="16" />
+      <Ptr length="4" />
+      <ShortInteger name="size" readOnly="true" />
+      <ShortInteger name="count" readOnly="true" />
+      <Pad tag="pd64" length="4" />
+      <Skip sizeOfSource="sizeof(int)" length="4" />
+      <Pad tag="pd64" length="4" />
+      <Ptr length="4" />
+      <Ptr length="4" />
+      <ShortInteger name="size" readOnly="true" />
+      <ShortInteger name="count" readOnly="true" />
+      <Pad tag="pd64" length="4" />
+      <Skip sizeOfSource="sizeof(int)" length="4" />
+      <Pad tag="pd64" length="4" />
+      <Ptr length="4" />
+      <Ptr length="4" />
+      <Data CStyleName="mopp_code_data" pascalStyleName="MoppCodeData" name="mopp code data" readOnly="true" />
+      <Pad tag="algn" length="8" />
+    </FieldSet>
+  </Layout>
+</SharedLayouts>

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="spk!" name="sound_dialogue_constants" version="1">
+  <Layout regolithID="block:sound_dialogue_constants" internalName="sound_dialogue_constants_block" name="sound_dialogue_constants">
+    <FieldSet version="0" sizeofValue="40" sizeofSource="sizeof(s_sound_dialogue_constants_definition)" isLatest="true">
+      <Explanation name="named playing fractions" description="these values correspond to the named play fractions in the dialogue editor (It's really skip fractions, but who cares?)" />
+      <Real CStyleName="almost_never" pascalStyleName="AlmostNever" name="almost never" />
+      <Real CStyleName="rarely" pascalStyleName="Rarely" name="rarely" />
+      <Real CStyleName="somewhat" pascalStyleName="Somewhat" name="somewhat" />
+      <Real CStyleName="often" pascalStyleName="Often" name="often" />
+      <Pad sizeOfSource="6*sizeof(real)" length="24" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="obje" name="object" version="1">
+  <Layout regolithID="block:object" internalName="object_block" name="object">
+    <FieldSet version="0" sizeofValue="256" sizeofSource="sizeof(struct _object_definition)" isLatest="true">
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:object_flags" CStyleName="object_flags" pascalStyleName="ObjectFlags">
+          <Bit name="does not cast shadow" CStyleName="does_not_cast_shadow_bit" pascalStyleName="DoesNotCastShadowBit" />
+          <Bit name="search cardinal direction lightmaps on failure" CStyleName="search_cardinal_direction_lightmaps_on_failure_bit" pascalStyleName="SearchCardinalDirectionLightmapsOnFailureBit" />
+          <Bit name="unused" expertOnly="true" CStyleName="unused2_bit" pascalStyleName="Unused2Bit" />
+          <Bit name="not a pathfinding obstacle" CStyleName="not_a_pathfinding_obstacle_bit" pascalStyleName="NotAPathfindingObstacleBit" />
+          <Bit name="extension of parent" description="object passes all function values to parent and uses parent's markers" CStyleName="extension_of_parent_bit" pascalStyleName="ExtensionOfParentBit" />
+          <Bit name="does not cause collision damage" CStyleName="does_not_cause_collision_damage_bit" pascalStyleName="DoesNotCauseCollisionDamageBit" />
+          <Bit name="early mover" CStyleName="early_mover_bit" pascalStyleName="EarlyMoverBit" />
+          <Bit name="early mover localized physics" CStyleName="early_mover_localized_physics_bit" pascalStyleName="EarlyMoverLocalizedPhysicsBit" />
+          <Bit name="use static massive lightmap sample" description="cast A LOT of rays once and store the results for lighting" CStyleName="use_static_massive_lightmap_sample_bit" pascalStyleName="UseStaticMassiveLightmapSampleBit" />
+          <Bit name="object scales attachments" CStyleName="object_scales_attachments_bit" pascalStyleName="ObjectScalesAttachmentsBit" />
+          <Bit name="inherits player's appearance" CStyleName="inherits_players_appearance_bit" pascalStyleName="InheritsPlayersAppearanceBit" />
+          <Bit name="dead bipeds can't localize" CStyleName="dead_bipeds_cant_localize_bit" pascalStyleName="DeadBipedsCantLocalizeBit" />
+          <Bit name="attach to clusters by dynamic sphere" description="use this for the mac gun on spacestation" CStyleName="attach_to_clusters_by_dynamic_sphere_bit" pascalStyleName="AttachToClustersByDynamicSphereBit" />
+          <Bit name="effects created by this object do not spawn objects in multiplayer" CStyleName="effects_created_by_this_object_do_not_spawn_objects_in_multiplayer_bit" pascalStyleName="EffectsCreatedByThisObjectDoNotSpawnObjectsInMultiplayerBit" />
+          <Bit name="prophet is not displayed in pegasus builds" expertOnly="true" CStyleName="prophet_is_not_displayed_in_pegasus_builds_bit" pascalStyleName="ProphetIsNotDisplayedInPegasusBuildsBit" />
+        </Options>
+      </WordFlags>
+      <Real CStyleName="bounding_radius" pascalStyleName="BoundingRadius" name="bounding radius" units="world units" />
+      <RealPoint3D CStyleName="bounding_offset" pascalStyleName="BoundingOffset" name="bounding offset" />
+      <UselessPad length="12" />
+      <Real CStyleName="acceleration_scale" pascalStyleName="AccelerationScale" name="acceleration scale" units="[0,+inf]" description="marine 1.0, grunt 1.4, elite 0.9, hunter 0.5, etc." />
+      <ShortEnum CStyleName="lightmap_shadow_mode" pascalStyleName="LightmapShadowMode" name="lightmap shadow mode">
+        <Options regolithID="enum:object_lightmap_shadow_mode" CStyleName="object_lightmap_shadow_mode" pascalStyleName="ObjectLightmapShadowMode">
+          <Enum name="default" CStyleName="default_value" pascalStyleName="Default" />
+          <Enum name="never" CStyleName="never" pascalStyleName="Never" />
+          <Enum name="always" CStyleName="always" pascalStyleName="Always" />
+        </Options>
+      </ShortEnum>
+      <CharEnum CStyleName="sweetener_size" pascalStyleName="SweetenerSize" name="sweetener size">
+        <Options regolithID="enum:object_sweetener_size" CStyleName="object_sweetener_size" pascalStyleName="ObjectSweetenerSize">
+          <Enum name="small" CStyleName="small" pascalStyleName="Small" />
+          <Enum name="medium" CStyleName="medium" pascalStyleName="Medium" />
+          <Enum name="large" CStyleName="large" pascalStyleName="Large" />
+        </Options>
+      </CharEnum>
+      <Pad sizeOfSource="sizeof(byte)" length="1" />
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <UselessPad length="32" />
+      <Real CStyleName="dynamic_light_sphere_radius" pascalStyleName="DynamicLightSphereRadius" name="dynamic light sphere radius" description="sphere to use for dynamic lights and shadows. only used if not 0" />
+      <RealPoint3D CStyleName="dynamic_light_sphere_offset" pascalStyleName="DynamicLightSphereOffset" name="dynamic light sphere offset" description="only used if radius not 0" />
+      <StringId CStyleName="default_model_variant" pascalStyleName="DefaultModelVariant" name="default model variant" />
+      <TagReference CStyleName="model" pascalStyleName="Model" name="model">
+        <tag>hlmt</tag>
+      </TagReference>
+      <TagReference CStyleName="crate_object" pascalStyleName="CrateObject" name="crate object">
+        <tag>bloc</tag>
+      </TagReference>
+      <UselessPad length="16" />
+      <TagReference CStyleName="modifier_shader" pascalStyleName="ModifierShader" name="modifier shader">
+        <tag>shad</tag>
+      </TagReference>
+      <TagReference CStyleName="creation_effect" pascalStyleName="CreationEffect" name="creation effect">
+        <tag>effe</tag>
+      </TagReference>
+      <TagReference CStyleName="material_effects" pascalStyleName="MaterialEffects" name="material effects">
+        <tag>foot</tag>
+      </TagReference>
+      <UselessPad length="24" />
+      <Block CStyleName="ai_properties" pascalStyleName="AiProperties" name="ai properties" maxElementCount="1">
+        <Layout regolithID="block:object_ai_properties" internalName="object_ai_properties_block" name="object_ai_properties_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct object_ai_properties)" isLatest="true">
+            <LongFlags CStyleName="ai_flags" pascalStyleName="AiFlags" name="ai flags">
+              <Options regolithID="enum:object_ai_flags" CStyleName="object_ai_flags" pascalStyleName="ObjectAiFlags">
+                <Bit name="detroyable cover" CStyleName="detroyable_cover_bit" pascalStyleName="DetroyableCoverBit" />
+                <Bit name="pathfinding ignore when dead" CStyleName="pathfinding_ignore_when_dead_bit" pascalStyleName="PathfindingIgnoreWhenDeadBit" />
+                <Bit name="dynamic cover" CStyleName="dynamic_cover_bit" pascalStyleName="DynamicCoverBit" />
+              </Options>
+            </LongFlags>
+            <StringId CStyleName="ai_type_name" pascalStyleName="AiTypeName" name="ai type name" description="used for combat dialogue, etc." />
+            <Pad sizeOfSource="sizeof(long)" length="4" />
+            <ShortEnum CStyleName="ai_size" pascalStyleName="AiSize" name="ai size">
+              <Options regolithID="enum:ai_size" CStyleName="ai_size" pascalStyleName="AiSize">
+                <Enum name="default" CStyleName="default_value" pascalStyleName="Default" />
+                <Enum name="tiny" CStyleName="tiny" pascalStyleName="Tiny" />
+                <Enum name="small" CStyleName="small" pascalStyleName="Small" />
+                <Enum name="medium" CStyleName="medium" pascalStyleName="Medium" />
+                <Enum name="large" CStyleName="large" pascalStyleName="Large" />
+                <Enum name="huge" CStyleName="huge" pascalStyleName="Huge" />
+                <Enum name="immobile" CStyleName="immobile" pascalStyleName="Immobile" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="leap_jump_speed" pascalStyleName="LeapJumpSpeed" name="leap jump speed">
+              <OptionsXRef>enum:character_jump_mode</OptionsXRef>
+            </ShortEnum>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <UselessPad length="24" />
+      <Block CStyleName="functions" pascalStyleName="Functions" name="functions" maxElementCount="256" maxElementCountSource="k_maximum_object_functions">
+        <Layout regolithID="block:object_function" internalName="object_function_block" name="object_function_block">
+          <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(s_object_function_definition)" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:object_function_flags" CStyleName="object_function_flags" pascalStyleName="ObjectFunctionFlags">
+                <Bit name="invert" description="result of function is one minus actual result" CStyleName="invert_bit" pascalStyleName="InvertBit" />
+                <Bit name="mapping does not controls active" description="the curve mapping can make the function active/inactive" CStyleName="mapping_does_not_controls_active_bit" pascalStyleName="MappingDoesNotControlsActiveBit" />
+                <Bit name="always active" description="function does not deactivate when at or below lower bound" CStyleName="always_active_bit" pascalStyleName="AlwaysActiveBit" />
+                <Bit name="random time offset" description="function offsets periodic function input by random value between 0 and 1" CStyleName="random_time_offset_bit" pascalStyleName="RandomTimeOffsetBit" />
+              </Options>
+            </LongFlags>
+            <StringId CStyleName="import_name" pascalStyleName="ImportName" name="import name" tag="sted" />
+            <StringId CStyleName="export_name" pascalStyleName="ExportName" name="export name" />
+            <StringId CStyleName="turn_off_with" pascalStyleName="TurnOffWith" name="turn off with" description="if the specified function is off, so is this function" tag="sted" />
+            <Real CStyleName="min_value" pascalStyleName="MinValue" name="min value" description="function must exceed this value (after mapping) to be active 0. means do nothing" />
+            <Custom name="default function" tag="fned" />
+            <Struct CStyleName="default_function" pascalStyleName="DefaultFunction" name="default function">
+              <LayoutXRef>structure:mapping_function</LayoutXRef>
+            </Struct>
+            <StringId CStyleName="scale_by" pascalStyleName="ScaleBy" name="scale by" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <UselessPad length="16" />
+      <Explanation name="Applying collision damage" description="for things that want to cause more or less collision damage" />
+      <Real CStyleName="apply_collision_damage_scale" pascalStyleName="ApplyCollisionDamageScale" name="Apply collision damage scale" description="0 means 1.  1 is standard scale.  Some things may want to apply more damage" />
+      <Explanation name="Game collision damage parameters" description="0 - means take default value from globals.globals" />
+      <Real CStyleName="min_game_acc_default" pascalStyleName="MinGameAccDefault" name="min game acc (default)" description="0-oo" />
+      <Real CStyleName="max_game_acc_default" pascalStyleName="MaxGameAccDefault" name="max game acc (default)" description="0-oo" />
+      <Real CStyleName="min_game_scale_default" pascalStyleName="MinGameScaleDefault" name="min game scale (default)" description="0-1" />
+      <Real CStyleName="max_game_scale_default" pascalStyleName="MaxGameScaleDefault" name="max game scale (default)" description="0-1" />
+      <Explanation name="Absolute collision damage parameters" description="0 - means take default value from globals.globals" />
+      <Real CStyleName="min_abs_acc_default" pascalStyleName="MinAbsAccDefault" name="min abs acc (default)" description="0-oo" />
+      <Real CStyleName="max_abs_acc_default" pascalStyleName="MaxAbsAccDefault" name="max abs acc (default)" description="0-oo" />
+      <Real CStyleName="min_abs_scale_default" pascalStyleName="MinAbsScaleDefault" name="min abs scale (default)" description="0-1" />
+      <Real CStyleName="max_abs_scale_default" pascalStyleName="MaxAbsScaleDefault" name="max abs scale (default)" description="0-1" />
+      <ShortInteger CStyleName="hud_text_message_index" pascalStyleName="HudTextMessageIndex" name="hud text message index" expertOnly="true" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Block CStyleName="attachments" pascalStyleName="Attachments" name="attachments" maxElementCount="16" maxElementCountSource="k_maximum_number_of_attachments_per_object">
+        <Layout regolithID="block:object_attachment" internalName="object_attachment_block" name="object_attachment_block">
+          <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(struct object_attachment_definition)" isLatest="true">
+            <TagReference CStyleName="type" pascalStyleName="Type" name="type" blockNameSource="true">
+              <tag />
+            </TagReference>
+            <OldStringId CStyleName="marker" pascalStyleName="Marker" name="marker" />
+            <UselessPad length="4" />
+            <ShortEnum CStyleName="change_color" pascalStyleName="ChangeColor" name="change color">
+              <Options regolithID="enum:object_attachment_change_color_level" CStyleName="object_attachment_change_color_level" pascalStyleName="ObjectAttachmentChangeColorLevel">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="primary" CStyleName="primary" pascalStyleName="Primary" />
+                <Enum name="secondary" CStyleName="secondary" pascalStyleName="Secondary" />
+                <Enum name="tertiary" CStyleName="tertiary" pascalStyleName="Tertiary" />
+                <Enum name="quaternary" CStyleName="quaternary" pascalStyleName="Quaternary" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <StringId CStyleName="primary_scale" pascalStyleName="PrimaryScale" name="primary scale" tag="sted" />
+            <StringId CStyleName="secondary_scale" pascalStyleName="SecondaryScale" name="secondary scale" tag="sted" />
+            <UselessPad length="8" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="widgets" pascalStyleName="Widgets" name="widgets" maxElementCount="4" maxElementCountSource="MAXIMUM_WIDGETS_PER_OBJECT">
+        <Layout regolithID="block:object_widget" internalName="object_widget_block" name="object_widget_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct object_definition_widget)" isLatest="true">
+            <TagReference CStyleName="type" pascalStyleName="Type" name="type" blockNameSource="true">
+              <tag />
+            </TagReference>
+            <UselessPad length="16" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="old_functions" pascalStyleName="OldFunctions" name="old functions" expertOnly="true" maxElementCount="4">
+        <Layout regolithID="block:old_object_function" internalName="old_object_function_block" name="old_object_function_block">
+          <FieldSet version="0" sizeofValue="80" sizeofSource="sizeof(s_old_object_function_definition)" isLatest="true">
+            <Pad sizeOfSource="sizeof(s_old_object_function_definition)-sizeof(c_old_string_id)" length="76" />
+            <OldStringId />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="change_colors" pascalStyleName="ChangeColors" name="change colors" maxElementCount="4" maxElementCountSource="k_object_change_color_count">
+        <Layout regolithID="block:object_change_colors" internalName="object_change_colors" name="object_change_colors">
+          <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(struct object_change_color_definition)" isLatest="true">
+            <UselessPad length="32" />
+            <Block CStyleName="initial_permutations" pascalStyleName="InitialPermutations" name="initial permutations" maxElementCount="32" maxElementCountSource="MAXIMUM_NUMBER_OF_OBJECT_CHANGE_COLOR_INITIAL_PERMUTATIONS">
+              <Layout regolithID="block:object_change_color_initial_permutation" internalName="object_change_color_initial_permutation" name="object_change_color_initial_permutation">
+                <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(struct object_change_color_initial_permutation)" isLatest="true">
+                  <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+                  <RealRgbColor CStyleName="color_lower_bound" pascalStyleName="ColorLowerBound" name="color lower bound" />
+                  <RealRgbColor CStyleName="color_upper_bound" pascalStyleName="ColorUpperBound" name="color upper bound" />
+                  <StringId CStyleName="variant_name" pascalStyleName="VariantName" name="variant name" description="if empty, may be used by any model variant" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="functions" pascalStyleName="Functions" name="functions" maxElementCount="4" maxElementCountSource="MAXIMUM_NUMBER_OF_OBJECT_CHANGE_COLOR_FUNCTIONS">
+              <Layout regolithID="block:object_change_color_function" internalName="object_change_color_function" name="object_change_color_function">
+                <FieldSet version="0" sizeofValue="40" sizeofSource="sizeof(struct object_change_color_function)" isLatest="true">
+                  <Pad sizeOfSource="sizeof(long)" length="4" />
+                  <LongFlags CStyleName="scale_flags" pascalStyleName="ScaleFlags" name="scale flags">
+                    <Options regolithID="enum:color_interpolation_flags" CStyleName="color_interpolation_flags" pascalStyleName="ColorInterpolationFlags">
+                      <Bit name="blend in hsv" description="blends colors in hsv rather than rgb space" CStyleName="blend_in_hsv_bit" pascalStyleName="BlendInHsvBit" />
+                      <Bit name="...more colors" description="blends colors through more hues (goes the long way around the color wheel)" CStyleName="more_colors_bit" pascalStyleName="MoreColorsBit" />
+                    </Options>
+                  </LongFlags>
+                  <RealRgbColor CStyleName="color_lower_bound" pascalStyleName="ColorLowerBound" name="color lower bound" />
+                  <RealRgbColor CStyleName="color_upper_bound" pascalStyleName="ColorUpperBound" name="color upper bound" />
+                  <StringId CStyleName="darken_by" pascalStyleName="DarkenBy" name="darken by" />
+                  <StringId CStyleName="scale_by" pascalStyleName="ScaleBy" name="scale by" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="predicted_resources" pascalStyleName="PredictedResources" name="predicted resources" readOnly="true" expertOnly="true" maxElementCount="2048">
+        <LayoutXRef>block:predicted_resource</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

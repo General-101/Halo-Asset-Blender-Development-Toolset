@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="sfx+" name="sound_effect_collection" version="1">
+  <Layout regolithID="block:sound_effect_collection" internalName="sound_effect_collection_block" name="sound_effect_collection">
+    <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_platform_sound_playback_collection)" isLatest="true">
+      <Block CStyleName="sound_effects" pascalStyleName="SoundEffects" name="sound effects" maxElementCount="128">
+        <Layout regolithID="block:platform_sound_playback" internalName="platform_sound_playback_block" name="platform_sound_playback_block">
+          <FieldSet version="0" sizeofValue="76" sizeofSource="sizeof(s_platform_sound_playback_named_definition)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+            <Struct CStyleName="playback" pascalStyleName="Playback" name="playback">
+              <Layout regolithID="structure:platform_sound_playback" tag="plsn" internalName="platform_sound_playback_struct" backingBlockInternalName="platform_sound_playback_struct_block" name="platform_sound_playback_struct">
+                <FieldSet version="0" sizeofValue="72" sizeofSource="sizeof(s_platform_sound_playback_definition)" isLatest="true">
+                  <Block maxElementCount="8" maxElementCountSource="k_maximum_number_of_override_mixbins">
+                    <LayoutXRef>block:platform_sound_override_mixbins</LayoutXRef>
+                  </Block>
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <OptionsXRef>enum:sound_effect_flags_playback</OptionsXRef>
+                  </LongFlags>
+                  <Pad sizeOfSource="2*sizeof(dword)" length="8" />
+                  <Block CStyleName="filter" pascalStyleName="Filter" name="filter" maxElementCount="1">
+                    <LayoutXRef>block:platform_sound_filter</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="pitch_lfo" pascalStyleName="PitchLfo" name="pitch lfo" maxElementCount="1">
+                    <LayoutXRef>block:platform_sound_pitch_lfo</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="filter_lfo" pascalStyleName="FilterLfo" name="filter lfo" maxElementCount="1">
+                    <LayoutXRef>block:platform_sound_filter_lfo</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="sound_effect" pascalStyleName="SoundEffect" name="sound effect" maxElementCount="1">
+                    <LayoutXRef>block:sound_effect_playback</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

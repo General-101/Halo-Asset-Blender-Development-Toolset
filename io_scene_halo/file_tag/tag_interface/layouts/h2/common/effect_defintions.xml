@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedLayouts>
+  <Layout regolithID="block:effect_locations" internalName="effect_locations_block" name="effect_locations_block">
+    <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(struct effect_location_definition)" isLatest="true">
+      <Explanation name="MARKER NAMES" description="In addition to the marker in the render model there are several special marker names:&#xA;&#xA;replace&#xA;Replace allows you to use the same effect with different markers. Damage transition effects support this for example.&#xA;&#xA;gravity, up&#xA;The direction of gravity (down) and the opposite direction (up).  Always supplied&#xA;&#xA;normal&#xA;Vector pointing directly away from the surface you collided with. Supplied for effects from collision.&#xA;&#xA;forward&#xA;The 'negative incident' vector i.e. the direction the object is moving in. Most commonly used to generated decals. Supplied for effects from collision.&#xA;&#xA;backward&#xA;The 'incident' vector i.e. the opposite of the direction the object is moving in. Supplied for effects from collision.&#xA;&#xA;reflection&#xA;The way the effect would reflect off the surface it hit. Supplied for effects from collision.&#xA;&#xA;root&#xA;The object root (pivot). These can used for all effects which are associated with an object.&#xA;&#xA;impact&#xA;The location of a havok impact.&#xA;&#xA;" />
+      <OldStringId CStyleName="marker_name" pascalStyleName="MarkerName" name="marker name" blockNameSource="true" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:particle_system_definition_block_new" internalName="particle_system_definition_block_new" name="particle_system_definition_block_new">
+    <FieldSet version="0" sizeofValue="44" sizeofSource="sizeof(c_particle_system_definition_v1)">
+      <TagReference CStyleName="particle" pascalStyleName="Particle" name="particle">
+        <tag />
+      </TagReference>
+      <LongBlockIndex CStyleName="location" pascalStyleName="Location" name="location" />
+      <ShortEnum CStyleName="coordinate_system" pascalStyleName="CoordinateSystem" name="coordinate system">
+        <Options regolithID="enum:particle_system_coordinate_system" CStyleName="particle_system_coordinate_system" pascalStyleName="ParticleSystemCoordinateSystem">
+          <Enum name="world" CStyleName="world" pascalStyleName="World" />
+          <Enum name="local" CStyleName="local" pascalStyleName="Local" />
+          <Enum name="parent" CStyleName="parent" pascalStyleName="Parent" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="environment" pascalStyleName="Environment" name="environment">
+        <Options regolithID="enum:effect_environment_create_in" CStyleName="effect_environment_create_in" pascalStyleName="EffectEnvironmentCreateIn">
+          <Enum name="any environment" CStyleName="any_environment" pascalStyleName="AnyEnvironment" />
+          <Enum name="air only" CStyleName="air_only" pascalStyleName="AirOnly" />
+          <Enum name="water only" CStyleName="water_only" pascalStyleName="WaterOnly" />
+          <Enum name="space only" CStyleName="space_only" pascalStyleName="SpaceOnly" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="disposition" pascalStyleName="Disposition" name="disposition">
+        <Options regolithID="enum:effect_disposition_mode" CStyleName="effect_disposition_mode" pascalStyleName="EffectDispositionMode">
+          <Enum name="either mode" CStyleName="either_mode" pascalStyleName="EitherMode" />
+          <Enum name="violent mode only" CStyleName="violent_mode_only" pascalStyleName="ViolentModeOnly" />
+          <Enum name="nonviolent mode only" CStyleName="nonviolent_mode_only" pascalStyleName="NonviolentModeOnly" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="camera_mode" pascalStyleName="CameraMode" name="camera mode">
+        <Options regolithID="enum:particle_system_camera_mode" CStyleName="particle_system_camera_mode" pascalStyleName="ParticleSystemCameraMode">
+          <Enum name="independent of camera mode" CStyleName="independent_of_camera_mode" pascalStyleName="IndependentOfCameraMode" />
+          <Enum name="only in first person" CStyleName="only_in_first_person" pascalStyleName="OnlyInFirstPerson" />
+          <Enum name="only in third person" CStyleName="only_in_third_person" pascalStyleName="OnlyInThirdPerson" />
+          <Enum name="both first and third" CStyleName="both_first_and_third" pascalStyleName="BothFirstAndThird" />
+        </Options>
+      </ShortEnum>
+      <ShortInteger CStyleName="sort_bias" pascalStyleName="SortBias" name="sort bias" description="use values between -10 and 10 to move closer and farther from camera (positive is closer)" />
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:new_particle_system_flags" CStyleName="new_particle_system_flags" pascalStyleName="NewParticleSystemFlags">
+          <Bit name="glow" CStyleName="glow_bit" pascalStyleName="GlowBit" />
+          <Bit name="cinematics" CStyleName="cinematics_bit" pascalStyleName="CinematicsBit" />
+          <Bit name="looping particle" CStyleName="looping_particle_bit" pascalStyleName="LoopingParticleBit" />
+          <Bit name="disabled for debugging" CStyleName="disabled_for_debugging_bit" pascalStyleName="DisabledForDebuggingBit" />
+          <Bit name="inherit effect velocity" CStyleName="inherit_effect_velocity_bit" pascalStyleName="InheritEffectVelocityBit" />
+          <Bit name="don't render system" CStyleName="dont_render_system_bit" pascalStyleName="DontRenderSystemBit" />
+          <Bit name="render when zoomed" CStyleName="render_when_zoomed_bit" pascalStyleName="RenderWhenZoomedBit" />
+          <Bit name="spread between ticks" CStyleName="spread_between_ticks_bit" pascalStyleName="SpreadBetweenTicksBit" />
+          <Bit name="persistent particle" CStyleName="persistent_particle_bit" pascalStyleName="PersistentParticleBit" />
+          <Bit name="expensive visibility" CStyleName="expensive_visibility_bit" pascalStyleName="ExpensiveVisibilityBit" />
+        </Options>
+      </WordFlags>
+      <Block CStyleName="emitters" pascalStyleName="Emitters" name="emitters" maxElementCount="8" maxElementCountSource="c_particle_system_definition::k_maximum_emitters_per_definition">
+        <Layout regolithID="block:particle_system_emitter_definition" internalName="particle_system_emitter_definition_block" name="particle_system_emitter_definition_block">
+          <FieldSet version="0" sizeofValue="228" sizeofSource="sizeof(c_particle_emitter_definition)" isLatest="true">
+            <TagReference CStyleName="particle_physics" pascalStyleName="ParticlePhysics" name="particle physics">
+              <tag>pmov</tag>
+            </TagReference>
+            <Explanation name="particle emission rate (particles/tick)" />
+            <Struct CStyleName="particle_emission_rate" pascalStyleName="ParticleEmissionRate" name="particle emission rate">
+              <Layout regolithID="structure:particle_property_scalar_struct_new" tag="PRPS" internalName="particle_property_scalar_struct_new" backingBlockInternalName="particle_property_scalar_struct_new_block" name="particle_property_scalar_struct_new">
+                <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(c_particle_property)" isLatest="true">
+                  <ShortEnum CStyleName="input_variable" pascalStyleName="InputVariable" name="Input Variable" tag="fnin">
+                    <Options regolithID="enum:particle_property" CStyleName="particle_property" pascalStyleName="ParticleProperty">
+                      <Enum name="particle age" CStyleName="particle_age" pascalStyleName="ParticleAge" />
+                      <Enum name="particle emit time" CStyleName="particle_emit_time" pascalStyleName="ParticleEmitTime" />
+                      <Enum name="particle random 1" CStyleName="particle_random_1" pascalStyleName="ParticleRandom1" />
+                      <Enum name="particle random 2" CStyleName="particle_random_2" pascalStyleName="ParticleRandom2" />
+                      <Enum name="emitter age" CStyleName="emitter_age" pascalStyleName="EmitterAge" />
+                      <Enum name="emitter random 1" CStyleName="emitter_random_1" pascalStyleName="EmitterRandom1" />
+                      <Enum name="emitter random 2" CStyleName="emitter_random_2" pascalStyleName="EmitterRandom2" />
+                      <Enum name="system lod" CStyleName="system_lod" pascalStyleName="SystemLod" />
+                      <Enum name="game time" CStyleName="game_time" pascalStyleName="GameTime" />
+                      <Enum name="effect a scale" CStyleName="effect_a_scale" pascalStyleName="EffectAScale" />
+                      <Enum name="effect b scale" CStyleName="effect_b_scale" pascalStyleName="EffectBScale" />
+                      <Enum name="particle rotation" CStyleName="particle_rotation" pascalStyleName="ParticleRotation" />
+                      <Enum name="explosion animation" CStyleName="explosion_animation" pascalStyleName="ExplosionAnimation" />
+                      <Enum name="explosion rotation" CStyleName="explosion_rotation" pascalStyleName="ExplosionRotation" />
+                      <Enum name="particle random 3" CStyleName="particle_random_3" pascalStyleName="ParticleRandom3" />
+                      <Enum name="particle random 4" CStyleName="particle_random_4" pascalStyleName="ParticleRandom4" />
+                      <Enum name="location random" CStyleName="location_random" pascalStyleName="LocationRandom" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="range_variable" pascalStyleName="RangeVariable" name="Range Variable" tag="fnir">
+                    <OptionsXRef>enum:particle_property</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="output_modifier" pascalStyleName="OutputModifier" name="Output Modifier" tag="fnop">
+                    <Options regolithID="enum:particle_property_scalar_output_modifier" CStyleName="particle_property_scalar_output_modifier" pascalStyleName="ParticlePropertyScalarOutputModifier">
+                      <Enum CStyleName="unnamed_0" pascalStyleName="Unnamed0" />
+                      <Enum name="Plus" CStyleName="plus" pascalStyleName="Plus" />
+                      <Enum name="Times" CStyleName="times" pascalStyleName="Times" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="output_modifier_input" pascalStyleName="OutputModifierInput" name="Output Modifier Input" tag="fnom">
+                    <OptionsXRef>enum:particle_property</OptionsXRef>
+                  </ShortEnum>
+                  <Custom name="Mapping" tag="fned" />
+                  <Struct CStyleName="mapping" pascalStyleName="Mapping" name="Mapping">
+                    <LayoutXRef>structure:mapping_function</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Explanation name="particle lifespan(seconds)" />
+            <Struct CStyleName="particle_lifespan" pascalStyleName="ParticleLifespan" name="particle lifespan">
+              <LayoutXRef>structure:particle_property_scalar_struct_new</LayoutXRef>
+            </Struct>
+            <Explanation name="particle velocity(world units/second)" />
+            <Struct CStyleName="particle_velocity" pascalStyleName="ParticleVelocity" name="particle velocity">
+              <LayoutXRef>structure:particle_property_scalar_struct_new</LayoutXRef>
+            </Struct>
+            <Explanation name="particle angular velocity(degrees/second)" />
+            <Struct CStyleName="particle_angular_velocity" pascalStyleName="ParticleAngularVelocity" name="particle angular velocity">
+              <LayoutXRef>structure:particle_property_scalar_struct_new</LayoutXRef>
+            </Struct>
+            <Explanation name="particle size(world units)" />
+            <Struct CStyleName="particle_size" pascalStyleName="ParticleSize" name="particle size">
+              <LayoutXRef>structure:particle_property_scalar_struct_new</LayoutXRef>
+            </Struct>
+            <Explanation name="particle tint" />
+            <Struct CStyleName="particle_tint" pascalStyleName="ParticleTint" name="particle tint">
+              <Layout regolithID="structure:particle_property_color_struct_new" tag="PRPC" internalName="particle_property_color_struct_new" backingBlockInternalName="particle_property_color_struct_new_block" name="particle_property_color_struct_new">
+                <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(c_particle_property)" isLatest="true">
+                  <ShortEnum CStyleName="input_variable" pascalStyleName="InputVariable" name="Input Variable" tag="fnin">
+                    <OptionsXRef>enum:particle_property</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="range_variable" pascalStyleName="RangeVariable" name="Range Variable" tag="fnir">
+                    <OptionsXRef>enum:particle_property</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="output_modifier" pascalStyleName="OutputModifier" name="Output Modifier" tag="fnop">
+                    <OptionsXRef>enum:particle_property_scalar_output_modifier</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="output_modifier_input" pascalStyleName="OutputModifierInput" name="Output Modifier Input" tag="fnom">
+                    <OptionsXRef>enum:particle_property</OptionsXRef>
+                  </ShortEnum>
+                  <Custom name="Mapping" tag="fned" />
+                  <Struct CStyleName="mapping" pascalStyleName="Mapping" name="Mapping">
+                    <LayoutXRef>structure:mapping_function</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Explanation name="particle alpha" />
+            <Struct CStyleName="particle_alpha" pascalStyleName="ParticleAlpha" name="particle alpha">
+              <LayoutXRef>structure:particle_property_scalar_struct_new</LayoutXRef>
+            </Struct>
+            <Explanation name="EMISSION SETTINGS" />
+            <LongEnum CStyleName="emission_shape" pascalStyleName="EmissionShape" name="emission shape">
+              <Options regolithID="enum:particle_system_emission_shape" CStyleName="particle_system_emission_shape" pascalStyleName="ParticleSystemEmissionShape">
+                <Enum name="sprayer" CStyleName="sprayer" pascalStyleName="Sprayer" />
+                <Enum name="disc" CStyleName="disc" pascalStyleName="Disc" />
+                <Enum name="globe" CStyleName="globe" pascalStyleName="Globe" />
+                <Enum name="implode" CStyleName="implode" pascalStyleName="Implode" />
+                <Enum name="tube" CStyleName="tube" pascalStyleName="Tube" />
+                <Enum name="halo" CStyleName="halo" pascalStyleName="Halo" />
+                <Enum name="impact contour" CStyleName="impact_contour" pascalStyleName="ImpactContour" />
+                <Enum name="impact area" CStyleName="impact_area" pascalStyleName="ImpactArea" />
+                <Enum name="debris" CStyleName="debris" pascalStyleName="Debris" />
+                <Enum name="line" CStyleName="line" pascalStyleName="Line" />
+              </Options>
+            </LongEnum>
+            <Explanation name="emission radius(world units)" />
+            <Struct CStyleName="emission_radius" pascalStyleName="EmissionRadius" name="emission radius">
+              <LayoutXRef>structure:particle_property_scalar_struct_new</LayoutXRef>
+            </Struct>
+            <Explanation name="emission angle(degrees)" />
+            <Struct CStyleName="emission_angle" pascalStyleName="EmissionAngle" name="emission angle">
+              <LayoutXRef>structure:particle_property_scalar_struct_new</LayoutXRef>
+            </Struct>
+            <RealPoint3D CStyleName="translational_offset" pascalStyleName="TranslationalOffset" name="translational offset" />
+            <RealEulerAngles2D CStyleName="relative_direction" pascalStyleName="RelativeDirection" name="relative direction" description="particle initial velocity direction relative to the location's forward" />
+            <Pad sizeOfSource="sizeof(dword)*2" length="8" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="68" sizeofSource="sizeof(c_particle_system_definition)" isLatest="true">
+      <TagReference CStyleName="particle" pascalStyleName="Particle" name="particle">
+        <tag />
+      </TagReference>
+      <LongBlockIndex CStyleName="location" pascalStyleName="Location" name="location" blockReference="block:effect_locations" />
+      <ShortEnum CStyleName="coordinate_system" pascalStyleName="CoordinateSystem" name="coordinate system">
+        <OptionsXRef>enum:particle_system_coordinate_system</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="environment" pascalStyleName="Environment" name="environment">
+        <OptionsXRef>enum:effect_environment_create_in</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="disposition" pascalStyleName="Disposition" name="disposition">
+        <OptionsXRef>enum:effect_disposition_mode</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="camera_mode" pascalStyleName="CameraMode" name="camera mode">
+        <OptionsXRef>enum:particle_system_camera_mode</OptionsXRef>
+      </ShortEnum>
+      <ShortInteger CStyleName="sort_bias" pascalStyleName="SortBias" name="sort bias" description="use values between -10 and 10 to move closer and farther from camera (positive is closer)" />
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:new_particle_system_flags</OptionsXRef>
+      </WordFlags>
+      <Real CStyleName="lod_in_distance" pascalStyleName="LodInDistance" name="LOD in distance" description="defaults to 0.0" />
+      <Real CStyleName="lod_feather_in_delta" pascalStyleName="LodFeatherInDelta" name="LOD feather in delta" description="defaults to 0.0" />
+      <Skip sizeOfSource="sizeof(real)" length="4" />
+      <Real CStyleName="lod_out_distance" pascalStyleName="LodOutDistance" name="LOD out distance" description="defaults to 30.0" />
+      <Real CStyleName="lod_feather_out_delta" pascalStyleName="LodFeatherOutDelta" name="LOD feather out delta" description="defaults to 10.0" />
+      <Skip sizeOfSource="sizeof(real)" length="4" />
+      <Block CStyleName="emitters" pascalStyleName="Emitters" name="emitters" maxElementCount="8" maxElementCountSource="c_particle_system_definition::k_maximum_emitters_per_definition">
+        <LayoutXRef>block:particle_system_emitter_definition</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</SharedLayouts>

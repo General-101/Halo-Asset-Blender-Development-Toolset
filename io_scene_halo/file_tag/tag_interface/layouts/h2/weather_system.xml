@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="weat" name="weather_system" version="1">
+  <Layout regolithID="block:weather_system" internalName="weather_system_block" name="weather_system">
+    <FieldSet version="0" sizeofValue="188" sizeofSource="sizeof(c_weather_system)" isLatest="true">
+      <Block CStyleName="particle_system" pascalStyleName="ParticleSystem" name="particle system" maxElementCount="1">
+        <Layout regolithID="block:global_particle_system_lite" internalName="global_particle_system_lite_block" name="global_particle_system_lite_block">
+          <FieldSet version="0" sizeofValue="156" sizeofSource="sizeof(c_particle_system_lite)" isLatest="true">
+            <TagReference CStyleName="sprites" pascalStyleName="Sprites" name="sprites">
+              <tag>bitm</tag>
+            </TagReference>
+            <Real CStyleName="view_box_width" pascalStyleName="ViewBoxWidth" name="view box width" />
+            <Real CStyleName="view_box_height" pascalStyleName="ViewBoxHeight" name="view box height" />
+            <Real CStyleName="view_box_depth" pascalStyleName="ViewBoxDepth" name="view box depth" />
+            <Real CStyleName="exclusion_radius" pascalStyleName="ExclusionRadius" name="exclusion radius" />
+            <Real CStyleName="max_velocity" pascalStyleName="MaxVelocity" name="max velocity" />
+            <Real CStyleName="min_mass" pascalStyleName="MinMass" name="min mass" />
+            <Real CStyleName="max_mass" pascalStyleName="MaxMass" name="max mass" />
+            <Real CStyleName="min_size" pascalStyleName="MinSize" name="min size" />
+            <Real CStyleName="max_size" pascalStyleName="MaxSize" name="max size" />
+            <LongInteger CStyleName="maximum_number_of_particles" pascalStyleName="MaximumNumberOfParticles" name="maximum number of particles" />
+            <RealVector3D CStyleName="initial_velocity" pascalStyleName="InitialVelocity" name="initial velocity" />
+            <Real CStyleName="bitmap_animation_speed" pascalStyleName="BitmapAnimationSpeed" name="bitmap animation speed" />
+            <Struct CStyleName="geometry_block_info" pascalStyleName="GeometryBlockInfo" name="geometry block info" readOnly="true">
+              <LayoutXRef>structure:global_geometry_block_info</LayoutXRef>
+            </Struct>
+            <Block CStyleName="particle_system_data" pascalStyleName="ParticleSystemData" name="particle system data" maxElementCount="1">
+              <Layout regolithID="block:particle_system_lite_data" internalName="particle_system_lite_data_block" name="particle_system_lite_data_block">
+                <FieldSet version="0" sizeofValue="56" sizeofSource="sizeof(particle_system_data)" isLatest="true">
+                  <Block CStyleName="particles_render_data" pascalStyleName="ParticlesRenderData" name="particles render data" readOnly="true" maxElementCount="4096" maxElementCountSource="MAX_PARTICLES_LITE">
+                    <Layout regolithID="block:particles_render_data" internalName="particles_render_data_block" name="particles_render_data_block">
+                      <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(c_particle_lite_render)" isLatest="true">
+                        <Real CStyleName="positionx" pascalStyleName="Positionx" name="position.x" readOnly="true" />
+                        <Real CStyleName="positiony" pascalStyleName="Positiony" name="position.y" readOnly="true" />
+                        <Real CStyleName="positionz" pascalStyleName="Positionz" name="position.z" readOnly="true" />
+                        <Real CStyleName="size" pascalStyleName="Size" name="size" readOnly="true" />
+                        <RgbColor CStyleName="color" pascalStyleName="Color" name="color" readOnly="true" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="particles_other_data" pascalStyleName="ParticlesOtherData" name="particles other data" readOnly="true" maxElementCount="4096" maxElementCountSource="MAX_PARTICLES_LITE">
+                    <Layout regolithID="block:particles_update_data" internalName="particles_update_data_block" name="particles_update_data_block">
+                      <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(c_particle_lite_data)" isLatest="true">
+                        <Real CStyleName="velocityx" pascalStyleName="Velocityx" name="velocity.x" readOnly="true" />
+                        <Real CStyleName="velocityy" pascalStyleName="Velocityy" name="velocity.y" readOnly="true" />
+                        <Real CStyleName="velocityz" pascalStyleName="Velocityz" name="velocity.z" readOnly="true" />
+                        <Pad sizeOfSource="sizeof(real_vector3d)" length="12" />
+                        <Real CStyleName="mass" pascalStyleName="Mass" name="mass" readOnly="true" />
+                        <Real CStyleName="creation_time_stamp" pascalStyleName="CreationTimeStamp" name="creation time stamp" readOnly="true" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Pad sizeOfSource="32" length="32" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <Options regolithID="enum:global_particle_system_type" CStyleName="global_particle_system_type" pascalStyleName="GlobalParticleSystemType">
+                <Enum name="generic" CStyleName="generic" pascalStyleName="Generic" />
+                <Enum name="snow" CStyleName="snow" pascalStyleName="Snow" />
+                <Enum name="rain" CStyleName="rain" pascalStyleName="Rain" />
+                <Enum name="rain splash" CStyleName="rain_splash" pascalStyleName="RainSplash" />
+                <Enum name="bugs" CStyleName="bugs" pascalStyleName="Bugs" />
+                <Enum name="sand storm" CStyleName="sand_storm" pascalStyleName="SandStorm" />
+                <Enum name="debris" CStyleName="debris" pascalStyleName="Debris" />
+                <Enum name="bubbles" CStyleName="bubbles" pascalStyleName="Bubbles" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Real CStyleName="mininum_opacity" pascalStyleName="MininumOpacity" name="mininum opacity" />
+            <Real CStyleName="maxinum_opacity" pascalStyleName="MaxinumOpacity" name="maxinum opacity" />
+            <Real CStyleName="rain_streak_scale" pascalStyleName="RainStreakScale" name="rain streak scale" />
+            <Real CStyleName="rain_line_width" pascalStyleName="RainLineWidth" name="rain line width" />
+            <Pad sizeOfSource="sizeof(real)" length="4" />
+            <Pad sizeOfSource="sizeof(long)" length="4" />
+            <Pad sizeOfSource="sizeof(long)" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="background_plates" pascalStyleName="BackgroundPlates" name="background plates" maxElementCount="3">
+        <Layout regolithID="block:global_weather_background_plate" internalName="global_weather_background_plate_block" name="global_weather_background_plate_block">
+          <FieldSet version="0" sizeofValue="960" sizeofSource="sizeof(c_animated_background_plate)" isLatest="true">
+            <TagReference CStyleName="texture_0" pascalStyleName="Texture0" name="texture 0">
+              <tag>bitm</tag>
+            </TagReference>
+            <TagReference CStyleName="texture_1" pascalStyleName="Texture1" name="texture 1">
+              <tag>bitm</tag>
+            </TagReference>
+            <TagReference CStyleName="texture_2" pascalStyleName="Texture2" name="texture 2">
+              <tag>bitm</tag>
+            </TagReference>
+            <Real CStyleName="plate_positions_0" pascalStyleName="PlatePositions0" name="plate positions 0" />
+            <Real CStyleName="plate_positions_1" pascalStyleName="PlatePositions1" name="plate positions 1" />
+            <Real CStyleName="plate_positions_2" pascalStyleName="PlatePositions2" name="plate positions 2" />
+            <RealVector3D CStyleName="move_speed_0" pascalStyleName="MoveSpeed0" name="move speed 0" />
+            <RealVector3D CStyleName="move_speed_1" pascalStyleName="MoveSpeed1" name="move speed 1" />
+            <RealVector3D CStyleName="move_speed_2" pascalStyleName="MoveSpeed2" name="move speed 2" />
+            <Real CStyleName="texture_scale_0" pascalStyleName="TextureScale0" name="texture scale 0" />
+            <Real CStyleName="texture_scale_1" pascalStyleName="TextureScale1" name="texture scale 1" />
+            <Real CStyleName="texture_scale_2" pascalStyleName="TextureScale2" name="texture scale 2" />
+            <RealVector3D CStyleName="jitter_0" pascalStyleName="Jitter0" name="jitter 0" />
+            <RealVector3D CStyleName="jitter_1" pascalStyleName="Jitter1" name="jitter 1" />
+            <RealVector3D CStyleName="jitter_2" pascalStyleName="Jitter2" name="jitter 2" />
+            <Real CStyleName="plate_z_near" pascalStyleName="PlateZNear" name="plate z near" />
+            <Real CStyleName="plate_z_far" pascalStyleName="PlateZFar" name="plate z far" />
+            <Real CStyleName="depth_blend_z_near" pascalStyleName="DepthBlendZNear" name="depth blend z near" />
+            <Real CStyleName="depth_blend_z_far" pascalStyleName="DepthBlendZFar" name="depth blend z far" />
+            <Real CStyleName="opacity_0" pascalStyleName="Opacity0" name="opacity 0" />
+            <Real CStyleName="opacity_1" pascalStyleName="Opacity1" name="opacity 1" />
+            <Real CStyleName="opacity_2" pascalStyleName="Opacity2" name="opacity 2" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:global_weather_background_plate_flags" CStyleName="global_weather_background_plate_flags" pascalStyleName="GlobalWeatherBackgroundPlateFlags">
+                <Bit name="forward motion" CStyleName="forward_motion_bit" pascalStyleName="ForwardMotionBit" />
+                <Bit name="auto position planes" CStyleName="auto_position_planes_bit" pascalStyleName="AutoPositionPlanesBit" />
+                <Bit name="auto scale planesauto update speed" CStyleName="auto_scale_planesauto_update_speed_bit" pascalStyleName="AutoScalePlanesautoUpdateSpeedBit" />
+              </Options>
+            </LongFlags>
+            <RealRgbColor CStyleName="tint_color0" pascalStyleName="TintColor0" name="tint color0" />
+            <RealRgbColor CStyleName="tint_color1" pascalStyleName="TintColor1" name="tint color1" />
+            <RealRgbColor CStyleName="tint_color2" pascalStyleName="TintColor2" name="tint color2" />
+            <Real CStyleName="mass_1" pascalStyleName="Mass1" name="mass 1" />
+            <Real CStyleName="mass_2" pascalStyleName="Mass2" name="mass 2" />
+            <Real CStyleName="mass_3" pascalStyleName="Mass3" name="mass 3" />
+            <Pad sizeOfSource="UNEXPOSED_DATA_SIZE" length="736" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Struct CStyleName="wind_model" pascalStyleName="WindModel" name="wind model">
+        <Layout regolithID="structure:global_wind_model" tag="WNDM" internalName="global_wind_model_struct" backingBlockInternalName="global_wind_model_struct_block" name="global_wind_model_struct">
+          <FieldSet version="0" sizeofValue="160" sizeofSource="sizeof(c_wind_model)" isLatest="true">
+            <Real CStyleName="wind_tiling_scale" pascalStyleName="WindTilingScale" name="wind tiling scale" />
+            <RealVector3D CStyleName="wind_primary_headingpitchstrength" pascalStyleName="WindPrimaryHeadingpitchstrength" name="wind primary heading/pitch/strength" />
+            <Real CStyleName="primary_rate_of_change" pascalStyleName="PrimaryRateOfChange" name="primary rate of change" />
+            <Real CStyleName="primary_min_strength" pascalStyleName="PrimaryMinStrength" name="primary min strength" />
+            <Pad sizeOfSource="sizeof(real)" length="4" />
+            <Pad sizeOfSource="sizeof(real)" length="4" />
+            <Pad sizeOfSource="sizeof(real_vector3d)" length="12" />
+            <RealVector3D CStyleName="wind_gusting_headingpitchstrength" pascalStyleName="WindGustingHeadingpitchstrength" name="wind gusting heading/pitch/strength" />
+            <Real CStyleName="gust_diretional_rate_of_change" pascalStyleName="GustDiretionalRateOfChange" name="gust diretional rate of change" />
+            <Real CStyleName="gust_strength_rate_of_change" pascalStyleName="GustStrengthRateOfChange" name="gust strength rate of change" />
+            <Real CStyleName="gust_cone_angle" pascalStyleName="GustConeAngle" name="gust cone angle" />
+            <Pad sizeOfSource="sizeof(real)" length="4" />
+            <Pad sizeOfSource="sizeof(real)" length="4" />
+            <Pad sizeOfSource="sizeof(real_vector3d)" length="12" />
+            <Pad sizeOfSource="sizeof(real_vector3d)" length="12" />
+            <Pad sizeOfSource="sizeof(real_vector3d)" length="12" />
+            <Pad sizeOfSource="sizeof(real_vector3d)" length="12" />
+            <Real CStyleName="turbulance_rate_of_change" pascalStyleName="TurbulanceRateOfChange" name="turbulance rate of change" />
+            <RealVector3D CStyleName="turbulence_scale_x_y_z" pascalStyleName="TurbulenceScaleXYZ" name="turbulence_scale x, y, z" />
+            <Real CStyleName="gravity_constant" pascalStyleName="GravityConstant" name="gravity constant" />
+            <Block CStyleName="wind_pirmitives" pascalStyleName="WindPirmitives" name="wind_pirmitives" maxElementCount="128" maxElementCountSource="MAX_WIND_PRIMITIVES">
+              <Layout regolithID="block:gloal_wind_primitives" internalName="gloal_wind_primitives_block" name="wind primitives">
+                <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(c_wind_primitive)" isLatest="true">
+                  <RealVector3D CStyleName="position" pascalStyleName="Position" name="position" />
+                  <Real CStyleName="radius" pascalStyleName="Radius" name="radius" />
+                  <Real CStyleName="strength" pascalStyleName="Strength" name="strength" />
+                  <ShortEnum CStyleName="wind_primitive_type" pascalStyleName="WindPrimitiveType" name="wind primitive type">
+                    <Options regolithID="enum:wind_primitive_type" CStyleName="wind_primitive_type" pascalStyleName="WindPrimitiveType">
+                      <Enum name="vortex" CStyleName="vortex" pascalStyleName="Vortex" />
+                      <Enum name="gust" CStyleName="gust" pascalStyleName="Gust" />
+                      <Enum name="implosion" CStyleName="implosion" pascalStyleName="Implosion" />
+                      <Enum name="explosion" CStyleName="explosion" pascalStyleName="Explosion" />
+                    </Options>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Pad sizeOfSource="sizeof(real)" length="4" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Real CStyleName="fade_radius" pascalStyleName="FadeRadius" name="fade radius" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

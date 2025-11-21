@@ -30,6 +30,8 @@ from math import radians
 from .format import JMAAsset
 from mathutils import Vector, Euler, Quaternion, Matrix
 from ..global_functions import mesh_processing, global_functions, resource_management
+if (5, 0, 0) <= bpy.app.version:
+    from bpy_extras import anim_utils
 
 def find_valid_armature(context, obj):
     valid_armature = None
@@ -120,7 +122,9 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
 
     local_matrices = []
     absolute_matrices = []
-    armature_matrix = [armature.matrix_world]
+    armature_matrix = [Matrix().to_4x4]
+    if armature:
+        armature_matrix = [armature.matrix_world]
     for node in joined_list:
         is_bone = armature and isinstance(node, bpy.types.Bone)
         if is_bone:
@@ -193,13 +197,22 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
     if generate_checksum and len(JMA.nodes) > 0:
         JMA.node_checksum = global_functions.node_hierarchy_checksum(JMA.nodes, JMA.nodes[0], JMA.node_checksum)
 
+    action = None
     if armature:
-        action = None
         fcurves = []
         if armature and armature.animation_data:
             action = armature.animation_data.action 
         if action:
-            fcurves = action.fcurves
+            if (5, 0, 0) <= bpy.app.version:
+                if action.slots:
+                    action_slot = action.slots[0]
+                else:
+                    action_slot = action.slots.new(id_type='OBJECT', name=armature.name)
+
+                channelbag = anim_utils.action_ensure_channelbag_for_slot(action, action_slot)
+                fcurves = channelbag.fcurves
+            else:
+                fcurves = action.fcurves
 
         fcurve_dict = {}
         for fc in fcurves:
@@ -212,7 +225,9 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
     for frame in range(first_frame, last_frame):
         frame_matrices = []
         for node_idx, node in enumerate(joined_list):
-            local_matrix = global_functions.export_fcurve_data(action, fcurve_dict, armature, node, node_idx, frame, local_matrices)
+            local_matrix = Matrix().to_4x4()
+            if action:
+                local_matrix = global_functions.export_fcurve_data(action, fcurve_dict, armature, node, node_idx, frame, local_matrices)
             frame_matrices.append(local_matrix)
         temp_local_matrices.append(frame_matrices)
 
@@ -255,7 +270,7 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
                 bone = joined_list[unordered_map[node_idx]]
                 is_bone = armature and isinstance(bone, bpy.types.Bone)
                 mesh_dimensions = global_functions.get_dimensions(local_matrix, bone, jma_version, is_bone, 'JMA', scale_value)
-                local_frame.append(JMA.Transform(mesh_dimensions.position, mesh_dimensions.quaternion, mesh_dimensions.scale[0]))
+                local_frame.append(JMA.Transform(mesh_dimensions.position, mesh_dimensions.quaternion, round(mesh_dimensions.scale[0], 2)))
             final_transforms.append(local_frame)
 
     else:
@@ -279,8 +294,8 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
 
             rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
             translation = (mesh_dimensions.position[0], mesh_dimensions.position[1], mesh_dimensions.position[2])
-            scale = (mesh_dimensions.scale[0])
-
+            scale = round(mesh_dimensions.scale[0], 2)
+            
             JMA.biped_controller_transforms.append(JMA.Transform(translation, rotation, scale))
 
     # Restore visibility status for all resources

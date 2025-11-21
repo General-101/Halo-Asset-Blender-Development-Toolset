@@ -130,7 +130,7 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
 
         if marker.type == 'EMPTY':
             scale = (mesh_dimensions.scale[0])
-            if not marker.ass_jms.marker_region == '':
+            if not global_functions.string_empty_check(marker.ass_jms.marker_region):
                 if not marker.ass_jms.marker_region in region_list:
                     region_list.append(marker.ass_jms.marker_region)
 
@@ -144,7 +144,7 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
 
                 region_idx = region_list.index(region_name)
 
-            elif not marker.ass_jms.marker_region == '':
+            elif not global_functions.string_empty_check(marker.ass_jms.marker_region):
                 if not marker.ass_jms.marker_region in region_list:
                     region_list.append(marker.ass_jms.marker_region)
 
@@ -214,34 +214,21 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
             original_geo_matrix = global_functions.get_matrix(original_geo, original_geo, False, blend_scene.armature, joined_list, False, version, "JMS", False, custom_scale, fix_rotations)
             region_count = len(original_geo.data.region_list)
             for idx, face in enumerate(evaluted_mesh.polygons):
-                face_set = (None, default_permutation, default_region)
                 region_index = -1
-                if game_version == "halo1":
-                    region_index = region_list.index(default_region)
-
-                lod = face_set[0]
-                permutation = face_set[1]
-                region = face_set[2]
+                variant_name = ""
                 if not original_geo.data.active_region == -1 and region_count > 0:
                     region_idx = evaluted_mesh.get_custom_attribute().data[idx].value - 1
                     if not region_idx == -1 and not region_idx >= region_count:
-                        face_set = mesh_processing.process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, region_idx)
-                        lod = face_set[0]
-                        permutation = face_set[1]
-                        region = face_set[2]
-                        if not region in region_list:
-                            region_list.append(region)
+                        variant_name = original_geo.data.region_list[region_idx].name
+                        if not variant_name in region_list:
+                            region_list.append(variant_name)
 
-                        region_index = region_list.index(region)
-                        if not game_version == "halo1":
-                            if not permutation in permutation_list:
-                                permutation_list.append(permutation)
+                        region_index = region_list.index(variant_name)
 
-                material = global_functions.get_material(game_version, original_geo, face, evaluted_mesh, lod, region, permutation)
-                material_index = -1
-                if not material == -1:
-                    material_list = global_functions.gather_materials(game_version, material, material_list, "JMS")
-                    material_index = material_list.index(material)
+                if game_version == 'halo1':
+                    variant_name = ""
+
+                material_index = global_functions.get_material(original_geo.material_slots, evaluted_mesh, face, variant_name, material_list)
 
                 vert_count = len(JMS.vertices)
                 v0 = vert_count
@@ -258,7 +245,6 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
                     loop_data = evaluted_mesh.loops[loop_index]
                     vertex_data = evaluted_mesh.vertices[loop_data.vertex_index]
 
-                    region = region_index
                     normal = (original_geo_matrix.to_3x3() @ evaluted_mesh.corner_normals[loop_index].vector).normalized()
                     if not loop_normals:
                         normal = (original_geo_matrix.to_3x3() @ vertex_data.normal).normalized()
@@ -271,7 +257,7 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
                     color = mesh_processing.process_mesh_export_color(evaluted_mesh, loop_index, point_idx)
                     node_influence_count, node_set = mesh_processing.process_mesh_export_weights(vertex_data, blend_scene.armature, original_geo, vertex_groups, joined_list, "JMS")
 
-                    JMS.vertices.append(JMSAsset.Vertex(node_influence_count, node_set, region, scaled_translation, normal, color, uv_set))
+                    JMS.vertices.append(JMSAsset.Vertex(node_influence_count, node_set, region_index, scaled_translation, normal, color, uv_set))
 
             original_geo.to_mesh_clear()
 
@@ -284,21 +270,13 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
             lod = None
             region = default_region
             permutation = default_permutation
+            variant_name = ""
             if not spheres.data.active_region == -1:
-                face_set = spheres.data.region_list[spheres.data.active_region].name.split()
-                lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
+                variant_name = spheres.data.region_list[spheres.data.active_region].name.split()
+                if not variant_name in region_list:
+                    region_list.append(variant_name)
 
-                if not permutation in permutation_list:
-                    permutation_list.append(permutation)
-
-                if not region in region_list:
-                    region_list.append(region)
-
-            material = global_functions.get_material(game_version, spheres, face, mesh_sphere, lod, region, permutation)
-            material_index = -1
-            if not material == -1:
-                material_list = global_functions.gather_materials(game_version, material, material_list, 'JMS')
-                material_index = material_list.index(material)
+            material_index = global_functions.get_material(original_geo.material_slots, evaluted_mesh, face, variant_name, material_list)
 
             parent_index = global_functions.get_parent(blend_scene.armature, spheres, joined_list, -1)
             sphere_matrix = global_functions.get_matrix(spheres, spheres, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
@@ -319,21 +297,13 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
             lod = None
             region = default_region
             permutation = default_permutation
+            variant_name = ""
             if not boxes.data.active_region == -1:
-                face_set = boxes.data.region_list[boxes.data.active_region].name.split()
-                lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
+                variant_name = boxes.data.region_list[boxes.data.active_region].name
+                if not variant_name in region_list:
+                    region_list.append(variant_name)
 
-                if not permutation in permutation_list:
-                    permutation_list.append(permutation)
-
-                if not region in region_list:
-                    region_list.append(region)
-
-            material = global_functions.get_material(game_version, boxes, face, mesh_boxes, lod, region, permutation)
-            material_index = -1
-            if not material == -1:
-                material_list = global_functions.gather_materials(game_version, material, material_list, 'JMS')
-                material_index = material_list.index(material)
+            material_index = global_functions.get_material(original_geo.material_slots, evaluted_mesh, face, variant_name, material_list)
 
             parent_index = global_functions.get_parent(blend_scene.armature, boxes, joined_list, -1)
             box_matrix = global_functions.get_matrix(boxes, boxes, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
@@ -356,21 +326,13 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
             lod = None
             region = default_region
             permutation = default_permutation
+            variant_name = ""
             if not capsule.data.active_region == -1:
-                face_set = capsule.data.region_list[capsule.data.active_region].name.split()
-                lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
+                variant_name = capsule.data.region_list[capsule.data.active_region].name
+                if not variant_name in region_list:
+                    region_list.append(variant_name)
 
-                if not permutation in permutation_list:
-                    permutation_list.append(permutation)
-
-                if not region in region_list:
-                    region_list.append(region)
-
-            material = global_functions.get_material(game_version, capsule, face, mesh_capsule, lod, region, permutation)
-            material_index = -1
-            if not material == -1:
-                material_list = global_functions.gather_materials(game_version, material, material_list, 'JMS')
-                material_index = material_list.index(material)
+            material_index = global_functions.get_material(original_geo.material_slots, evaluted_mesh, face, variant_name, material_list)
 
             parent_index = global_functions.get_parent(blend_scene.armature, capsule, joined_list, -1)
             capsule_matrix = global_functions.get_matrix(capsule, capsule, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
@@ -395,21 +357,13 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
             lod = None
             region = default_region
             permutation = default_permutation
+            variant_name = ""
             if not original_geo.data.active_region == -1:
-                face_set = original_geo.data.region_list[original_geo.data.active_region].name.split()
-                lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
+                variant_name = original_geo.data.region_list[original_geo.data.active_region].name
+                if not variant_name in region_list:
+                    region_list.append(variant_name)
 
-                if not permutation in permutation_list:
-                    permutation_list.append(permutation)
-
-                if not region in region_list:
-                    region_list.append(region)
-
-            material = global_functions.get_material(game_version, original_geo, face, evaluated_geo, lod, region, permutation)
-            material_index = -1
-            if not material == -1:
-                material_list = global_functions.gather_materials(game_version, material, material_list, 'JMS')
-                material_index = material_list.index(material)
+            material_index = global_functions.get_material(original_geo.material_slots, evaluted_mesh, face, variant_name, material_list)
 
             parent_index = global_functions.get_parent(blend_scene.armature, original_geo, joined_list, -1)
             convex_matrix = global_functions.get_matrix(original_geo, original_geo, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
@@ -668,7 +622,8 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
         name = region
         JMS.regions.append(JMSAsset.Region(name))
 
-    for material in material_list:
+    for mat_set in material_list:
+        material, variant_name = mat_set
         name = None
         texture_path = None
         slot = None
@@ -699,11 +654,12 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
                                 break
 
         else:
+            lod, permutation, region = global_functions.material_definition_parser(False, variant_name, default_region, default_permutation)
             texture_path = '<none>'
-            if not material[0] == None:
+            if not material == None:
                 name = mesh_processing.append_material_symbols(material[0], game_version, False)
-                if not material[0].node_tree == None and write_textures:
-                    for node in material[0].node_tree.nodes:
+                if not material.node_tree == None and write_textures:
+                    for node in material.node_tree.nodes:
                         if node.type == 'TEX_IMAGE':
                             if not node.image == None:
                                 if node.image.source == "FILE" and not node.image.packed_file:
@@ -720,16 +676,16 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
                                 texture_path = tex
                                 break
 
-            name = mesh_processing.append_material_symbols(material[0], game_version, False)
-            slot = bpy.data.materials.find(material[0].name)
-            lod = mesh_processing.get_lod(material[1], game_version)
+            name = mesh_processing.append_material_symbols(material, game_version, False)
+            slot = bpy.data.materials.find(material.name)
+            lod = mesh_processing.get_lod(lod, game_version)
             #This doesn't matter for CE but for Halo 2/3 the region or permutation names can't have any whitespace.
             #Lets fix that here to make sure nothing goes wrong.
-            if len(material[2]) != 0 and not game_version == "halo1":
-                region = material[2].replace(' ', '_').replace('\t', '_')
+            if len(region) != 0 and not game_version == "halo1":
+                region = region.replace(' ', '_').replace('\t', '_')
 
-            if len(material[3]) != 0 and not game_version == "halo1":
-                permutation = material[3].replace(' ', '_').replace('\t', '_')
+            if len(permutation) != 0 and not game_version == "halo1":
+                permutation = permutation.replace(' ', '_').replace('\t', '_')
 
         JMS.materials.append(JMSAsset.Material(name, texture_path, slot, lod, permutation, region))
 

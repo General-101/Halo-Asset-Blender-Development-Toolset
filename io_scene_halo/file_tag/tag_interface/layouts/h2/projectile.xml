@@ -1,0 +1,272 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="proj" parent="obje" name="projectile" version="5">
+  <Layout regolithID="block:projectile" internalName="projectile_block" name="projectile">
+    <FieldSet version="0" sizeofValue="496" sizeofSource="sizeof(_projectile_definition_v1)" parentVersion="0">
+      <Explanation name="$$$ PROJECTILE $$$" />
+      <LongFlags CStyleName="projectile_flags" pascalStyleName="ProjectileFlags" name="flags">
+        <Options regolithID="enum:projectile_flags" CStyleName="projectile_flags" pascalStyleName="ProjectileFlags">
+          <Bit name="oriented along velocity" CStyleName="oriented_along_velocity_bit" pascalStyleName="OrientedAlongVelocityBit" />
+          <Bit name="AI must use ballistic aiming" CStyleName="ai_must_use_ballistic_aiming_bit" pascalStyleName="AiMustUseBallisticAimingBit" />
+          <Bit name="detonation max time if attached" CStyleName="detonation_max_time_if_attached_bit" pascalStyleName="DetonationMaxTimeIfAttachedBit" />
+          <Bit name="has super combining explosion" CStyleName="has_super_combining_explosion_bit" pascalStyleName="HasSuperCombiningExplosionBit" />
+          <Bit name="damage scales based on distance" CStyleName="damage_scales_based_on_distance_bit" pascalStyleName="DamageScalesBasedOnDistanceBit" />
+          <Bit name="travels instantaneously" CStyleName="travels_instantaneously_bit" pascalStyleName="TravelsInstantaneouslyBit" />
+          <Bit name="steering adjusts orientation" CStyleName="steering_adjusts_orientation_bit" pascalStyleName="SteeringAdjustsOrientationBit" />
+          <Bit name="don't noise up steering" CStyleName="dont_noise_up_steering_bit" pascalStyleName="DontNoiseUpSteeringBit" />
+          <Bit name="can track behind itself" CStyleName="can_track_behind_itself_bit" pascalStyleName="CanTrackBehindItselfBit" />
+          <Bit name="ROBOTRON STEERING" expertOnly="true" CStyleName="robotron_steering_bit" pascalStyleName="RobotronSteeringBit" />
+          <Bit name="faster when owned by player" CStyleName="faster_when_owned_by_player_bit" pascalStyleName="FasterWhenOwnedByPlayerBit" />
+        </Options>
+      </LongFlags>
+      <ShortEnum CStyleName="detonation_timer_starts" pascalStyleName="DetonationTimerStarts" name="detonation timer starts">
+        <Options regolithID="enum:projectile_detonation_timer_start" CStyleName="projectile_detonation_timer_start" pascalStyleName="ProjectileDetonationTimerStart">
+          <Enum name="immediately" CStyleName="immediately" pascalStyleName="Immediately" />
+          <Enum name="after first bounce" CStyleName="after_first_bounce" pascalStyleName="AfterFirstBounce" />
+          <Enum name="when at rest" CStyleName="when_at_rest" pascalStyleName="WhenAtRest" />
+          <Enum name="after first bounce off any surface" CStyleName="after_first_bounce_off_any_surface" pascalStyleName="AfterFirstBounceOffAnySurface" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="impact_noise" pascalStyleName="ImpactNoise" name="impact noise">
+        <OptionsXRef>enum:unit_firing_noise_level</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="old_obsolete_a_in" pascalStyleName="OldObsoleteAIn" name="old obsolete A in">
+        <Options regolithID="enum:projectile_obsolete_in" CStyleName="projectile_obsolete_in" pascalStyleName="ProjectileObsoleteIn">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="range remaining" CStyleName="range_remaining" pascalStyleName="RangeRemaining" />
+          <Enum name="time remaining" CStyleName="time_remaining" pascalStyleName="TimeRemaining" />
+          <Enum name="tracer" CStyleName="tracer" pascalStyleName="Tracer" />
+          <Enum name="acceleration_range" CStyleName="acceleration_range" pascalStyleName="AccelerationRange" />
+          <Enum name="projectile_attach" CStyleName="projectile_attach" pascalStyleName="ProjectileAttach" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="old_obsolete_b_in" pascalStyleName="OldObsoleteBIn" name="old obsolete B in">
+        <OptionsXRef>enum:projectile_obsolete_in</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="old_obsolete_c_in" pascalStyleName="OldObsoleteCIn" name="old obsolete C in">
+        <OptionsXRef>enum:projectile_obsolete_in</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="old_obsolete_d_in" pascalStyleName="OldObsoleteDIn" name="old obsolete D in">
+        <OptionsXRef>enum:projectile_obsolete_in</OptionsXRef>
+      </ShortEnum>
+      <TagReference CStyleName="super_detonation" pascalStyleName="SuperDetonation" name="super detonation">
+        <tag>effe</tag>
+      </TagReference>
+      <Real CStyleName="ai_perception_radius" pascalStyleName="AiPerceptionRadius" name="AI perception radius" units="world units" />
+      <Real CStyleName="collision_radius" pascalStyleName="CollisionRadius" name="collision radius" units="world units" />
+      <Explanation name="detonation" />
+      <Real CStyleName="arming_time" pascalStyleName="ArmingTime" name="arming time" units="seconds" description="won't detonate before this time elapses" />
+      <Real CStyleName="danger_radius" pascalStyleName="DangerRadius" name="danger radius" units="world units" />
+      <TagReference CStyleName="effect" pascalStyleName="Effect" name="effect">
+        <tag>effe</tag>
+      </TagReference>
+      <RealBounds CStyleName="timer" pascalStyleName="Timer" name="timer" units="seconds" description="detonation countdown (zero is untimed)" />
+      <Real CStyleName="minimum_velocity" pascalStyleName="MinimumVelocity" name="minimum velocity" units="world units per second" description="detonates when slowed below this velocity" />
+      <Real CStyleName="maximum_range" pascalStyleName="MaximumRange" name="maximum range" units="world units" description="detonates after travelling this distance" />
+      <Explanation name="physics" />
+      <Real CStyleName="air_gravity_scale" pascalStyleName="AirGravityScale" name="air gravity scale" description="the proportion of normal gravity applied to the projectile when in air." />
+      <RealBounds CStyleName="air_damage_range" pascalStyleName="AirDamageRange" name="air damage range" units="world units" description="the range over which damage is scaled when the projectile is in air." />
+      <Real CStyleName="water_gravity_scale" pascalStyleName="WaterGravityScale" name="water gravity scale" description="the proportion of normal gravity applied to the projectile when in water." />
+      <RealBounds CStyleName="water_damage_range" pascalStyleName="WaterDamageRange" name="water damage range" units="world units" description="the range over which damage is scaled when the projectile is in water." />
+      <Real CStyleName="initial_velocity" pascalStyleName="InitialVelocity" name="initial velocity" units="world units per second" description="bullet's velocity when inflicting maximum damage" />
+      <Real CStyleName="final_velocity" pascalStyleName="FinalVelocity" name="final velocity" units="world units per second" description="bullet's velocity when inflicting minimum damage" />
+      <Angle CStyleName="guided_angular_velocity" pascalStyleName="GuidedAngularVelocity" name="guided angular velocity" units="degrees per second" />
+      <ShortEnum CStyleName="detonation_noise" pascalStyleName="DetonationNoise" name="detonation noise">
+        <OptionsXRef>enum:unit_firing_noise_level</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <TagReference CStyleName="detonation_started" pascalStyleName="DetonationStarted" name="detonation started">
+        <tag>effe</tag>
+      </TagReference>
+      <TagReference CStyleName="flyby_sound" pascalStyleName="FlybySound" name="flyby sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="attached_detonation_damage" pascalStyleName="AttachedDetonationDamage" name="attached detonation damage">
+        <tag>jpt!</tag>
+      </TagReference>
+      <TagReference CStyleName="impact_damage" pascalStyleName="ImpactDamage" name="impact damage">
+        <tag>jpt!</tag>
+      </TagReference>
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <Block CStyleName="material_responses" pascalStyleName="MaterialResponses" name="material responses" tag="sort" maxElementCount="200" maxElementCountSource="k_maximum_material_responses">
+        <Layout regolithID="block:projectile_material_response" internalName="projectile_material_response_block" name="projectile_material_response_block">
+          <FieldSet version="0" sizeofValue="112" sizeofSource="sizeof(s_projectile_material_response_definition)" isLatest="true">
+            <WordFlags name="flags">
+              <Options regolithID="enum:projectile_material_flags" CStyleName="projectile_material_flags" pascalStyleName="ProjectileMaterialFlags">
+                <Bit name="cannot be overpenetrated" CStyleName="cannot_be_overpenetrated_bit" pascalStyleName="CannotBeOverpenetratedBit" />
+              </Options>
+            </WordFlags>
+            <Explanation name="default result" description="(if the potential result, below, fails to happen)" />
+            <ShortEnum name="response">
+              <Options regolithID="enum:projectile_material_response" CStyleName="projectile_material_response" pascalStyleName="ProjectileMaterialResponse">
+                <Enum name="impact (detonate)" CStyleName="impact_detonate" pascalStyleName="ImpactDetonate" />
+                <Enum name="fizzle" CStyleName="fizzle" pascalStyleName="Fizzle" />
+                <Enum name="overpenetrate" CStyleName="overpenetrate" pascalStyleName="Overpenetrate" />
+                <Enum name="attach" CStyleName="attach" pascalStyleName="Attach" />
+                <Enum name="bounce" CStyleName="bounce" pascalStyleName="Bounce" />
+                <Enum name="bounce (dud)" CStyleName="bounce_dud" pascalStyleName="BounceDud" />
+                <Enum name="fizzle (ricochet)" CStyleName="fizzle_ricochet" pascalStyleName="FizzleRicochet" />
+              </Options>
+            </ShortEnum>
+            <TagReference name="DO NOT USE (OLD effect)">
+              <tag>effe</tag>
+            </TagReference>
+            <StringId CStyleName="material_name" pascalStyleName="MaterialName" name="material name" tag="sted" />
+            <Skip sizeOfSource="sizeof(long)" length="4" />
+            <UselessPad length="8" />
+            <Explanation name="potential result" />
+            <ShortEnum name="response">
+              <OptionsXRef>enum:projectile_material_response</OptionsXRef>
+            </ShortEnum>
+            <WordFlags name="flags">
+              <Options regolithID="enum:projectile_material_response_flags" CStyleName="projectile_material_response_flags" pascalStyleName="ProjectileMaterialResponseFlags">
+                <Bit name="only against units" CStyleName="only_against_units_bit" pascalStyleName="OnlyAgainstUnitsBit" />
+                <Bit name="never against units" CStyleName="never_against_units_bit" pascalStyleName="NeverAgainstUnitsBit" />
+              </Options>
+            </WordFlags>
+            <RealFraction CStyleName="chance_fraction" pascalStyleName="ChanceFraction" name="chance fraction" units="[0,1]" />
+            <AngleBounds CStyleName="between" pascalStyleName="Between" name="between" units="degrees" />
+            <RealBounds CStyleName="_and" pascalStyleName="And" name="and" units="world units per second" />
+            <TagReference name="DO NOT USE (OLD effect)">
+              <tag>effe</tag>
+            </TagReference>
+            <UselessPad length="16" />
+            <Explanation name="misc" />
+            <ShortEnum CStyleName="scale_effects_by" pascalStyleName="ScaleEffectsBy" name="scale effects by">
+              <Options regolithID="enum:projectile_material_scale_effect_type" CStyleName="projectile_material_scale_effect_type" pascalStyleName="ProjectileMaterialScaleEffectType">
+                <Enum name="damage" CStyleName="damage" pascalStyleName="Damage" />
+                <Enum name="angle" CStyleName="angle" pascalStyleName="Angle" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <Angle CStyleName="angular_noise" pascalStyleName="AngularNoise" name="angular noise" units="degrees" description="the angle of incidence is randomly perturbed by at most this amount to simulate irregularity." />
+            <Real CStyleName="velocity_noise" pascalStyleName="VelocityNoise" name="velocity noise" units="world units per second" description="the velocity is randomly perturbed by at most this amount to simulate irregularity." />
+            <TagReference CStyleName="do_not_use_old_detonation_effect" pascalStyleName="DoNotUseOldDetonationEffect" name="DO NOT USE (OLD detonation effect)">
+              <tag>effe</tag>
+            </TagReference>
+            <UselessPad length="24" />
+            <Explanation name="penetration" />
+            <Real CStyleName="initial_friction" pascalStyleName="InitialFriction" name="initial friction" description="the fraction of the projectile's velocity lost on penetration" />
+            <Real CStyleName="maximum_distance" pascalStyleName="MaximumDistance" name="maximum distance" description="the maximum distance the projectile can travel through on object of this material" />
+            <Explanation name="reflection" />
+            <Real CStyleName="parallel_friction" pascalStyleName="ParallelFriction" name="parallel friction" description="the fraction of the projectile's velocity parallel to the surface lost on impact" />
+            <Real CStyleName="perpendicular_friction" pascalStyleName="PerpendicularFriction" name="perpendicular friction" description="the fraction of the projectile's velocity perpendicular to the surface lost on impact" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="New/unsorted fields" />
+      <TagReference CStyleName="impact_effect" pascalStyleName="ImpactEffect" name="impact effect">
+        <tag>effe</tag>
+      </TagReference>
+      <TagReference CStyleName="detonation_damage" pascalStyleName="DetonationDamage" name="detonation damage">
+        <tag>jpt!</tag>
+      </TagReference>
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="604" sizeofSource="sizeof(_projectile_definition)" parentVersion="0" isLatest="true">
+      <Explanation name="$$$ PROJECTILE $$$" />
+      <LongFlags CStyleName="projectile_flags" pascalStyleName="ProjectileFlags" name="flags">
+        <OptionsXRef>enum:projectile_flags</OptionsXRef>
+      </LongFlags>
+      <ShortEnum CStyleName="detonation_timer_starts" pascalStyleName="DetonationTimerStarts" name="detonation timer starts">
+        <OptionsXRef>enum:projectile_detonation_timer_start</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="impact_noise" pascalStyleName="ImpactNoise" name="impact noise">
+        <OptionsXRef>enum:unit_firing_noise_level</OptionsXRef>
+      </ShortEnum>
+      <UselessPad length="8" />
+      <Real CStyleName="ai_perception_radius" pascalStyleName="AiPerceptionRadius" name="AI perception radius" units="world units" />
+      <Real CStyleName="collision_radius" pascalStyleName="CollisionRadius" name="collision radius" units="world units" />
+      <Explanation name="detonation" />
+      <Real CStyleName="arming_time" pascalStyleName="ArmingTime" name="arming time" units="seconds" description="won't detonate before this time elapses" />
+      <Real CStyleName="danger_radius" pascalStyleName="DangerRadius" name="danger radius" units="world units" />
+      <RealBounds CStyleName="timer" pascalStyleName="Timer" name="timer" units="seconds" description="detonation countdown (zero is untimed)" />
+      <Real CStyleName="minimum_velocity" pascalStyleName="MinimumVelocity" name="minimum velocity" units="world units per second" description="detonates when slowed below this velocity" />
+      <Real CStyleName="maximum_range" pascalStyleName="MaximumRange" name="maximum range" units="world units" description="detonates after travelling this distance" />
+      <ShortEnum CStyleName="detonation_noise" pascalStyleName="DetonationNoise" name="detonation noise">
+        <OptionsXRef>enum:unit_firing_noise_level</OptionsXRef>
+      </ShortEnum>
+      <ShortInteger CStyleName="super_det_projectile_count" pascalStyleName="SuperDetProjectileCount" name="super det. projectile count" />
+      <TagReference CStyleName="detonation_started" pascalStyleName="DetonationStarted" name="detonation started">
+        <tag>effe</tag>
+      </TagReference>
+      <TagReference CStyleName="detonation_effect_airborne" pascalStyleName="DetonationEffectAirborne" name="detonation effect (airborne)">
+        <tag>effe</tag>
+      </TagReference>
+      <TagReference CStyleName="detonation_effect_ground" pascalStyleName="DetonationEffectGround" name="detonation effect (ground)">
+        <tag>effe</tag>
+      </TagReference>
+      <TagReference CStyleName="detonation_damage" pascalStyleName="DetonationDamage" name="detonation damage">
+        <tag>jpt!</tag>
+      </TagReference>
+      <TagReference CStyleName="attached_detonation_damage" pascalStyleName="AttachedDetonationDamage" name="attached detonation damage">
+        <tag>jpt!</tag>
+      </TagReference>
+      <TagReference CStyleName="super_detonation" pascalStyleName="SuperDetonation" name="super detonation">
+        <tag>effe</tag>
+      </TagReference>
+      <Struct CStyleName="your_momma" pascalStyleName="YourMomma" name="your momma">
+        <Layout regolithID="structure:super_detonation_damage" Name="breakfast" tag="sd2s" internalName="super_detonation_damage_struct" backingBlockInternalName="super_detonation_damage_struct_block">
+          <FieldSet version="0" sizeofValue="0" sizeofSource="0" />
+          <FieldSet version="1" sizeofValue="16" sizeofSource="sizeof(struct tag_reference)" isLatest="true">
+            <TagReference CStyleName="super_detonation_damage" pascalStyleName="SuperDetonationDamage" name="super detonation damage">
+              <tag>jpt!</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <TagReference CStyleName="detonation_sound" pascalStyleName="DetonationSound" name="detonation sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <CharEnum CStyleName="damage_reporting_type" pascalStyleName="DamageReportingType" name="damage reporting type">
+        <OptionsXRef>enum:weapon_damage_type</OptionsXRef>
+      </CharEnum>
+      <Pad sizeOfSource="sizeof(byte)*3" length="3" />
+      <TagReference CStyleName="super_attached_detonation_damage" pascalStyleName="SuperAttachedDetonationDamage" name="super attached detonation damage">
+        <tag>jpt!</tag>
+      </TagReference>
+      <UselessPad length="40" />
+      <Real CStyleName="material_effect_radius" pascalStyleName="MaterialEffectRadius" name="material effect radius" description="radius within we will generate material effects" />
+      <Explanation name="flyby/impact" />
+      <TagReference CStyleName="flyby_sound" pascalStyleName="FlybySound" name="flyby sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="impact_effect" pascalStyleName="ImpactEffect" name="impact effect">
+        <tag>effe</tag>
+      </TagReference>
+      <TagReference CStyleName="impact_damage" pascalStyleName="ImpactDamage" name="impact damage">
+        <tag>jpt!</tag>
+      </TagReference>
+      <Explanation name="boarding fields" />
+      <Real CStyleName="boarding_detonation_time" pascalStyleName="BoardingDetonationTime" name="boarding detonation time" />
+      <TagReference CStyleName="boarding_detonation_damage" pascalStyleName="BoardingDetonationDamage" name="boarding detonation damage">
+        <tag>jpt!</tag>
+      </TagReference>
+      <TagReference CStyleName="boarding_attached_detonation_damage" pascalStyleName="BoardingAttachedDetonationDamage" name="boarding attached detonation damage">
+        <tag>jpt!</tag>
+      </TagReference>
+      <UselessPad length="28" />
+      <Explanation name="physics" />
+      <Real CStyleName="air_gravity_scale" pascalStyleName="AirGravityScale" name="air gravity scale" description="the proportion of normal gravity applied to the projectile when in air." />
+      <RealBounds CStyleName="air_damage_range" pascalStyleName="AirDamageRange" name="air damage range" units="world units" description="the range over which damage is scaled when the projectile is in air." />
+      <Real CStyleName="water_gravity_scale" pascalStyleName="WaterGravityScale" name="water gravity scale" description="the proportion of normal gravity applied to the projectile when in water." />
+      <RealBounds CStyleName="water_damage_range" pascalStyleName="WaterDamageRange" name="water damage range" units="world units" description="the range over which damage is scaled when the projectile is in water." />
+      <Real CStyleName="initial_velocity" pascalStyleName="InitialVelocity" name="initial velocity" units="world units per second" description="bullet's velocity when inflicting maximum damage" />
+      <Real CStyleName="final_velocity" pascalStyleName="FinalVelocity" name="final velocity" units="world units per second" description="bullet's velocity when inflicting minimum damage" />
+      <Struct CStyleName="blah" pascalStyleName="Blah" name="blah">
+        <Layout regolithID="structure:angular_velocity_lower_bound" Name="breakfast" tag="avlb" internalName="angular_velocity_lower_bound_struct" backingBlockInternalName="angular_velocity_lower_bound_struct_block">
+          <FieldSet version="0" sizeofValue="0" sizeofSource="0" />
+          <FieldSet version="1" sizeofValue="4" sizeofSource="sizeof(real)" isLatest="true">
+            <Angle CStyleName="guided_angular_velocity_lower" pascalStyleName="GuidedAngularVelocityLower" name="guided angular velocity (lower)" units="degrees per second" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Angle CStyleName="guided_angular_velocity_upper" pascalStyleName="GuidedAngularVelocityUpper" name="guided angular velocity (upper)" units="degrees per second" />
+      <RealBounds CStyleName="acceleration_range" pascalStyleName="AccelerationRange" name="acceleration range" units="world units" description="what distance range the projectile goes from initial velocity to final velocity" />
+      <Pad sizeOfSource="sizeof(real)" length="4" />
+      <RealFraction CStyleName="targeted_leading_fraction" pascalStyleName="TargetedLeadingFraction" name="targeted leading fraction" />
+      <UselessPad length="48" />
+      <Block CStyleName="material_responses" pascalStyleName="MaterialResponses" name="material responses" tag="sort" maxElementCount="200" maxElementCountSource="k_maximum_material_responses">
+        <LayoutXRef>block:projectile_material_response</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>
