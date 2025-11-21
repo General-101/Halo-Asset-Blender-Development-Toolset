@@ -1602,9 +1602,9 @@ def get_fields(tag_stream, block_stream, tag_header, tag_block_header, field_nod
             if not unread_data_size < field_size:
                 result = get_result(field_key, tag_block_fields)
                 if result is not None:
-                    write_variable_string(block_stream, result, "<", fixed_length=field_size, terminator_length=0, append_terminator=False)
+                    write_variable_string(block_stream, result, endian_override, fixed_length=field_size, terminator_length=0, append_terminator=False)
                 else:
-                    write_variable_string(block_stream, field_default, "<", fixed_length=field_size, terminator_length=0, append_terminator=False)
+                    write_variable_string(block_stream, field_default, endian_override, fixed_length=field_size, terminator_length=0, append_terminator=False)
     elif field_tag == "TagReference":
         field_default = (None, 0, 0, -1, "")
         field_size = 16
