@@ -1,30 +1,41 @@
-name: release
+name: Release - 5.0-beta
 
 on:
   push:
+    branches:
+      - 5.0-beta
     paths-ignore:
       - '*.md'
 jobs:
-  package:
+  release_package:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout branch
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
-      - uses: actions/setup-python@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.x # Version range or exact version of a Python version to use, using SemVer's version range syntax
-      - name: Do package
+          python-version: '3.x'
+
+      - name: Build ZIP package
         run: python build/create_zip.py
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: toolkit
           path: output/
-      - name: Release to Github
+
+      - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          prerelease: false
-          token: '${{ secrets.GITHUB_TOKEN }}'
-          artifacts: output/*
-          tag: '${{ github.run_number }}'
+          prerelease: true              # because it's a beta branch
+          artifacts: "output/*"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: "beta-${{ github.run_number }}"
+          name: "5.0-beta Release ${{ github.run_number }}"
+          body: "Automated release for branch 5.0-beta."
