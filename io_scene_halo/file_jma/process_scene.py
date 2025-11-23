@@ -198,21 +198,36 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
         JMA.node_checksum = global_functions.node_hierarchy_checksum(JMA.nodes, JMA.nodes[0], JMA.node_checksum)
 
     action = None
+    temp_action = None
     if armature:
         fcurves = []
         if armature and armature.animation_data:
             action = armature.animation_data.action 
         if action:
-            if (5, 0, 0) <= bpy.app.version:
-                if action.slots:
-                    action_slot = action.slots[0]
-                else:
-                    action_slot = action.slots.new(id_type='OBJECT', name=armature.name)
+            temp_action = action.copy()
+            temp_action.name = action.name + "_TEMP"
+            armature.animation_data.action = temp_action
+            bpy.ops.nla.bake(
+                frame_start=first_frame,
+                frame_end=last_frame,
+                only_selected=False,
+                visual_keying=True,
+                clear_constraints=False,
+                clear_parents=False,
+                use_current_action=True,
+                bake_types={'POSE'}
+            )
 
-                channelbag = anim_utils.action_ensure_channelbag_for_slot(action, action_slot)
+            if (5, 0, 0) <= bpy.app.version:
+                if temp_action.slots:
+                    action_slot = temp_action.slots[0]
+                else:
+                    action_slot = temp_action.slots.new(id_type='OBJECT', name=armature.name)
+
+                channelbag = anim_utils.action_ensure_channelbag_for_slot(temp_action, action_slot)
                 fcurves = channelbag.fcurves
             else:
-                fcurves = action.fcurves
+                fcurves = temp_action.fcurves
 
         fcurve_dict = {}
         for fc in fcurves:
@@ -226,8 +241,8 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
         frame_matrices = []
         for node_idx, node in enumerate(joined_list):
             local_matrix = Matrix().to_4x4()
-            if action:
-                local_matrix = global_functions.export_fcurve_data(action, fcurve_dict, armature, node, node_idx, frame, local_matrices)
+            if temp_action:
+                local_matrix = global_functions.export_fcurve_data(temp_action, fcurve_dict, armature, node, node_idx, frame, local_matrices)
             frame_matrices.append(local_matrix)
         temp_local_matrices.append(frame_matrices)
 
@@ -289,7 +304,7 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
     armature_transform = False
     if jma_version > 16394 and armature_transform:
         for frame in range(JMA.frame_count):
-            transform_matrix = global_functions.export_fcurve_data(action, fcurve_dict, armature, armature, 0, frame, armature_matrix)
+            transform_matrix = global_functions.export_fcurve_data(temp_action, fcurve_dict, armature, armature, 0, frame, armature_matrix)
             mesh_dimensions = global_functions.get_dimensions(armature_matrix, armature, jma_version, False, 'JMA', scale_value)
 
             rotation = (mesh_dimensions.quaternion[0], mesh_dimensions.quaternion[1], mesh_dimensions.quaternion[2], mesh_dimensions.quaternion[3])
@@ -302,5 +317,9 @@ def process_scene(context, extension, jma_version, game_title, generate_checksum
     resource_management.restore_collection_visibility(stored_collection_visibility)
     resource_management.restore_object_visibility(stored_object_visibility)
     resource_management.restore_modifier_visibility(stored_modifier_visibility)
+
+    if action and temp_action:
+        armature.animation_data.action = action
+        bpy.data.actions.remove(temp_action)
 
     return JMA

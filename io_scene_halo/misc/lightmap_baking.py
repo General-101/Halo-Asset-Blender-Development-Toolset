@@ -367,11 +367,12 @@ def run_bake(context, lightmap_ob, generate_vertex_colors=False, render_name="UV
     context.view_layer.objects.active = lightmap_ob
 
     context.scene.render.engine = 'CYCLES'
+    
     bpy.ops.object.bake(
         type='DIFFUSE',
         pass_filter={'DIRECT','INDIRECT'}, 
-        margin=16,
-        margin_type='EXTEND', 
+        margin=bpy.context.scene.render.bake.margin,
+        margin_type=bpy.context.scene.render.bake.margin_type, 
         use_clear=False,
         use_selected_to_active=False,
         target=target_name,
