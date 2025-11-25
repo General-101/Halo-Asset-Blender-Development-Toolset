@@ -399,7 +399,6 @@ def generate_h2_shader(mat, tag_ref, asset_cache, report):
     # 2 = Full Shader generation
     if not int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 0:
         tag_groups = tag_common.h2_tag_groups
-        print(tag_ref)
         shader_asset = tag_interface.get_disk_asset(tag_ref["path"], tag_groups.get(tag_ref["group name"]))
         if not shader_asset == None:
             if shader_asset["Header"]["tag group"] == "shad":
@@ -668,10 +667,7 @@ def find_h2_shader_tag(import_filepath, material_name):
     tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path
     shader_path = None
     shader_tag = {"group name": None, "path": ""}
-    print("DATA PATH: ", data_path)
-    print("TAG PATH: ", tag_path)
     if not global_functions.string_empty_check(data_path) and not global_functions.string_empty_check(tag_path):
-        print("PREF PATHS PASS")
         shader_collection_dic = {}
         shader_collection_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, r"scenarios\shaders\shader_collections.shader_collections")
         if os.path.isfile(shader_collection_path):
@@ -719,25 +715,18 @@ def find_h2_shader_tag(import_filepath, material_name):
         if shader_path == None:
             import_directory = os.path.dirname(os.path.dirname(import_filepath))
             local_path = os.path.relpath(import_directory, data_path)
-            if local_path:
-                print("LOCAL PATH PASS: ", local_path)
-                import_shader_directory = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, local_path, "shaders")
-                print("IMPORT SHADER DIRECTORY: ", import_shader_directory)
-                if os.path.exists(import_shader_directory):
-                    print("IMPORT SHADER DIRECTORY PASS")
-                    for file in os.listdir(import_shader_directory):
-                        file_name = os.path.basename(file)
-                        extension = None
-                        result = file_name.rsplit(".", 1)
-                        if len(result) == 2:
-                            file_name = result[0]
-                            extension = result[1]
-                        print(shader_name)
-                        print(file_name)
-                        print(extension)
-                        if shader_name == file_name and extension.lower() in "shader":
-                            shader_path = os.path.join(import_shader_directory, file)
-                            break
+            import_shader_directory = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, local_path, "shaders")
+            if os.path.exists(import_shader_directory):
+                for file in os.listdir(import_shader_directory):
+                    file_name = os.path.basename(file)
+                    extension = None
+                    result = file_name.rsplit(".", 1)
+                    if len(result) == 2:
+                        file_name = result[0]
+                        extension = result[1]
+                    if shader_name == file_name and extension.lower() in "shader":
+                        shader_path = os.path.join(import_shader_directory, file)
+                        break
                         
         if shader_path == None:
             for root, dirs, filenames in os.walk(tag_path):
@@ -765,7 +754,6 @@ def find_h2_shader_tag(import_filepath, material_name):
     else:
        print("Your Halo 2 data and tag paths are not set. Please set them in preferences and restart Blender") 
 
-    print("SHADER TAG: ", shader_tag)
     return shader_tag
 
 def find_h3_shader_tag(import_filepath, material_name):

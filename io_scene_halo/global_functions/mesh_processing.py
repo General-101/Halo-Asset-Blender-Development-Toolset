@@ -475,7 +475,6 @@ def generate_marker(context, collection, game_title, filepath, ASSET, region_ele
             if marker_region_index >= 0:
                 region_name = ASSET.regions[marker_region_index].name
         else:
-            print(marker_region_index)
             if marker_region_index >= 0:
                 region_name = ASSET["regions"][marker_region_index]["name"]
 

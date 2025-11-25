@@ -122,7 +122,6 @@ def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_
                     sibling = node["next sibling node"]
                     child = node["first child node"]
                     parent = node["parent node"]
-                    print(name, parent, child, sibling)
                     nodes.append(JMA.Node(name, parent, child, sibling))
 
         if nodes is None:
