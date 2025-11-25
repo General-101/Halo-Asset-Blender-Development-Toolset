@@ -62,16 +62,12 @@ def write_file(context, file_path, report):
 
     if tags_directory in file_path and os.path.isfile(file_path):
         if not global_functions.string_empty_check(tags_directory):
-            result = file_path.split(tags_directory, 1)
-            if len(result) > 1:
-                local_path, tag_extension = result[1].rsplit(".", 1)
-                tag_group = tag_extensions.get(tag_extension)
-                tag_ref = {"group name": tag_group, "path": local_path}
+            local_path, tag_extension = os.path.relpath(file_path, tags_directory).rsplit(".", 1)
+            tag_group = tag_extensions.get(tag_extension)
+            tag_ref = {"group name": tag_group, "path": local_path}
 
-                donor_scnr = tag_interface.read_tag(tag_ref, tags_directory, tag_groups, engine_tag, merged_defs)
+            donor_scnr = tag_interface.read_tag(tag_ref, tags_directory, tag_groups, engine_tag, merged_defs)
 
-            else:
-                report({'ERROR'}, "Invalid input provided. Check your tag directory settings and make sure the file exists in your tag directory.")
         else:
             report({'ERROR'}, "Invalid tag directory path provided. Check your tag directory settings.")
 

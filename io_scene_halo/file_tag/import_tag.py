@@ -78,64 +78,60 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
             print("%s is not supported." % game_title)
 
         if not global_functions.string_empty_check(tags_directory):
-            result = file_path.split(tags_directory, 1)
-            if len(result) > 1:
-                local_path, tag_extension = result[1].rsplit(".", 1)
-                tag_group = tag_extensions.get(tag_extension)
-                tag_ref = {"group name": tag_group, "path": local_path}
+            local_path, tag_extension = os.path.relpath(file_path, tags_directory).rsplit(".", 1)
+            tag_group = tag_extensions.get(tag_extension)
+            tag_ref = {"group name": tag_group, "path": local_path}
 
-                tag_interface.generate_tag_dictionary(game_title, tag_ref, tags_directory, tag_groups, engine_tag, merged_defs, asset_cache)
+            tag_interface.generate_tag_dictionary(game_title, tag_ref, tags_directory, tag_groups, engine_tag, merged_defs, asset_cache)
 
-                context.scene.halo.game_title = game_title
-                
-                if game_title == "halo1":
-                    shader_groups = ("senv", "soso", "schi", "scex", "sotr", "sgla", "smet", "spla", "swat")
+            context.scene.halo.game_title = game_title
+            
+            if game_title == "halo1":
+                shader_groups = ("senv", "soso", "schi", "scex", "sotr", "sgla", "smet", "spla", "swat")
 
-                elif game_title == "halo2":
-                    shader_groups = ("shad")
-
-                else:
-                    input_stream.close()
-                    report({'ERROR'}, "Not implemented")
-
-                    return {'CANCELLED'}
-
-                build_scene = None
-                if tag_group == "mode" or tag_group == "mod2":
-                    build_scene = build_mesh
-
-                elif tag_group == "coll":
-                    build_scene = build_collision
-
-                elif tag_group == "phys":
-                    build_scene = build_physics
-
-                elif tag_group == "antr":
-                    build_scene = build_animations
-
-                elif tag_group == "sbsp":
-                    build_scene = build_bsp
-
-                elif tag_group == "ltmp":
-                    build_scene = build_lightmap
-
-                elif tag_group == "scnr":
-                    context.scene.tag_scenario.scenario_path = file_path
-                    build_scene = build_scenario
-
-                elif tag_group == "trak":
-                    build_scene = build_camera_track
-
-                elif tag_group in shader_groups:
-                    build_scene = build_shader
-
-                input_stream.close()
-                if build_scene:
-                    build_scene.build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, report)
-                else:
-                    report({'ERROR'}, "Tag file has no support. Contact the plugin author if it should.")
+            elif game_title == "halo2":
+                shader_groups = ("shad")
 
             else:
-                report({'ERROR'}, "Invalid input provided. Check your tag directory settings and make sure the file exists in your tag directory.")
+                input_stream.close()
+                report({'ERROR'}, "Not implemented")
+
+                return {'CANCELLED'}
+
+            build_scene = None
+            if tag_group == "mode" or tag_group == "mod2":
+                build_scene = build_mesh
+
+            elif tag_group == "coll":
+                build_scene = build_collision
+
+            elif tag_group == "phys":
+                build_scene = build_physics
+
+            elif tag_group == "antr":
+                build_scene = build_animations
+
+            elif tag_group == "sbsp":
+                build_scene = build_bsp
+
+            elif tag_group == "ltmp":
+                build_scene = build_lightmap
+
+            elif tag_group == "scnr":
+                context.scene.tag_scenario.scenario_path = file_path
+                build_scene = build_scenario
+
+            elif tag_group == "trak":
+                build_scene = build_camera_track
+
+            elif tag_group in shader_groups:
+                build_scene = build_shader
+
+            input_stream.close()
+            if build_scene:
+                build_scene.build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, report)
+            else:
+                report({'ERROR'}, "Tag file has no support. Contact the plugin author if it should.")
+
         else:
             report({'ERROR'}, "Invalid tag directory path provided. Check your tag directory settings.")

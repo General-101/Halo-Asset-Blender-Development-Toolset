@@ -24,6 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import os
 import bpy
 
 from bpy.types import (
@@ -85,25 +86,21 @@ def get_tag_path(self):
 
 def set_tag_path(self, value):
     tag_group = self.tag_group
-    tag_path = value.lower()
+    tag_path = value
     config_tag_path = ""
     tag_groups = None
     tag_extensions = None
     if bpy.context.scene.halo.game_title == 'halo1':
         tag_groups = h1_tag_groups
         tag_extensions = h1_tag_extensions
-        config_tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path.lower()
+        config_tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path
     elif bpy.context.scene.halo.game_title == 'halo2':
         tag_groups = h2_tag_groups
         tag_extensions = h2_tag_extensions
-        config_tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path.lower()
+        config_tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path
     
     if not global_functions.string_empty_check(config_tag_path):
-        tag_path = tag_path.split(config_tag_path)
-        if len(tag_path) >= 2:
-            tag_path = tag_path[1]
-        else:
-            tag_path = tag_path[0]
+        tag_path = os.path.relpath(tag_path, config_tag_path)
 
     tag_path = tag_path.rsplit(".", 1)
     if len(tag_path) >= 2 and tag_extensions:

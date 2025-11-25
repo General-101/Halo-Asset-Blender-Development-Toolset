@@ -310,30 +310,25 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
         merged_defs = h1.generate_defs(tag_common.h1_defs_directory, output_dir)
         tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path
         data_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
-
         if not global_functions.string_empty_check(data_directory):
-            result = filepath.split(data_directory, 1)
-            if len(result) > 1:
-                local_path = result[1]
-                output_directory = os.path.dirname(os.path.dirname(local_path))
-                output_filename = os.path.basename(output_directory)
+            local_path = os.path.relpath(filepath, data_directory)
+            output_directory = os.path.dirname(os.path.dirname(local_path))
+            output_filename = os.path.basename(output_directory)
 
-                tag_ref = {"group name": "mod2", "path": os.path.join(output_directory, output_filename)}
-                tag_interface.generate_tag_dictionary(game_title, tag_ref, tags_directory, tag_groups, engine_tag, merged_defs, asset_cache)
+            tag_ref = {"group name": "mod2", "path": os.path.join(output_directory, output_filename)}
+            tag_interface.generate_tag_dictionary(game_title, tag_ref, tags_directory, tag_groups, engine_tag, merged_defs, asset_cache)
 
-                gbxmodel_asset = tag_interface.get_disk_asset(tag_ref["path"], tag_groups.get(tag_ref["group name"]))
-                if gbxmodel_asset is not None:
-                    nodes = []
-                    for node in gbxmodel_asset["Data"]["nodes"]:
-                        name = node["name"]
-                        sibling = node["next sibling node"]
-                        child = node["first child node"]
-                        parent = node["parent node"]
+            gbxmodel_asset = tag_interface.get_disk_asset(tag_ref["path"], tag_groups.get(tag_ref["group name"]))
+            if gbxmodel_asset is not None:
+                nodes = []
+                for node in gbxmodel_asset["Data"]["nodes"]:
+                    name = node["name"]
+                    sibling = node["next sibling node"]
+                    child = node["first child node"]
+                    parent = node["parent node"]
 
-                        JMA.nodes.append(JMA.Node(name, parent, child, sibling))
+                    JMA.nodes.append(JMA.Node(name, parent, child, sibling))
 
-            else:
-                report({'ERROR'}, "Invalid input provided. Check your data directory settings and make sure the file exists in your data directory.")
         else:
             report({'ERROR'}, "Invalid data directory path provided. Check your data directory settings.")
 

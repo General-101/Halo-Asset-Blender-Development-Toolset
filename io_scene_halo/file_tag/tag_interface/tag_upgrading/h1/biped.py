@@ -29,33 +29,46 @@ import os
 from mathutils import Vector
 from enum import Flag, Enum, auto
 
-class H1BipedFlags(Flag):
-    turns_without_animating = auto()
-    passes_through_other_bipeds = auto()
-    immune_for_falling_damage = auto()
-    rotate_while_airborne = auto()
-    uses_limp_body_physics = auto()
-    unused_5 = auto()
-    random_speed_increase = auto()
-    unused_7 = auto()
-    spawn_death_children_on_destroy = auto()
-    stunned_by_emp_damage = auto()
-    dead_physics_when_stunned = auto()
-    always_ragdoll_when_dead = auto()
+class H1ObjectFlags(Flag):
+    does_not_cast_shadow = auto()
+    transparent_self_occlusion = auto()
+    brighter_than_it_should_be = auto()
+    not_a_pathfinding_obstacle = auto()
+    extension_of_parent = auto()
+    cast_shadow_by_default = auto()
+    does_not_have_anniversary_geometry = auto()
 
-class H2BipedFlags(Flag):
-    turns_without_animating = auto()
-    passes_through_other_bipeds = auto()
-    immune_for_falling_damage = auto()
-    rotate_while_airborne = auto()
-    uses_limp_body_physics = auto()
-    unused_5 = auto()
-    random_speed_increase = auto()
-    unused_7 = auto()
-    spawn_death_children_on_destroy = auto()
-    stunned_by_emp_damage = auto()
-    dead_physics_when_stunned = auto()
-    always_ragdoll_when_dead = auto()
+class H2ObjectFlags(Flag):
+    does_not_cast_shadow = auto()
+    search_cardinal_direction_lightmaps_on_failure = auto()
+    unused2 = auto()
+    not_a_pathfinding_obstacle = auto()
+    extension_of_parent = auto()
+    does_not_cause_collision_damage = auto()
+    early_mover = auto()
+    early_mover_localized_physics = auto()
+    use_static_massive_lightmap_sample = auto()
+    object_scales_attachments = auto()
+    inherits_players_appearance = auto()
+    dead_bipeds_cant_localize = auto()
+    attach_to_clusters_by_dynamic_sphere = auto()
+    effects_created_by_this_object_do_not_spawn_objects_in_multiplayer = auto()
+    prophet_is_not_displayed_in_pegasus_builds = auto()
+
+def convert_object_flags(object_flags):
+    flags = 0
+    active_h1_flags = H1ObjectFlags(object_flags)
+    if H1ObjectFlags.does_not_cast_shadow in active_h1_flags:
+        flags += H2ObjectFlags.does_not_cast_shadow.value
+
+    if H1ObjectFlags.not_a_pathfinding_obstacle in active_h1_flags:
+        flags += H2ObjectFlags.not_a_pathfinding_obstacle.value
+
+    if H1ObjectFlags.extension_of_parent in active_h1_flags:
+        flags += H2ObjectFlags.extension_of_parent.value
+
+    return flags
+
 
 def generate_contact_points(dump_dic, TAG, ASSET):
     contact_points_tag_block = dump_dic['Data']['Contact Points']
@@ -73,6 +86,24 @@ def generate_contact_points(dump_dic, TAG, ASSET):
     return TAG.TagBlock(contact_point_count)
 
 def generate_ai_properties(dump_dic, TAG, BIPED):
+    ai_property_element = {
+        "ai flags": 0,
+        "ai type name": "",
+        "ai type name_pad": 0,
+        "ai size": {
+            "type": "ShortEnum",
+            "value": 0,
+            "value name": ""
+        },
+        "leap jump speed": {
+            "type": "ShortEnum",
+            "value": 0,
+            "value name": ""
+        }
+    }
+    ai_properties_block = [ai_property_element]
+
+
     tag_file_name = os.path.basename(dump_dic['TagName']).lower().replace(" ", "_")
     if "brute" in tag_file_name:
         ai_property = BIPED.AIProperty()
@@ -224,273 +255,15 @@ def get_lock_on_defaults(dump_dic, TAG):
 
     return lock_on_flags, lock_on_distance, head_shot_acceleration_scale, area_damage_effect, collision_flags, mass, living_material_name, dead_material_name
 
-def upgrade_biped(dict_asset, report):
-
-    pitch_range = dump_dic['Data']['Pitch Range']
-    seat_acceleration_scale = dump_dic['Data']['Seat Acceleration Scale']
-    spawned_actor_count = dump_dic['Data']['Spawned Actor Count']
-
-    unit_type, unit_class = get_metagame_data(dump_dic)
-    right_hand_node, left_hand_node, preferred_gun_node = get_hand_defaults(dump_dic)
-    camera_interpolation_start, camera_interpolation_end, camera_forward_movement_scale, camera_side_movement_scale, camera_vertical_movement_scale, camera_exclusion_distance = get_camera_defaults(dump_dic)
-    lock_on_flags, lock_on_distance, head_shot_acceleration_scale, area_damage_effect, collision_flags, mass, living_material_name, dead_material_name = get_lock_on_defaults(dump_dic, TAG)
-
-    function_keywords = [("Object", _20030504_ObjectFunctionsEnum), ("Unit", _20030504_UnitFunctionsEnum), ("Biped", _20030504_BipedFunctionsEnum)]
-
-    BIPED.body_header = TAG.TagBlockHeader("tbfd", 1, 1, 988)
-    BIPED.object_flags = upgrade_e3_object_flags(dump_dic['Data']['Flags'])
-    BIPED.bounding_radius = dump_dic['Data']['Bounding Radius']
-    BIPED.bounding_offset = dump_dic['Data']['Bounding Offset']
-    BIPED.acceleration_scale = dump_dic['Data']['Acceleration Scale']
-    BIPED.lightmap_shadow_mode = 0
-    BIPED.sweetner_size = 0
-    BIPED.dynamic_light_sphere_radius = 0.0
-    BIPED.dynamic_light_sphere_offset = Vector()
-    BIPED.default_model_variant = dump_dic['Data']['Default Model Variant']
-    BIPED.default_model_variant_length = len(dump_dic['Data']['Default Model Variant'])
-    BIPED.model = TAG.TagRef().convert_from_json(dump_dic['Data']['Model'])
-    BIPED.crate_object = TAG.TagRef()
-    BIPED.modifier_shader = TAG.TagRef()
-    BIPED.creation_effect = TAG.TagRef()
-    BIPED.material_effects = TAG.TagRef()
-    BIPED.ai_properties_tag_block = generate_ai_properties(dump_dic, TAG, BIPED)
-    BIPED.functions_tag_block = TAG.TagBlock()
-    BIPED.apply_collision_damage_scale = 0.0
-    BIPED.min_game_acc = 0.0
-    BIPED.max_game_acc = 0.0
-    BIPED.min_game_scale = 0.0
-    BIPED.max_game_scale = 0.0
-    BIPED.min_abs_acc = 0.0
-    BIPED.max_abs_acc = 0.0
-    BIPED.min_abs_scale = 0.0
-    BIPED.max_abs_scale = 0.0
-    BIPED.hud_text_message_index = dump_dic['Data']['Hud Text Message Index']
-    BIPED.attachments_tag_block = generate_attachments(dump_dic, TAG, BIPED, function_keywords)
-    BIPED.widgets_tag_block = generate_widgets(dump_dic, TAG, BIPED)
-    BIPED.old_functions_tag_block = TAG.TagBlock()
-    BIPED.change_colors_tag_block = generate_change_colors(dump_dic, TAG, BIPED, function_keywords)
-    BIPED.predicted_resources_tag_block = TAG.TagBlock()
-    BIPED.unit_flags = dump_dic['Data']['Unit Flags']
-    BIPED.default_team = dump_dic['Data']['Default Team']['Value']
-    BIPED.constant_sound_volume = dump_dic['Data']['Constant Sound Volume']['Value']
-    BIPED.integrated_light_toggle = TAG.TagRef().convert_from_json(dump_dic['Data']['Integrated Light Toggle'])
-    BIPED.camera_field_of_view = dump_dic['Data']['Camera Field Of View']
-    BIPED.camera_stiffness = dump_dic['Data']['Camera Stiffness']
-    BIPED.camera_marker_name = dump_dic['Data']['Camera Marker Name']
-    BIPED.camera_marker_name_length = len(BIPED.camera_marker_name)
-    BIPED.camera_submerged_marker_name = dump_dic['Data']['Camera Submerged Marker Name']
-    BIPED.camera_submerged_marker_name_length = len(BIPED.camera_submerged_marker_name)
-    BIPED.pitch_auto_level = dump_dic['Data']['Pitch Auto-Level']
-    BIPED.pitch_range = (pitch_range["Min"], pitch_range["Max"])
-    BIPED.camera_tracks_tag_block = generate_camera_tracks(dump_dic, TAG, BIPED)
-    BIPED.acceleration_range = Vector((seat_acceleration_scale[0], seat_acceleration_scale[1], seat_acceleration_scale[2])) * 30
-    BIPED.acceleration_action_scale = 0.0
-    BIPED.acceleration_attach_scale = 0.0
-    BIPED.soft_ping_threshold = dump_dic['Data']['Soft Ping Threshold']
-    BIPED.soft_ping_interrupt_time = dump_dic['Data']['Soft Ping Interrupt Time']
-    BIPED.hard_ping_threshold = dump_dic['Data']['Hard Ping Threshold']
-    BIPED.hard_ping_interrupt_time = dump_dic['Data']['Hard Ping Interrupt Time']
-    BIPED.hard_death_threshold = dump_dic['Data']['Hard Death Threshold']
-    BIPED.feign_death_threshold = dump_dic['Data']['Feign Death Threshold']
-    BIPED.feign_death_time = dump_dic['Data']['Feign Death Time']
-    BIPED.distance_of_evade_anim = dump_dic['Data']['Distance Of Evade Anim']
-    BIPED.distance_of_dive_anim = dump_dic['Data']['Distance Of Dive Anim']
-    BIPED.stunned_movement_threshold = dump_dic['Data']['Stunned Movement Threshold']
-    BIPED.feign_death_chance = dump_dic['Data']['Feign Death Chance']
-    BIPED.feign_repeat_chance = dump_dic['Data']['Feign Repeat Chance']
-    BIPED.spawned_turret_actor = TAG.TagRef().convert_from_json(dump_dic['Data']['Spawned Actor'], "char")
-    BIPED.spawned_actor_count = (spawned_actor_count["Min"], spawned_actor_count["Max"])
-    BIPED.spawned_velocity = dump_dic['Data']['Spawned Velocity']
-    BIPED.aiming_velocity_maximum = dump_dic['Data']['Aiming Velocity Maximum']
-    BIPED.aiming_acceleration_maximum = dump_dic['Data']['Aiming Acceleration Maximum']
-    BIPED.casual_aiming_modifier = dump_dic['Data']['Casual Aiming Modifier']
-    BIPED.looking_velocity_maximum = dump_dic['Data']['Looking Velocity Maximum']
-    BIPED.looking_acceleration_maximum = dump_dic['Data']['Looking Acceleration Maximum']
-    BIPED.right_hand_node = right_hand_node
-    BIPED.left_hand_node = left_hand_node
-    BIPED.preferred_gun_node = preferred_gun_node
-    BIPED.right_hand_node_length = len(BIPED.right_hand_node)
-    BIPED.left_hand_node_length = len(BIPED.left_hand_node)
-    BIPED.preferred_gun_node_length = len(BIPED.preferred_gun_node)
-    BIPED.melee_damage = TAG.TagRef().convert_from_json(dump_dic['Data']['Melee Damage'])
-    BIPED.boarding_melee_damage = TAG.TagRef()
-    BIPED.boarding_melee_response = TAG.TagRef()
-    BIPED.landing_melee_damage = TAG.TagRef()
-    BIPED.flurry_melee_damage = TAG.TagRef()
-    BIPED.obstacle_smash_damage = TAG.TagRef()
-    BIPED.motion_sensor_blip_size = dump_dic['Data']['Motion Sensor Blip Size']['Value']
-    BIPED.unit_type = unit_type
-    BIPED.unit_class = unit_class
-    BIPED.postures_tag_block = TAG.TagBlock()
-    BIPED.new_hud_interfaces_tag_block = generate_new_hud_interface(dump_dic, TAG, BIPED)
-    BIPED.dialogue_variants_tag_block = generate_dialogue_variants(dump_dic, TAG, BIPED)
-    BIPED.grenade_velocity = dump_dic['Data']['Grenade Velocity']
-    BIPED.grenade_type = dump_dic['Data']['Grenade Type']['Value']
-    BIPED.grenade_count = dump_dic['Data']['Grenade Count']
-    BIPED.powered_seats_tag_block = generate_powered_seats(dump_dic, TAG, BIPED)
-    BIPED.weapons_tag_block = generate_weapons(dump_dic, TAG, BIPED)
-    BIPED.seats_tag_block = generate_seats(dump_dic, TAG, BIPED)
-    BIPED.boost_peak_power = 0.0
-    BIPED.boost_rise_power = 0.0
-    BIPED.boost_peak_time = 0.0
-    BIPED.boost_fall_power = 0.0
-    BIPED.dead_time = 0.0
-    BIPED.attack_weight = 0.0
-    BIPED.decay_weight = 0.0
-    BIPED.moving_turning_speed = dump_dic['Data']['Moving Turning Speed']
-    BIPED.biped_flags = dump_dic['Data']['Biped Flags']
-    if not BipedFlags.uses_limp_body_physics in BipedFlags(BIPED.biped_flags):
-        BIPED.biped_flags += BipedFlags.uses_limp_body_physics.value
-    if BipedFlags.passes_through_other_bipeds in BipedFlags(BIPED.biped_flags):
-        BIPED.biped_flags -= BipedFlags.passes_through_other_bipeds.value
-
-    BIPED.stationary_turning_threshold = dump_dic['Data']['Stationary Turning Threshold']
-    BIPED.jump_velocity = dump_dic['Data']['Jump Velocity'] * 30
-    BIPED.maximum_soft_landing_time = dump_dic['Data']['Maximum Soft Landing Time']
-    BIPED.maximum_hard_landing_time = dump_dic['Data']['Maximum Hard Landing Time']
-    BIPED.minimum_soft_landing_velocity = dump_dic['Data']['Minimum Soft Landing Velocity']
-    BIPED.minimum_hard_landing_velocity = dump_dic['Data']['Minimum Hard Landing Velocity']
-    BIPED.maximum_hard_landing_velocity = dump_dic['Data']['Maximum Hard Landing Velocity']
-    BIPED.death_hard_landing_velocity = dump_dic['Data']['Death Hard Landing Velocity']
-    BIPED.stun_duration = 0.0
-    BIPED.standing_camera_height = dump_dic['Data']['Standing Camera Height']
-    BIPED.crouching_camera_height = dump_dic['Data']['Crouching Camera Height']
-    BIPED.crouching_transition_time = dump_dic['Data']['Crouch Transition Time']
-    BIPED.camera_interpolation_start = camera_interpolation_start
-    BIPED.camera_interpolation_end = camera_interpolation_end
-    BIPED.camera_forward_movement_scale = camera_forward_movement_scale
-    BIPED.camera_side_movement_scale = camera_side_movement_scale
-    BIPED.camera_vertical_movement_scale = camera_vertical_movement_scale
-    BIPED.camera_exclusion_distance = camera_exclusion_distance
-    BIPED.autoaim_width = dump_dic['Data']['Autoaim Width']
-    BIPED.lock_on_flags = lock_on_flags
-    BIPED.lock_on_distance = lock_on_distance
-    BIPED.head_shot_acceleration_scale = head_shot_acceleration_scale
-    BIPED.area_damage_effect = area_damage_effect
-    BIPED.collision_flags = collision_flags
-    BIPED.height_standing = dump_dic['Data']['Standing Camera Height']
-    BIPED.height_crouching = dump_dic['Data']['Crouching Camera Height']
-    BIPED.radius = dump_dic['Data']['Collision Radius']
-    BIPED.mass = mass
-    BIPED.living_material_name = living_material_name
-    BIPED.dead_material_name = dead_material_name
-    BIPED.living_material_name_length = len(BIPED.living_material_name)
-    BIPED.dead_material_name_length = len(BIPED.dead_material_name)
-    BIPED.dead_sphere_shapes_tag_block = TAG.TagBlock()
-    BIPED.pill_shapes_tag_block = TAG.TagBlock()
-    BIPED.sphere_shapes_tag_block = TAG.TagBlock()
-    BIPED.maximum_slope_angle = dump_dic['Data']['Maximum Slope Angle']
-    BIPED.downhill_falloff_angle = dump_dic['Data']['Downhill Falloff Angle']
-    BIPED.downhill_cuttoff_angle = dump_dic['Data']['Downhill Cutoff Angle']
-    BIPED.uphill_falloff_angle = dump_dic['Data']['Uphill Falloff Angle']
-    BIPED.uphill_cuttoff_angle = dump_dic['Data']['Uphill Cutoff Angle']
-    BIPED.downhill_velocity_scale = dump_dic['Data']['Downhill Velocity Scale']
-    BIPED.uphill_velocity_scale = dump_dic['Data']['Uphill Velocity Scale']
-    BIPED.bank_angle = dump_dic['Data']['Bank Angle']
-    BIPED.bank_apply_time = dump_dic['Data']['Bank Apply Time']
-    BIPED.bank_decay_time = dump_dic['Data']['Bank Decay Time']
-    BIPED.pitch_ratio = dump_dic['Data']['Pitch Ratio']
-    BIPED.max_velocity = dump_dic['Data']['Max Velocity']
-    BIPED.max_sidestep_velocity = dump_dic['Data']['Max Sidestep Velocity']
-    BIPED.acceleration = dump_dic['Data']['Acceleration']
-    BIPED.deceleration = dump_dic['Data']['Deceleration']
-    BIPED.angular_velocity_maximum = dump_dic['Data']['Angular Velocity Maximum']
-    BIPED.angular_acceleration_maximum = dump_dic['Data']['Angular Acceleration Maximum']
-    BIPED.crouch_velocity_modifier = dump_dic['Data']['Crouch Velocity Modifier']
-    BIPED.contact_points_tag_block = generate_contact_points(dump_dic, TAG, BIPED)
-    BIPED.reanimation_character = TAG.TagRef()
-    BIPED.death_spawn_character = TAG.TagRef()
-    BIPED.death_spawn_count = 0
-
+def upgrade_biped(h1_biped_asset, report):
     h2_biped_asset = {
         "Data": {
-            "flags": dict_asset,
-            "bounding radius": 0.0,
-            "bounding offset": [
-                0.0,
-                0.0,
-                0.0
-            ],
-            "acceleration scale": 0.0,
-            "lightmap shadow mode": {
-                "type": "ShortEnum",
-                "value": 0,
-                "value name": ""
-            },
-            "sweetener size": {
-                "type": "CharEnum",
-                "value": 0,
-                "value name": ""
-            },
-            "dynamic light sphere radius": 0.0,
-            "dynamic light sphere offset": [
-                0.0,
-                0.0,
-                0.0
-            ],
-            "default model variant": "",
-            "default model variant_pad": 0,
-            "model": {
-                "group name": "hlmt",
-                "unk1": 0,
-                "length": 0,
-                "unk2": -1,
-                "path": ""
-            },
-            "crate object": {
-                "group name": "bloc",
-                "unk1": 0,
-                "length": 0,
-                "unk2": -1,
-                "path": ""
-            },
-            "modifier shader": {
-                "group name": "shad",
-                "unk1": 0,
-                "length": 0,
-                "unk2": -1,
-                "path": ""
-            },
-            "creation effect": {
-                "group name": "effe",
-                "unk1": 0,
-                "length": 0,
-                "unk2": -1,
-                "path": ""
-            },
-            "material effects": {
-                "group name": "foot",
-                "unk1": 0,
-                "length": 0,
-                "unk2": -1,
-                "path": ""
-            },
-            "TagBlock_ai properties": {
-                "unk1": 0,
-                "unk2": 0
-            },
-            "TagBlockHeader_ai properties": {
-                "name": "tbfd",
-                "version": 0,
-                "size": 16
-            },
-            "ai properties": [
-                {
-                    "ai flags": 0,
-                    "ai type name": "",
-                    "ai type name_pad": 0,
-                    "ai size": {
-                        "type": "ShortEnum",
-                        "value": 0,
-                        "value name": ""
-                    },
-                    "leap jump speed": {
-                        "type": "ShortEnum",
-                        "value": 0,
-                        "value name": ""
-                    }
-                }
-            ],
+            "flags": convert_object_flags(h1_biped_asset["Data"]["flags"]),
+            "bounding radius": h1_biped_asset["Data"]["bounding radius"],
+            "bounding offset": h1_biped_asset["Data"]["bounding offset"],
+            "acceleration scale": h1_biped_asset["Data"]["acceleration scale"],
+            "model": {"group name": "hlmt", "path": ""},
+            "ai properties": generate_ai_properties(h1_biped_asset),
             "TagBlock_functions": {
                 "unk1": 0,
                 "unk2": 0
