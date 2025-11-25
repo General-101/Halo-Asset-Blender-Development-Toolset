@@ -139,7 +139,7 @@ def build_scene(context, filepath, report):
         elif game_title == "halo2":
             shader_ref = shader_processing.find_h2_shader_tag(ASS.filepath, material_name)
             tag_interface.generate_tag_dictionary(game_title, shader_ref, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache)
-            shader_processing.generate_h2_shader(blend_mat, shader_ref, 0, asset_cache, report)
+            shader_processing.generate_h2_shader(blend_mat, shader_ref, asset_cache, report)
         elif game_title == "halo3":
             shader_ref = shader_processing.find_h3_shader_tag(ASS.filepath, material_name)
             shader_processing.generate_h3_shader(blend_mat, shader_ref, asset_cache, report)
