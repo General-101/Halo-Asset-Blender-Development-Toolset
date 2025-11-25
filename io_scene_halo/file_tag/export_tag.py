@@ -75,9 +75,6 @@ def write_file(context, file_path, report):
     filepath = "%s%s" % (filename_no_ext, "_blender.scenario")
 
     scnr_dict = generate_scenario_scene(context, donor_scnr, file_path)
-    with open(r"C:\Users\Steven\Desktop\shader_stuff.json", 'w', encoding='utf8') as json_file:
-        json.dump(scnr_dict, json_file, ensure_ascii=True, indent=4)
-
     tag_interface.write_file(merged_defs, scnr_dict, tag_interface.obfuscation_buffer_prepare(), filepath, engine_tag)
 
     return {'FINISHED'}
