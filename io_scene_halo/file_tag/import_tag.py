@@ -99,39 +99,40 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
                 return {'CANCELLED'}
 
             build_scene = None
-            if tag_group == "mode" or tag_group == "mod2":
-                build_scene = build_mesh
+            if tag_group is not None:
+                if tag_group == "mode" or tag_group == "mod2":
+                    build_scene = build_mesh
 
-            elif tag_group == "coll":
-                build_scene = build_collision
+                elif tag_group == "coll":
+                    build_scene = build_collision
 
-            elif tag_group == "phys":
-                build_scene = build_physics
+                elif tag_group == "phys":
+                    build_scene = build_physics
 
-            elif tag_group == "antr":
-                build_scene = build_animations
+                elif tag_group == "antr":
+                    build_scene = build_animations
 
-            elif tag_group == "sbsp":
-                build_scene = build_bsp
+                elif tag_group == "sbsp":
+                    build_scene = build_bsp
 
-            elif tag_group == "ltmp":
-                build_scene = build_lightmap
+                elif tag_group == "ltmp":
+                    build_scene = build_lightmap
 
-            elif tag_group == "scnr":
-                context.scene.tag_scenario.scenario_path = file_path
-                build_scene = build_scenario
+                elif tag_group == "scnr":
+                    context.scene.tag_scenario.scenario_path = file_path
+                    build_scene = build_scenario
 
-            elif tag_group == "trak":
-                build_scene = build_camera_track
+                elif tag_group == "trak":
+                    build_scene = build_camera_track
 
-            elif tag_group in shader_groups:
-                build_scene = build_shader
+                elif tag_group in shader_groups:
+                    build_scene = build_shader
 
-            input_stream.close()
-            if build_scene:
-                build_scene.build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, report)
-            else:
-                report({'ERROR'}, "Tag file has no support. Contact the plugin author if it should.")
+                input_stream.close()
+                if build_scene:
+                    build_scene.build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, report)
+                else:
+                    report({'ERROR'}, "Tag file has no support. Contact the plugin author if it should.")
 
         else:
             report({'ERROR'}, "Invalid tag directory path provided. Check your tag directory settings.")
