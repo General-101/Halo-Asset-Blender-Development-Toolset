@@ -36,7 +36,6 @@ from .shader_helper import (
     get_output_material_node, 
     connect_inputs, 
     generate_image_node,
-    place_node,
     HALO_1_SHADER_RESOURCES
     )
 
@@ -87,13 +86,11 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
         mat.node_tree.nodes.remove(node)
 
     output_material_node = get_output_material_node(mat)
-    place_node(output_material_node, 0)
+    output_material_node.location = (0.0, 0.0)
 
     shader_environment_node = get_shader_environment_node(mat.node_tree)
-    place_node(shader_environment_node, 1)
+    shader_environment_node.location = (-440.0, 0.0)
     shader_environment_node.name = "Shader Environment"
-    shader_environment_node.width = 400.0
-    shader_environment_node.height = 100.0
 
     connect_inputs(mat.node_tree, shader_environment_node, "Shader", output_material_node, "Surface")
 
@@ -103,7 +100,7 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
         base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         base_map_node.image = base_map_texture
         base_map_node.image.alpha_mode = 'CHANNEL_PACKED'
-        place_node(base_map_node, 2)
+        base_map_node.location = (-720.0, 0.0)
         connect_inputs(mat.node_tree, base_map_node, "Color", shader_environment_node, "Base Map")
         connect_inputs(mat.node_tree, base_map_node, "Alpha", shader_environment_node, "Base Map Alpha")
 
@@ -112,7 +109,7 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
         primary_detail_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         primary_detail_node.image = primary_detail_texture
         primary_detail_node.image.alpha_mode = 'CHANNEL_PACKED'
-        place_node(primary_detail_node, 2, 1)
+        primary_detail_node.location = (-720.0, -300.0)
         connect_inputs(mat.node_tree, primary_detail_node, "Color", shader_environment_node, "Primary Detail Map")
         connect_inputs(mat.node_tree, primary_detail_node, "Alpha", shader_environment_node, "Primary Detail Map Alpha")
 
@@ -130,7 +127,7 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
         secondary_detail_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         secondary_detail_node.image = secondary_detail_texture
         secondary_detail_node.image.alpha_mode = 'CHANNEL_PACKED'
-        place_node(secondary_detail_node, 2, 2)
+        secondary_detail_node.location = (-720.0, -600.0)
         connect_inputs(mat.node_tree, secondary_detail_node, "Color", shader_environment_node, "Secondary Detail Map")
         connect_inputs(mat.node_tree, secondary_detail_node, "Alpha", shader_environment_node, "Secondary Detail Map Alpha")
 
@@ -148,7 +145,7 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
         micro_detail_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         micro_detail_node.image = micro_detail_texture
         micro_detail_node.image.alpha_mode = 'CHANNEL_PACKED'
-        place_node(micro_detail_node, 2, 3)
+        micro_detail_node.location = (-720.0, -900.0)
         connect_inputs(mat.node_tree, micro_detail_node, "Color", shader_environment_node, "Micro Detail Map")
         connect_inputs(mat.node_tree, micro_detail_node, "Alpha", shader_environment_node, "Micro Detail Map Alpha")
 
@@ -169,7 +166,7 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
         bump_node.image.alpha_mode = 'CHANNEL_PACKED'
         bump_node.interpolation = 'Cubic'
         bump_node.image.colorspace_settings.name = 'Non-Color'
-        place_node(bump_node, 2, 4)
+        bump_node.location = (-720.0, -1200.0)
         connect_inputs(mat.node_tree, bump_node, "Color", shader_environment_node, "Bump Map")
         connect_inputs(mat.node_tree, bump_node, "Alpha", shader_environment_node, "Bump Map Alpha")
 
@@ -186,8 +183,8 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
     if self_illumination_texture:
         self_illumination_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         self_illumination_node.image = self_illumination_texture
-        place_node(self_illumination_node, 2, 5)
-        connect_inputs(mat.node_tree, self_illumination_node, "Color", shader_environment_node, "Self-Illumination Map")
+        self_illumination_node.location = (-720.0, -1500.0)
+        connect_inputs(mat.node_tree, self_illumination_node, "Color", shader_environment_node, "Self Illumination Map")
 
         sim_scale = shader_data["map scale"]
         if sim_scale == 0.0:
@@ -200,12 +197,16 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
     reflection_texture = generate_image_node(mat, shader_data["reflection cube map"], permutation_index, asset_cache, "halo1", report)
     if reflection_texture:
         reflection_node = mat.node_tree.nodes.new("ShaderNodeTexEnvironment")
+        texcoord_node = mat.node_tree.nodes.new("ShaderNodeTexCoord")
         reflection_node.image = reflection_texture
-        place_node(reflection_node, 2, 6)
+        reflection_node.location = (-720.0, -1800.0)
+        texcoord_node.location = (-900.0, -1800.0)
         connect_inputs(mat.node_tree, reflection_node, "Color", shader_environment_node, "Reflection Cube Map")
+        connect_inputs(mat.node_tree, texcoord_node, "Reflection", reflection_node, "Vector")
+
 
     shader_environment_node.inputs["Power"].default_value = shader_data["power"]
-    shader_environment_node.inputs["Color of Emitted Light"].default_value = convert_to_blender_color(shader_data["color of emitted light"], True)
+    shader_environment_node.inputs["Color Of Emitted Light"].default_value = convert_to_blender_color(shader_data["color of emitted light"], True)
     alpha_shader = EnvironmentFlags.alpha_tested in EnvironmentFlags(shader_data["flags_1"])
     if alpha_shader:
         shader_environment_node.inputs["Alpha Tested"].default_value = True
@@ -218,25 +219,25 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
     shader_environment_node.inputs["Detail Map Function"].default_value = shader_data["detail map function"]["value"]
     shader_environment_node.inputs["Micro Detail Map Function"].default_value = shader_data["micro detail map function"]["value"]
     if bump_bitmap is not None:
-        shader_environment_node.inputs["Bump Strength"].default_value = bump_bitmap["Data"]["bump height"] * 15
+        shader_environment_node.inputs["Bump Map Strength"].default_value = bump_bitmap["Data"]["bump height"] * 15
 
     shader_environment_node.inputs["Primary On Color"].default_value = convert_to_blender_color(shader_data["primary on color"], True)
     shader_environment_node.inputs["Primary Off Color"].default_value = convert_to_blender_color(shader_data["primary off color"], True)
-    shader_environment_node.inputs["Primary Self-Illumination Activation Level"].default_value = 0
+    shader_environment_node.inputs["Primary Self Illumination Activation Level"].default_value = 0
     if not FunctionEnum.one.value == shader_data["primary animation function"]:
-        shader_environment_node.inputs["Primary Self-Illumination Activation Level"].default_value = 1
+        shader_environment_node.inputs["Primary Self Illumination Activation Level"].default_value = 1
 
     shader_environment_node.inputs["Secondary On Color"].default_value = convert_to_blender_color(shader_data["secondary on color"], True)
     shader_environment_node.inputs["Secondary Off Color"].default_value = convert_to_blender_color(shader_data["secondary off color"], True)
-    shader_environment_node.inputs["Secondary Self-Illumination Activation Level"].default_value = 0
+    shader_environment_node.inputs["Secondary Self Illumination Activation Level"].default_value = 0
     if not FunctionEnum.one.value == shader_data["secondary animation function"]:
-        shader_environment_node.inputs["Secondary Self-Illumination Activation Level"].default_value = 1
+        shader_environment_node.inputs["Secondary Self Illumination Activation Level"].default_value = 1
 
     shader_environment_node.inputs["Plasma On Color"].default_value = convert_to_blender_color(shader_data["plasma on color"], True)
     shader_environment_node.inputs["Plasma Off Color"].default_value = convert_to_blender_color(shader_data["plasma off color"], True)
-    shader_environment_node.inputs["Plasma Self-Illumination Activation Level"].default_value = 0
+    shader_environment_node.inputs["Plasma Self Illumination Activation Level"].default_value = 0
     if not FunctionEnum.one.value == shader_data["plasma animation function"]:
-        shader_environment_node.inputs["Plasma Self-Illumination Activation Level"].default_value = 1
+        shader_environment_node.inputs["Plasma Self Illumination Activation Level"].default_value = 1
 
     shader_environment_node.inputs["Brightness"].default_value = shader_data["brightness"]
     shader_environment_node.inputs["Perpendicular Color"].default_value = convert_to_blender_color(shader_data["perpendicular color"], True)

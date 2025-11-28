@@ -858,14 +858,14 @@ def get_fallback_shader_node(tree, shader_name, blacklist=None):
 def set_image_scale(mat, image_node, image_scale, rescale_image=False, bitmap_1=None, bitmap_2=None, permutation_index=0):
     vect_math_node = mat.node_tree.nodes.new("ShaderNodeVectorMath")
     vect_math_node.operation = 'MULTIPLY'
-    vect_math_node.location = Vector((-200, -125)) + image_node.location
+    vect_math_node.location = Vector((-180.0, 0.0)) + image_node.location
 
     connect_inputs(mat.node_tree, vect_math_node, "Vector", image_node, "Vector")
 
     uv_map_node = mat.node_tree.nodes.new("ShaderNodeUVMap")
     combine_xyz_node = mat.node_tree.nodes.new("ShaderNodeCombineXYZ")
-    uv_map_node.location = Vector((-400, -100)) + image_node.location
-    combine_xyz_node.location = Vector((-400, -225)) + image_node.location
+    uv_map_node.location = Vector((-360.0, 0.0)) + image_node.location
+    combine_xyz_node.location = Vector((-360.0, -120.0)) + image_node.location
     connect_inputs(mat.node_tree, uv_map_node, "UV", vect_math_node, 0)
     connect_inputs(mat.node_tree, combine_xyz_node, "Vector", vect_math_node, 1)
 

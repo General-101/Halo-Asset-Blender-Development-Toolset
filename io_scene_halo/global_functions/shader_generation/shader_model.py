@@ -36,7 +36,6 @@ from .shader_helper import (
     get_output_material_node, 
     connect_inputs, 
     generate_image_node,
-    place_node,
     HALO_1_SHADER_RESOURCES
     )
 
@@ -91,13 +90,11 @@ def generate_shader_model(mat, shader_asset, permutation_index, asset_cache, rep
         mat.node_tree.nodes.remove(node)
 
     output_material_node = get_output_material_node(mat)
-    place_node(output_material_node)
+    output_material_node.location = (0.0, 0.0)
 
     shader_model_node = get_shader_model_node(mat.node_tree)
-    place_node(shader_model_node, 1)
+    shader_model_node.location = (-440.0, 0.0)
     shader_model_node.name = "Shader Model"
-    shader_model_node.width = 400.0
-    shader_model_node.height = 100.0
 
     connect_inputs(mat.node_tree, shader_model_node, "Shader", output_material_node, "Surface")
 
@@ -108,7 +105,7 @@ def generate_shader_model(mat, shader_asset, permutation_index, asset_cache, rep
         base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         base_map_node.image = base_map_texture
         base_map_node.image.alpha_mode = 'CHANNEL_PACKED'
-        place_node(base_map_node, 2)
+        base_map_node.location = (-720.0, 0.0)
         connect_inputs(mat.node_tree, base_map_node, "Color", shader_model_node, "Base Map")
         connect_inputs(mat.node_tree, base_map_node, "Alpha", shader_model_node, "Base Map Alpha")
 
@@ -132,7 +129,7 @@ def generate_shader_model(mat, shader_asset, permutation_index, asset_cache, rep
         multipurpose_map_node.image.alpha_mode = 'CHANNEL_PACKED'
         multipurpose_map_node.image.colorspace_settings.name = 'Non-Color'
         multipurpose_map_node.interpolation = 'Cubic'
-        place_node(multipurpose_map_node, 2, 1)
+        multipurpose_map_node.location = (-720.0, -320.0)
         connect_inputs(mat.node_tree, multipurpose_map_node, "Color", shader_model_node, "Multipurpose Map")
         connect_inputs(mat.node_tree, multipurpose_map_node, "Alpha", shader_model_node, "Multipurpose Map Alpha")
 
@@ -153,7 +150,7 @@ def generate_shader_model(mat, shader_asset, permutation_index, asset_cache, rep
         detail_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         detail_map_node.image = detail_map_texture
         detail_map_node.image.alpha_mode = 'CHANNEL_PACKED'
-        place_node(detail_map_node, 2, 2)
+        detail_map_node.location = (-720.0, -640.0)
         connect_inputs(mat.node_tree, detail_map_node, "Color", shader_model_node, "Detail Map")
         connect_inputs(mat.node_tree, detail_map_node, "Alpha", shader_model_node, "Detail Map Alpha")
 
@@ -170,13 +167,16 @@ def generate_shader_model(mat, shader_asset, permutation_index, asset_cache, rep
     cube_map_texture = generate_image_node(mat, shader_data["cube map"], permutation_index, asset_cache, "halo1", report)
     if cube_map_texture:
         cube_map_node = mat.node_tree.nodes.new("ShaderNodeTexEnvironment")
+        texcoord_node = mat.node_tree.nodes.new("ShaderNodeTexCoord")
         cube_map_node.image = cube_map_texture
         cube_map_node.image.alpha_mode = 'CHANNEL_PACKED'
-        place_node(cube_map_node, 2, 3)
+        cube_map_node.location = (-720.0, -960.0)
+        texcoord_node.location = (-900.0, -960.0)
         connect_inputs(mat.node_tree, cube_map_node, "Color", shader_model_node, "Reflection Cube Map")
+        connect_inputs(mat.node_tree, texcoord_node, "Reflection", cube_map_node, "Vector")
 
     shader_model_node.inputs["Power"].default_value = shader_data["power"]
-    shader_model_node.inputs["Color of Emitted Light"].default_value = convert_to_blender_color(shader_data["color of emitted light"], True)
+    shader_model_node.inputs["Color Of Emitted Light"].default_value = convert_to_blender_color(shader_data["color of emitted light"], True)
 
     shader_model_flags = ModelFlags(shader_data["flags_1"])
 
@@ -185,17 +185,17 @@ def generate_shader_model(mat, shader_asset, permutation_index, asset_cache, rep
 
     mat.use_backface_culling = True
     if ModelFlags.two_sided in shader_model_flags:
-        shader_model_node.inputs["Two-Sided"].default_value = True
+        shader_model_node.inputs["Two Sided"].default_value = True
         mat.use_backface_culling = False
 
     if ModelFlags.not_alpha_tested in shader_model_flags:
-        shader_model_node.inputs["Not Alpha-Tested"].default_value = True
+        shader_model_node.inputs["Not Alpha Tested"].default_value = True
 
     if ModelFlags.alpha_blended_decal in shader_model_flags:
-        shader_model_node.inputs["Alpha-Blended Decal"].default_value = True
+        shader_model_node.inputs["Alpha Blended Decal"].default_value = True
 
     if ModelFlags.multipurpose_map_uses_og_xbox_channel_order in shader_model_flags:
-        shader_model_node.inputs["Multipurpose Map Uses OG Xbox Channel Order"].default_value = True
+        shader_model_node.inputs["Use Xbox Multipurpose Channel Order"].default_value = True
 
     shader_model_node.inputs["Animation Color Lower Bound"].default_value = convert_to_blender_color(shader_data["animation color lower bound"], True)
     shader_model_node.inputs["Animation Color Upper Bound"].default_value = convert_to_blender_color(shader_data["animation color upper bound"], True)
@@ -203,8 +203,8 @@ def generate_shader_model(mat, shader_asset, permutation_index, asset_cache, rep
     if not FunctionEnum.one.value == shader_data["animation function"]["value"]:
         shader_model_node.inputs["Animation Color Bound Factor"].default_value = 1
 
-    shader_model_node.inputs["Detail Function Setting"].default_value = shader_data["detail function"]["value"]
-    shader_model_node.inputs["Detail Mask Setting"].default_value = shader_data["detail mask"]["value"]
+    shader_model_node.inputs["Detail Function"].default_value = shader_data["detail function"]["value"]
+    shader_model_node.inputs["Detail Mask"].default_value = shader_data["detail mask"]["value"]
 
     shader_model_node.inputs["Perpendicular Brightness"].default_value = shader_data["perpendicular brightness"]
     shader_model_node.inputs["Perpendicular Tint Color"].default_value = convert_to_blender_color(shader_data["perpendicular tint color"], True)

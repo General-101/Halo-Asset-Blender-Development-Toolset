@@ -1,6 +1,7 @@
 import bpy
 
 from enum import Flag, Enum, auto
+from mathutils import Euler, Matrix, Vector
 from ...global_functions import global_functions
 from ...file_tag.tag_interface import tag_interface, tag_common
 from .shader_helper import (
@@ -214,9 +215,7 @@ def set_stg_values(shad_root, stg_node):
         stg_node.inputs["Map %s Rotation Animation Phase" % map_key].default_value = map_element["rotation animation phase"]
         stg_node.inputs["Map %s Rotation Animation Scale" % map_key].default_value = map_element["rotation animation scale"]
 
-        x, y = map_element["rotation animation center"]
-        stg_node.inputs["Map %s Rotation Animation Center X" % map_key].default_value = x
-        stg_node.inputs["Map %s Rotation Animation Center Y" % map_key].default_value = y
+        stg_node.inputs["Map %s Rotation Animation Center" % map_key].default_value = map_element["rotation animation center"]
 
     for stage_idx, stage_element in enumerate(shad_root["stages"]):
         stg_node.inputs["Stage %s" % stage_idx].default_value = True
@@ -335,25 +334,25 @@ def get_field_input_instructions(node_tree, field_value, stg_paths, stg_node, st
         elif field_enum == InputAlphaEnum.map_blue_0:
             output_node, output_key = stg_paths["map_a_color"]
             seperate_node = node_tree.nodes.new("ShaderNodeSeparateColor")
-            #place_node(map_d_node, stage_offset - 4, 6)
+            seperate_node.location = Vector(((-720.0 + (-900 * stg_idx)), 0.0))
             connect_inputs(node_tree, output_node, output_key, seperate_node, "Color")
             connect_inputs(node_tree, seperate_node, "Blue", input_node, input_key)
         elif field_enum == InputAlphaEnum.map_blue_1:
             output_node, output_key = stg_paths["map_b_color"]
             seperate_node = node_tree.nodes.new("ShaderNodeSeparateColor")
-            #place_node(map_d_node, stage_offset - 4, 6)
+            seperate_node.location = Vector(((-720.0 + (-900 * stg_idx)), -180.0))
             connect_inputs(node_tree, output_node, output_key, seperate_node, "Color")
             connect_inputs(node_tree, seperate_node, "Blue", input_node, input_key)
         elif field_enum == InputAlphaEnum.map_blue_2:
             output_node, output_key = stg_paths["map_c_color"]
             seperate_node = node_tree.nodes.new("ShaderNodeSeparateColor")
-            #place_node(map_d_node, stage_offset - 4, 6)
+            seperate_node.location = Vector(((-720.0 + (-900 * stg_idx)), -360.0))
             connect_inputs(node_tree, output_node, output_key, seperate_node, "Color")
             connect_inputs(node_tree, seperate_node, "Blue", input_node, input_key)
         elif field_enum == InputAlphaEnum.map_blue_3:
             output_node, output_key = stg_paths["map_d_color"]
             seperate_node = node_tree.nodes.new("ShaderNodeSeparateColor")
-            #place_node(map_d_node, stage_offset - 4, 6)
+            seperate_node.location = Vector(((-720.0 + (-900 * stg_idx)), -540.0))
             connect_inputs(node_tree, output_node, output_key, seperate_node, "Color")
             connect_inputs(node_tree, seperate_node, "Blue", input_node, input_key)
         elif field_enum == InputAlphaEnum.vertex_blue_0_blue_light:
@@ -363,7 +362,7 @@ def get_field_input_instructions(node_tree, field_value, stg_paths, stg_node, st
             else:
                 output_node, output_key = stg_paths["vertex_0_color"]
                 seperate_node = node_tree.nodes.new("ShaderNodeSeparateColor")
-                #place_node(map_d_node, stage_offset - 4, 6)
+                seperate_node.location = Vector((-180, 0.0)) + input_node.location
                 connect_inputs(node_tree, output_node, output_key, seperate_node, "Color")
                 connect_inputs(node_tree, seperate_node, "Blue", input_node, input_key)
         elif field_enum == InputAlphaEnum.vertex_blue_1_fade_parallel:
@@ -373,7 +372,7 @@ def get_field_input_instructions(node_tree, field_value, stg_paths, stg_node, st
             else:
                 output_node, output_key = stg_paths["vertex_1_color"]
                 seperate_node = node_tree.nodes.new("ShaderNodeSeparateColor")
-                #place_node(map_d_node, stage_offset - 4, 6)
+                seperate_node.location = Vector((-180, 0.0)) + input_node.location
                 connect_inputs(node_tree, output_node, output_key, seperate_node, "Color")
                 connect_inputs(node_tree, seperate_node, "Blue", input_node, input_key)
         elif field_enum == InputAlphaEnum.scratch_blue_0:
@@ -383,7 +382,7 @@ def get_field_input_instructions(node_tree, field_value, stg_paths, stg_node, st
             else:
                 output_node, output_key = stg_paths["scratch_0_color"]
                 seperate_node = node_tree.nodes.new("ShaderNodeSeparateColor")
-                #place_node(map_d_node, stage_offset - 4, 6)
+                seperate_node.location = Vector((-180, 0.0)) + input_node.location
                 connect_inputs(node_tree, output_node, output_key, seperate_node, "Color")
                 connect_inputs(node_tree, seperate_node, "Blue", input_node, input_key)
         elif field_enum == InputAlphaEnum.scratch_blue_1:
@@ -393,17 +392,17 @@ def get_field_input_instructions(node_tree, field_value, stg_paths, stg_node, st
             else:
                 output_node, output_key = stg_paths["scratch_1_color"]
                 seperate_node = node_tree.nodes.new("ShaderNodeSeparateColor")
-                #place_node(map_d_node, stage_offset - 4, 6)
+                seperate_node.location = Vector((-180, 0.0)) + input_node.location
                 connect_inputs(node_tree, output_node, output_key, seperate_node, "Color")
                 connect_inputs(node_tree, seperate_node, "Blue", input_node, input_key)
         elif field_enum == InputAlphaEnum.constant_blue_0:
             seperate_node = node_tree.nodes.new("ShaderNodeSeparateColor")
-            #place_node(map_d_node, stage_offset - 4, 6)
+            seperate_node.location = Vector((-180, 0.0)) + input_node.location
             connect_inputs(node_tree, stg_node, "Stage %s Color" % stg_idx, seperate_node, "Color")
             connect_inputs(node_tree, seperate_node, "Blue", input_node, input_key)
         elif field_enum == InputAlphaEnum.constant_blue_1:
             seperate_node = node_tree.nodes.new("ShaderNodeSeparateColor")
-            #place_node(map_d_node, stage_offset - 4, 6)
+            seperate_node.location = Vector((-180, 0.0)) + input_node.location
             connect_inputs(node_tree, stg_node, "Stage %s Color 1" % stg_idx, seperate_node, "Color")
             connect_inputs(node_tree, seperate_node, "Blue", input_node, input_key)
 
@@ -633,7 +632,7 @@ def create_stages(node_tree, stage_element, offset=0):
 
     c_abcd_node = get_resource_node(node_tree, get_output_mapping_name(stage_element["output mapping color"]["value"]))
     c_abcd_node.name = "color_abcd_stage"
-    place_node(c_abcd_node, 1 + stage_offset)
+    c_abcd_node.location = Vector(((-900.0 + (-900 * offset)), 0.0))
 
     c_mix_abcd_node = None
     c_add_abcd_node = None
@@ -641,86 +640,85 @@ def create_stages(node_tree, stage_element, offset=0):
     if StageFlags.color_mux in stage_flags:
         c_mix_abcd_node = get_resource_node(node_tree, "ABCD Mux")
         c_mix_abcd_node.name = "color_mix_abcd_stage"
-        place_node(c_mix_abcd_node, 2 + stage_offset, 2)
+        c_mix_abcd_node.location = Vector((-1080.0 + (-900 * offset), -280.0))
     else:
         c_add_abcd_node = node_tree.nodes.new(type="ShaderNodeMix")
         c_add_abcd_node.name = "color_add_abcd_stage"
         c_add_abcd_node.data_type = 'RGBA'
         c_add_abcd_node.blend_type = 'ADD'
         c_add_abcd_node.inputs[0].default_value = 1.0
-        place_node(c_add_abcd_node, 2 + stage_offset)
-
+        c_add_abcd_node.location = Vector((-1080.0 + (-900 * offset), 0.0))
 
     c_ab_node = get_resource_node(node_tree, "Output Function")
     c_ab_node.name = "color_ab_stage"
     if OutputFunctionEnum(stage_element["output ab function"]["value"]) == OutputFunctionEnum.dot_product:
         c_ab_node.inputs["Multiply/Dot Product"].default_value = True
 
-    place_node(c_ab_node, 3 + stage_offset)
+    c_ab_node.location = Vector((-1260.0 + (-900 * offset), 0.0))
 
     c_cd_node = get_resource_node(node_tree, "Output Function")
     c_cd_node.name = "color_cd_stage"
     if OutputFunctionEnum(stage_element["output cd function"]["value"]) == OutputFunctionEnum.dot_product:
-        c_ab_node.inputs["Multiply/Dot Product"].default_value = True
+        c_cd_node.inputs["Multiply/Dot Product"].default_value = True
 
-    place_node(c_cd_node, 3 + stage_offset, 2)
+    c_cd_node.location = Vector((-1260.0 + (-900 * offset), -280.0))
 
     c_a_node = get_resource_node(node_tree, get_input_mapping_name(stage_element["input a mapping"]["value"]))
     c_a_node.name = "color_a_stage"
-    place_node(c_a_node, 4 + stage_offset)
+    c_a_node.location = Vector((-1440.0 + (-900 * offset), 0.0))
 
     c_b_node = get_resource_node(node_tree, get_input_mapping_name(stage_element["input b mapping"]["value"]))
     c_b_node.name = "color_b_stage"
-    place_node(c_b_node, 4 + stage_offset, 1)
+    c_b_node.location = Vector((-1440.0 + (-900 * offset), -140.0))
 
     c_c_node = get_resource_node(node_tree, get_input_mapping_name(stage_element["input c mapping"]["value"]))
     c_c_node.name = "color_c_stage"
-    place_node(c_c_node, 4 + stage_offset, 2)
+    c_c_node.location = Vector((-1440.0 + (-900 * offset), -280.0))
 
     c_d_node = get_resource_node(node_tree, get_input_mapping_name(stage_element["input d mapping"]["value"]))
     c_d_node.name = "color_d_stage"
-    place_node(c_d_node, 4 + stage_offset, 3)
+    c_d_node.location = Vector((-1440.0 + (-900 * offset), -420.0))
 
     a_abcd_node = get_resource_node(node_tree, get_output_mapping_name(stage_element["output mapping alpha"]["value"], True))
     a_abcd_node.name = "alpha_abcd_stage"
-    place_node(a_abcd_node, 1 + stage_offset, 5)
+    a_abcd_node.location = Vector((-900.0 + (-900 * offset), -720.0))
 
     a_mix_abcd_node = None
     a_add_abcd_node = None
     if StageFlags.alpha_mux in stage_flags:
         a_mix_abcd_node = get_resource_node(node_tree, "ABCD Mux")
         a_mix_abcd_node.name = "alpha_mix_abcd_stage"
-        place_node(a_mix_abcd_node, 2 + stage_offset, 7)
+        a_mix_abcd_node.location = Vector((-1080.0 + (-900 * offset), -1000.0))
     else:
         a_add_abcd_node = node_tree.nodes.new(type="ShaderNodeMath")
         a_add_abcd_node.name = "alpha_add_abcd_stage"
-        place_node(a_add_abcd_node, 2 + stage_offset, 5)
+        a_add_abcd_node.location = Vector((-1080.0 + (-900 * offset), -720.0))
 
     a_ab_node = node_tree.nodes.new(type="ShaderNodeMath")
     a_ab_node.name = "alpha_ab_stage"
     a_ab_node.operation = 'MULTIPLY'
-    place_node(a_ab_node, 3 + stage_offset, 5)
+    a_ab_node.location = Vector((-1260.0 + (-900 * offset), -720.0))
 
     a_cd_node = node_tree.nodes.new(type="ShaderNodeMath")
     a_cd_node.name = "alpha_cd_stage"
     a_cd_node.operation = 'MULTIPLY'
-    place_node(a_cd_node, 3 + stage_offset, 7)
+    a_cd_node.location = Vector((-1260.0 + (-900 * offset), -1000.0))
 
     a_a_node = get_resource_node(node_tree, get_input_mapping_name(stage_element["input a mapping alpha"]["value"], True))
     a_a_node.name = "alpha_a_stage"
-    place_node(a_a_node, 4 + stage_offset, 5)
+    a_a_node.location = Vector((-1440.0 + (-900 * offset), -720.0))
 
     a_b_node = get_resource_node(node_tree, get_input_mapping_name(stage_element["input b mapping alpha"]["value"], True))
     a_b_node.name = "alpha_b_stage"
-    place_node(a_b_node, 4 + stage_offset, 6)
+    a_b_node.location = Vector((-1440.0 + (-900 * offset), -860.0))
 
     a_c_node = get_resource_node(node_tree, get_input_mapping_name(stage_element["input c mapping alpha"]["value"], True))
     a_c_node.name = "alpha_c_stage"
-    place_node(a_c_node, 4 + stage_offset, 7)
+    a_c_node.location = Vector((-1440.0 + (-900 * offset), -1000.0))
 
     a_d_node = get_resource_node(node_tree, get_input_mapping_name(stage_element["input d mapping alpha"]["value"], True))
     a_d_node.name = "alpha_d_stage"
-    place_node(a_d_node, 4 + stage_offset, 8)
+    a_d_node.location = Vector((-1440.0 + (-900 * offset), -1140.0))
 
     stage_list["c_abcd_node"] = c_abcd_node
     stage_list["c_add_abcd_node"] = c_add_abcd_node
@@ -758,9 +756,9 @@ def generate_alpha_blend_output(node_tree, stg_paths, output_material_node):
     diffuse_node = node_tree.nodes.new("ShaderNodeBsdfDiffuse")
     mix_node = node_tree.nodes.new("ShaderNodeMixShader")
 
-    #place_node(map_d_node, stage_offset - 4, 6)
-    #place_node(map_d_node, stage_offset - 4, 6)
-    #place_node(map_d_node, stage_offset - 4, 6)
+    transparent_node.location = Vector((-540.0, 0.0))
+    diffuse_node.location = Vector((-540.0, -140.0))
+    mix_node.location = Vector((-360.0, 0.0))
 
     if stg_paths["scratch_0_color"] is None:
         diffuse_node.inputs["Color"].default_value = (0, 0, 0, 1)
@@ -776,16 +774,17 @@ def generate_alpha_blend_output(node_tree, stg_paths, output_material_node):
 
     connect_inputs(node_tree, transparent_node, "BSDF", mix_node, 1)
     connect_inputs(node_tree, diffuse_node, "BSDF", mix_node, 2)
-    connect_inputs(node_tree, mix_node, "Shader", output_material_node, "Surface")
+
+    return mix_node
 
 def generate_add_blend_output(node_tree, stg_paths, output_material_node):
     emission_node = node_tree.nodes.new("ShaderNodeEmission")
     transparent_node = node_tree.nodes.new("ShaderNodeBsdfTransparent")
     add_node = node_tree.nodes.new("ShaderNodeAddShader")
 
-    #place_node(map_d_node, stage_offset - 4, 6)
-    #place_node(map_d_node, stage_offset - 4, 6)
-    #place_node(map_d_node, stage_offset - 4, 6)
+    emission_node.location = Vector((-540.0, 0.0))
+    transparent_node.location = Vector((-540.0, -140.0))
+    add_node.location = Vector((-360.0, 0.0))
 
     if stg_paths["scratch_0_color"] is None:
         emission_node.inputs["Color"].default_value = (0, 0, 0, 1)
@@ -795,7 +794,8 @@ def generate_add_blend_output(node_tree, stg_paths, output_material_node):
 
     connect_inputs(node_tree, emission_node, "Emission", add_node, 0)
     connect_inputs(node_tree, transparent_node, "BSDF", add_node, 1)
-    connect_inputs(node_tree, add_node, "Shader", output_material_node, "Surface")
+
+    return add_node
 
 def get_scale(field_value):
     scale_value = 1.0
@@ -807,6 +807,10 @@ def generate_texture_mapping(node_tree, stg_node, map_idx, input_node, input_key
     mapping_node = node_tree.nodes.new("ShaderNodeMapping")
     uv_node = node_tree.nodes.new("ShaderNodeUVMap")
     texture_pan_node = get_resource_node(node_tree, "Halo Texture Pan")
+
+    mapping_node.location = Vector((-180.0, 0.0)) + input_node.location
+    uv_node.location = Vector((-360.0, 0.0)) + input_node.location
+    texture_pan_node.location = Vector((-360.0, -140.0)) + input_node.location
 
     x_scale = get_scale(stg_node.inputs["Map %s U Scale" % map_idx].default_value)
     y_scale = get_scale(stg_node.inputs["Map %s V Scale" % map_idx].default_value)
@@ -822,7 +826,6 @@ def generate_texture_mapping(node_tree, stg_node, map_idx, input_node, input_key
     connect_inputs(node_tree, mapping_node, "Vector", input_node, input_key)
 
 def generate_shader_transparent_generic(mat, shader_asset, permutation_index, asset_cache, report):
-    tag_groups = tag_common.h1_tag_groups
     shader_data = shader_asset["Data"]
 
     mat.use_nodes = True
@@ -831,7 +834,7 @@ def generate_shader_transparent_generic(mat, shader_asset, permutation_index, as
         mat.node_tree.nodes.remove(node)
 
     output_material_node = get_output_material_node(mat)
-    place_node(output_material_node, 0)
+    output_material_node.location = (0.0, 0.0)
 
     stg_node = get_resource_node(mat.node_tree, "shader_transparent_generic")
     stg_node.name = "Shader Transparent Generic"
@@ -841,8 +844,7 @@ def generate_shader_transparent_generic(mat, shader_asset, permutation_index, as
     for stage_idx, stage_element in enumerate(reversed(shader_data["stages"])):
         stage_groups.append(create_stages(mat.node_tree, stage_element, stage_idx))
 
-    stage_offset = (stage_idx + 1) * 4
-    place_node(stg_node, stage_offset + 1)
+    stg_node.location = (-7200.0, 0.0)
 
     map_tag_refs = [None, None, None, None]
     for map_idx, map_element in enumerate(shader_data["maps"]):
@@ -854,7 +856,7 @@ def generate_shader_transparent_generic(mat, shader_asset, permutation_index, as
             map_a_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
             map_a_node.image = map_a_texture
             map_a_node.image.alpha_mode = 'CHANNEL_PACKED'
-            place_node(map_a_node, stage_offset - 4)
+            map_a_node.location = Vector((-7480.0, 0.0))
             connect_inputs(mat.node_tree, map_a_node, "Color", stg_node, "Map A Color")
             connect_inputs(mat.node_tree, map_a_node, "Alpha", stg_node, "Map A Alpha")
             generate_texture_mapping(mat.node_tree, stg_node, "A", map_a_node, "Vector")
@@ -865,7 +867,7 @@ def generate_shader_transparent_generic(mat, shader_asset, permutation_index, as
             map_b_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
             map_b_node.image = map_b_texture
             map_b_node.image.alpha_mode = 'CHANNEL_PACKED'
-            place_node(map_b_node, stage_offset - 4, 2)
+            map_b_node.location = Vector((-7480.0, -380.0))
             connect_inputs(mat.node_tree, map_b_node, "Color", stg_node, "Map B Color")
             connect_inputs(mat.node_tree, map_b_node, "Alpha", stg_node, "Map B Alpha")
             generate_texture_mapping(mat.node_tree, stg_node, "B", map_b_node, "Vector")
@@ -876,7 +878,7 @@ def generate_shader_transparent_generic(mat, shader_asset, permutation_index, as
             map_c_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
             map_c_node.image = map_c_texture
             map_c_node.image.alpha_mode = 'CHANNEL_PACKED'
-            place_node(map_c_node, stage_offset - 4, 4)
+            map_c_node.location = Vector((-7480.0, -760.0))
             connect_inputs(mat.node_tree, map_c_node, "Color", stg_node, "Map C Color")
             connect_inputs(mat.node_tree, map_c_node, "Alpha", stg_node, "Map C Alpha")
             generate_texture_mapping(mat.node_tree, stg_node, "C", map_c_node, "Vector")
@@ -887,7 +889,7 @@ def generate_shader_transparent_generic(mat, shader_asset, permutation_index, as
             map_d_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
             map_d_node.image = map_d_texture
             map_d_node.image.alpha_mode = 'CHANNEL_PACKED'
-            place_node(map_d_node, stage_offset - 4, 6)
+            map_d_node.location = Vector((-7480.0, -1140.0))
             connect_inputs(mat.node_tree, map_d_node, "Color", stg_node, "Map D Color")
             connect_inputs(mat.node_tree, map_d_node, "Alpha", stg_node, "Map D Alpha")
             generate_texture_mapping(mat.node_tree, stg_node, "D", map_d_node, "Vector")
@@ -968,20 +970,38 @@ def generate_shader_transparent_generic(mat, shader_asset, permutation_index, as
         get_field_output_instructions(stg_node.inputs["Stage %s Output Cd Alpha" % stage_idx].default_value, stg_paths, stage["a_cd_node"], input_key="Value", is_alpha=True)
         get_field_output_instructions(stg_node.inputs["Stage %s Output Ab Cd Mux Sum Alpha" % stage_idx].default_value, stg_paths, stage["a_abcd_node"], input_key="A", is_alpha=True)
 
+    final_node = None
     fbf_enum = FramebufferBlendFunctionEnum(stg_node.inputs["Framebuffer Blend Function"].default_value)
     if fbf_enum == FramebufferBlendFunctionEnum.alpha_blend:
-        generate_alpha_blend_output(mat.node_tree, stg_paths, output_material_node)
+        final_node = generate_alpha_blend_output(mat.node_tree, stg_paths, output_material_node)
     elif fbf_enum == FramebufferBlendFunctionEnum.multiply:
-        generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
+        final_node = generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
     elif fbf_enum == FramebufferBlendFunctionEnum.double_multiply:
-        generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
+        final_node = generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
     elif fbf_enum == FramebufferBlendFunctionEnum.add:
-        generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
+        final_node = generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
     elif fbf_enum == FramebufferBlendFunctionEnum.subtract:
-        generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
+        final_node = generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
     elif fbf_enum == FramebufferBlendFunctionEnum.component_min:
-        generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
+        final_node = generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
     elif fbf_enum == FramebufferBlendFunctionEnum.component_max:
-        generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
+        final_node = generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
     elif fbf_enum == FramebufferBlendFunctionEnum.alpha_multiply_add:
-        generate_alpha_blend_output(mat.node_tree, stg_paths, output_material_node)
+        final_node = generate_alpha_blend_output(mat.node_tree, stg_paths, output_material_node)
+
+    if final_node is not None:
+        emission_node = mat.node_tree.nodes.new("ShaderNodeEmission")
+        light_path_node = mat.node_tree.nodes.new("ShaderNodeLightPath")
+        mix_node = mat.node_tree.nodes.new("ShaderNodeMixShader")
+
+        emission_node.location = Vector((-360.0, -140.0))
+        light_path_node.location = Vector((-360.0, 380.0))
+        mix_node.location = Vector((-180.0, 0.0))
+
+        connect_inputs(mat.node_tree, light_path_node, "Is Camera Ray", mix_node, 0)
+        connect_inputs(mat.node_tree, final_node, "Shader", mix_node, 2)
+        connect_inputs(mat.node_tree, emission_node, "Emission", mix_node, 1)
+        connect_inputs(mat.node_tree, mix_node, "Shader", output_material_node, "Surface")
+        
+        connect_inputs(mat.node_tree, stg_node, "Power", emission_node, 1)
+        connect_inputs(mat.node_tree, stg_node, "Color Of Emitted Light", emission_node, 0)
