@@ -346,7 +346,7 @@ def vertex_group_clean_normalize(context, obj, limit_value):
         bpy.ops.mesh.select_all(action='SELECT')
         bpy.ops.object.vertex_group_clean(group_select_mode='ALL', limit=limit_value)
         bpy.ops.object.vertex_group_limit_total(group_select_mode='ALL', limit=4)
-        bpy.ops.object.vertex_group_normalize_all(group_select_mode='ALL')
+        bpy.ops.object.vertex_group_normalize_all(group_select_mode='ALL', lock_active=False)
         bpy.ops.object.mode_set(mode = 'OBJECT')
 
         context.view_layer.update()
