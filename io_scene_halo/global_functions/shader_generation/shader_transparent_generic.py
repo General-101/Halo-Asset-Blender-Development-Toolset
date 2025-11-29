@@ -751,7 +751,7 @@ def get_resource_node(tree, group_name):
 
     return group_node
 
-def generate_alpha_blend_output(node_tree, stg_paths, output_material_node):
+def generate_alpha_blend_output(shader_data, stg_node, node_tree, stg_paths, output_material_node):
     transparent_node = node_tree.nodes.new("ShaderNodeBsdfTransparent")
     diffuse_node = node_tree.nodes.new("ShaderNodeBsdfDiffuse")
     mix_node = node_tree.nodes.new("ShaderNodeMixShader")
@@ -775,9 +775,12 @@ def generate_alpha_blend_output(node_tree, stg_paths, output_material_node):
     connect_inputs(node_tree, transparent_node, "BSDF", mix_node, 1)
     connect_inputs(node_tree, diffuse_node, "BSDF", mix_node, 2)
 
+    if len(shader_data["stages"]) == 0:
+        connect_inputs(node_tree, stg_node, "Map A", diffuse_node, "Color")
+
     return mix_node
 
-def generate_add_blend_output(node_tree, stg_paths, output_material_node):
+def generate_add_blend_output(shader_data, stg_node, node_tree, stg_paths, output_material_node):
     emission_node = node_tree.nodes.new("ShaderNodeEmission")
     transparent_node = node_tree.nodes.new("ShaderNodeBsdfTransparent")
     add_node = node_tree.nodes.new("ShaderNodeAddShader")
@@ -794,6 +797,9 @@ def generate_add_blend_output(node_tree, stg_paths, output_material_node):
 
     connect_inputs(node_tree, emission_node, "Emission", add_node, 0)
     connect_inputs(node_tree, transparent_node, "BSDF", add_node, 1)
+
+    if len(shader_data["stages"]) == 0:
+        connect_inputs(node_tree, stg_node, "Map A", emission_node, "Color")
 
     return add_node
 
@@ -973,21 +979,21 @@ def generate_shader_transparent_generic(mat, shader_asset, permutation_index, as
     final_node = None
     fbf_enum = FramebufferBlendFunctionEnum(stg_node.inputs["Framebuffer Blend Function"].default_value)
     if fbf_enum == FramebufferBlendFunctionEnum.alpha_blend:
-        final_node = generate_alpha_blend_output(mat.node_tree, stg_paths, output_material_node)
+        final_node = generate_alpha_blend_output(shader_data, stg_node, mat.node_tree, stg_paths, output_material_node)
     elif fbf_enum == FramebufferBlendFunctionEnum.multiply:
-        final_node = generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
+        final_node = generate_add_blend_output(shader_data, stg_node, mat.node_tree, stg_paths, output_material_node)
     elif fbf_enum == FramebufferBlendFunctionEnum.double_multiply:
-        final_node = generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
+        final_node = generate_add_blend_output(shader_data, stg_node, mat.node_tree, stg_paths, output_material_node)
     elif fbf_enum == FramebufferBlendFunctionEnum.add:
-        final_node = generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
+        final_node = generate_add_blend_output(shader_data, stg_node, mat.node_tree, stg_paths, output_material_node)
     elif fbf_enum == FramebufferBlendFunctionEnum.subtract:
-        final_node = generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
+        final_node = generate_add_blend_output(shader_data, stg_node, mat.node_tree, stg_paths, output_material_node)
     elif fbf_enum == FramebufferBlendFunctionEnum.component_min:
-        final_node = generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
+        final_node = generate_add_blend_output(shader_data, stg_node, mat.node_tree, stg_paths, output_material_node)
     elif fbf_enum == FramebufferBlendFunctionEnum.component_max:
-        final_node = generate_add_blend_output(mat.node_tree, stg_paths, output_material_node)
+        final_node = generate_add_blend_output(shader_data, stg_node, mat.node_tree, stg_paths, output_material_node)
     elif fbf_enum == FramebufferBlendFunctionEnum.alpha_multiply_add:
-        final_node = generate_alpha_blend_output(mat.node_tree, stg_paths, output_material_node)
+        final_node = generate_alpha_blend_output(shader_data, stg_node, mat.node_tree, stg_paths, output_material_node)
 
     if final_node is not None:
         emission_node = mat.node_tree.nodes.new("ShaderNodeEmission")
@@ -1004,4 +1010,4 @@ def generate_shader_transparent_generic(mat, shader_asset, permutation_index, as
         connect_inputs(mat.node_tree, mix_node, "Shader", output_material_node, "Surface")
         
         connect_inputs(mat.node_tree, stg_node, "Power", emission_node, 1)
-        connect_inputs(mat.node_tree, stg_node, "Color Of Emitted Light", emission_node, 0)
+        connect_inputs(mat.node_tree, stg_node, "Map A", emission_node, 0)

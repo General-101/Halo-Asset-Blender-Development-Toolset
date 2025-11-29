@@ -268,10 +268,21 @@ def get_texture_from_plate(texture, permutation_index=0, is_cubemap=True):
 
         else:
             if sequence_count > 0:
-                if sequence_count < permutation_index:
-                    img = sequences[0][0]
+                if sequence_count <= permutation_index:
+                    print("Permutation index out of bounds.")
+                    if len(sequences[0]) > 0:
+                        img = sequences[0][0]
+                    else:
+                        print("Failed to find any fallback image permutations. Something went wrong.")
+                    
                 else:
-                    img = sequences[permutation_index][0]
+                    if len(sequences[permutation_index]) > 0:
+                        img = sequences[permutation_index][0]
+                    else:
+                        print("Failed to find any image permutations. Something went wrong.")
+            else:
+                print("Failed to find any image sequences. Something went wrong.")
+
 
     elif is_cubemap:
         faces = extract_t_faces(img)
