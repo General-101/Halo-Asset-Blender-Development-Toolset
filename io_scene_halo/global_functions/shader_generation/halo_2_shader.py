@@ -34,7 +34,7 @@ from .shader_helper import (
     get_output_material_node, 
     connect_inputs, 
     generate_image_node,
-    get_shader_node,
+    get_h2_shader_node,
     set_image_scale,
     get_linked_node,
     get_fallback_shader_node,
@@ -191,7 +191,7 @@ def generate_shader(mat, shader_asset, template_asset, asset_cache, report):
     place_node(output_material_node)
 
     if is_group_valid(shader_template_name):
-        shader_node = get_shader_node(mat.node_tree, shader_template_name)
+        shader_node = get_h2_shader_node(mat.node_tree, shader_template_name)
     else:
         shader_node = get_fallback_shader_node(mat.node_tree, shader_template_name)
 

@@ -27,6 +27,7 @@
 import os
 import bpy
 import bmesh
+import struct
 import base64
 import numpy as np
 
@@ -483,7 +484,7 @@ def get_data_type(ob, ob_parent, element, scnr_data, tag_path="", block_indices=
             ob.tag_move_position.time = element["time"]
             ob.tag_move_position.animation = element["animation"]
             ob.tag_move_position.sequence_id = element["sequence id"]
-            ob.tag_move_position.surface_index = element["surface index"]
+            ob.tag_move_position.surface_index = struct.unpack('i', struct.pack('I', element["surface index"]))[0]
 
         elif ob_parent_name.startswith("starting_location"):
             command_list_collection = None
@@ -836,7 +837,7 @@ def generate_command_lists(context, level_root, scnr_data):
 
     asset_collection = global_functions.get_referenced_collection(collection_name, context.scene.collection, True)
     for command_list_idx, command_list in enumerate(scnr_data["command lists"]):
-        block_indices = (command_list_idx)
+        block_indices = [command_list_idx]
         command_list_name = "%s_cl%s" % (command_list["name"], command_list_idx)
         commands_coll_name = "Commands_cl%s" % command_list_idx
         points_coll_name = "Points_cl%s" % command_list_idx
@@ -847,7 +848,7 @@ def generate_command_lists(context, level_root, scnr_data):
         c_cl_collection = global_functions.get_referenced_collection(commands_coll_name, command_list_collection, True)
         p_cl_collection = global_functions.get_referenced_collection(points_coll_name, command_list_collection, True)
         for command_idx, command in  enumerate(command_list["commands"]):
-            block_indices = (command_list_idx, command_idx)
+            block_indices = [command_list_idx, command_idx]
 
             command_coll_name = "%s_cl%sc%s" % ("command", command_list_idx, command_idx)
 

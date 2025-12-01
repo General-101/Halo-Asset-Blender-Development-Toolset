@@ -27,11 +27,8 @@
 import os
 import bpy
 
-from ...global_functions.shader_generation import halo_2_shader
-from ...global_functions import shader_processing
-from ...global_functions.shader_generation.shader_model import generate_shader_model
-from ...global_functions.shader_generation.shader_environment import generate_shader_environment
 from ...file_tag.tag_interface import tag_interface
+from ...global_functions.shader_generation import halo_1_shader, halo_2_shader
 from ...file_tag.tag_interface.tag_common import h1_tag_groups, h2_tag_groups
 
 def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, report):
@@ -44,73 +41,73 @@ def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_
             shader_asset = tag_interface.get_disk_asset(tag_name, h1_tag_groups.get(tag_group))
             mat = bpy.data.materials.new(name=material_name)
             if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
-                shader_processing.generate_shader_environment_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_environment_simple(mat, shader_asset, permutation_index, asset_cache, report)
             else:
-                generate_shader_environment(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_environment(mat, shader_asset, permutation_index, asset_cache, report)
 
         elif tag_group == "soso":
             shader_asset = tag_interface.get_disk_asset(tag_name, h1_tag_groups.get(tag_group))
             mat = bpy.data.materials.new(name=material_name)
             if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
-                shader_processing.generate_shader_model_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_model_simple(mat, shader_asset, permutation_index, asset_cache, report)
             else:
-                generate_shader_model(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_model(mat, shader_asset, permutation_index, asset_cache, report)
 
         elif tag_group == "schi":
             shader_asset = tag_interface.get_disk_asset(tag_name, h1_tag_groups.get(tag_group))
             mat = bpy.data.materials.new(name=material_name)
             if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
-                shader_processing.generate_shader_transparent_chicago_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_transparent_chicago_simple(mat, shader_asset, permutation_index, asset_cache, report)
             else:
-                shader_processing.generate_shader_transparent_chicago_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_transparent_chicago_simple(mat, shader_asset, permutation_index, asset_cache, report)
 
         elif tag_group == "scex":
             shader_asset = tag_interface.get_disk_asset(tag_name, h1_tag_groups.get(tag_group))
             mat = bpy.data.materials.new(name=material_name)
             if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
-                shader_processing.generate_shader_transparent_chicago_extended_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_transparent_chicago_extended_simple(mat, shader_asset, permutation_index, asset_cache, report)
             else:
-                shader_processing.generate_shader_transparent_chicago_extended_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_transparent_chicago_extended_simple(mat, shader_asset, permutation_index, asset_cache, report)
 
         elif tag_group == "sotr":
             shader_asset = tag_interface.get_disk_asset(tag_name, h1_tag_groups.get(tag_group))
             mat = bpy.data.materials.new(name=material_name)
             if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
-                shader_processing.generate_shader_transparent_generic_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_transparent_generic_simple(mat, shader_asset, permutation_index, asset_cache, report)
             else:
-                shader_processing.generate_shader_transparent_generic(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_transparent_generic(mat, shader_asset, permutation_index, asset_cache, report)
 
         elif tag_group == "sgla":
             shader_asset = tag_interface.get_disk_asset(tag_name, h1_tag_groups.get(tag_group))
             mat = bpy.data.materials.new(name=material_name)
             if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
-                shader_processing.generate_shader_transparent_glass_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_transparent_glass_simple(mat, shader_asset, permutation_index, asset_cache, report)
             else:
-                shader_processing.generate_shader_transparent_glass(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_transparent_glass(mat, shader_asset, permutation_index, asset_cache, report)
 
         elif tag_group == "smet":
             shader_asset = tag_interface.get_disk_asset(tag_name, h1_tag_groups.get(tag_group))
             mat = bpy.data.materials.new(name=material_name)
             if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
-                shader_processing.generate_shader_transparent_meter_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_transparent_meter_simple(mat, shader_asset, permutation_index, asset_cache, report)
             else:
-                shader_processing.generate_shader_transparent_meter(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_transparent_meter(mat, shader_asset, permutation_index, asset_cache, report)
 
         elif tag_group == "spla":
             shader_asset = tag_interface.get_disk_asset(tag_name, h1_tag_groups.get(tag_group))
             mat = bpy.data.materials.new(name=material_name)
             if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
-                shader_processing.generate_shader_transparent_plasma_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_transparent_plasma_simple(mat, shader_asset, permutation_index, asset_cache, report)
             else:
-                shader_processing.generate_shader_transparent_plasma_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_transparent_plasma_simple(mat, shader_asset, permutation_index, asset_cache, report)
 
         elif tag_group == "swat":
             shader_asset = tag_interface.get_disk_asset(tag_name, h1_tag_groups.get(tag_group))
             mat = bpy.data.materials.new(name=material_name)
             if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
-                shader_processing.generate_shader_transparent_water_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_transparent_water_simple(mat, shader_asset, permutation_index, asset_cache, report)
             else:
-                shader_processing.generate_shader_transparent_water_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_shader.generate_shader_transparent_water_simple(mat, shader_asset, permutation_index, asset_cache, report)
 
     else:
         if tag_group == "shad":

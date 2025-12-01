@@ -795,6 +795,28 @@ def generate_detail_logic_node(tree, shader):
 
     return detail_logic_node
 
+def get_shader_node(tree, shader_resource, shader_name):
+    if not bpy.data.node_groups.get(shader_name):
+        with bpy.data.libraries.load(shader_resource) as (data_from, data_to):
+            data_to.node_groups.append(data_from.node_groups[data_from.node_groups.index(shader_name)])
+
+    shader_node = tree.nodes.new('ShaderNodeGroup')
+    shader_node.node_tree = bpy.data.node_groups.get(shader_name)
+
+    return shader_node
+
+def get_h2_shader_node(tree, shader_name):
+    shader_node = None
+    add_shader_group(shader_name)
+
+    template_node = bpy.data.node_groups.get(shader_name)
+    if template_node:
+        shader_node = tree.nodes.new('ShaderNodeGroup')
+        shader_node.node_tree = template_node
+        shader_node.name = shader_name.replace('_', ' ').title()
+
+    return shader_node
+
 def add_shader_group(shader_name):
     if not bpy.data.node_groups.get(shader_name):
         with bpy.data.libraries.load(HALO_2_SHADER_RESOURCES) as (data_from, data_to):
@@ -809,17 +831,7 @@ def is_group_valid(shader_name):
 
     return found_group
 
-def get_shader_node(tree, shader_name):
-    shader_node = None
-    add_shader_group(shader_name)
 
-    template_node = bpy.data.node_groups.get(shader_name)
-    if template_node:
-        shader_node = tree.nodes.new('ShaderNodeGroup')
-        shader_node.node_tree = template_node
-        shader_node.name = shader_name.replace('_', ' ').title()
-
-    return shader_node
 
 def get_fallback_shader_node(tree, shader_name, blacklist=None):
     shader_node = None

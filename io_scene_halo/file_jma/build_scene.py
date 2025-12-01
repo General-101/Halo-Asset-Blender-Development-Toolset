@@ -34,6 +34,7 @@ from ..global_functions import mesh_processing, global_functions, resource_manag
 from ..file_tag.tag_interface import tag_interface, tag_common
 from ..file_tag.tag_interface.tag_definitions import h1, h2
 from ..file_tag.h1.file_model_animations.animation_parser import JMA_RETAIL_NODES
+from ..file_jms.build_scene_retail import build_scene_retail
 
 def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature, fix_rotations, game_version):
     created_bone_list = []
@@ -127,9 +128,34 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
 
             current_bone.matrix = transform_matrix
 
+def get_jms_node(node_name, JMS_A, JMS_B):
+    jms_name = None
+    if jms_name is None:
+        for jms_node in JMS_A.nodes:
+            if global_functions.remove_node_prefix(jms_node.name).lower() == global_functions.remove_node_prefix(node_name).lower():
+                jms_name = jms_node.name
+                break
+    if jms_name is None:
+        for jms_node in JMS_B.nodes:
+            if global_functions.remove_node_prefix(jms_node.name).lower() == global_functions.remove_node_prefix(node_name).lower():
+                jms_name = jms_node.name
+                break
+
+    if jms_name is None:
+        jms_name = node_name
+
+    return jms_name
+
+
 def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B, JMS_B_invalid, JMA, armature, parent_id_class, fix_rotations, game_version):
     file_version = JMA.version
-    first_frame = JMA.transforms[0]
+    jma_frame = JMA.transforms[0]
+
+    jms_a_file_version = JMS_A.version
+    jms_a_frame = JMS_A.transforms[0]
+
+    jms_b_file_version = JMS_B.version
+    jms_b_frame = JMS_B.transforms[0]
 
     file_type = "JMA"
     if JMS_A and not JMS_A_invalid:
@@ -137,7 +163,7 @@ def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B,
 
     bpy.ops.object.mode_set(mode = 'EDIT')
     for idx, jma_node in enumerate(JMA.nodes):
-        current_bone = armature.data.edit_bones.new(jma_node.name)
+        current_bone = armature.data.edit_bones.new(get_jms_node(jma_node.name, JMS_A, JMS_B))
         parent_idx = jma_node.parent
 
         if not parent_idx == -1 and not parent_idx == None:
@@ -147,13 +173,13 @@ def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B,
             elif 'clavicle' in jma_node.name and not parent_id_class.spine1 == None and not parent_id_class.clavicle0 == None and not parent_id_class.clavicle1 == None:
                 parent_idx = parent_id_class.spine1
 
-            parent = JMA.nodes[parent_idx].name
+            parent = get_jms_node(JMA.nodes[parent_idx].name, JMS_A, JMS_B)
             current_bone.parent = armature.data.edit_bones[parent]
 
         bone_distance = mesh_processing.get_bone_distance(JMA, idx, "JMA")
 
-        matrix_translate = Matrix.Translation(first_frame[idx].translation)
-        matrix_rotation = first_frame[idx].rotation.to_matrix().to_4x4()
+        matrix_translate = Matrix.Translation(jma_frame[idx].translation)
+        matrix_rotation = jma_frame[idx].rotation.to_matrix().to_4x4()
 
         if JMS_A and not JMS_A_invalid and not JMS_B_invalid:
             for a_idx, jms_a_node in enumerate(JMS_A_nodes):
@@ -433,6 +459,10 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
                 set_parent_id_class(JMA, parent_id_class)
 
             generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B, JMS_B_invalid, JMA, armature, parent_id_class, fix_rotations, game_version)
+            if not JMS_A_invalid:
+                build_scene_retail(context, JMS_A, filepath, game_version, True, fix_parents, fix_rotations, True, report)
+            if not JMS_B_invalid:
+                build_scene_retail(context, JMS_B, filepath, game_version, True, fix_parents, fix_rotations, True, report)
 
         elif JMS_A:
             armdata = bpy.data.armatures.new('Armature')
