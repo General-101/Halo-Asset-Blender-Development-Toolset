@@ -430,8 +430,10 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
         armature_bone_list = list(armature.data.bones)
         for node in armature_bone_list:
             for jma_node in JMA.nodes:
-                if node.name.lower() == jma_node.name.lower():
-                    scene_nodes.append(global_functions.remove_node_prefix(node.name).lower())
+                c_blend_node = global_functions.remove_node_prefix(node.name).lower()
+                c_jma_node = global_functions.remove_node_prefix(jma_node.name).lower()
+                if c_blend_node == c_jma_node:
+                    scene_nodes.append(c_blend_node)
 
     else:
         for obj in object_list:
