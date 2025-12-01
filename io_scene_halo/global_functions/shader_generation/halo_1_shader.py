@@ -104,6 +104,19 @@ class ExtraFlags(Flag):
     numeric_countdown_timer = auto()
     custom_edition_blending = auto()
 
+class GlassPropertiesFlags(Flag):
+    alpha_tested = auto()
+    decal = auto()
+    two_sided = auto()
+    bump_map_is_specular_mask = auto()
+
+class MeterPropertiesFlags(Flag):
+    decal = auto()
+    two_sided = auto()
+    flash_color_is_negative = auto()
+    tint_mode_2 = auto()
+    unfiltered = auto()
+
 class FunctionEnum(Enum):
     one = 0
     zero = auto()
@@ -1524,6 +1537,10 @@ def generate_shader_transparent_chicago_extended(mat, shader_asset, permutation_
     for node in mat.node_tree.nodes:
         mat.node_tree.nodes.remove(node)
 
+    shader_flags = ShaderFlags(shader_data["flags"])
+    shader_property_flags = ShaderTransparentPropertiesFlags(shader_data["flags_1"])
+    extra_flags = ExtraFlags(shader_data["extra flags"])
+
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
 
@@ -1551,16 +1568,40 @@ def generate_shader_transparent_chicago_extended(mat, shader_asset, permutation_
     connect_inputs(mat.node_tree, stce_node, "Color Of Emitted Light", emission_light_node, "Color")
     connect_inputs(mat.node_tree, stce_node, "4 Stage Map A", emission_view_node, "Color")
 
+    stce_node.inputs["Simple Parameterization"].default_value = ShaderFlags.simple_parameterization in shader_flags
+    stce_node.inputs["Ignore Normals"].default_value = ShaderFlags.ignore_normals in shader_flags
+    stce_node.inputs["Transparent Lit"].default_value = ShaderFlags.transparent_lit in shader_flags
+    stce_node.inputs["Detail Level"].default_value = shader_data["detail level"]["value"]
+    stce_node.inputs["Power"].default_value = shader_data["power"]
+    stce_node.inputs["Color Of Emitted Light"].default_value = convert_to_blender_color(shader_data["color of emitted light"], True)
+    stce_node.inputs["Tint Color"].default_value = convert_to_blender_color(shader_data["tint color"], True)
+
+    stce_node.inputs["Material Type"].default_value = shader_data["material type"]["value"]
+
+    stce_node.inputs["Numeric Counter Limit"].default_value = shader_data["numeric counter limit"]
+    stce_node.inputs["Alpha Tested"].default_value = ShaderTransparentPropertiesFlags.alpha_tested in shader_property_flags
+    stce_node.inputs["Decal"].default_value = ShaderTransparentPropertiesFlags.decal in shader_property_flags
+    stce_node.inputs["Two Sided"].default_value = ShaderTransparentPropertiesFlags.two_sided in shader_property_flags
+    stce_node.inputs["First Map Is In Screenspace"].default_value = ShaderTransparentPropertiesFlags.first_map_is_in_screenspace in shader_property_flags
+    stce_node.inputs["Draw Before Water"].default_value = ShaderTransparentPropertiesFlags.draw_before_water in shader_property_flags
+    stce_node.inputs["Ignore Effect"].default_value = ShaderTransparentPropertiesFlags.ignore_effect in shader_property_flags
+    stce_node.inputs["Scale First Map With Distance"].default_value = ShaderTransparentPropertiesFlags.scale_first_map_with_distance in shader_property_flags
+    stce_node.inputs["Numeric"].default_value = ShaderTransparentPropertiesFlags.numeric in shader_property_flags
+    stce_node.inputs["First Map Type"].default_value = shader_data["first map type"]["value"]
+    stce_node.inputs["Framebuffer Blend Function"].default_value = shader_data["framebuffer blend function"]["value"]
+    stce_node.inputs["Framebuffer Fade Mode"].default_value = shader_data["framebuffer fade mode"]["value"]
+    stce_node.inputs["Framebuffer Fade Source"].default_value = shader_data["framebuffer fade source"]["value"]
+
+    stce_node.inputs["Lens Flare Spacing"].default_value = shader_data["lens flare spacing"]
+
+    stce_node.inputs["Dont Fade Active Camouflage"].default_value = ExtraFlags.dont_fade_active_camouflage in extra_flags
+    stce_node.inputs["Numeric Countdown Timer"].default_value = ExtraFlags.numeric_countdown_timer in extra_flags
+    stce_node.inputs["Custom Edition Blending"].default_value = ExtraFlags.custom_edition_blending in extra_flags
+
     map0_slots = ("A", "B", "C", "D")
     map0_positions = (Vector((-1080.0, 0.0)), Vector((-1080.0, -300.0)), Vector((-1080.0, -600.0)), Vector((-1080.0, -900.0)))
     map1_slots = ("A", "B")
     map1_positions = (Vector((-1080.0, -1200.0)), Vector((-1080.0, -1500.0)))
-    for map_idx, map_element in enumerate(shader_data["4 stage maps"]):
-        map0_tag_refs[map_idx] = map_element["map"]
-
-    for map_idx, map_element in enumerate(shader_data["2 stage maps"]):
-        map1_tag_refs[map_idx] = map_element["map"]
-
     for map_idx, map_element in enumerate(shader_data["4 stage maps"]):
         map_flags = ChicagoMapFlags(map_element["flags"])
 
@@ -1603,6 +1644,49 @@ def generate_shader_transparent_chicago_extended(mat, shader_asset, permutation_
             map_node.location = map0_positions[map_idx]
             connect_inputs(mat.node_tree, map_node, "Color", stce_node, "4 Stage Map %s Color" % map0_slots[map_idx])
             connect_inputs(mat.node_tree, map_node, "Alpha", stce_node, "4 Stage Map %s Alpha" % map0_slots[map_idx])
+
+    for map_idx, map_element in enumerate(shader_data["2 stage maps"]):
+        map_flags = ChicagoMapFlags(map_element["flags"])
+
+        stce_node.inputs["2 Stage Map %s" % map1_slots[map_idx]].default_value = True
+        stce_node.inputs["2 Stage Map %s Unfiltered" % map1_slots[map_idx]].default_value = ChicagoMapFlags.unfiltered in map_flags
+        stce_node.inputs["2 Stage Map %s Alpha Replicate" % map1_slots[map_idx]].default_value = ChicagoMapFlags.alpha_replicate in map_flags
+        stce_node.inputs["2 Stage Map %s U Clamped" % map1_slots[map_idx]].default_value = ChicagoMapFlags.u_clamped in map_flags
+        stce_node.inputs["2 Stage Map %s V Clamped" % map1_slots[map_idx]].default_value = ChicagoMapFlags.v_clamped in map_flags
+        stce_node.inputs["2 Stage Map %s Color Function" % map1_slots[map_idx]].default_value = map_element["color function"]["value"]
+        stce_node.inputs["2 Stage Map %s Alpha Function" % map1_slots[map_idx]].default_value = map_element["alpha function"]["value"]
+        stce_node.inputs["2 Stage Map %s U Scale" % map1_slots[map_idx]].default_value = map_element["map u scale"]
+        stce_node.inputs["2 Stage Map %s V Scale" % map1_slots[map_idx]].default_value = map_element["map v scale"]
+        stce_node.inputs["2 Stage Map %s U Offset" % map1_slots[map_idx]].default_value = map_element["map u offset"]
+        stce_node.inputs["2 Stage Map %s V Offset" % map1_slots[map_idx]].default_value = map_element["map v offset"]
+        stce_node.inputs["2 Stage Map %s Rotation" % map1_slots[map_idx]].default_value = map_element["map rotation"]
+        stce_node.inputs["2 Stage Map %s Mipmap Bias" % map1_slots[map_idx]].default_value = map_element["mipmap bias"]
+ 
+        stce_node.inputs["2 Stage Map %s U Animation Source" % map1_slots[map_idx]].default_value = map_element["u animation source"]["value"]
+        stce_node.inputs["2 Stage Map %s U Animation Function" % map1_slots[map_idx]].default_value = map_element["u animation function"]["value"]
+        stce_node.inputs["2 Stage Map %s U Animation Period" % map1_slots[map_idx]].default_value = map_element["u animation period"]
+        stce_node.inputs["2 Stage Map %s U Animation Phase" % map1_slots[map_idx]].default_value = map_element["u animation phase"]
+        stce_node.inputs["2 Stage Map %s U Animation Scale" % map1_slots[map_idx]].default_value = map_element["u animation scale"]
+        stce_node.inputs["2 Stage Map %s V Animation Source" % map1_slots[map_idx]].default_value = map_element["v animation source"]["value"]
+        stce_node.inputs["2 Stage Map %s V Animation Function" % map1_slots[map_idx]].default_value = map_element["v animation function"]["value"]
+        stce_node.inputs["2 Stage Map %s V Animation Period" % map1_slots[map_idx]].default_value = map_element["v animation period"]
+        stce_node.inputs["2 Stage Map %s V Animation Phase" % map1_slots[map_idx]].default_value = map_element["v animation phase"]
+        stce_node.inputs["2 Stage Map %s V Animation Scale" % map1_slots[map_idx]].default_value = map_element["v animation scale"]
+        stce_node.inputs["2 Stage Map %s Rotation Animation Source" % map1_slots[map_idx]].default_value = map_element["rotation animation source"]["value"]
+        stce_node.inputs["2 Stage Map %s Rotation Animation Function" % map1_slots[map_idx]].default_value = map_element["rotation animation function"]["value"]
+        stce_node.inputs["2 Stage Map %s Rotation Animation Period" % map1_slots[map_idx]].default_value = map_element["rotation animation period"]
+        stce_node.inputs["2 Stage Map %s Rotation Animation Phase" % map1_slots[map_idx]].default_value = map_element["rotation animation phase"]
+        stce_node.inputs["2 Stage Map %s Rotation Animation Scale" % map1_slots[map_idx]].default_value = map_element["rotation animation scale"]
+        stce_node.inputs["2 Stage Map %s Rotation Animation Center" % map1_slots[map_idx]].default_value = map_element["rotation animation center"]
+
+        map_texture = generate_image_node(mat, map_element["map"], permutation_index, asset_cache, "halo1", report)
+        if map_texture:
+            map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
+            map_node.image = map_texture
+            map_node.image.alpha_mode = 'CHANNEL_PACKED'
+            map_node.location = map1_positions[map_idx]
+            connect_inputs(mat.node_tree, map_node, "Color", stce_node, "2 Stage Map %s Color" % map1_slots[map_idx])
+            connect_inputs(mat.node_tree, map_node, "Alpha", stce_node, "2 Stage Map %s Alpha" % map1_slots[map_idx])
 
 def generate_shader_transparent_generic_simple(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
@@ -1842,9 +1926,11 @@ def generate_shader_transparent_glass(mat, shader_asset, permutation_index, asse
     shader_data = shader_asset["Data"]
 
     mat.use_nodes = True
-
     for node in mat.node_tree.nodes:
         mat.node_tree.nodes.remove(node)
+
+    shader_flags = ShaderFlags(shader_data["flags"])
+    shader_property_flags = GlassPropertiesFlags(shader_data["shader transparent glass flags"])
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = (0.0, 0.0)
@@ -1854,6 +1940,37 @@ def generate_shader_transparent_glass(mat, shader_asset, permutation_index, asse
     shader_transparent_glass.name = "Shader Transparent Glass"
 
     connect_inputs(mat.node_tree, shader_transparent_glass, "Shader", output_material_node, "Surface")
+
+    shader_transparent_glass.inputs["Simple Parameterization"].default_value = ShaderFlags.simple_parameterization in shader_flags
+    shader_transparent_glass.inputs["Ignore Normals"].default_value = ShaderFlags.ignore_normals in shader_flags
+    shader_transparent_glass.inputs["Transparent Lit"].default_value = ShaderFlags.transparent_lit in shader_flags
+    shader_transparent_glass.inputs["Detail Level"].default_value = shader_data["detail level"]["value"]
+    shader_transparent_glass.inputs["Power"].default_value = shader_data["power"]
+    shader_transparent_glass.inputs["Color Of Emitted Light"].default_value = convert_to_blender_color(shader_data["color of emitted light"], True)
+    shader_transparent_glass.inputs["Tint Color"].default_value = convert_to_blender_color(shader_data["tint color"], True)
+
+    shader_transparent_glass.inputs["Material Type"].default_value = shader_data["material type"]["value"]
+
+    shader_transparent_glass.inputs["Alpha Tested"].default_value = GlassPropertiesFlags.alpha_tested in shader_property_flags
+    shader_transparent_glass.inputs["Decal"].default_value = GlassPropertiesFlags.decal in shader_property_flags
+    shader_transparent_glass.inputs["Two Sided"].default_value = GlassPropertiesFlags.two_sided in shader_property_flags
+    shader_transparent_glass.inputs["Bump Map Is Specular Mask"].default_value = GlassPropertiesFlags.bump_map_is_specular_mask in shader_property_flags
+
+    shader_transparent_glass.inputs["Background Tint Color"].default_value = convert_to_blender_color(shader_data["background tint color"], True)
+    shader_transparent_glass.inputs["Background Tint Map Scale"].default_value = shader_data["background tint map scale"]
+
+    shader_transparent_glass.inputs["Reflection Type"].default_value = shader_data["reflection type"]["value"]
+    shader_transparent_glass.inputs["Perpendicular Brightness"].default_value = shader_data["perpendicular brightness"]
+    shader_transparent_glass.inputs["Perpendicular Tint Color"].default_value = convert_to_blender_color(shader_data["perpendicular tint color"], True)
+    shader_transparent_glass.inputs["Parallel Brightness"].default_value = shader_data["parallel brightness"]
+    shader_transparent_glass.inputs["Parallel Tint Color"].default_value = convert_to_blender_color(shader_data["parallel tint color"], True)
+    shader_transparent_glass.inputs["Bump Map Scale"].default_value = shader_data["bump map scale"]
+
+    shader_transparent_glass.inputs["Diffuse Map Scale"].default_value = shader_data["diffuse map scale"]
+    shader_transparent_glass.inputs["Diffuse Detail Map Scale"].default_value = shader_data["diffuse detail map scale"]
+
+    shader_transparent_glass.inputs["Specular Map Scale"].default_value = shader_data["specular map scale"]
+    shader_transparent_glass.inputs["Specular Detail Map Scale"].default_value = shader_data["specular detail map scale"]
 
     background_tint_map_texture = generate_image_node(mat, shader_data["background tint map"], permutation_index, asset_cache, "halo1", report)
     if background_tint_map_texture:
@@ -1955,6 +2072,11 @@ def generate_shader_transparent_meter(mat, shader_asset, permutation_index, asse
     shader_data = shader_asset["Data"]
 
     mat.use_nodes = True
+    for node in mat.node_tree.nodes:
+        mat.node_tree.nodes.remove(node)
+
+    shader_flags = ShaderFlags(shader_data["flags"])
+    shader_property_flags = MeterPropertiesFlags(shader_data["flags_1"])
 
     output_material_node = get_output_material_node(mat)
     output_material_node.location = Vector((0.0, 0.0))
@@ -1963,6 +2085,38 @@ def generate_shader_transparent_meter(mat, shader_asset, permutation_index, asse
     stm_node.name = "Shader Transparent Meter"
     stm_node.location = (-440.0, 0.0)
 
+    connect_inputs(mat.node_tree, stm_node, "Shader", output_material_node, "Surface")
+
+    stm_node.inputs["Simple Parameterization"].default_value = ShaderFlags.simple_parameterization in shader_flags
+    stm_node.inputs["Ignore Normals"].default_value = ShaderFlags.ignore_normals in shader_flags
+    stm_node.inputs["Transparent Lit"].default_value = ShaderFlags.transparent_lit in shader_flags
+    stm_node.inputs["Detail Level"].default_value = shader_data["detail level"]["value"]
+    stm_node.inputs["Power"].default_value = shader_data["power"]
+    stm_node.inputs["Color Of Emitted Light"].default_value = convert_to_blender_color(shader_data["color of emitted light"], True)
+    stm_node.inputs["Tint Color"].default_value = convert_to_blender_color(shader_data["tint color"], True)
+
+    stm_node.inputs["Material Type"].default_value = shader_data["material type"]["value"]
+
+    stm_node.inputs["Decal"].default_value = MeterPropertiesFlags.decal in shader_property_flags
+    stm_node.inputs["Two Sided"].default_value = MeterPropertiesFlags.two_sided in shader_property_flags
+    stm_node.inputs["Flash Color Is Negative"].default_value = MeterPropertiesFlags.flash_color_is_negative in shader_property_flags
+    stm_node.inputs["Tint Mode 2"].default_value = MeterPropertiesFlags.tint_mode_2 in shader_property_flags
+    stm_node.inputs["Unfiltered"].default_value = MeterPropertiesFlags.unfiltered in shader_property_flags
+
+    stm_node.inputs["Gradient Min Color"].default_value = convert_to_blender_color(shader_data["gradient min color"], True)
+    stm_node.inputs["Gradient Max Color"].default_value = convert_to_blender_color(shader_data["gradient max color"], True)
+    stm_node.inputs["Background Color"].default_value = convert_to_blender_color(shader_data["background color"], True)
+    stm_node.inputs["Flash Color"].default_value = convert_to_blender_color(shader_data["flash color"], True)
+    stm_node.inputs["Meter Tint Color"].default_value = convert_to_blender_color(shader_data["meter tint color"], True)
+    stm_node.inputs["Meter Transparency"].default_value = shader_data["meter transparency"]
+    stm_node.inputs["Background Transparency"].default_value = shader_data["background transparency"]
+
+    stm_node.inputs["Meter Brightness Source"].default_value = shader_data["meter brightness source"]["value"]
+    stm_node.inputs["Flash Brightness Source"].default_value = shader_data["flash brightness source"]["value"]
+    stm_node.inputs["Value Source"].default_value = shader_data["value source"]["value"]
+    stm_node.inputs["Gradient Source"].default_value = shader_data["gradient source"]["value"]
+    stm_node.inputs["Flash Extension Source"].default_value = shader_data["flash extension source"]["value"]
+
     base_map_texture = generate_image_node(mat, shader_data["map"], permutation_index, asset_cache, "halo1", report)
     if base_map_texture:
         base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
@@ -1970,6 +2124,7 @@ def generate_shader_transparent_meter(mat, shader_asset, permutation_index, asse
         base_map_node.image.alpha_mode = 'CHANNEL_PACKED'
         base_map_node.location = Vector((-720.0, 0.0))
         connect_inputs(mat.node_tree, base_map_node, "Color", stm_node, "Meter Map")
+        connect_inputs(mat.node_tree, base_map_node, "Alpha", stm_node, "Meter Map Alpha")
 
 def generate_shader_transparent_plasma_simple(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
