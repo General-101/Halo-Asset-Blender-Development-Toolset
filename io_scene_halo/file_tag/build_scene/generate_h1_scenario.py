@@ -615,7 +615,7 @@ def generate_comments(context, level_root, scnr_data, asset_cache):
         font = bpy.data.curves.new(type="FONT", name="comment")
         font_ob = bpy.data.objects.new("comment_%s" % comment_idx, font)
         font_ob.color = (1, 1, 1, 0)
-        font_ob.data.body = base64.b64decode(comment_element["comment"]["encoded"])
+        font_ob.data.body = base64.b64decode(comment_element["comment"]["encoded"]).decode('utf-8', 'replace')
 
         font_ob.parent = level_root
         font_ob.location = Vector(comment_element["position"]) * 100
@@ -766,7 +766,7 @@ def generate_encounters(context, level_root, scnr_data):
 
     asset_collection = global_functions.get_referenced_collection(collection_name, context.scene.collection, True)
     for encounter_idx, encounter in enumerate(scnr_data["encounters"]):
-        block_indices = (encounter_idx)
+        block_indices = [encounter_idx]
         encounter_coll_name = "%s_e%s" % (encounter["name"], encounter_idx)
         encounter_element_id = "e%s" % (encounter_idx)
 
@@ -779,7 +779,7 @@ def generate_encounters(context, level_root, scnr_data):
         s_e_collection = global_functions.get_referenced_collection(squads_coll_name, encounter_collection, True)
         p_e_collection = global_functions.get_referenced_collection(platoons_coll_name, encounter_collection, True)
         for squad_idx, squad in  enumerate(encounter["squads"]):
-            block_indices = (encounter_idx, squad_idx)
+            block_indices = [encounter_idx, squad_idx]
 
             squad_coll_name = "%s_e%ss%s" % (squad["name"], encounter_idx, squad_idx)
             squad_element_id = "e%ss%s" % (encounter_idx, squad_idx)

@@ -317,14 +317,14 @@ def generate_h1_shader(mat, tag_ref, permutation_index, asset_cache, report):
                 if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
                     halo_1_shader.generate_shader_transparent_plasma_simple(mat, shader_asset, permutation_index, asset_cache, report)
                 else:
-                    halo_1_shader.generate_shader_transparent_plasma_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                    halo_1_shader.generate_shader_transparent_plasma(mat, shader_asset, permutation_index, asset_cache, report)
 
             elif shader_asset["Header"]["tag group"] == "swat":
                 # TODO: Needs a proper shader node group
                 if int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen) == 1:
                     halo_1_shader.generate_shader_transparent_water_simple(mat, shader_asset, permutation_index, asset_cache, report)
                 else:
-                    halo_1_shader.generate_shader_transparent_water_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                    halo_1_shader.generate_shader_transparent_water(mat, shader_asset, permutation_index, asset_cache, report)
 
         else:
             print("Halo 1 parsed shader tag returned as none. Something went horribly wrong")

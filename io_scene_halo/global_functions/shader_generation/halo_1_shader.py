@@ -27,6 +27,7 @@
 import bpy
 
 from mathutils import Vector
+from math import radians
 from enum import Flag, Enum, auto
 from ...file_tag.tag_interface import tag_interface, tag_common
 from ..shader_generation.shader_helper import (
@@ -116,6 +117,12 @@ class MeterPropertiesFlags(Flag):
     flash_color_is_negative = auto()
     tint_mode_2 = auto()
     unfiltered = auto()
+
+class WaterPropertiesFlags(Flag):
+    base_map_alpha_modulates_reflection = auto()
+    base_map_color_modulates_background = auto()
+    atmospheric_fog = auto()
+    draw_before_fog = auto()
 
 class FunctionEnum(Enum):
     one = 0
@@ -2149,6 +2156,73 @@ def generate_shader_transparent_plasma_simple(mat, shader_asset, permutation_ind
         place_node(base_map_node, 2)
         connect_inputs(mat.node_tree, base_map_node, "Color", bdsf_principled, "Base Color")
 
+def generate_shader_transparent_plasma(mat, shader_asset, permutation_index, asset_cache, report):
+    shader_data = shader_asset["Data"]
+
+    mat.use_nodes = True
+    for node in mat.node_tree.nodes:
+        mat.node_tree.nodes.remove(node)
+
+    shader_flags = ShaderFlags(shader_data["flags"])
+
+    output_material_node = get_output_material_node(mat)
+    output_material_node.location = Vector((0.0, 0.0))
+
+    stp_node = get_shader_node(mat.node_tree, HALO_1_SHADER_RESOURCES, "shader_transparent_plasma")
+    stp_node.name = "Shader Transparent Plasma"
+    stp_node.location = (-440.0, 0.0)
+
+    connect_inputs(mat.node_tree, stp_node, "Shader", output_material_node, "Surface")
+
+    stp_node.inputs["Simple Parameterization"].default_value = ShaderFlags.simple_parameterization in shader_flags
+    stp_node.inputs["Ignore Normals"].default_value = ShaderFlags.ignore_normals in shader_flags
+    stp_node.inputs["Transparent Lit"].default_value = ShaderFlags.transparent_lit in shader_flags
+    stp_node.inputs["Detail Level"].default_value = shader_data["detail level"]["value"]
+    stp_node.inputs["Power"].default_value = shader_data["power"]
+    stp_node.inputs["Color Of Emitted Light"].default_value = convert_to_blender_color(shader_data["color of emitted light"], True)
+    stp_node.inputs["Tint Color"].default_value = convert_to_blender_color(shader_data["tint color"], True)
+
+    stp_node.inputs["Material Type"].default_value = shader_data["material type"]["value"]
+
+    stp_node.inputs["Intensity Source"].default_value = shader_data["intensity source"]["value"]
+    stp_node.inputs["Intensity Exponent"].default_value = shader_data["intensity exponent"]
+
+    stp_node.inputs["Offset Source"].default_value = shader_data["offset source"]["value"]
+    stp_node.inputs["Offset Amount"].default_value = shader_data["offset amount"]
+    stp_node.inputs["Offset Exponent"].default_value = shader_data["offset exponent"]
+
+    stp_node.inputs["Perpendicular Brightness"].default_value = shader_data["perpendicular brightness"]
+    stp_node.inputs["Perpendicular Tint Color"].default_value = convert_to_blender_color(shader_data["perpendicular tint color"], True)
+    stp_node.inputs["Parallel Brightness"].default_value = shader_data["parallel brightness"]
+    stp_node.inputs["Parallel Tint Color"].default_value = convert_to_blender_color(shader_data["parallel tint color"], True)
+    stp_node.inputs["Tint Color Source"].default_value = shader_data["tint color source"]["value"]
+
+    stp_node.inputs["Primary Animation Period"].default_value = shader_data["animation period"]
+    stp_node.inputs["Primary Animation Direction"].default_value = shader_data["animation direction"]
+    stp_node.inputs["Primary Noise Map Scale"].default_value = shader_data["noise map scale"]
+
+    stp_node.inputs["Secondary Animation Period"].default_value = shader_data["animation period_1"]
+    stp_node.inputs["Secondary Animation Direction"].default_value = shader_data["animation direction_1"]
+    stp_node.inputs["Secondary Noise Map Scale"].default_value = shader_data["noise map scale_1"]
+
+    noise_map_texture = generate_image_node(mat, shader_data["noise map"], permutation_index, asset_cache, "halo1", report)
+    if noise_map_texture:
+        noise_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
+        noise_map_node.image = noise_map_texture
+        noise_map_node.image.alpha_mode = 'CHANNEL_PACKED'
+        noise_map_node.location = Vector((-720.0, 0.0))
+        connect_inputs(mat.node_tree, noise_map_node, "Color", stp_node, "Primary Noise Map")
+        connect_inputs(mat.node_tree, noise_map_node, "Alpha", stp_node, "Primary Noise Map Alpha")
+
+    noise1_map_texture = generate_image_node(mat, shader_data["noise map_1"], permutation_index, asset_cache, "halo1", report)
+    if noise1_map_texture:
+        noise1_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
+        noise1_map_node.image = noise1_map_texture
+        noise1_map_node.image.alpha_mode = 'CHANNEL_PACKED'
+        noise1_map_node.location = Vector((-720.0, -300.0))
+        connect_inputs(mat.node_tree, noise1_map_node, "Color", stp_node, "Secondary Noise Map")
+        connect_inputs(mat.node_tree, noise1_map_node, "Alpha", stp_node, "Secondary Noise Map Alpha")
+
 def generate_shader_transparent_water_simple(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
@@ -2171,3 +2245,87 @@ def generate_shader_transparent_water_simple(mat, shader_asset, permutation_inde
         base_map_node.image.alpha_mode = 'CHANNEL_PACKED'
         place_node(base_map_node, 2)
         connect_inputs(mat.node_tree, base_map_node, "Color", bdsf_principled, "Base Color")
+
+def generate_shader_transparent_water(mat, shader_asset, permutation_index, asset_cache, report):
+    shader_data = shader_asset["Data"]
+
+    mat.use_nodes = True
+    for node in mat.node_tree.nodes:
+        mat.node_tree.nodes.remove(node)
+
+    shader_flags = ShaderFlags(shader_data["flags"])
+    shader_property_flags = WaterPropertiesFlags(shader_data["water flags"])
+
+    output_material_node = get_output_material_node(mat)
+    output_material_node.location = Vector((0.0, 0.0))
+
+    stw_node = get_shader_node(mat.node_tree, HALO_1_SHADER_RESOURCES, "shader_transparent_water")
+    stw_node.name = "Shader Transparent Plasma"
+    stw_node.location = (-440.0, 0.0)
+
+    connect_inputs(mat.node_tree, stw_node, "Shader", output_material_node, "Surface")
+
+    stw_node.inputs["Simple Parameterization"].default_value = ShaderFlags.simple_parameterization in shader_flags
+    stw_node.inputs["Ignore Normals"].default_value = ShaderFlags.ignore_normals in shader_flags
+    stw_node.inputs["Transparent Lit"].default_value = ShaderFlags.transparent_lit in shader_flags
+    stw_node.inputs["Detail Level"].default_value = shader_data["detail level"]["value"]
+    stw_node.inputs["Power"].default_value = shader_data["power"]
+    stw_node.inputs["Color Of Emitted Light"].default_value = convert_to_blender_color(shader_data["color of emitted light"], True)
+    stw_node.inputs["Tint Color"].default_value = convert_to_blender_color(shader_data["tint color"], True)
+
+    stw_node.inputs["Material Type"].default_value = shader_data["material type"]["value"]
+
+    stw_node.inputs["Base Map Alpha Modulates Reflection"].default_value = WaterPropertiesFlags.base_map_alpha_modulates_reflection in shader_property_flags
+    stw_node.inputs["Base Map Color Modulates Background"].default_value = WaterPropertiesFlags.base_map_color_modulates_background in shader_property_flags
+    stw_node.inputs["Atmospheric Fog"].default_value = WaterPropertiesFlags.atmospheric_fog in shader_property_flags
+    stw_node.inputs["Draw Before Fog"].default_value = WaterPropertiesFlags.draw_before_fog in shader_property_flags
+    stw_node.inputs["View Perpendicular Brightness"].default_value = shader_data["perpendicular brightness"]
+    stw_node.inputs["View Perpendicular Tint Color"].default_value = convert_to_blender_color(shader_data["perpendicular tint color"], True)
+    stw_node.inputs["View Parallel Brightness"].default_value = shader_data["parallel brightness"]
+    stw_node.inputs["View Parallel Tint Color"].default_value = convert_to_blender_color(shader_data["parallel tint color"], True)
+    stw_node.inputs["Ripple Animation Angle"].default_value = radians(shader_data["animation angle"])
+    stw_node.inputs["Ripple Animation Velocity"].default_value = shader_data["animation velocity"]
+    stw_node.inputs["Ripple Animation Scale"].default_value = shader_data["scale"]
+    stw_node.inputs["Ripple Mipmap Levels"].default_value = shader_data["mipmap levels"]
+    stw_node.inputs["Ripple Mipmap Fade Factor"].default_value = shader_data["mipmap fade factor"]
+    stw_node.inputs["Ripple Mipmap Detail Bias"].default_value = shader_data["mipmap detail bias"]
+
+    base_map_texture = generate_image_node(mat, shader_data["base map"], permutation_index, asset_cache, "halo1", report)
+    if base_map_texture:
+        base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
+        base_map_node.image = base_map_texture
+        base_map_node.image.alpha_mode = 'CHANNEL_PACKED'
+        base_map_node.extension = 'EXTEND'
+
+        base_map_node.location = Vector((-720.0, 0.0))
+        connect_inputs(mat.node_tree, base_map_node, "Color", stw_node, "Base Map")
+        connect_inputs(mat.node_tree, base_map_node, "Alpha", stw_node, "Base Map Alpha")
+
+    reflection_map_texture = generate_image_node(mat, shader_data["reflection map"], permutation_index, asset_cache, "halo1", report)
+    if reflection_map_texture:
+        reflection_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
+        reflection_map_node.image = reflection_map_texture
+        reflection_map_node.image.alpha_mode = 'CHANNEL_PACKED'
+        reflection_map_node.location = Vector((-720.0, -300.0))
+        connect_inputs(mat.node_tree, reflection_map_node, "Color", stw_node, "Reflection Map")
+        connect_inputs(mat.node_tree, reflection_map_node, "Alpha", stw_node, "Reflection Map Alpha")
+
+    ripple_map_texture = generate_image_node(mat, shader_data["maps"], permutation_index, asset_cache, "halo1", report)
+    if ripple_map_texture:
+        ripple_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
+        ripple_map_node.image = ripple_map_texture
+        ripple_map_node.image.alpha_mode = 'CHANNEL_PACKED'
+        ripple_map_node.location = Vector((-720.0, -600.0))
+        connect_inputs(mat.node_tree, ripple_map_node, "Color", stw_node, "Ripple Maps")
+        connect_inputs(mat.node_tree, ripple_map_node, "Alpha", stw_node, "Ripple Maps Alpha")
+
+    ripple_slots = ("A", "B", "C", "D")
+    for ripple_idx, ripple_element in enumerate(shader_data["ripples"]):
+        stw_node.inputs["Ripple %s" % ripple_slots[ripple_idx]].default_value = True
+        stw_node.inputs["Ripple %s Contribution Factor" % ripple_slots[ripple_idx]].default_value = ripple_element["contribution factor"]
+        stw_node.inputs["Ripple %s Animation Angle" % ripple_slots[ripple_idx]].default_value = radians(ripple_element["animation angle"])
+        stw_node.inputs["Ripple %s Animation Velocity" % ripple_slots[ripple_idx]].default_value = ripple_element["animation velocity"]
+        stw_node.inputs["Ripple %s Map Offset" % ripple_slots[ripple_idx]].default_value = ripple_element["map offset"]
+        stw_node.inputs["Ripple %s Map Repeats" % ripple_slots[ripple_idx]].default_value = ripple_element["map repeats"]
+        stw_node.inputs["Ripple %s Map Index" % ripple_slots[ripple_idx]].default_value = ripple_element["map index"]
+
