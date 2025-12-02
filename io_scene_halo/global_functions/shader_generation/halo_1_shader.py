@@ -1886,21 +1886,26 @@ def generate_shader_transparent_generic(mat, shader_asset, permutation_index, as
 
     if final_node is not None:
         emission_node = mat.node_tree.nodes.new("ShaderNodeEmission")
+        transparency_node = mat.node_tree.nodes.new("ShaderNodeBsdfTransparent")
+        add_node = mat.node_tree.nodes.new("ShaderNodeAddShader")
         light_path_node = mat.node_tree.nodes.new("ShaderNodeLightPath")
         mix_node = mat.node_tree.nodes.new("ShaderNodeMixShader")
 
-        emission_node.location = Vector((-360.0, -140.0))
+        emission_node.location = Vector((-540.0, -280.0))
+        transparency_node.location = Vector((-540.0, -400.0))
+        add_node.location = Vector((-360.0, -140.0))
         light_path_node.location = Vector((-360.0, 380.0))
         mix_node.location = Vector((-180.0, 0.0))
 
         connect_inputs(mat.node_tree, light_path_node, "Is Camera Ray", mix_node, 0)
         connect_inputs(mat.node_tree, final_node, "Shader", mix_node, 2)
-        connect_inputs(mat.node_tree, emission_node, "Emission", mix_node, 1)
         connect_inputs(mat.node_tree, mix_node, "Shader", output_material_node, "Surface")
-        
+        connect_inputs(mat.node_tree, add_node, "Shader", mix_node, 1)
+        connect_inputs(mat.node_tree, emission_node, "Emission", add_node, 0)
+        connect_inputs(mat.node_tree, transparency_node, "BSDF", add_node, 1)
+
         connect_inputs(mat.node_tree, stg_node, "Power", emission_node, 1)
         
-
         if len(shader_data["stages"]) == 0:
             connect_inputs(mat.node_tree, stg_node, "Map A", emission_node, 0)
         else:

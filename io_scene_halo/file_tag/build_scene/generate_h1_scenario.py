@@ -160,6 +160,14 @@ class CommandListFlags(Flag):
     disable_falling_damage = auto()
     manual_bsp_index = auto()
 
+class LightFlags(Flag):
+    dynamic = auto()
+    no_specular = auto()
+    dont_light_own_object = auto()
+    supersize_in_first_person = auto()
+    first_person_flashlight = auto()
+    dont_fade_active_camouflage = auto()
+
 def get_rotation_euler(yaw=0, pitch=0, roll=0):
     yaw = -radians(yaw)
     pitch = radians(pitch)
@@ -681,6 +689,8 @@ def generate_object_elements(context, level_root, collection_name, scnr_data, as
     for element_idx, element in enumerate(tag_block):
         tag_path = ""
         mesh_data = None
+        marker_data = None
+        palette_asset = None
         tag_path_no_ext = ""
         if element["type"] >= 0 and element["type"] < palette_count:
             pallete_item = tag_palette[element["type"]]["name"]
@@ -689,6 +699,7 @@ def generate_object_elements(context, level_root, collection_name, scnr_data, as
             palette_asset = tag_interface.get_disk_asset(pallete_item["path"], h1_tag_groups.get(pallete_item["group name"]))
             if palette_asset is not None and len(palette_asset["Data"]["model"]["path"]) > 0:
                 mesh_data = asset_cache[palette_asset["Data"]["model"]["group name"]][palette_asset["Data"]["model"]["path"]]["blender_assets"].get("blender_asset")
+                marker_data = asset_cache[palette_asset["Data"]["model"]["group name"]][palette_asset["Data"]["model"]["path"]].get("marker_positions")
 
         tag_name = "NONE"
         if not global_functions.string_empty_check(tag_path_no_ext):
@@ -716,6 +727,49 @@ def generate_object_elements(context, level_root, collection_name, scnr_data, as
         if collection_name == "Scenery" and ObjectFlags.automatically in ObjectFlags(element["not placed"]):
             root.hide_set(True)
             root.hide_render = True
+
+        if collection_name == "Scenery" or collection_name == "Light Fixtures":
+            if palette_asset is not None and marker_data is not None:
+                palette_data = palette_asset["Data"]
+                for attachment in palette_data["attachments"]:
+                    type_field = attachment.get("type")
+                    marker_field = attachment.get("marker", "")
+                    if type_field is not None:
+                        group_name_value = type_field.get("group name")
+                        if group_name_value == "ligh":
+                            light_asset = tag_interface.get_disk_asset(type_field["path"], h1_tag_groups.get(type_field["group name"]))
+                            if light_asset is not None:
+                                light_dict = light_asset["Data"]
+                                marker_entry = marker_data.get(marker_field, [None])
+                                for marker_idx, marker_positions in enumerate(marker_entry):
+                                    # We are just taking the index that the collection comes up in our if else check at the start of this function. 
+                                    # Kinda to mirror the H2 object type enum. - Gen
+                                    collection_index = 0
+                                    if not collection_name == "Scenery": 
+                                        collection_index = 7 
+
+                                    marker_name = "%s_%s%s%s" % (marker_field, collection_index, element_idx, marker_idx)
+                                    light_data = asset_cache[type_field["group name"]][type_field["path"]]["blender_assets"].get("blender_asset")
+                                    if not light_data:
+                                        light_data = asset_cache[type_field["group name"]][type_field["path"]]["blender_assets"]["blender_asset"] = bpy.data.lights.new(marker_name, "POINT")
+                                        light_data.energy = 0
+                                        light_data.shadow_soft_size = 0     
+                                        light_data.color = (0, 0, 0)
+
+                                        if not LightFlags.dynamic in LightFlags(light_dict["flags"]):
+                                            # The multiplication values here are made up and just look good to me in Blender. - Gen
+                                            light_data.energy = light_dict["intensity"] * 6000000
+                                            light_data.shadow_soft_size = light_dict["radius"] * 10
+                                            light_data.color = convert_to_blender_color(light_dict["color"], False)
+
+                                    light_ob = bpy.data.objects.new(marker_name, light_data)
+                                    asset_collection.objects.link(light_ob)
+
+                                    light_ob.parent = root
+                                    if marker_positions is not None:
+                                        light_ob.matrix_basis = marker_positions
+
+
 
 def generate_netgame_equipment_elements(context, level_root, scnr_data, asset_cache, fix_rotations, report, random_color_gen):
     asset_collection = global_functions.get_referenced_collection("Netgame Equipment", context.scene.collection, True)
@@ -993,7 +1047,60 @@ def generate_decals(context, level_root, scnr_data):
 
         get_data_type(ob, asset_collection, element, scnr_data, tag_path)
 
+def generate_marker_positions(parsed_asset):
+    asset_data = parsed_asset["Data"]
+    marker_positions = {}
+
+    absolute_frame = [None for node in asset_data["nodes"]]
+    for node_idx, node in enumerate(asset_data["nodes"]):
+        parent_idx = node["parent node"]
+        matrix_rotation = global_functions.convert_quaternion(node["default rotation"]).inverted().to_matrix().to_4x4()
+        matrix_translation = Matrix.Translation(Vector(node["default translation"]) * 100)
+
+        transform_matrix = matrix_translation @ matrix_rotation
+        if parent_idx != -1:
+            absolute_matrix = absolute_frame[parent_idx] @ transform_matrix
+        else:
+            absolute_matrix = transform_matrix
+        absolute_frame[node_idx] = absolute_matrix
+
+    for region in asset_data["regions"]:
+        permutation_element = None
+        for permutation in region["permutations"]:
+            if "base" in permutation["name"].lower():
+                permutation_element = permutation
+                break
+
+        if permutation_element is None:
+            for permutation in region["permutations"]:
+                permutation_element = permutation
+                break
+
+        if permutation_element is not None:
+            for marker in permutation["markers"]:
+                marker_entry = marker_positions.get(marker["name"])
+                if marker_entry is None:
+                    marker_entry = marker_positions[marker["name"]] = []
+
+                matrix_rotation = global_functions.convert_quaternion(marker["rotation"]).inverted().to_matrix().to_4x4()
+                matrix_translation = Matrix.Translation(Vector(marker["translation"]) * 100)
+
+                transform_matrix = matrix_translation @ matrix_rotation
+
+                marker_entry.append(transform_matrix)
+
+    return marker_positions
+
 def generate_scenario_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, report):
+    mod2_group = asset_cache.get("mod2")
+    if mod2_group is not None:
+        for tag_path in asset_cache["mod2"]:
+            mod2_asset = tag_interface.get_disk_asset(tag_path, h1_tag_groups.get("mod2"))
+            if mod2_asset is not None:
+                marker_positions = asset_cache["mod2"][tag_path].get("marker_positions")
+                if marker_positions is None:
+                    mod2_group[tag_path]["marker_positions"] = generate_marker_positions(mod2_asset)
+
     scnr_asset = tag_interface.get_disk_asset(tag_ref["path"], h1_tag_groups.get(tag_ref["group name"]))
     scnr_data = scnr_asset["Data"]
 
