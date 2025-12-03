@@ -41,16 +41,14 @@ class SurfaceFlags(Flag):
     invalid = auto()
     conveyor = auto()
 
-def build_collision(context, armature, COLLISION, fix_rotations):
-    collision_root = COLLISION["Data"]
-
+def build_collision(context, armature, collision_data, fix_rotations):
     node_prefix_tuple = ('b ', 'b_', 'bone ', 'bone_', 'frame ', 'frame_', 'bip01 ', 'bip01_')
     collection = context.collection
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
-    for region_idx, region in enumerate(collision_root["regions"]):
+    for region_idx, region in enumerate(collision_data["regions"]):
         for permutation_idx, permutation in enumerate(region["permutations"]):
             for bsp_idx, bsp in enumerate(permutation["bsps"]):
-                parent_name = collision_root["nodes"][bsp["node index"]]["name"]
+                parent_name = collision_data["nodes"][bsp["node index"]]["name"]
                 for node_prefix in node_prefix_tuple:
                     if parent_name.lower().startswith(node_prefix):
                         parent_name = re.split(node_prefix, parent_name, maxsplit=1, flags=re.IGNORECASE)[1]
@@ -105,7 +103,7 @@ def build_collision(context, armature, COLLISION, fix_rotations):
                     if not is_invalid:
                         ngon_material_index = surface["material"]
                         if not ngon_material_index == -1:
-                            mat = collision_root["materials"][ngon_material_index]
+                            mat = collision_data["materials"][ngon_material_index]
 
                         current_region_permutation = "%s %s" % (permutation_name, region_name)
 

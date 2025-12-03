@@ -34,11 +34,9 @@ from ..h1.file_model_collision_geometry.build_mesh import build_collision as bui
 from ..h2.file_collision_model.build_mesh import build_collision as build_retail_h2_collision
 from ...file_tag.tag_interface import tag_interface, tag_common
 
-def build_pathfinding_spheres(context, armature, COLLISION, fix_rotations, empty_markers):
-    collision_root = COLLISION["Data"]
-
+def build_pathfinding_spheres(context, armature, collision_data, fix_rotations, empty_markers):
     collection = context.collection
-    for pathfinding_sphere_idx, pathfinding_sphere in enumerate(collision_root["pathfinding spheres"]):
+    for pathfinding_sphere_idx, pathfinding_sphere in enumerate(collision_data["pathfinding spheres"]):
         parent_idx = pathfinding_sphere["node"]
         object_name = '#pathfinding_sphere_%s' % pathfinding_sphere_idx
 
@@ -71,7 +69,7 @@ def build_pathfinding_spheres(context, armature, COLLISION, fix_rotations, empty
         transform_matrix = matrix_translate @ scale
 
         if not parent_idx == -1 :
-            bone_name = collision_root["nodes"][parent_idx]["name"]
+            bone_name = collision_data["nodes"][parent_idx]["name"]
 
             object_mesh.parent = armature
             object_mesh.parent_type = "BONE"

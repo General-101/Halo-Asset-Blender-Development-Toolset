@@ -38,19 +38,17 @@ class SurfaceFlags(Flag):
     climbable = auto()
     breakable = auto()
 
-def build_collision(context, armature, COLLISION, fix_rotations):
-    collision_root = COLLISION["Data"]
-
+def build_collision(context, armature, collision_data, fix_rotations):
     collection = context.collection
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
-    for node in collision_root["nodes"]:
+    for node in collision_data["nodes"]:
         node_name = node["name"]
         for bsp_idx, bsp in enumerate(node["bsps"]):
             if len(bsp["surfaces"]) > 0:
                 active_region_permutations = []
 
                 region_index = node["region"]
-                region_element = collision_root["regions"][region_index]
+                region_element = collision_data["regions"][region_index]
                 permutation_element =  region_element["permutations"][bsp_idx]
                 region_name = region_element["name"]
                 permutation_name = permutation_element["name"]
@@ -89,7 +87,7 @@ def build_collision(context, armature, COLLISION, fix_rotations):
                 for surface_idx, surface in enumerate(bsp["surfaces"]):
                     ngon_material_index = surface["material"]
                     if not ngon_material_index == -1:
-                        mat = collision_root["materials"][ngon_material_index]
+                        mat = collision_data["materials"][ngon_material_index]
 
                     current_region_permutation = region_name
 
@@ -152,7 +150,7 @@ def build_collision(context, armature, COLLISION, fix_rotations):
             else:
                 active_region_permutations = []
 
-                region = collision_root["regions"][node["region"]]
+                region = collision_data["regions"][node["region"]]
                 region_name = region["name"]
                 permutation_name = region["permutations"][bsp_idx]["name"]
                 if region_name == "__unnamed":

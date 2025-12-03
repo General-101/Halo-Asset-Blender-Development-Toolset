@@ -687,10 +687,6 @@ def generate_object_elements(context, level_root, collection_name, scnr_data, as
             root.hide_set(hidden_in_render)
             root.hide_render = hidden_in_render 
 
-
-
-
-
 def generate_light_volumes_elements(context, level_root, collection_name, scnr_data, asset_cache, fix_rotations, report, random_color_gen):
     asset_collection = global_functions.get_referenced_collection(collection_name, context.scene.collection, False)
     for element_idx, element in enumerate(scnr_data["light volumes"]):
