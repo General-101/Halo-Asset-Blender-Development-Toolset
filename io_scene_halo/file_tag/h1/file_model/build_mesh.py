@@ -285,7 +285,7 @@ def build_mesh(mode_asset, geometry, armature, LOD, region_name, permutation_nam
     if (4, 1, 0) > bpy.app.version:
         full_mesh.use_auto_smooth = True
 
-def get_geometry_layout(tag_ref, asset_cache, armature, is_triangle_list, report, simple_mesh=False):
+def get_geometry_layout(tag_ref, asset_cache, armature, is_triangle_list, report, simple_mesh=False, permutation_indicies=None):
     tag_groups = tag_common.h1_tag_groups
     mode_asset = tag_interface.get_disk_asset(tag_ref["path"], tag_groups.get(tag_ref["group name"]))
     mode_data = mode_asset["Data"]
@@ -310,43 +310,62 @@ def get_geometry_layout(tag_ref, asset_cache, armature, is_triangle_list, report
     if simple_mesh:
         object_name = os.path.basename(tag_ref["path"])
         full_mesh = bpy.data.meshes.new(object_name)
-        asset_cache[tag_ref["group name"]][tag_ref["path"]]["blender_assets"]["blender_asset"] = full_mesh
+        if permutation_indicies is not None:
+            asset_cache[tag_ref["group name"]][tag_ref["path"]]["blender_assets"][permutation_indicies] = full_mesh
+        else:
+            asset_cache[tag_ref["group name"]][tag_ref["path"]]["blender_assets"]["blender_asset"] = full_mesh
 
     visited_geo = set()
-    for region in mode_data["regions"]:
-        for permutation in region["permutations"]:
-            superlow_geometry_index = permutation["super low"]
-            low_geometry_index = permutation["low"]
-            medium_geometry_index = permutation["medium"]
-            high_geometry_index = permutation["high"]
-            superhigh_geometry_index = permutation["super high"]
+    if permutation_indicies is not None:
+        for region_idx, region in enumerate(mode_data["regions"]):
+            permutation_element = region["permutations"][permutation_indicies[region_idx]]
+            superlow_geometry_index = permutation_element["super low"]
+            low_geometry_index = permutation_element["low"]
+            medium_geometry_index = permutation_element["medium"]
+            high_geometry_index = permutation_element["high"]
+            superhigh_geometry_index = permutation_element["super high"]
 
             geometry_count = len(mode_data["geometries"])
             if not superhigh_geometry_index == -1 and superhigh_geometry_index < geometry_count and not superhigh_geometry_index in visited_geo:
                 visited_geo.add(superhigh_geometry_index)
                 superhigh_geometry = mode_data["geometries"][superhigh_geometry_index]
-                build_mesh(mode_asset, superhigh_geometry, armature, 'superhigh', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh)
+                build_mesh(mode_asset, superhigh_geometry, armature, 'superhigh', region["name"], permutation_element["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh)
 
-            if not simple_mesh:
-                if not high_geometry_index == -1 and high_geometry_index < geometry_count and not high_geometry_index in visited_geo:
-                    visited_geo.add(high_geometry_index)
-                    high_geometry = mode_data["geometries"][high_geometry_index]
-                    build_mesh(mode_asset, high_geometry, armature, 'high', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh)
+    else:
+        for region in mode_data["regions"]:
+            for permutation in region["permutations"]:
+                superlow_geometry_index = permutation["super low"]
+                low_geometry_index = permutation["low"]
+                medium_geometry_index = permutation["medium"]
+                high_geometry_index = permutation["high"]
+                superhigh_geometry_index = permutation["super high"]
 
-                if not medium_geometry_index == -1 and medium_geometry_index < geometry_count and not medium_geometry_index in visited_geo:
-                    visited_geo.add(medium_geometry_index)
-                    medium_geometry = mode_data["geometries"][medium_geometry_index]
-                    build_mesh(mode_asset, medium_geometry, armature, 'medium', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh)
+                geometry_count = len(mode_data["geometries"])
+                if not superhigh_geometry_index == -1 and superhigh_geometry_index < geometry_count and not superhigh_geometry_index in visited_geo:
+                    visited_geo.add(superhigh_geometry_index)
+                    superhigh_geometry = mode_data["geometries"][superhigh_geometry_index]
+                    build_mesh(mode_asset, superhigh_geometry, armature, 'superhigh', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh)
 
-                if not low_geometry_index == -1 and low_geometry_index < geometry_count and not low_geometry_index in visited_geo:
-                    visited_geo.add(low_geometry_index)
-                    low_geometry = mode_data["geometries"][low_geometry_index]
-                    build_mesh(mode_asset, low_geometry, armature, 'low', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh)
+                if not simple_mesh:
+                    if not high_geometry_index == -1 and high_geometry_index < geometry_count and not high_geometry_index in visited_geo:
+                        visited_geo.add(high_geometry_index)
+                        high_geometry = mode_data["geometries"][high_geometry_index]
+                        build_mesh(mode_asset, high_geometry, armature, 'high', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh)
 
-                if not superlow_geometry_index == -1 and superlow_geometry_index < geometry_count and not superlow_geometry_index in visited_geo:
-                    visited_geo.add(superlow_geometry_index)
-                    superlow_geometry = mode_data["geometries"][superlow_geometry_index]
-                    build_mesh(mode_asset, superlow_geometry, armature, 'superlow', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh)
+                    if not medium_geometry_index == -1 and medium_geometry_index < geometry_count and not medium_geometry_index in visited_geo:
+                        visited_geo.add(medium_geometry_index)
+                        medium_geometry = mode_data["geometries"][medium_geometry_index]
+                        build_mesh(mode_asset, medium_geometry, armature, 'medium', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh)
 
-            else:
-                break
+                    if not low_geometry_index == -1 and low_geometry_index < geometry_count and not low_geometry_index in visited_geo:
+                        visited_geo.add(low_geometry_index)
+                        low_geometry = mode_data["geometries"][low_geometry_index]
+                        build_mesh(mode_asset, low_geometry, armature, 'low', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh)
+
+                    if not superlow_geometry_index == -1 and superlow_geometry_index < geometry_count and not superlow_geometry_index in visited_geo:
+                        visited_geo.add(superlow_geometry_index)
+                        superlow_geometry = mode_data["geometries"][superlow_geometry_index]
+                        build_mesh(mode_asset, superlow_geometry, armature, 'superlow', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh)
+
+                else:
+                    break

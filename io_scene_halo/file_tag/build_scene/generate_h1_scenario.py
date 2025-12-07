@@ -168,6 +168,9 @@ class LightFlags(Flag):
     first_person_flashlight = auto()
     dont_fade_active_camouflage = auto()
 
+class PermutationFlags(Flag):
+    cannot_be_chosen_randomly = auto()
+
 def get_rotation_euler(yaw=0, pitch=0, roll=0):
     yaw = -radians(yaw)
     pitch = radians(pitch)
@@ -629,6 +632,56 @@ def generate_comments(context, level_root, scnr_data, asset_cache):
         font_ob.location = Vector(comment_element["position"]) * 100
         asset_collection.objects.link(font_ob)
 
+# NOTE 0: cannot_be_choosen_randomly bit exludes the permutation from the sorting and permutation selection. Seems to only be able to be set via scripts
+# NOTE 1: Sort permutation names with no slots by alphabetical order and the index of the item in list. Try to keep undefined slots where they are.
+# NOTE 2: Get slots from permutation names.
+# NOTE 3: If there are duplicate slots then the duplicate items get sorted by alphabetical order. We are including slots already taken by note 1. The idea is that you're playing musical chairs with the slots.
+# NOTE 4: If the object has a desired permutation of 0 then the object uses the randomize code. Some sort of function that takes the number of permutations that allow for random choice. Not entirely sure how it works but it's not a table (at least doesn't seem to be to me.)
+rng_table_5 = [1, 1, 2, 0, 2, 1, 1, 3, 2, 2, 2, 0, 3, 3, 0, 1, 3, 1, 2, 4, 2, 1, 2, 2, 3, 3, 4, 1, 3, 4, 1, 4, 4, 0, 4, 0, 3, 3, 0, 3, 3, 1, 4, 3, 2, 1, 0, 3, 3, 1, 0, 2, 4, 2, 2, 3]
+def get_permutation_slots(model_data, desired_permutation, rng_index):
+    permutation_indicies = [-1 for region in model_data["regions"]]
+    for region_idx, region in enumerate(model_data["regions"]):
+        permutaion_items = []
+        for perm_idx, permutation in enumerate(region["permutations"]):
+            flags = PermutationFlags(permutation["flags"])
+            if PermutationFlags.cannot_be_chosen_randomly not in flags:
+                permutaion_items.append([permutation, region_idx, perm_idx])
+
+        if desired_permutation != 0:
+            permutation_indicies[region_idx] = 0
+            for permutation_item in permutaion_items:
+                permutation, region_idx = permutation_item
+
+                permutation_slot = ""
+                result_string = "".join(reversed(permutation["name"]))
+                for idx, char in enumerate(result_string): # loop through the characters in the name
+                    if char.isdigit(): # Check if the character is a number
+                        permutation_slot = char + permutation_slot
+                    else:
+                        if char == "-":
+                            if not len(permutation_slot) > 0:
+                                permutation_slot = "0"  
+                            permutation_slot = int(permutation_slot)
+                            if desired_permutation == permutation_slot:
+                                permutation_indicies[region_idx] = permutation_slot
+                        break # We've hit a non number
+        if permutation_indicies[region_idx] == -1:
+            perm_count = len(permutaion_items)
+            if perm_count > 1:
+                rng_index += 1
+
+            permutation_indicies[region_idx] = 0
+            if perm_count == 2:
+                permutation_indicies[region_idx] = 0
+            elif perm_count == 3:
+                permutation_indicies[region_idx] = 0
+            elif perm_count == 4:
+                permutation_indicies[region_idx] = 0
+            elif perm_count == 5:
+                permutation_indicies[region_idx] = permutaion_items[rng_table_5[rng_index]][2]
+
+    return tuple(permutation_indicies), rng_index
+
 def generate_object_elements(context, level_root, collection_name, scnr_data, asset_cache, fix_rotations, report, random_color_gen):
     hide_collection = False
     tag_block = None
@@ -662,7 +715,7 @@ def generate_object_elements(context, level_root, collection_name, scnr_data, as
         tag_block = scnr_data["controls"]
         tag_palette = scnr_data["control palette"]
     elif collection_name == "Light Fixtures":
-        hide_collection = True
+        hide_collection = False
         tag_block = scnr_data["light fixtures"]
         tag_palette = scnr_data["light fixture palette"]
     elif collection_name == "Sound Scenery":
@@ -671,35 +724,37 @@ def generate_object_elements(context, level_root, collection_name, scnr_data, as
         tag_palette = scnr_data["sound scenery palette"]
 
     asset_collection = global_functions.get_referenced_collection(collection_name, context.scene.collection, hide_collection)
-    for palette_element in tag_palette:
-        object_asset = tag_interface.get_disk_asset(palette_element["name"]["path"], h1_tag_groups.get(palette_element["name"]["group name"]))
-        if not object_asset == None:
-            mesh_collections = ("Scenery", "Bipeds", "Vehicles", "Equipment", "Weapons", "Machines", "Controls", "Light Fixtures", "Sound Scenery")
-            if collection_name in mesh_collections:
-                if object_asset["Data"]["model"]["group name"] == "mode":
-                    object_asset["Data"]["model"]["group name"] = "mod2"
-
-                model_asset = tag_interface.get_disk_asset(object_asset["Data"]["model"]["path"], h1_tag_groups.get(object_asset["Data"]["model"]["group name"]))
-                if model_asset is not None and len(object_asset["Data"]["model"]["path"]) > 0:
-                    mesh = asset_cache[object_asset["Data"]["model"]["group name"]][object_asset["Data"]["model"]["path"]]["blender_assets"].get("blender_asset")
-                    if not mesh:
-                        get_geometry_layout(object_asset["Data"]["model"], asset_cache, None, False, report, True)
-
     palette_count = len(tag_palette)
+    rng_index = -1
     for element_idx, element in enumerate(tag_block):
         tag_path = ""
         mesh_data = None
+        tag_path_no_ext = ""
         marker_data = None
         palette_asset = None
-        tag_path_no_ext = ""
         if element["type"] >= 0 and element["type"] < palette_count:
             pallete_item = tag_palette[element["type"]]["name"]
             tag_path_no_ext = pallete_item["path"]
             tag_path = "%s.%s" % (pallete_item["path"], h1_tag_groups.get(pallete_item["group name"]))
             palette_asset = tag_interface.get_disk_asset(pallete_item["path"], h1_tag_groups.get(pallete_item["group name"]))
-            if palette_asset is not None and len(palette_asset["Data"]["model"]["path"]) > 0:
-                mesh_data = asset_cache[palette_asset["Data"]["model"]["group name"]][palette_asset["Data"]["model"]["path"]]["blender_assets"].get("blender_asset")
-                marker_data = asset_cache[palette_asset["Data"]["model"]["group name"]][palette_asset["Data"]["model"]["path"]].get("marker_positions")
+            if not palette_asset == None:
+                mesh_collections =  ("Scenery", "Bipeds", "Vehicles", "Equipment", "Weapons", "Machines", "Controls", "Light Fixtures", "Sound Scenery")
+                if collection_name in mesh_collections:
+                    model_asset = tag_interface.get_disk_asset(palette_asset["Data"]["model"]["path"], h1_tag_groups.get(palette_asset["Data"]["model"]["group name"]))
+                    if not model_asset == None:
+                        model_data = model_asset["Data"]
+                        permutation_indicies, rng_index = get_permutation_slots(model_data, element["desired permutation"], rng_index)
+
+                        anim_graph_asset = tag_interface.get_disk_asset(palette_asset["Data"]["animation graph"]["path"], h1_tag_groups.get(palette_asset["Data"]["animation graph"]["group name"]))
+                        if not anim_graph_asset == None:
+                            if len(anim_graph_asset["Data"]["animations"]) > 0:
+                                rng_index += 1
+
+                        render_tag_ref = asset_cache[palette_asset["Data"]["model"]["group name"]][palette_asset["Data"]["model"]["path"]]
+                        mesh_data = render_tag_ref["blender_assets"].get(permutation_indicies)
+                        if model_asset is not None and mesh_data is None:
+                            get_geometry_layout(palette_asset["Data"]["model"], asset_cache, None, False, report, True, permutation_indicies)
+                            mesh_data = render_tag_ref["blender_assets"].get(permutation_indicies)
 
         tag_name = "NONE"
         if not global_functions.string_empty_check(tag_path_no_ext):
@@ -768,8 +823,6 @@ def generate_object_elements(context, level_root, collection_name, scnr_data, as
                                     light_ob.parent = root
                                     if marker_positions is not None:
                                         light_ob.matrix_basis = marker_positions
-
-
 
 def generate_netgame_equipment_elements(context, level_root, scnr_data, asset_cache, fix_rotations, report, random_color_gen):
     asset_collection = global_functions.get_referenced_collection("Netgame Equipment", context.scene.collection, True)

@@ -2065,8 +2065,8 @@ def h1_single_tag():
     output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h1_merged_output")
     merged_defs = h1.generate_defs(tag_common.h1_defs_directory, output_dir)
 
-    read_path = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\1\Vanilla\tags\effects\blood aoe elite.effect"
-    output_path = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\1\Vanilla\tags\blood aoe elite.effect"
+    read_path = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\1\Vanilla\tags\levels\test\tutorial\tutorial.scenario"
+    output_path = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\1\Vanilla\tags\tutorial.scenario"
     tag_directory = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\1\Vanilla\tags"
 
     tag_dict = read_file(merged_defs, tag_directory, read_path, engine_tag=EngineTag.H1Latest.value)
@@ -2276,7 +2276,8 @@ def read_tag(tag_path, tag_group, tag_directory, tag_groups, engine_tag, merged_
 # Add whatever you need or just get rid of the check in get_tag_reference if you just want to import everything - Gen
 TAG_WHITELIST = ("bipd", "bitm", "trak", "coll", "bloc", "crea", "ctrl", "lifi", "mach", "eqip", "mod2", "itmc", "ligh", "MGS2", "hlmt", "coll", "phmo", "mode", 
                  "ai**", "*ipd", "cin*", "clu*", "/**/", "*rea", "dec*", "dc*s", "dgr*", "*qip", "*igh", "*cen", "*sce", "sbsp", "sslt", "ltmp", "trg*", "*ehi", 
-                 "*eap", "scen", "shad", "senv", "soso", "stem", "schi", "scex", "sotr", "sgla", "smet", "spla", "swat", "sky ", "ssce", "vehi", "vehc", "weap")
+                 "*eap", "scen", "shad", "senv", "soso", "stem", "schi", "scex", "sotr", "sgla", "smet", "spla", "swat", "sky ", "ssce", "vehi", "vehc", "weap", 
+                 "antr")
 
 def get_tag_references(field_node, tag_block_fields, tag_references, game_title, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender):
     field_tag = field_node.tag
