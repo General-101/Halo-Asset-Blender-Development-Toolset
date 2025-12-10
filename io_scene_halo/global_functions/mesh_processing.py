@@ -731,11 +731,11 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
                             if not mat:
                                 mat = bpy.data.materials.new(name=material_name)
 
-                    if not material_name in object_mesh.data.materials.keys():
+                    if not mat.name in object_mesh.data.materials.keys():
                         object_mesh.data.materials.append(mat)
 
                     mat.diffuse_color = random_color_gen.next()
-                    material_index = object_mesh.data.materials.keys().index(material_name)
+                    material_index = object_mesh.data.materials.keys().index(mat.name)
                     object_mesh.data.polygons[triangle_idx].material_index = material_index
 
                 if game_title == "halo1":
