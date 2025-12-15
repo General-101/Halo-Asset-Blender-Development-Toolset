@@ -27,8 +27,12 @@
 import os
 import math
 import numpy as np
-from PIL import Image
 from collections import deque
+try:
+    from PIL import Image
+except ModuleNotFoundError:
+    print("PIL not found. Unable to create image node.")
+    Image = None
 
 def is_power_of_two(n):
     return n > 0 and (n & (n - 1) == 0)
@@ -231,68 +235,68 @@ def cubemap_to_panorama(images, width=1024, height=512):
 
 def get_texture_from_plate(texture, permutation_index=0, is_cubemap=True):
     img = texture
-    is_plate, palette = is_color_plate(img)
-    if is_plate:
-        sequences = extract_colorplate_faces(img, palette)
-        sequence_count = len(sequences)
-        if is_cubemap:
-            image_sets = []
-            for sequence_idx, sequence in enumerate(sequences):
-                face_0 = sequence[1]
-                face_0 = face_0.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
-                face_0 = face_0.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-                face_1 = sequence[3]
-                face_2 = sequence[4]
-                face_3 = sequence[5]
-                face_3 = face_3.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
-                face_3 = face_3.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-                face_4 = sequence[0]
-                face_4 = face_4.transpose(Image.Transpose.ROTATE_90)
-                face_4 = face_4.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
-                face_4 = face_4.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-                face_5 = sequence[2]
-                face_5 = face_5.transpose(Image.Transpose.ROTATE_90)
-                faces = [face_0, face_1, face_2, face_3, face_4, face_5]
+    if Image is not None:
+        is_plate, palette = is_color_plate(img)
+        if is_plate:
+            sequences = extract_colorplate_faces(img, palette)
+            sequence_count = len(sequences)
+            if is_cubemap:
+                image_sets = []
+                for sequence_idx, sequence in enumerate(sequences):
+                    face_0 = sequence[1]
+                    face_0 = face_0.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
+                    face_0 = face_0.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+                    face_1 = sequence[3]
+                    face_2 = sequence[4]
+                    face_3 = sequence[5]
+                    face_3 = face_3.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
+                    face_3 = face_3.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+                    face_4 = sequence[0]
+                    face_4 = face_4.transpose(Image.Transpose.ROTATE_90)
+                    face_4 = face_4.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
+                    face_4 = face_4.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+                    face_5 = sequence[2]
+                    face_5 = face_5.transpose(Image.Transpose.ROTATE_90)
+                    faces = [face_0, face_1, face_2, face_3, face_4, face_5]
 
-                if sequence:
-                    w, h = face_0.size
-                    pano_w = 4 * w
-                    pano_h = 2 * h
+                    if sequence:
+                        w, h = face_0.size
+                        pano_w = 4 * w
+                        pano_h = 2 * h
 
-                    img = cubemap_to_panorama(faces, pano_w, pano_h)
-                    image_sets.append([img])
+                        img = cubemap_to_panorama(faces, pano_w, pano_h)
+                        image_sets.append([img])
 
-            if sequence_count > 0:
-                if sequence_count < permutation_index:
-                    img = image_sets[0][0]
-                else:
-                    img = image_sets[permutation_index][0]
-
-        else:
-            if sequence_count > 0:
-                if sequence_count <= permutation_index:
-                    print("Permutation index out of bounds.")
-                    if len(sequences[0]) > 0:
-                        img = sequences[0][0]
+                if sequence_count > 0:
+                    if sequence_count < permutation_index:
+                        img = image_sets[0][0]
                     else:
-                        print("Failed to find any fallback image permutations. Something went wrong.")
-                    
-                else:
-                    if len(sequences[permutation_index]) > 0:
-                        img = sequences[permutation_index][0]
-                    else:
-                        print("Failed to find any image permutations. Something went wrong.")
+                        img = image_sets[permutation_index][0]
+
             else:
-                print("Failed to find any image sequences. Something went wrong.")
+                if sequence_count > 0:
+                    if sequence_count <= permutation_index:
+                        print("Permutation index out of bounds.")
+                        if len(sequences[0]) > 0:
+                            img = sequences[0][0]
+                        else:
+                            print("Failed to find any fallback image permutations. Something went wrong.")
+                        
+                    else:
+                        if len(sequences[permutation_index]) > 0:
+                            img = sequences[permutation_index][0]
+                        else:
+                            print("Failed to find any image permutations. Something went wrong.")
+                else:
+                    print("Failed to find any image sequences. Something went wrong.")
 
+        elif is_cubemap:
+            faces = extract_t_faces(img)
+            if faces:
+                w, h = img.size
+                pano_w = 4 * w
+                pano_h = 2 * h
 
-    elif is_cubemap:
-        faces = extract_t_faces(img)
-        if faces:
-            w, h = img.size
-            pano_w = 4 * w
-            pano_h = 2 * h
-
-            img = cubemap_to_panorama(faces, pano_w, pano_h)
+                img = cubemap_to_panorama(faces, pano_w, pano_h)
 
     return img.convert('RGBA')

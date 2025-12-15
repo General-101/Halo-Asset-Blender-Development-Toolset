@@ -42,24 +42,15 @@ try:
     from .tag_definitions import h1, h2, common
     from .tag_postprocessing.h1 import postprocess_functions as h1_postprocess_functions
     from .tag_postprocessing.h2 import postprocess_functions as h2_postprocess_functions, create_function
+    from .tag_upgrading.h1 import upgrade_functions as h1_upgrade_functions
+    from .tag_upgrading.h2 import upgrade_functions as h2_upgrade_functions
 except ImportError:
     import tag_common
     from tag_definitions import h1, h2, common
     from tag_postprocessing.h1 import postprocess_functions as h1_postprocess_functions
     from tag_postprocessing.h2 import postprocess_functions as h2_postprocess_functions, create_function
-
-class EngineTag(Enum):
-    # halo 1 types
-    H1 = "blam"
-    H1Latest = H1
-    # halo 2 types
-    H2V1 = "ambl"
-    H2V2 = "LAMB"
-    H2V3 = "MLAB"
-    H2V4 = "BLM!"
-    H2Latest = H2V4
-
-engine_tag_values = {e.value for e in EngineTag}
+    from tag_upgrading.h1 import upgrade_functions as h1_upgrade_functions
+    from tag_upgrading.h2 import upgrade_functions as h2_upgrade_functions
 
 def obfuscation_buffer_prepare():
     obfuscation_buffer = [0] * 256
@@ -139,7 +130,7 @@ def write_field_header(tag_block_header, block_count, output_stream, field_endia
 def is_header_valid(tag_header, tag_groups):
     result = False
     valid_group = tag_groups.get(tag_header["tag group"])
-    valid_engine = tag_header["engine tag"] in engine_tag_values
+    valid_engine = tag_header["engine tag"] in tag_common.engine_tag_values
     if valid_group and valid_engine:
         result = True
     return result
@@ -199,31 +190,31 @@ def get_pad_size(tag_field):
 def is_tag_block_legacy(tag_header):
     global HAS_LEGACY_HEADER
     HAS_LEGACY_HEADER = False
-    if tag_header["engine tag"] == EngineTag.H1Latest.value:
+    if tag_header["engine tag"] == tag_common.EngineTag.H1Latest.value:
         HAS_LEGACY_HEADER = True
-    elif tag_header["engine tag"] == EngineTag.H2V1.value:
+    elif tag_header["engine tag"] == tag_common.EngineTag.H2V1.value:
         HAS_LEGACY_HEADER = True
 
 def is_string_legacy(tag_header):
     global HAS_LEGACY_STRINGS
     HAS_LEGACY_STRINGS = False
-    if tag_header["engine tag"] == EngineTag.H1Latest.value:
+    if tag_header["engine tag"] == tag_common.EngineTag.H1Latest.value:
         HAS_LEGACY_STRINGS = True
-    elif tag_header["engine tag"] == EngineTag.H2V1.value:
+    elif tag_header["engine tag"] == tag_common.EngineTag.H2V1.value:
         HAS_LEGACY_STRINGS = True
-    elif tag_header["engine tag"] == EngineTag.H2V2.value:
+    elif tag_header["engine tag"] == tag_common.EngineTag.H2V2.value:
         HAS_LEGACY_STRINGS = True
 
 def is_padding_legacy(tag_header):
     global HAS_LEGACY_PADDING
     HAS_LEGACY_PADDING = False
-    if tag_header["engine tag"] == EngineTag.H1Latest.value:
+    if tag_header["engine tag"] == tag_common.EngineTag.H1Latest.value:
         HAS_LEGACY_PADDING = True
-    elif tag_header["engine tag"] == EngineTag.H2V1.value:
+    elif tag_header["engine tag"] == tag_common.EngineTag.H2V1.value:
         HAS_LEGACY_PADDING = True
-    elif tag_header["engine tag"] == EngineTag.H2V2.value:
+    elif tag_header["engine tag"] == tag_common.EngineTag.H2V2.value:
         HAS_LEGACY_PADDING = True
-    elif tag_header["engine tag"] == EngineTag.H2V3.value:
+    elif tag_header["engine tag"] == tag_common.EngineTag.H2V3.value:
         HAS_LEGACY_PADDING = True
 
 def replace_neg_zero(val):
@@ -455,7 +446,7 @@ def get_fields(tag_stream, block_stream, tag_header, tag_block_header, field_nod
             block_count, unk1, unk2 = result
             tag_block_fields["TagBlock_%s" % field_key] = {"unk1": unk1, "unk2": unk2}
             if block_count > 0:
-                if tag_header["engine tag"] == EngineTag.H1Latest.value:
+                if tag_header["engine tag"] == tag_common.EngineTag.H1Latest.value:
                     latest_field_set = None
                     for layout in field_node:
                         for current_field_set in layout:
@@ -568,7 +559,7 @@ def get_fields(tag_stream, block_stream, tag_header, tag_block_header, field_nod
                         pos = block_stream.tell()
                         block_stream.seek(0, io.SEEK_END)  
                         current_block_stream.seek(0)
-                        if tag_header["engine tag"] == EngineTag.H1Latest.value:
+                        if tag_header["engine tag"] == tag_common.EngineTag.H1Latest.value:
                             block_stream.write(current_block_stream.getvalue())
                             block_stream.seek(pos)
                         else:
@@ -1459,7 +1450,7 @@ def get_fields(tag_stream, block_stream, tag_header, tag_block_header, field_nod
         if FILE_MODE == FileModeEnum.read:
             struct_header = None
             store_header = False
-            if not tag_header["engine tag"] == EngineTag.H1Latest.value:
+            if not tag_header["engine tag"] == tag_common.EngineTag.H1Latest.value:
                 # We don't use field size here cause field size is used for the total read data in the block chunk. Structs come from the resource chunk written after block data. - Gen
                 pos = tag_stream.tell()
                 if not (os.stat(tag_stream.name).st_size - pos) < 16:
@@ -1572,7 +1563,7 @@ def get_fields(tag_stream, block_stream, tag_header, tag_block_header, field_nod
                         struct_size = field_set_size
                     struct_header = {"name": struct_name, "version": struct_version, "size": struct_size}
 
-            if not tag_header["engine tag"] == EngineTag.H1Latest.value and (has_header or not PRESERVE_VERSION):
+            if not tag_header["engine tag"] == tag_common.EngineTag.H1Latest.value and (has_header or not PRESERVE_VERSION):
                 pos = block_stream.tell()
                 block_stream.seek(0, io.SEEK_END)
                 write_field_header(struct_header, 1, block_stream, is_legacy=HAS_LEGACY_HEADER)
@@ -1762,9 +1753,9 @@ def get_fields(tag_stream, block_stream, tag_header, tag_block_header, field_nod
                 else:    
                     block_stream.write(struct.pack(struct_string, *field_default))
 
-def read_file(merged_defs, tag_directory, file_path="", engine_tag=EngineTag.H2Latest.value, file_endian_override=None):
+def read_file(merged_defs, tag_directory, file_path="", engine_tag=tag_common.EngineTag.H2Latest.value, file_endian_override=None):
     global PRESERVE_VERSION
-    if engine_tag == EngineTag.H1Latest.value:
+    if engine_tag == tag_common.EngineTag.H1Latest.value:
         file_endian = ">"
         if file_endian_override:
             file_endian = file_endian_override
@@ -1813,7 +1804,7 @@ def read_file(merged_defs, tag_directory, file_path="", engine_tag=EngineTag.H2L
                               "engine tag": header_engine_tag}
     
         tag_header = tag_dict["Header"]
-        if tag_header["engine tag"] == EngineTag.H1Latest.value:
+        if tag_header["engine tag"] == tag_common.EngineTag.H1Latest.value:
             tag_groups = tag_common.h1_tag_groups
             tag_extensions = tag_common.h1_tag_extensions
             postprocess_functions =  h1_postprocess_functions
@@ -1858,7 +1849,7 @@ def read_file(merged_defs, tag_directory, file_path="", engine_tag=EngineTag.H2L
             raise ValueError(f"Latest field set not found.")
 
         block_count = 1
-        if tag_header["engine tag"] == EngineTag.H1Latest.value:
+        if tag_header["engine tag"] == tag_common.EngineTag.H1Latest.value:
             version = int(latest_field_set.attrib.get('version'))
             size = int(latest_field_set.attrib.get('sizeofValue'))
             field_header = {"name": "tbfd", "version": version, "size": size}
@@ -1896,15 +1887,18 @@ def read_file(merged_defs, tag_directory, file_path="", engine_tag=EngineTag.H2L
 
         return tag_dict
 
-def write_file(merged_defs, tag_dict, obfuscation_buffer, file_path="", engine_tag=EngineTag.H2Latest.value, file_endian_override=None):
+def write_file(merged_defs, tag_dict, obfuscation_buffer, file_path="", engine_tag=tag_common.EngineTag.H2Latest.value, file_endian_override=None):
     global PRESERVE_VERSION
-    if engine_tag == EngineTag.H1Latest.value:
+    if engine_tag == tag_common.EngineTag.H1Latest.value:
         file_endian = ">"
         if file_endian_override:
             file_endian = file_endian_override
         tag_groups = tag_common.h1_tag_groups
         tag_extensions = tag_common.h1_tag_extensions
         postprocess_functions =  h1_postprocess_functions
+        upgrade_functions =  None
+        downgrade_functions = None
+        
     else:
         file_endian="<"
         if file_endian_override:
@@ -1912,18 +1906,33 @@ def write_file(merged_defs, tag_dict, obfuscation_buffer, file_path="", engine_t
         tag_groups = tag_common.h2_tag_groups
         tag_extensions = tag_common.h2_tag_extensions
         postprocess_functions =  h2_postprocess_functions
+        upgrade_functions =  h1_upgrade_functions
+        downgrade_functions = None
 
     update_interface(FileModeEnum.write, file_endian)
 
-    file_extension = file_path.rsplit(".", 1)[1]
+    file_extension = ""
+    tag_group = ""
+    if file_path is not None:
+        result = file_path.rsplit(".", 1)
+        if len(result) > 1:
+            file_extension = result[1]
+            tag_group = tag_extensions.get(file_extension)
 
-    tag_group = tag_extensions.get(file_extension)
     tag_extension = file_extension
     tag_header = tag_dict.get("Header")
     if tag_header is not None:
-        tag_group = tag_header["tag group"] 
+        tag_group = tag_header["tag group"]
         tag_extension = tag_groups.get(tag_group)
 
+        
+        upgrade_function = upgrade_functions.get(tag_group)
+        if tag_header["engine tag"] == "blam" and engine_tag is not tag_common.EngineTag.H1Latest.value:
+            tag_dict = upgrade_function(tag_dict, tag_common.EngineTag)
+            tag_header = tag_dict.get("Header")
+
+        tag_group = tag_header["tag group"]
+        tag_extension = tag_groups.get(tag_group)
         tag_def = merged_defs.get(tag_group)
 
     else:
@@ -1943,6 +1952,12 @@ def write_file(merged_defs, tag_dict, obfuscation_buffer, file_path="", engine_t
             "plugin handle": -1, 
             "engine tag": engine_tag
             }
+
+    if file_path is None:
+        path_basename = os.path.basename(tag_dict["TagName"])
+        path_dirname = os.path.dirname(tag_dict["TagName"])
+        filename_no_ext = path_basename.rsplit('.', 1)[0]
+        file_path = os.path.join(path_dirname, "%s_blender.%s" % (filename_no_ext, tag_extension))
 
     sound_hack = False
     if tag_group == "snd!" and not PRESERVE_VERSION:
@@ -2031,7 +2046,7 @@ def write_file(merged_defs, tag_dict, obfuscation_buffer, file_path="", engine_t
     tag_header["engine tag"] = string_to_bytes(tag_header["engine tag"], file_endian)
 
     combined_streams = io.BytesIO()
-    if not engine_tag == EngineTag.H1Latest.value:
+    if not engine_tag == tag_common.EngineTag.H1Latest.value:
         tag_block_header_stream = io.BytesIO(b"\x00" * tag_block_header_size)
         if tag_group == "vrtx" and tag_block_header["size"] == 20:
             tag_block_header["version"] = 0
@@ -2069,11 +2084,11 @@ def h1_single_tag():
     output_path = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\1\Vanilla\tags\tutorial.scenario"
     tag_directory = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\1\Vanilla\tags"
 
-    tag_dict = read_file(merged_defs, tag_directory, read_path, engine_tag=EngineTag.H1Latest.value)
+    tag_dict = read_file(merged_defs, tag_directory, read_path, engine_tag=tag_common.EngineTag.H1Latest.value)
     with open(os.path.join(os.path.dirname(output_path), "%s.json" % os.path.basename(output_path).rsplit(".", 1)[0]), 'w', encoding ='utf8') as json_file:
         json.dump(tag_dict, json_file, ensure_ascii = True, indent=4)
 
-    write_file(merged_defs, tag_dict, obfuscation_buffer_prepare(), output_path, engine_tag=EngineTag.H1Latest.value)
+    write_file(merged_defs, tag_dict, obfuscation_buffer_prepare(), output_path, engine_tag=tag_common.EngineTag.H1Latest.value)
 
 def h1_single_json():
     output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h1_merged_output")
@@ -2084,7 +2099,7 @@ def h1_single_json():
     with open(r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\1\Vanilla\tags\tag2.json", "r", encoding="utf8") as json_file:
         tag_dict = json.load(json_file)
 
-        write_file(merged_defs, tag_dict, obfuscation_buffer_prepare(), output_path, engine_tag=EngineTag.H1Latest.value)
+        write_file(merged_defs, tag_dict, obfuscation_buffer_prepare(), output_path, engine_tag=tag_common.EngineTag.H1Latest.value)
 
 def h2_single_tag():
     output_dir = os.path.join(os.path.dirname(tag_common.h2_defs_directory), "h2_merged_output")
@@ -2146,7 +2161,7 @@ def h1_directory():
                     output_path = os.path.join(output_dir, file)
 
                     try:
-                        tag_dict = read_file(merged_defs, input_dir, read_path, engine_tag=EngineTag.H1Latest.value)
+                        tag_dict = read_file(merged_defs, input_dir, read_path, engine_tag=tag_common.EngineTag.H1Latest.value)
                         if DUMP_JSON:
                             try:
                                 json_filename = os.path.basename(output_path).rsplit(".", 1)[0] + ".json"
@@ -2161,7 +2176,7 @@ def h1_directory():
                                 traceback.print_exc(file=log_file)
 
                         try:
-                            write_file(merged_defs, tag_dict, obfuscation_buffer, output_path, engine_tag=EngineTag.H1Latest.value)
+                            write_file(merged_defs, tag_dict, obfuscation_buffer, output_path, engine_tag=tag_common.EngineTag.H1Latest.value)
                             
                             # Hash check after write
                             original_hash = compute_file_hash(read_path)
@@ -2471,9 +2486,27 @@ def print_skeleton_info():
     read_path = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\1\Vanilla\tags\characters\cyborg\cyborg.gbxmodel"
     tag_directory = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\1\Vanilla\tags"
 
-    tag_dict = read_file(merged_defs, tag_directory, read_path, engine_tag=EngineTag.H1Latest.value)
+    tag_dict = read_file(merged_defs, tag_directory, read_path, engine_tag=tag_common.EngineTag.H1Latest.value)
     node_count = len(tag_dict["Data"]["nodes"])
     node_checksum = tag_dict["Data"]["node list checksum"]
     print("(%s, %s): (" % (node_count, node_checksum))
     for node in tag_dict["Data"]["nodes"]:
         print('        ["%s",        %s, %s, %s],' % (node["name"], node["first child node"], node["next sibling node"], node["parent node"]))
+
+def process_tag(read_path, tag_directory, read_engine=tag_common.EngineTag.H1Latest.value, write_engine=tag_common.EngineTag.H1Latest.value):
+    h1_output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h1_merged_output")
+    h1_merged_defs = h1.generate_defs(tag_common.h1_defs_directory, h1_output_dir)
+
+    h2_output_dir = os.path.join(os.path.dirname(tag_common.h2_defs_directory), "h2_merged_output")
+    h2_merged_defs = h1.generate_defs(tag_common.h2_defs_directory, h2_output_dir)
+
+    read_merged_defs = h1_merged_defs
+    if read_engine is not tag_common.EngineTag.H1Latest.value:
+        read_merged_defs = h2_merged_defs
+
+    write_merged_defs = h1_merged_defs
+    if write_engine is not tag_common.EngineTag.H1Latest.value:
+        write_merged_defs = h2_merged_defs
+
+    tag_dict = read_file(read_merged_defs, tag_directory, read_path, engine_tag=read_engine)
+    write_file(write_merged_defs, tag_dict, obfuscation_buffer_prepare(), None, engine_tag=write_engine)

@@ -26,6 +26,8 @@
 
 import os
 
+from enum import Flag, Enum, auto
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 h1_defs_directory = os.path.join(current_dir, "layouts", "h1")
 h2_defs_directory = os.path.join(current_dir, "layouts", "h2")
@@ -368,3 +370,16 @@ float_fields = (
     "Rectangle2D",
     "Matrix3x3"
 )
+
+class EngineTag(Enum):
+    # halo 1 types
+    H1 = "blam"
+    H1Latest = H1
+    # halo 2 types
+    H2V1 = "ambl"
+    H2V2 = "LAMB"
+    H2V3 = "MLAB"
+    H2V4 = "BLM!"
+    H2Latest = H2V4
+
+engine_tag_values = {e.value for e in EngineTag}
