@@ -63,7 +63,7 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
             output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h1_merged_output")
             tag_groups = tag_common.h1_tag_groups
             tag_extensions = tag_common.h1_tag_extensions
-            engine_tag = tag_interface.EngineTag.H1Latest.value
+            engine_tag = tag_common.EngineTag.H1Latest.value
             merged_defs = h1.generate_defs(tag_common.h1_defs_directory, output_dir)
             tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path
             
@@ -71,7 +71,7 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, repo
             output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h2_merged_output")
             tag_groups = tag_common.h2_tag_groups
             tag_extensions = tag_common.h2_tag_extensions
-            engine_tag = tag_interface.EngineTag.H2Latest.value
+            engine_tag = tag_common.EngineTag.H2Latest.value
             merged_defs = h2.generate_defs(tag_common.h2_defs_directory, output_dir)
             tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path
         else:

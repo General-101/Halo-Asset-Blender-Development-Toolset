@@ -25,6 +25,10 @@
 # ##### END MIT LICENSE BLOCK #####
 
 from .h1_functions.biped import upgrade_biped
+from .h1_functions.bitmap import upgrade_bitmap
+from .h1_functions.contrail import upgrade_contrail
+from .h1_functions.damage_effect import upgrade_damage_effect
+from .h1_functions.decal import upgrade_decal
 
 upgrade_functions = {
     "actr": None,
@@ -32,14 +36,14 @@ upgrade_functions = {
     "ant!": None,
     "antr": None,
     "bipd": upgrade_biped,
-    "bitm": None,
+    "bitm": upgrade_bitmap,
     "boom": None,
     "cdmg": None,
     "coll": None,
     "colo": None,
-    "cont": None,
+    "cont": upgrade_contrail,
     "ctrl": None,
-    "deca": None,
+    "deca": upgrade_decal,
     "DeLa": None,
     "devc": None,
     "devi": None,
@@ -59,7 +63,7 @@ upgrade_functions = {
     "hudg": None,
     "item": None,
     "itmc": None,
-    "jpt!": None,
+    "jpt!": upgrade_damage_effect,
     "lens": None,
     "lifi": None,
     "ligh": None,

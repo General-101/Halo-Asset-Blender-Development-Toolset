@@ -107,9 +107,10 @@ def convert_flags(bitmap_flags):
 
     return flags
 
-def upgrade_bitmap(h1_bitm_asset, report):
+def upgrade_bitmap(h1_bitm_asset, EngineTag):
+    h1_bitm_data = h1_bitm_asset["Data"]
     repeat_value = 10
-    h1_bump_height = h1_bitm_asset["Data"]["bump height"]
+    h1_bump_height = h1_bitm_data["bump height"]
     str_bump_height = str(h1_bump_height).split(".", 1)[1]
     for char in str_bump_height:
         if char == "0":
@@ -121,21 +122,37 @@ def upgrade_bitmap(h1_bitm_asset, report):
     h2_bump_height = h1_bump_height * repeat_value
 
     h2_bitm_asset = {
+        "TagName": h1_bitm_asset["TagName"],
+        "Header": {
+            "unk1": 0, 
+            "flags": 0, 
+            "tag type": 0, 
+            "name": "", 
+            "tag group": "bitm", 
+            "checksum": 0, 
+            "data offset": 64, 
+            "data length": 0, 
+            "unk2": 0, 
+            "version": 7, 
+            "destination": 0, 
+            "plugin handle": -1, 
+            "engine tag": EngineTag.H2Latest.value
+        },
         "Data": {
-            "type": {"type": "ShortEnum", "value": h1_bitm_asset["Data"]["type"]["value"], "value name": ""},
-            "format": {"type": "ShortEnum", "value": convert_format(h1_bitm_asset["Data"]["encoding format"]["value"]), "value name": ""},
-            "usage": {"type": "ShortEnum", "value": h1_bitm_asset["Data"]["usage"]["value"], "value name": ""},
-            "flags": convert_flags(h1_bitm_asset["Data"]["flags"]),
-            "detail fade factor": h1_bitm_asset["Data"]["detail fade factor"],
-            "sharpen amount": h1_bitm_asset["Data"]["sharpen amount"],
+            "type": {"type": "ShortEnum", "value": h1_bitm_data["type"]["value"], "value name": ""},
+            "format": {"type": "ShortEnum", "value": convert_format(h1_bitm_data["encoding format"]["value"]), "value name": ""},
+            "usage": {"type": "ShortEnum", "value": h1_bitm_data["usage"]["value"], "value name": ""},
+            "flags": convert_flags(h1_bitm_data["flags"]),
+            "detail fade factor": h1_bitm_data["detail fade factor"],
+            "sharpen amount": h1_bitm_data["sharpen amount"],
             "bump height": h2_bump_height,
-            "ShortEnum": {"type": "ShortEnum", "value": h1_bitm_asset["Data"]["size"]["value"], "value name": ""},
-            "ShortInteger": h1_bitm_asset["Data"]["count"],
-            "blur filter size": h1_bitm_asset["Data"]["blur filter size"],
-            "alpha bias": h1_bitm_asset["Data"]["alpha bias"],
-            "mipmap count": h1_bitm_asset["Data"]["mipmap count"],
-            "sprite usage": {"type": "ShortEnum", "value": h1_bitm_asset["Data"]["usage_1"]["value"], "value name": ""},
-            "sprite spacing": h1_bitm_asset["Data"]["spacing"]
+            "ShortEnum": {"type": "ShortEnum", "value": h1_bitm_data["size"]["value"], "value name": ""},
+            "ShortInteger": h1_bitm_data["count"],
+            "blur filter size": h1_bitm_data["blur filter size"],
+            "alpha bias": h1_bitm_data["alpha bias"],
+            "mipmap count": h1_bitm_data["mipmap count"],
+            "sprite usage": {"type": "ShortEnum", "value": h1_bitm_data["usage_1"]["value"], "value name": ""},
+            "sprite spacing": h1_bitm_data["spacing"]
         }
     }
 

@@ -213,7 +213,7 @@ def generate_seats(dump_dic):
             "pitch auto-level": seat_element["pitch auto level"],
             "pitch range": seat_element["pitch range"],
             "camera tracks": seat_element["camera tracks"],
-            "unit hud interface": seat_element["unit hud interface"],
+            "unit hud interface": seat_element["hud interface"],
             "enter seat string": "",
             "yaw minimum": seat_element["yaw minimum"],
             "yaw maximum": seat_element["yaw maximum"],

@@ -236,7 +236,7 @@ def upgrade_biped(h1_biped_asset, EngineTag):
             "name": "", 
             "tag group": "bipd", 
             "checksum": 0, 
-            "data offset": 0, 
+            "data offset": 64, 
             "data length": 0, 
             "unk2": 0, 
             "version": 3, 

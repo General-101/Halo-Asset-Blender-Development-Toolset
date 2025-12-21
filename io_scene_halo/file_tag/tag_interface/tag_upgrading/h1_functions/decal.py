@@ -27,10 +27,8 @@
 import json
 
 from enum import Flag, Enum, auto
-from ....global_functions import tag_format, shader_processing
-from ....file_tag.h2.file_decal.format import DecalAsset, LayerEnum
 
-class _20030504_FramebufferBlendFunctionEnum(Enum):
+class FramebufferBlendFunctionEnum(Enum):
     alpha_blend = 0
     multiply = auto()
     double_multiply = auto()
@@ -40,67 +38,80 @@ class _20030504_FramebufferBlendFunctionEnum(Enum):
     component_max = auto()
     alpha_multiply_add = auto()
 
+class LayerEnum(Enum):
+    lit_alpha_blend_prelight = 0
+    lit_alpha_blend = auto()
+    double_multiply = auto()
+    multiply = auto()
+    max_layer = auto()
+    add = auto()
+    error = auto()
+
 def convert_legacy_layer(blend_index):
     h2_blend_index = 0
-    h1_blend = _20030504_FramebufferBlendFunctionEnum(blend_index)
-    if h1_blend == _20030504_FramebufferBlendFunctionEnum.alpha_blend:
+    h1_blend = FramebufferBlendFunctionEnum(blend_index)
+    if h1_blend == FramebufferBlendFunctionEnum.alpha_blend:
         h2_blend_index = LayerEnum.lit_alpha_blend.value
-    elif h1_blend == _20030504_FramebufferBlendFunctionEnum.multiply:
+    elif h1_blend == FramebufferBlendFunctionEnum.multiply:
         h2_blend_index = LayerEnum.multiply.value
-    elif h1_blend == _20030504_FramebufferBlendFunctionEnum.double_multiply:
+    elif h1_blend == FramebufferBlendFunctionEnum.double_multiply:
         h2_blend_index = LayerEnum.double_multiply.value
-    elif h1_blend == _20030504_FramebufferBlendFunctionEnum.add:
+    elif h1_blend == FramebufferBlendFunctionEnum.add:
         h2_blend_index = LayerEnum.add.value
-    elif h1_blend == _20030504_FramebufferBlendFunctionEnum.subtract:
+    elif h1_blend == FramebufferBlendFunctionEnum.subtract:
         h2_blend_index = LayerEnum.add.value
-    elif h1_blend == _20030504_FramebufferBlendFunctionEnum.component_min:
-        h2_blend_index = LayerEnum.max.value
-    elif h1_blend == _20030504_FramebufferBlendFunctionEnum.component_max:
-        h2_blend_index = LayerEnum.max.value
-    elif h1_blend == _20030504_FramebufferBlendFunctionEnum.alpha_multiply_add:
+    elif h1_blend == FramebufferBlendFunctionEnum.component_min:
+        h2_blend_index = LayerEnum.max_layer.value
+    elif h1_blend == FramebufferBlendFunctionEnum.component_max:
+        h2_blend_index = LayerEnum.max_layer.value
+    elif h1_blend == FramebufferBlendFunctionEnum.alpha_multiply_add:
         h2_blend_index = LayerEnum.multiply.value
 
     return h2_blend_index
 
-def upgrade_decal(H2_ASSET, patch_txt_path, report):
-    dump_dic = json.load(H2_ASSET)
+def upgrade_decal(h1_deca_asset, EngineTag):
+    h1_deca_data = h1_deca_asset["Data"]
 
-    TAG = tag_format.TagAsset()
-    DECAL = DecalAsset()
-    TAG.upgrade_patches = tag_format.get_patch_set(patch_txt_path)
+    h2_deca_asset = {
+        "TagName": h1_deca_asset["TagName"],
+        "Header": {
+            "unk1": 0,
+            "flags": 0,
+            "tag type": 0,
+            "name": "",
+            "tag group": "deca",
+            "checksum": 0,
+            "data offset": 64,
+            "data length": 0,
+            "unk2": 0,
+            "version": 1,
+            "destination": 0,
+            "plugin handle": -1,
+            "engine tag": EngineTag.H2Latest.value
+        },
+        "Data": {
+            "flags": h1_deca_data["flags"],
+            "type": {
+                "type": "ShortEnum",
+                "value": h1_deca_data["type"]["value"],
+                "value name": ""
+            },
+            "layer": {
+                "type": "ShortEnum",
+                "value": convert_legacy_layer(h1_deca_data["framebuffer blend function"]["value"]),
+                "value name": ""
+            },
+            "max overlapping count": 8,
+            "next decal in chain": h1_deca_data["next decal in chain"],
+            "radius": h1_deca_data["radius"],
+            "radius overlap rejection": 0.75,
+            "color lower bounds": h1_deca_data["color lower bound"],
+            "color upper bounds": h1_deca_data["color upper bound"],
+            "lifetime": h1_deca_data["lifetime"],
+            "decay time": h1_deca_data["decay time"],
+            "bitmap": h1_deca_data["map"],
+            "maximum sprite extent": h1_deca_data["maximum sprite extent"]
+        }
+    }
 
-    DECAL.header = TAG.Header()
-    DECAL.header.unk1 = 0
-    DECAL.header.flags = 0
-    DECAL.header.type = 0
-    DECAL.header.name = ""
-    DECAL.header.tag_group = "deca"
-    DECAL.header.checksum = 0
-    DECAL.header.data_offset = 64
-    DECAL.header.data_length = 0
-    DECAL.header.unk2 = 0
-    DECAL.header.version = 1
-    DECAL.header.destination = 0
-    DECAL.header.plugin_handle = -1
-    DECAL.header.engine_tag = "BLM!"
-
-    radius = dump_dic['Data']['Radius']
-    lifetime = dump_dic['Data']['Lifetime']
-    decay_time = dump_dic['Data']['Decay Time']
-
-    DECAL.body_header = TAG.TagBlockHeader("tbfd", 0, 1, 188)
-    DECAL.flags = dump_dic['Data']['Flags']
-    DECAL.decal_type = dump_dic['Data']['Type']['Value']
-    DECAL.layer = convert_legacy_layer(dump_dic['Data']['Framebuffer Blend Function']['Value'])
-    DECAL.max_overlapping_count = 8
-    DECAL.next_decal_in_chain = TAG.TagRef().convert_from_json(dump_dic['Data']['Next Decal In Chain'])
-    DECAL.radius = (radius["Min"], radius["Max"])
-    DECAL.radius_overlap_rejection = 0.75
-    DECAL.color_lower_bounds = shader_processing.get_rgb_percentage(dump_dic['Data']["Color Lower Bounds"])
-    DECAL.color_upper_bounds = shader_processing.get_rgb_percentage(dump_dic['Data']["Color Upper Bounds"])
-    DECAL.lifetime = (lifetime["Min"], lifetime["Max"])
-    DECAL.decay_time = (decay_time["Min"], decay_time["Max"])
-    DECAL.bitmap = TAG.TagRef().convert_from_json(dump_dic['Data']['Map'])
-    DECAL.maximum_sprite_extent = dump_dic['Data']['Maximum Sprite Extent']
-
-    return DECAL
+    return h2_deca_asset

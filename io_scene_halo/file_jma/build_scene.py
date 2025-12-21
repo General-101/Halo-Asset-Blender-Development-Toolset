@@ -332,7 +332,7 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
         output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h1_merged_output")
         tag_groups = tag_common.h1_tag_groups
         tag_extensions = tag_common.h1_tag_extensions
-        engine_tag = tag_interface.EngineTag.H1Latest.value
+        engine_tag = tag_common.EngineTag.H1Latest.value
         merged_defs = h1.generate_defs(tag_common.h1_defs_directory, output_dir)
         tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path
         data_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path

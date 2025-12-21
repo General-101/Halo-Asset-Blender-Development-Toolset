@@ -24,97 +24,110 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import json
+def generate_point_states(dump_dic):
+    point_states_block = []
+    for point_state_element in dump_dic["Data"]["point states"]:
+        point_state_dict = {
+            "duration": point_state_element["duration"],
+            "transition duration": point_state_element["transition duration"],
+            "physics": point_state_element["physics"],
+            "width": point_state_element["width"],
+            "color lower bound": point_state_element["color lower bound"],
+            "color upper bound": point_state_element["color upper bound"],
+            "scale flags": point_state_element["scale flags"]
+        }
+        
+        point_states_block.append(point_state_dict)
 
-from ....global_functions import tag_format, shader_processing
-from ....file_tag.h2.file_contrail.format import ContrailAsset
+    return point_states_block
 
-def generate_point_states(dump_dic, TAG, CONTRAIL):
-    point_states_tag_block = dump_dic['Data']['Point States']
+def upgrade_contrail(h1_cont_asset, EngineTag):
+    h1_cont_data = h1_cont_asset["Data"]
 
-    for point_state_element in point_states_tag_block:
-        duration = point_state_element['Duration']
-        transition_duration = point_state_element['Transition Duration']
+    h2_cont_asset = {
+        "TagName": h1_cont_asset["TagName"],
+        "Header": {
+            "unk1": 0, 
+            "flags": 0, 
+            "tag type": 0, 
+            "name": "", 
+            "tag group": "cont", 
+            "checksum": 0, 
+            "data offset": 64, 
+            "data length": 0, 
+            "unk2": 0, 
+            "version": 3, 
+            "destination": 0, 
+            "plugin handle": -1, 
+            "engine tag": EngineTag.H2Latest.value
+        },
+        "Data": {
+            "flags": h1_cont_data["flags"],
+            "scale flags": h1_cont_data["scale flags"],
+            "point generation rate": h1_cont_data["point generation rate"],
+            "point velocity": h1_cont_data["point velocity"],
+            "point velocity cone angle": h1_cont_data["point velocity cone angle"],
+            "inherited velocity fraction": h1_cont_data["inherited velocity fraction"],
+            "render type": {
+                "type": "ShortEnum",
+                "value": h1_cont_data["render type"]["value"],
+                "value name": ""
+            },
+            "texture repeats u": h1_cont_data["texture repeats u"],
+            "texture repeats v": h1_cont_data["texture repeats v"],
+            "texture animation u": h1_cont_data["texture animation u"],
+            "texture animation v": h1_cont_data["texture animation v"],
+            "animation rate": h1_cont_data["animation rate"],
+            "bitmap": h1_cont_data["bitmap"],
+            "first sequence index": h1_cont_data["first sequence index"],
+            "sequence count": h1_cont_data["sequence count"],
+            "shader flags": h1_cont_data["shader flags"],
+            "framebuffer blend function": {
+                "type": "ShortEnum",
+                "value": h1_cont_data["framebuffer blend function"]["value"],
+                "value name": ""
+            },
+            "framebuffer fade mode": {
+                "type": "ShortEnum",
+                "value": h1_cont_data["framebuffer fade mode"]["value"],
+                "value name": ""
+            },
+            "map flags": h1_cont_data["map flags"],
+            "bitmap_1": h1_cont_data["bitmap_1"],
+            "anchor": {
+                "type": "ShortEnum",
+                "value": h1_cont_data["anchor"]["value"],
+                "value name": ""
+            },
+            "flags_1": h1_cont_data["flags_2"],
+            "u-animation function": {
+                "type": "ShortEnum",
+                "value": h1_cont_data["u animation function"]["value"],
+                "value name": ""
+            },
+            "u-animation period": h1_cont_data["u animation period"],
+            "u-animation phase": h1_cont_data["u animation phase"],
+            "u-animation scale": h1_cont_data["u animation scale"],
+            "v-animation function": {
+                "type": "ShortEnum",
+                "value": h1_cont_data["v animation function"]["value"],
+                "value name": ""
+            },
+            "v-animation period": h1_cont_data["v animation period"],
+            "v-animation phase": h1_cont_data["v animation phase"],
+            "v-animation scale": h1_cont_data["v animation scale"],
+            "rotation-animation function": {
+                "type": "ShortEnum",
+                "value": h1_cont_data["rotation animation function"]["value"],
+                "value name": ""
+            },
+            "rotation-animation period": h1_cont_data["rotation animation period"],
+            "rotation-animation phase": h1_cont_data["rotation animation phase"],
+            "rotation-animation scale": h1_cont_data["rotation animation scale"],
+            "rotation-animation center": h1_cont_data["rotation animation center"],
+            "zsprite radius scale": h1_cont_data["zsprite radius scale"],
+            "point states": generate_point_states(h1_cont_asset)
+        }
+    }
 
-        point_state = CONTRAIL.PointState()
-        point_state.duration = (duration["Min"], duration["Max"])
-        point_state.transition_duration = (transition_duration["Min"], transition_duration["Max"])
-        point_state.physics = TAG.TagRef().convert_from_json(point_state_element['Physics'])
-        point_state.width = point_state_element['Width']
-        point_state.color_lower_bound = shader_processing.get_rgb_percentage(point_state_element["Color Lower Bound"])
-        point_state.color_upper_bound = shader_processing.get_rgb_percentage(point_state_element["Color Upper Bound"])
-        point_state.scale_flags = point_state_element['Scale Flags']
-
-        CONTRAIL.point_states.append(point_state)
-
-    point_state_count = len(CONTRAIL.point_states)
-    CONTRAIL.point_states_header = TAG.TagBlockHeader("tbfd", 0, point_state_count, 72)
-
-    return TAG.TagBlock(point_state_count)
-
-def upgrade_contrail(H2_ASSET, patch_txt_path, report):
-    dump_dic = json.load(H2_ASSET)
-
-    TAG = tag_format.TagAsset()
-    CONTRAIL = ContrailAsset()
-    TAG.upgrade_patches = tag_format.get_patch_set(patch_txt_path)
-
-    CONTRAIL.header = TAG.Header()
-    CONTRAIL.header.unk1 = 0
-    CONTRAIL.header.flags = 0
-    CONTRAIL.header.type = 0
-    CONTRAIL.header.name = ""
-    CONTRAIL.header.tag_group = "cont"
-    CONTRAIL.header.checksum = 0
-    CONTRAIL.header.data_offset = 64
-    CONTRAIL.header.data_length = 0
-    CONTRAIL.header.unk2 = 0
-    CONTRAIL.header.version = 3
-    CONTRAIL.header.destination = 0
-    CONTRAIL.header.plugin_handle = -1
-    CONTRAIL.header.engine_tag = "BLM!"
-
-    CONTRAIL.point_states = []
-
-    point_velocity = dump_dic['Data']['Point Velocity']
-
-    CONTRAIL.body_header = TAG.TagBlockHeader("tbfd", 0, 1, 260)
-    CONTRAIL.flags = dump_dic['Data']['Flags']
-    CONTRAIL.scale_flags = dump_dic['Data']['Scale Flags']
-    CONTRAIL.point_generation_rate = dump_dic['Data']['Point Generation Rate']
-    CONTRAIL.point_velocity = (point_velocity["Min"], point_velocity["Max"])
-    CONTRAIL.point_velocity_cone_angle = dump_dic['Data']['Point Velocity Cone Angle']
-    CONTRAIL.inherited_velocity_fraction = dump_dic['Data']['Inherited Velocity Fraction']
-    CONTRAIL.render_type = dump_dic['Data']['Render Type']['Value']
-    CONTRAIL.texture_repeats_u = dump_dic['Data']['Texture Repeats U']
-    CONTRAIL.texture_repeats_v = dump_dic['Data']['Texture Repeats V']
-    CONTRAIL.texture_animation_u = dump_dic['Data']['Texture Animation U']
-    CONTRAIL.texture_animation_v = dump_dic['Data']['Texture Animation V']
-    CONTRAIL.animation_rate = dump_dic['Data']['Animation Rate']
-    CONTRAIL.render_bitmap = TAG.TagRef().convert_from_json(dump_dic['Data']['Bitmap'])
-    CONTRAIL.first_sequence_index = dump_dic['Data']['First Sequence Index']
-    CONTRAIL.sequence_count = dump_dic['Data']['Sequence Count']
-    CONTRAIL.shader_flags = dump_dic['Data']['Shader Flags']
-    CONTRAIL.framebuffer_blend_function = dump_dic['Data']['Framebuffer Blend Function']['Value']
-    CONTRAIL.framebuffer_fade_mode = dump_dic['Data']['Framebuffer Fade Mode']['Value']
-    CONTRAIL.map_flags = dump_dic['Data']['Map Flags']
-    CONTRAIL.secondary_bitmap = TAG.TagRef().convert_from_json(dump_dic['Data']['Secondary Bitmap'])
-    CONTRAIL.anchor = dump_dic['Data']['Anchor']['Value']
-    CONTRAIL.secondary_flags = dump_dic['Data']['Secondary Flags']
-    CONTRAIL.u_animation_function = dump_dic['Data']['U-Animation Function']['Value']
-    CONTRAIL.u_animation_period = dump_dic['Data']['U-Animation Period']
-    CONTRAIL.u_animation_phase = dump_dic['Data']['U-Animation Phase']
-    CONTRAIL.u_animation_scale = dump_dic['Data']['U-Animation Scale']
-    CONTRAIL.v_animation_function = dump_dic['Data']['V-Animation Function']['Value']
-    CONTRAIL.v_animation_period = dump_dic['Data']['V-Animation Period']
-    CONTRAIL.v_animation_phase = dump_dic['Data']['V-Animation Phase']
-    CONTRAIL.v_animation_scale = dump_dic['Data']['V-Animation Scale']
-    CONTRAIL.rotation_animation_function = dump_dic['Data']['Rotation-Animation Function']['Value']
-    CONTRAIL.rotation_animation_period = dump_dic['Data']['Rotation-Animation Period']
-    CONTRAIL.rotation_animation_phase = dump_dic['Data']['Rotation-Animation Phase']
-    CONTRAIL.rotation_animation_scale = dump_dic['Data']['Rotation-Animation Scale']
-    CONTRAIL.rotation_animation_center = dump_dic['Data']['Rotation-Animation Center']
-    CONTRAIL.zsprite_radius_scale = dump_dic['Data']['Zsprite Radius Scale']
-    CONTRAIL.point_states_tag_block = generate_point_states(dump_dic, TAG, CONTRAIL)
-
-    return CONTRAIL
+    return h2_cont_asset

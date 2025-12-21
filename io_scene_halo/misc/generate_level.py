@@ -1156,7 +1156,7 @@ def generate_level(context, game_title, level_seed, level_theme, level_damage, l
         os.makedirs(os.path.dirname(output_directory))
 
     output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h1_merged_output")
-    engine_tag = tag_interface.EngineTag.H1Latest.value
+    engine_tag = tag_common.EngineTag.H1Latest.value
     merged_defs = h1.generate_defs(tag_common.h1_defs_directory, output_dir)
 
     output_file = os.path.join(output_directory, "maze_gen.scenario")

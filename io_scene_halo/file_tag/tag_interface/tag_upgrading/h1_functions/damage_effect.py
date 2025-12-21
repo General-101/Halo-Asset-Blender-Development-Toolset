@@ -24,145 +24,317 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import json
+import io
+import struct
 
 from enum import Flag, Enum, auto
-from ....global_functions import tag_format, shader_processing
-from ....file_tag.h2.file_damage_effect.format import DamageEffectAsset, FunctionTypeEnum as DamageFunctionTypeEnum
-from ....file_tag.h2.file_shader.format import FunctionTypeEnum
 
-class _20030504_FunctionEnum(Enum):
-    linear = 0
-    early = auto()
-    very_early = auto()
-    late = auto()
-    very_late = auto()
-    cosine = auto()
+class FunctionTypeEnum(Enum):
+    identity = 0
+    constant = auto()
+    transition = auto()
+    periodic = auto()
+    linear = auto()
+    linear_key = auto()
+    multi_linear_key = auto()
+    spline = auto()
+    multi_spline = auto()
+    exponent = auto()
+    spline2 = auto()
 
-def convert_legacy_function(function_index):
-    h2_function_index = 0
-    h1_function = _20030504_FunctionEnum(function_index)
-    if h1_function == _20030504_FunctionEnum.linear:
-        h2_function_index = DamageFunctionTypeEnum.linear.value
-    elif h1_function == _20030504_FunctionEnum.early:
-        h2_function_index = DamageFunctionTypeEnum.early.value
-    elif h1_function == _20030504_FunctionEnum.very_early:
-        h2_function_index = DamageFunctionTypeEnum.very_early.value
-    elif h1_function == _20030504_FunctionEnum.late:
-        h2_function_index = DamageFunctionTypeEnum.late.value
-    elif h1_function == _20030504_FunctionEnum.very_late:
-        h2_function_index = DamageFunctionTypeEnum.very_late.value
-    elif h1_function == _20030504_FunctionEnum.cosine:
-        h2_function_index = DamageFunctionTypeEnum.cosine.value
+class MappingFlags(Flag):
+    scalar_intensity = 0
+    _range = 1
+    constant = 16
+    _2_color = 32
+    _3_color = 48
+    _4_color = 64
 
-    return h2_function_index
+def read_byte(function_stream, endian_override):
+    struct_string = '%sb' % endian_override
+    return (struct.unpack(struct_string, function_stream.read(1)))[0]
 
-def upgrade_damage_effect(H2_ASSET, patch_txt_path, report):
-    dump_dic = json.load(H2_ASSET)
+def read_real(function_stream, endian_override):
+    struct_string = '%sf' % endian_override
+    return (struct.unpack(struct_string, function_stream.read(4)))[0]
 
-    TAG = tag_format.TagAsset()
-    DAMAGEEFFECT = DamageEffectAsset()
-    TAG.upgrade_patches = tag_format.get_patch_set(patch_txt_path)
+def read_bgra(function_stream, endian_override):
+    struct_string = '%s4B' % endian_override
+    a, r, g, b = struct.unpack(struct_string, function_stream.read(4))[::-1]
+    return {"A": a/255,"R": r/255, "G": g/255, "B": b/255}
 
-    DAMAGEEFFECT.header = TAG.Header()
-    DAMAGEEFFECT.header.unk1 = 0
-    DAMAGEEFFECT.header.flags = 0
-    DAMAGEEFFECT.header.type = 0
-    DAMAGEEFFECT.header.name = ""
-    DAMAGEEFFECT.header.tag_group = "jpt!"
-    DAMAGEEFFECT.header.checksum = 0
-    DAMAGEEFFECT.header.data_offset = 64
-    DAMAGEEFFECT.header.data_length = 0
-    DAMAGEEFFECT.header.unk2 = 0
-    DAMAGEEFFECT.header.version = 6
-    DAMAGEEFFECT.header.destination = 0
-    DAMAGEEFFECT.header.plugin_handle = -1
-    DAMAGEEFFECT.header.engine_tag = "BLM!"
+def read_real_point_2d(function_stream, endian_override):
+    struct_string = '%s2f' % endian_override
+    return (struct.unpack(struct_string, function_stream.read(8)))
 
-    DAMAGEEFFECT.player_responses = []
+def write_real(function_stream, endian_override, value):
+    struct_string = '%sf' % endian_override
+    function_stream.write(struct.pack(struct_string, value))
 
-    radius = dump_dic['Data']['Radius']
-    damage_upper_bound = dump_dic['Data']['Damage Upper Bound']
-    ai_stun_bounds = dump_dic['Data']['Ai Stun Bounds']
-    jitter = dump_dic['Data']['Jitter']
+def write_bgra(function_stream, endian_override, argb):
+    struct_string = '%s4B' % endian_override
+    function_stream.write(struct.pack(struct_string, *reversed(argb.values())))
 
-    DAMAGEEFFECT.body_header = TAG.TagBlockHeader("tbfd", 1, 1, 212)
-    DAMAGEEFFECT.radius = (radius["Min"], radius["Max"])
-    DAMAGEEFFECT.cutoff_scale = dump_dic['Data']['Cutoff Scale']
-    DAMAGEEFFECT.flags = dump_dic['Data']['Flags']
-    DAMAGEEFFECT.side_effect = dump_dic['Data']['Side Effect']['Value']
-    DAMAGEEFFECT.category = dump_dic['Data']['Category']['Value']
-    DAMAGEEFFECT.damage_flags = dump_dic['Data']['Damage Flags']
-    DAMAGEEFFECT.aoe_core_radius = dump_dic['Data']['Aoe Core Radius']
-    DAMAGEEFFECT.damage_lower_bound = dump_dic['Data']['Damage Lower Bound']
-    DAMAGEEFFECT.damage_upper_bound = (damage_upper_bound["Min"], damage_upper_bound["Max"])
-    DAMAGEEFFECT.dmg_inner_cone_angle = 0.0
-    DAMAGEEFFECT.dmg_outer_cone_angle = 0.0
-    DAMAGEEFFECT.active_camouflage_damage = dump_dic['Data']['Active Camouflage Damage']
-    DAMAGEEFFECT.stun = dump_dic['Data']['Stun']
-    DAMAGEEFFECT.maximum_stun = dump_dic['Data']['Maximum Stun']
-    DAMAGEEFFECT.stun_time = dump_dic['Data']['Stun Time']
-    DAMAGEEFFECT.instantaneous_acceleration = dump_dic['Data']['Instantaneous Acceleration']
-    DAMAGEEFFECT.rider_direct_damage_scale = 0.0
-    DAMAGEEFFECT.rider_maximum_transfer_damage_scale = 0.0
-    DAMAGEEFFECT.rider_minimum_transfer_damage_scale = 0.0
-    DAMAGEEFFECT.general_damage = dump_dic['Data']['General Damage']
-    DAMAGEEFFECT.general_damage_length = len(DAMAGEEFFECT.general_damage)
-    DAMAGEEFFECT.specific_damage = dump_dic['Data']['Specific Damage']
-    DAMAGEEFFECT.specific_damage_length = len(DAMAGEEFFECT.specific_damage)
-    DAMAGEEFFECT.ai_stun_radius = dump_dic['Data']['Ai Stun Radius']
-    DAMAGEEFFECT.ai_stun_bounds = (ai_stun_bounds["Min"], ai_stun_bounds["Max"])
-    DAMAGEEFFECT.shake_radius = 0.0
-    DAMAGEEFFECT.emp_radius = 0.0
+def write_real_point_2d(function_stream, endian_override, value):
+    struct_string = '%s2f' % endian_override
+    function_stream.write(struct.pack(struct_string, *value))
 
-    player_response = DAMAGEEFFECT.PlayerResponse()
-    player_response.response_type = 0
-    player_response.flash_type = dump_dic['Data']['Type']['Value']
-    player_response.priority = dump_dic['Data']['Priority']['Value']
-    player_response.flash_duration = dump_dic['Data']['Flash Duration']
-    player_response.fade_function = convert_legacy_function(dump_dic['Data']['Flash Fade Function']['Value'])
-    player_response.maximum_intensity = dump_dic['Data']['Maximum Intensity']
-    player_response.color = shader_processing.get_rgb_percentage(dump_dic['Data']["Color"])
-    player_response.low_vibration_duration = dump_dic['Data']['Low Rumble Duration']
-    player_response.high_vibration_duration = dump_dic['Data']['High Rumble Duration']
-    player_response.effect_name = ""
-    player_response.effect_name_length = len(player_response.effect_name)
-    player_response.sound_duration = 0.0
-    player_response.functions = []
+def normalize_list(value, size, default=0):
+    if not isinstance(value, list):
+        return [default] * size
+    
+    return (value + [default] * size)[:size]
 
-    low_rumble_frequency = dump_dic['Data']['Low Rumble Frequency']
-    low_rumble_fade = dump_dic['Data']['Low Rumble Fade Function']['Value']
-    high_rumble_frequency = dump_dic['Data']['High Rumble Frequency']
-    high_rumble_fade = dump_dic['Data']['High Rumble Fade Function']['Value']
+def create_function(function_type=0, flags=0, function_1=0, function_2=0, mapping_inputs=[], function_inputs=[]):
+    data_field = []
+    endian_override = "<"
+    function_stream = io.BytesIO()
+    function_stream.write(struct.pack('%sb' % endian_override, function_type))
+    function_stream.write(struct.pack('%sb' % endian_override, flags))
+    function_stream.write(struct.pack('%sb' % endian_override, function_1))
+    function_stream.write(struct.pack('%sb' % endian_override, function_2))
+    mapping_flags = MappingFlags(flags)
+    if MappingFlags._2_color in mapping_flags:
+        color_inputs = normalize_list(mapping_inputs, 2, (0, 0, 0, 0))
+        write_bgra(function_stream, endian_override, color_inputs[0]) # Color A
+        function_stream.write(bytes(8))
+        write_bgra(function_stream, endian_override, color_inputs[1]) # Color B
 
-    shader_processing.convert_legacy_function(DAMAGEEFFECT, TAG, player_response.functions, function_type=FunctionTypeEnum.transition, function_0_type=low_rumble_fade, function_values=[0.0, low_rumble_frequency, 0.0, 1.0])
-    shader_processing.convert_legacy_function(DAMAGEEFFECT, TAG, player_response.functions, function_type=FunctionTypeEnum.transition, function_0_type=high_rumble_fade, function_values=[0.0, high_rumble_frequency, 0.0, 1.0])
-    shader_processing.convert_legacy_function(DAMAGEEFFECT, TAG, player_response.functions, function_type=FunctionTypeEnum.constant)
+    elif MappingFlags._3_color in mapping_flags:
+        color_inputs = normalize_list(mapping_inputs, 3, (0, 0, 0, 0))
+        write_bgra(function_stream, endian_override, color_inputs[0]) # Color A
+        write_bgra(function_stream, endian_override, color_inputs[1]) # Color B
+        function_stream.write(bytes(4))
+        write_bgra(function_stream, endian_override, color_inputs[2]) # Color C
 
-    DAMAGEEFFECT.player_responses.append(player_response)
+    elif MappingFlags._4_color in mapping_flags:
+        color_inputs = normalize_list(mapping_inputs, 4, (0, 0, 0, 0))
+        write_bgra(function_stream, endian_override, color_inputs[0]) # Color A
+        write_bgra(function_stream, endian_override, color_inputs[1]) # Color B
+        write_bgra(function_stream, endian_override, color_inputs[2]) # Color C
+        write_bgra(function_stream, endian_override, color_inputs[4]) # Color D
 
-    player_responses_count = len(DAMAGEEFFECT.player_responses)
-    DAMAGEEFFECT.player_response_header = TAG.TagBlockHeader("tbfd", 0, player_responses_count, 88)
-    DAMAGEEFFECT.player_responses_tag_block = TAG.TagBlock(player_responses_count)
+    else:
+        float_inputs = normalize_list(mapping_inputs, 2, 0.0)
+        write_real(function_stream, endian_override, float_inputs[0]) # Lower Bound
+        write_real(function_stream, endian_override, float_inputs[1]) # Upper Bound
+        function_stream.write(bytes(8))
 
-    DAMAGEEFFECT.impulse_duration = dump_dic['Data']['Impulse Duration']
-    DAMAGEEFFECT.fade_function = dump_dic['Data']['Fade Function']['Value']
-    DAMAGEEFFECT.rotation = dump_dic['Data']['Rotation']
-    DAMAGEEFFECT.pushback = dump_dic['Data']['Pushback']
-    DAMAGEEFFECT.jitter = (jitter["Min"], jitter["Max"])
-    DAMAGEEFFECT.shaking_duration = dump_dic['Data']['Shaking Duration']
-    DAMAGEEFFECT.falloff_function = dump_dic['Data']['Falloff Function']['Value']
-    DAMAGEEFFECT.random_translation = dump_dic['Data']['Random Translation']
-    DAMAGEEFFECT.random_rotation = dump_dic['Data']['Random Rotation']
-    DAMAGEEFFECT.wobble_function = dump_dic['Data']['Wobble Function']['Value']
-    DAMAGEEFFECT.wobble_function_period = dump_dic['Data']['Wobble Function Period']
-    DAMAGEEFFECT.wobble_weight = dump_dic['Data']['Wobble Weight']
-    DAMAGEEFFECT.sound = TAG.TagRef().convert_from_json(dump_dic['Data']['Sound'])
-    DAMAGEEFFECT.forward_velocity = dump_dic['Data']['Forward Velocity']
-    DAMAGEEFFECT.forward_radius = dump_dic['Data']['Forward Radius']
-    DAMAGEEFFECT.forward_exponent = dump_dic['Data']['Forward Exponent']
-    DAMAGEEFFECT.outward_velocity = dump_dic['Data']['Outward Velocity']
-    DAMAGEEFFECT.outward_radius = dump_dic['Data']['Outward Radius']
-    DAMAGEEFFECT.outward_exponent = dump_dic['Data']['Outward Exponent']
+    if FunctionTypeEnum.constant == FunctionTypeEnum(function_type):
+        function_stream.write(bytes(8))
 
-    return DAMAGEEFFECT
+    elif FunctionTypeEnum.transition == FunctionTypeEnum(function_type):
+        float_inputs = normalize_list(function_inputs, 4, 0.0)
+        write_real(function_stream, endian_override, float_inputs[0]) # Function Min
+        write_real(function_stream, endian_override, float_inputs[1]) # Function Max
+        write_real(function_stream, endian_override, float_inputs[2]) # Range Function Min
+        write_real(function_stream, endian_override, float_inputs[3]) # Range Function Max
+
+    elif FunctionTypeEnum.periodic == FunctionTypeEnum(function_type):
+        float_inputs = normalize_list(function_inputs, 8, 0.0)
+        write_real(function_stream, endian_override, float_inputs[0]) # Frequency
+        write_real(function_stream, endian_override, float_inputs[1]) # Phase
+        write_real(function_stream, endian_override, float_inputs[2]) # Function Min
+        write_real(function_stream, endian_override, float_inputs[3]) # Function Max
+        write_real(function_stream, endian_override, float_inputs[4]) # Range Frequency
+        write_real(function_stream, endian_override, float_inputs[5]) # Range Phase
+        write_real(function_stream, endian_override, float_inputs[6]) # Range Function Min
+        write_real(function_stream, endian_override, float_inputs[7]) # Range Function Max
+
+    elif FunctionTypeEnum.linear == FunctionTypeEnum(function_type):
+        point_inputs = normalize_list(function_inputs, 4, (0.0, 0.0))
+        for point_input in point_inputs[0:2]:
+            write_real_point_2d(function_stream, endian_override, point_input)
+
+        function_stream.write(bytes(8))
+        for point_input in point_inputs[2:4]:
+            write_real_point_2d(function_stream, endian_override, point_input)
+
+        function_stream.write(bytes(8))
+
+    elif FunctionTypeEnum.linear_key == FunctionTypeEnum(function_type):
+        point_inputs = normalize_list(function_inputs, 8, (0.0, 0.0))
+        for point_input in point_inputs[0:4]:
+            write_real_point_2d(function_stream, endian_override, point_input)
+
+        function_stream.write(bytes(48))
+        for point_input in point_inputs[4:8]:
+           write_real_point_2d(function_stream, endian_override, point_input)
+
+        function_stream.write(bytes(48))
+
+    elif FunctionTypeEnum.multi_linear_key == FunctionTypeEnum(function_type):
+        function_stream.write(bytes(256))
+
+    elif FunctionTypeEnum.spline == FunctionTypeEnum(function_type):
+        point_inputs = normalize_list(function_inputs, 8, (0.0, 0.0))
+        for point_input in point_inputs[0:4]:
+            write_real_point_2d(function_stream, endian_override, point_input)
+
+        function_stream.write(bytes(16))
+        for point_input in point_inputs[4:8]:
+            write_real_point_2d(function_stream, endian_override, point_input)
+
+        function_stream.write(bytes(16))
+
+    elif FunctionTypeEnum.multi_spline == FunctionTypeEnum(function_type):
+        function_stream.write(bytes(40))
+
+    elif FunctionTypeEnum.exponent == FunctionTypeEnum(function_type):
+        float_inputs = normalize_list(function_inputs, 6, 0.0)
+        write_real(function_stream, endian_override, float_inputs[0]) # Function Min
+        write_real(function_stream, endian_override, float_inputs[1]) # Function Max
+        write_real(function_stream, endian_override, float_inputs[2]) # Exponent
+        write_real(function_stream, endian_override, float_inputs[3]) # Range Function Min
+        write_real(function_stream, endian_override, float_inputs[4]) # Range Function Max
+        write_real(function_stream, endian_override, float_inputs[5]) # Range Exponent
+
+    elif FunctionTypeEnum.spline2 == FunctionTypeEnum(function_type):
+        point_inputs = normalize_list(function_inputs, 8, (0.0, 0.0))
+        for point_input in point_inputs[0:4]:
+            write_real_point_2d(function_stream, endian_override, point_input)
+
+        function_stream.write(bytes(16))
+        for point_input in point_inputs[4:8]:
+            write_real_point_2d(function_stream, endian_override, point_input)
+
+        function_stream.write(bytes(16))
+
+    for byte in function_stream.getbuffer():
+        signed_byte = byte if byte < 128 else byte - 256
+        data_field.append({"Value": signed_byte})
+
+    return data_field
+
+def generate_player_responses(dump_dic):
+    player_responses_block = []
+    player_response_dict = {
+        "response type": {
+            "type": "ShortEnum",
+            "value": 0,
+            "value name": ""
+        },
+        "type": {
+            "type": "ShortEnum",
+            "value": dump_dic["type"]["value"],
+            "value name": ""
+        },
+        "priority": {
+            "type": "ShortEnum",
+            "value": dump_dic["priority"]["value"],
+            "value name": ""
+        },
+        "duration": dump_dic["duration"],
+        "fade function": {
+            "type": "ShortEnum",
+            "value": dump_dic["fade function"]["value"],
+            "value name": ""
+        },
+        "maximum intensity": dump_dic["maximum intensity"],
+        "color": dump_dic["color"],
+        "duration_1": dump_dic["duration_1"],
+        "data": create_function(function_type=FunctionTypeEnum.transition.value, function_1=dump_dic["fade function_1"]["value"], function_inputs=[dump_dic["frequency"], 0.0]),
+        "duration_2": dump_dic["duration_2"],
+        "data_1": create_function(function_type=FunctionTypeEnum.transition.value, function_1=dump_dic["fade function_2"]["value"], function_inputs=[dump_dic["frequency_1"], 0.0]),
+        "effect name": "",
+        "duration_3": 0.0,
+        "data_2": create_function()
+    }
+        
+    player_responses_block.append(player_response_dict)
+
+    return player_responses_block
+
+def upgrade_damage_effect(h1_jpt_asset, EngineTag):
+    h1_jpt_data = h1_jpt_asset["Data"]
+
+    h2_jpt_asset = {
+        "TagName": h1_jpt_asset["TagName"],
+        "Header": {
+            "unk1": 0, 
+            "flags": 0, 
+            "tag type": 0, 
+            "name": "", 
+            "tag group": "jpt!", 
+            "checksum": 0, 
+            "data offset": 64, 
+            "data length": 0, 
+            "unk2": 0, 
+            "version": 6, 
+            "destination": 0, 
+            "plugin handle": -1, 
+            "engine tag": EngineTag.H2Latest.value
+        },
+        "Data": {
+            "radius": h1_jpt_data["radius"],
+            "cutoff scale": h1_jpt_data["cutoff scale"],
+            "flags": h1_jpt_data["flags"],
+            "side effect": {
+                "type": "ShortEnum",
+                "value": h1_jpt_data["side effect"]["value"],
+                "value name": ""
+            },
+            "category": {
+                "type": "ShortEnum",
+                "value": h1_jpt_data["category"]["value"],
+                "value name": ""
+            },
+            "flags_1": h1_jpt_data["flags_1"],
+            "AOE core radius": h1_jpt_data["AOE core radius"],
+            "damage lower bound": h1_jpt_data["lower bound"],
+            "damage upper bound": h1_jpt_data["upper bound"],
+            "dmg inner cone angle": 0.0,
+            "dmg outer cone angle": 0.0,
+            "active camouflage damage": h1_jpt_data["active camouflage damage"],
+            "stun": h1_jpt_data["stun"],
+            "maximum stun": h1_jpt_data["maximum stun"],
+            "stun time": h1_jpt_data["stun time"],
+            "instantaneous acceleration": h1_jpt_data["instantaneous acceleration"][0],
+            "rider direct damage scale": 0.0,
+            "rider maximum transfer damage scale": 0.0,
+            "rider minimum transfer damage scale": 0.0,
+            "general_damage": "",
+            "specific_damage": "",
+            "AI stun radius": 0.0,
+            "AI stun bounds": {
+                "Min": 0.0,
+                "Max": 0.0
+            },
+            "shake radius": 0.0,
+            "EMP radius": 0.0,
+            "player responses": generate_player_responses(h1_jpt_data),
+            "duration": h1_jpt_data["duration_3"],
+            "fade function": {
+                "type": "ShortEnum",
+                "value": h1_jpt_data["fade function_3"]["value"],
+                "value name": ""
+            },
+            "rotation": h1_jpt_data["rotation"],
+            "pushback": h1_jpt_data["pushback"],
+            "jitter": h1_jpt_data["jitter"],
+            "duration_1": h1_jpt_data["duration_4"],
+            "falloff function": {
+                "type": "ShortEnum",
+                "value": h1_jpt_data["falloff function"]["value"],
+                "value name": ""
+            },
+            "random translation": h1_jpt_data["random translation"],
+            "random rotation": h1_jpt_data["random rotation"],
+            "wobble function": {
+                "type": "ShortEnum",
+                "value": h1_jpt_data["wobble function"]["value"],
+                "value name": ""
+            },
+            "wobble function period": h1_jpt_data["wobble period"],
+            "wobble weight": h1_jpt_data["wobble weight"],
+            "sound": h1_jpt_data["sound"],
+            "forward velocity": h1_jpt_data["forward velocity"],
+            "forward radius": h1_jpt_data["forward radius"],
+            "forward exponent": h1_jpt_data["forward exponent"],
+            "outward velocity": h1_jpt_data["outward velocity"],
+            "outward radius": h1_jpt_data["outward radius"],
+            "outward exponent": h1_jpt_data["outward exponent"]
+        }
+    }
+
+    return h2_jpt_asset

@@ -1924,10 +1924,9 @@ def write_file(merged_defs, tag_dict, obfuscation_buffer, file_path="", engine_t
     if tag_header is not None:
         tag_group = tag_header["tag group"]
         tag_extension = tag_groups.get(tag_group)
-
-        
         upgrade_function = upgrade_functions.get(tag_group)
-        if tag_header["engine tag"] == "blam" and engine_tag is not tag_common.EngineTag.H1Latest.value:
+        
+        if tag_header["engine tag"] == "blam" and engine_tag is not tag_common.EngineTag.H1Latest.value and upgrade_function is not None:
             tag_dict = upgrade_function(tag_dict, tag_common.EngineTag)
             tag_header = tag_dict.get("Header")
 
@@ -2105,8 +2104,8 @@ def h2_single_tag():
     output_dir = os.path.join(os.path.dirname(tag_common.h2_defs_directory), "h2_merged_output")
     merged_defs = h2.generate_defs(tag_common.h2_defs_directory, output_dir)
 
-    read_path = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\2\Vanilla\tags\tag1.biped"
-    output_path = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\2\Vanilla\tags\tag2.biped"
+    read_path = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\2\Vanilla\tags\tag1.decal"
+    output_path = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\2\Vanilla\tags\tag2.decal"
     tag_directory = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\2\Vanilla\tags"
 
     tag_dict = read_file(merged_defs, tag_directory, read_path)
