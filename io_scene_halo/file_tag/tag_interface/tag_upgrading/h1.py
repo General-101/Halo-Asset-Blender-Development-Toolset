@@ -29,6 +29,8 @@ from .h1_functions.bitmap import upgrade_bitmap
 from .h1_functions.contrail import upgrade_contrail
 from .h1_functions.damage_effect import upgrade_damage_effect
 from .h1_functions.decal import upgrade_decal
+from .h1_functions.equipment import upgrade_equipment
+from .h1_functions.garbage import upgrade_garbage
 
 upgrade_functions = {
     "actr": None,
@@ -50,12 +52,12 @@ upgrade_functions = {
     "dobc": None,
     "effe": None,
     "elec": None,
-    "eqip": None,
+    "eqip": upgrade_equipment,
     "flag": None,
     "fog ": None,
     "font": None,
     "foot": None,
-    "garb": None,
+    "garb": upgrade_garbage,
     "glw!": None,
     "grhi": None,
     "hmt ": None,

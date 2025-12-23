@@ -24,177 +24,167 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import json
+from .functions import create_function, FunctionTypeEnum, MappingFlags, AnimationFunctionEnum
 
-from ....global_functions import tag_format, shader_processing
-from ....file_tag.h2.file_lens_flare.format import LensFlareAsset
-from ....file_tag.h2.file_shader.format import FunctionTypeEnum, OutputTypeFlags
+def generate_reflections(dump_dic):
+    reflections_block = []
+    for reflection_element in dump_dic["Data"]["reflections"]:
+        reflection_dict = {
+            "flags": reflection_element["flags"],
+            "bitmap index": reflection_element["bitmap index"],
+            "position": reflection_element["position"],
+            "rotation offset": reflection_element["rotation offset"],
+            "radius": reflection_element["radius"],
+            "brightness": reflection_element["brightness"],
+            "modulation factor": reflection_element["tint color"].get("A", 1.0),
+            "color": {
+                "R": reflection_element["tint color"].get("R", 0.0),
+                "G": reflection_element["tint color"].get("G", 0.0),
+                "B": reflection_element["tint color"].get("B", 0.0)
+            }
+        }
 
-def generate_reflections(dump_dic, TAG, LENSFLARE):
-    reflections_tag_block = dump_dic['Data']['Reflections']
+        reflections_block.append(reflection_dict)
 
-    for reflection_element in reflections_tag_block:
-        radius = reflection_element['Radius']
-        brightness = reflection_element['Brightness']
-        tint_color = shader_processing.get_rgb_percentage(reflection_element["Tint Color"])
+    return reflections_block
 
-        reflection = LENSFLARE.Reflection()
-        reflection.flags = reflection_element['Flags']
-        reflection.bitmap_index = reflection_element['Bitmap Index']
-        reflection.position = reflection_element['Position']
-        reflection.rotation_offset = reflection_element['Rotation Offset']
-        reflection.radius = (radius["Min"], radius["Max"])
-        reflection.brightness = (brightness["Min"], brightness["Max"])
-        reflection.modulation_factor = tint_color[3]
-        reflection.color = tint_color
+def generate_brightness(dump_dic):
+    brightness_block = []
+    for reflection_element in dump_dic["Data"]["reflections"]:
+        color_0 = reflection_element["color lower bound"]
+        color_1 = reflection_element["color upper bound"]
 
-        LENSFLARE.reflections.append(reflection)
+        R0 = color_0.get("R", 0.0)
+        G0 = color_0.get("G", 0.0)
+        B0 = color_0.get("B", 0.0)
+        A0 = color_0.get("A", 0.0)
+        R1 = color_1.get("R", 0.0)
+        G1 = color_1.get("G", 0.0)
+        B1 = color_1.get("B", 0.0)
+        A1 = color_1.get("A", 0.0)
 
-    reflections_count = len(LENSFLARE.reflections)
-    LENSFLARE.reflections_header = TAG.TagBlockHeader("tbfd", 0, reflections_count, 48)
+        animation_function = AnimationFunctionEnum(reflection_element["animation function"]["value"])
 
-    return TAG.TagBlock(reflections_count)
-
-def generate_brightness(dump_dic, TAG, LENSFLARE):
-    reflections_tag_block = dump_dic['Data']['Reflections']
-
-    reflection_first_element = None
-    for reflection_element in reflections_tag_block:
-        reflection_first_element = reflection_element
-        break
-
-    if reflection_first_element:
-        color_0 = shader_processing.get_rgb_percentage(reflection_first_element["Color Lower Bound"])
-        color_1 = shader_processing.get_rgb_percentage(reflection_first_element["Color Upper Bound"])
-        function_index = reflection_first_element["Animation Function"]["Value"]
         is_black = False
-        if (color_0[0] + color_0[1] + color_0[2]) == 0.0 and (color_1[0] + color_1[1] + color_1[2]) == 0.0:
+        if (R0 + G0 + B0) == 0.0 and (R1 + G1 + B1) == 0.0:
             is_black = True
 
         is_animated = False
-        if not function_index == 0 and not function_index == 1:
+        if not animation_function == AnimationFunctionEnum.one and not animation_function == AnimationFunctionEnum.zero:
             is_animated = True
 
         if not is_black and is_animated:
-            function_type = FunctionTypeEnum.periodic
-            rgb_0 = None
-            rgb_1 = None
-            rgb_2 = None
-            rgb_3 = None
-            value_0 = color_0[3]
-            value_1 = color_1[3]
-            value_2 = 0
-            value_3 = 0
-            function_0_type = function_index
-            function_1_type = 0
-            function_values = [reflection_first_element["Animation Phase"], reflection_first_element["Animation Period"], 0, 1, 0, 0, 0, 0]
+            function_type = FunctionTypeEnum.periodic.value
+            mapping_inputs = [A0, A1]
+            function_inputs = [reflection_element["animation phase"], reflection_element["animation period"], 0, 1]
 
-            shader_processing.convert_legacy_function(LENSFLARE, TAG, LENSFLARE.brightness, 0, 0, function_type, 0, 0, 0, rgb_0, rgb_1, rgb_2, rgb_3, value_0, value_1,
-                                                        value_2, value_3, function_0_type, function_1_type, function_values)
+            brightness_dict = {
+                "data": create_function(function_type=function_type, function_1=animation_function.value, mapping_inputs=mapping_inputs, function_inputs=function_inputs),
+            }
 
-    brightness_count = len(LENSFLARE.brightness)
-    LENSFLARE.brightness_header = TAG.TagBlockHeader("tbfd", 0, brightness_count, 12)
+            brightness_block.append(brightness_dict)
 
-    return TAG.TagBlock(brightness_count)
-
-def generate_color(dump_dic, TAG, LENSFLARE):
-    reflections_tag_block = dump_dic['Data']['Reflections']
-
-    reflection_first_element = None
-    for reflection_element in reflections_tag_block:
-        reflection_first_element = reflection_element
         break
 
-    if reflection_first_element:
-        color_0 = shader_processing.get_rgb_percentage(reflection_first_element["Color Lower Bound"])
-        color_1 = shader_processing.get_rgb_percentage(reflection_first_element["Color Upper Bound"])
-        function_index = reflection_first_element["Animation Function"]["Value"]
+    return brightness_block
+
+def generate_color(dump_dic):
+    color_block = []
+    for reflection_element in dump_dic["Data"]["reflections"]:
+        color_0 = reflection_element["color lower bound"]
+        color_1 = reflection_element["color upper bound"]
+
+        R0 = color_0.get("R", 0.0)
+        G0 = color_0.get("G", 0.0)
+        B0 = color_0.get("B", 0.0)
+        A0 = color_0.get("A", 0.0)
+        R1 = color_1.get("R", 0.0)
+        G1 = color_1.get("G", 0.0)
+        B1 = color_1.get("B", 0.0)
+        A1 = color_1.get("A", 0.0)
+
+        animation_function = AnimationFunctionEnum(reflection_element["animation function"]["value"])
+
         is_black = False
-        if (color_0[0] + color_0[1] + color_0[2]) == 0.0 and (color_1[0] + color_1[1] + color_1[2]) == 0.0:
+        if (R0 + G0 + B0) == 0.0 and (R1 + G1 + B1) == 0.0:
             is_black = True
 
         is_animated = False
-        if not function_index == 0 and not function_index == 1:
+        if not animation_function == AnimationFunctionEnum.one and not animation_function == AnimationFunctionEnum.zero:
             is_animated = True
 
         if not is_black and is_animated:
-            function_type = FunctionTypeEnum.periodic
-            flag_value = OutputTypeFlags._2_color.value
-            rgb_0 = reflection_first_element["Color Lower Bound"]
-            rgb_1 = reflection_first_element["Color Upper Bound"]
-            rgb_2 = None
-            rgb_3 = None
-            value_0 = 0
-            value_1 = 0
-            value_2 = 0
-            value_3 = 0
-            function_0_type = function_index
-            function_1_type = 0
-            function_values = [reflection_first_element["Animation Phase"], reflection_first_element["Animation Period"], 0, 1, 0, 0, 0, 0]
+            function_type = FunctionTypeEnum.periodic.value
+            flag_value = MappingFlags._2_color.value
+            mapping_inputs = [color_0, color_1]
+            function_inputs = [reflection_element["animation phase"], reflection_element["animation period"], 0, 1]
 
-            shader_processing.convert_legacy_function(LENSFLARE, TAG, LENSFLARE.color, 0, 0, function_type, flag_value, 0, 0, rgb_0, rgb_1, rgb_2, rgb_3, value_0, value_1,
-                                                        value_2, value_3, function_0_type, function_1_type, function_values)
+            color_dict = {
+                "data": create_function(function_type=function_type, flags=flag_value, function_1=animation_function.value, mapping_inputs=mapping_inputs, function_inputs=function_inputs),
+            }
 
-    color_count = len(LENSFLARE.color)
-    LENSFLARE.color_header = TAG.TagBlockHeader("tbfd", 0, color_count, 12)
+            color_block.append(color_dict)
 
-    return TAG.TagBlock(color_count)
+        break
 
-def upgrade_lens_flare(H2_ASSET, patch_txt_path, report):
-    dump_dic = json.load(H2_ASSET)
+    return color_block
 
-    TAG = tag_format.TagAsset()
-    LENSFLARE = LensFlareAsset()
-    TAG.upgrade_patches = tag_format.get_patch_set(patch_txt_path)
+def upgrade_lens_flare(h1_lens_asset, EngineTag):
+    h1_lens_data = h1_lens_asset["Data"]
 
-    LENSFLARE.header = TAG.Header()
-    LENSFLARE.header.unk1 = 0
-    LENSFLARE.header.flags = 0
-    LENSFLARE.header.type = 0
-    LENSFLARE.header.name = ""
-    LENSFLARE.header.tag_group = "lens"
-    LENSFLARE.header.checksum = 0
-    LENSFLARE.header.data_offset = 64
-    LENSFLARE.header.data_length = 0
-    LENSFLARE.header.unk2 = 0
-    LENSFLARE.header.version = 2
-    LENSFLARE.header.destination = 0
-    LENSFLARE.header.plugin_handle = -1
-    LENSFLARE.header.engine_tag = "BLM!"
+    h2_lens_asset = {
+        "TagName": h1_lens_asset["TagName"],
+        "Header": {
+            "unk1": 0,
+            "flags": 0,
+            "tag type": 0,
+            "name": "",
+            "tag group": "lens",
+            "checksum": 0,
+            "data offset": 64,
+            "data length": 0,
+            "unk2": 0,
+            "version": 2,
+            "destination": 0,
+            "plugin handle": -1,
+            "engine tag": EngineTag.H2Latest.value
+        },
+        "Data": {
+            "falloff angle": h1_lens_data["falloff angle"],
+            "cutoff angle": h1_lens_data["cutoff angle"],
+            "occlusion radius": h1_lens_data["occlusion radius"],
+            "occlusion offset direction": {
+                "type": "ShortEnum",
+                "value": h1_lens_data["occlusion offset direction"]["value"],
+                "value name": ""
+            },
+            "occlusion inner radius scale": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "near fade distance": h1_lens_data["near fade distance"],
+            "far fade distance": h1_lens_data["far fade distance"],
+            "bitmap": h1_lens_data["bitmap"],
+            "flags": h1_lens_data["flags"],
+            "rotation function": {
+                "type": "ShortEnum",
+                "value": h1_lens_data["rotation function"]["value"],
+                "value name": ""
+            },
+            "rotation function scale": h1_lens_data["rotation function scale"],
+            "corona scale": [h1_lens_data["horizontal scale"], h1_lens_data["vertical scale"]],
+            "falloff function": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "reflections": generate_reflections(h1_lens_asset),
+            "flags_1": 0,
+            "brightness": generate_brightness(h1_lens_asset),
+            "color": generate_color(h1_lens_asset),
+            "rotation": []
+        }
+    }
 
-    LENSFLARE.reflections = []
-    LENSFLARE.brightness = []
-    LENSFLARE.color = []
-    LENSFLARE.rotation = []
-
-    LENSFLARE.body_header = TAG.TagBlockHeader("tbfd", 0, 1, 124)
-    LENSFLARE.falloff_angle = dump_dic['Data']['Falloff Angle']
-    LENSFLARE.cutoff_angle = dump_dic['Data']['Cutoff Angle']
-    LENSFLARE.occlusion_radius = dump_dic['Data']['Occlusion Radius']
-    LENSFLARE.occlusion_offset_direction = dump_dic['Data']['Occlusion Offset Direction']['Value']
-    LENSFLARE.occlusion_inner_radius_scale = 0
-    LENSFLARE.near_fade_distance = dump_dic['Data']['Near Fade Distance']
-    LENSFLARE.far_fade_distance = dump_dic['Data']['Far Fade Distance']
-    LENSFLARE.bitmap = TAG.TagRef().convert_from_json(dump_dic['Data']['Bitmap'])
-    LENSFLARE.occlusion_flags = dump_dic['Data']['Flags']
-    LENSFLARE.rotation_function = dump_dic['Data']['Rotation Function']['Value']
-    float_count = len(str(dump_dic['Data']["Rotation Function Scale Float"]).split(".", 1)[1])
-    degree_count = len(str(dump_dic['Data']["Rotation Function Scale Degree"]).split(".", 1)[1])
-    scale_result = 0.0
-    if float_count < degree_count:
-        scale_result = dump_dic['Data']['Rotation Function Scale Float']
-    elif float_count > degree_count:
-        scale_result = dump_dic['Data']['Rotation Function Scale Degree']
-    else:
-        scale_result = dump_dic['Data']['Rotation Function Scale Float']
-
-    LENSFLARE.rotation_function_scale = scale_result
-    LENSFLARE.corona_scale = (dump_dic['Data']['Horizontal Scale'], dump_dic['Data']['Vertical Scale'])
-    LENSFLARE.falloff_function = 0
-    LENSFLARE.reflections_tag_block = generate_reflections(dump_dic, TAG, LENSFLARE)
-    LENSFLARE.flags = 0
-    LENSFLARE.brightness_tag_block = generate_brightness(dump_dic, TAG, LENSFLARE)
-    LENSFLARE.color_tag_block = generate_color(dump_dic, TAG, LENSFLARE)
-    LENSFLARE.rotation_tag_block = TAG.TagBlock()
-
-    return LENSFLARE
+    return h2_lens_asset
