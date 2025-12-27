@@ -230,7 +230,7 @@ def build_mesh(render_asset, geometry, armature, LOD, region_name, permutation_n
                     mat = mesh_processing.get_material(tag_element, asset_cache, "halo2", shader_collection_dic)
 
                 else:
-                    material_name = "invalid"
+                    material_name = "invalid_%sidx" % triangle_material_index
                     mat = bpy.data.materials.get(material_name)
                     if mat is None:
                         mat = bpy.data.materials.new(name=material_name)
@@ -338,7 +338,7 @@ def get_geometry_layout(tag_ref, asset_cache, armature, report, simple_mesh=Fals
                     path = split_result[1]
                     shader_collection_dic[path] = prefix
 
-    for material in render_data["materials"]:
+    for material_idx, material in enumerate(render_data["materials"]):
         shader_tag = material["shader"]
         old_shader_tag = material["old shader"]
         shader_group = shader_tag["group name"]
@@ -393,8 +393,8 @@ def get_geometry_layout(tag_ref, asset_cache, armature, report, simple_mesh=Fals
                 SHAD_ASSET["blender_assets"][material_name] = mat
 
         else:
-            material_name = "invalid"
-            if global_functions.string_empty_check(shader_name):
+            material_name = "invalid_%sidx" % material_idx
+            if not global_functions.string_empty_check(shader_name):
                 material_name = os.path.basename(shader_name)
 
             if has_collection:

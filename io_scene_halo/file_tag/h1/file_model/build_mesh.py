@@ -202,6 +202,7 @@ def build_mesh(mode_asset, geometry, armature, LOD, region_name, permutation_nam
                 base_name = os.path.basename(shader_name)
                 SHAD_ASSET = asset_cache.get(shader_group, {}).get(shader_name)
                 if SHAD_ASSET is not None:
+
                     material_name = base_name
                     if has_permutation:
                         material_name = "%s%s" % (base_name, permutation)
@@ -213,8 +214,8 @@ def build_mesh(mode_asset, geometry, armature, LOD, region_name, permutation_nam
                         SHAD_ASSET["blender_assets"][material_name] = mat
 
                 else:
-                    material_name = "invalid"
-                    if global_functions.string_empty_check(base_name):
+                    material_name = "invalid_%sidx" % triangle_material_index
+                    if not global_functions.string_empty_check(base_name):
                         material_name = base_name
 
                     if has_permutation:
@@ -293,18 +294,22 @@ def get_geometry_layout(tag_ref, asset_cache, armature, is_triangle_list, report
     random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
     for shader in mode_data["shaders"]:
         shad_tag_ref = shader["shader"]
-        SHAD_ASSET = asset_cache[shad_tag_ref["group name"]][shad_tag_ref["path"]]
 
         material_name = os.path.basename(shad_tag_ref["path"])
         if shader["permutation"] != 0:
             material_name = "%s%s" % (material_name, shader["permutation"])
 
-        mat = SHAD_ASSET["blender_assets"].get(material_name)
-        if not mat:
-            mat = bpy.data.materials.new(name=material_name)
-            SHAD_ASSET["blender_assets"][material_name] = mat
+        group_entry = asset_cache.get(shad_tag_ref["group name"])
+        SHAD_ASSET = None
+        if group_entry is not None:
+            SHAD_ASSET = group_entry.get(shad_tag_ref["path"])
+            if SHAD_ASSET is not None:
+                mat = SHAD_ASSET["blender_assets"].get(material_name)
+                if not mat:
+                    mat = bpy.data.materials.new(name=material_name)
+                    SHAD_ASSET["blender_assets"][material_name] = mat
 
-        shader_processing.generate_h1_shader(mat, shad_tag_ref, shader["permutation"], asset_cache, report)
+                shader_processing.generate_h1_shader(mat, shad_tag_ref, shader["permutation"], asset_cache, report)
 
     full_mesh = None
     if simple_mesh:

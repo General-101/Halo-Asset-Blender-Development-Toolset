@@ -24,188 +24,347 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import os
-import json
-
 from mathutils import Vector
 from enum import Flag, Enum, auto
-from ....global_functions import tag_format, shader_processing
-from ....file_tag.h2_20030504.file_object.format import upgrade_e3_object_flags
-from ....file_tag.h2.file_projectile.format import ProjectileAsset, ResponseEnum
-from ....file_tag.h2_20030504.file_object.upgrade_json import generate_attachments, generate_widgets, generate_change_colors, _20030504_ObjectFunctionsEnum
 
-class _20030504_ProjectileFunctionsEnum(Enum):
+from ..h1_functions.object import (
+    convert_object_flags, 
+    generate_ai_properties, 
+    generate_attachments, 
+    generate_widgets, 
+    generate_change_colors, 
+    FunctionEnum as ObjectFunctionsEnum
+    )
+
+from ..h1_functions.materials import get_material_name
+
+class H1ProjectileFlags(Flag):
+    oriented_along_velocity = auto()
+    ai_must_use_ballistic_aiming = auto()
+    detonation_max_time_if_attached = auto()
+    has_super_combining_explosion = auto()
+    combine_initial_velocity_with_parent_velocity = auto()
+    random_attached_detonation_time = auto()
+    minimum_unattached_detonation_time = auto()
+
+class H2ProjectileFlags(Flag):
+    oriented_along_velocity = auto()
+    ai_must_use_ballistic_aiming = auto()
+    detonation_max_time_if_attached = auto()
+    has_super_combining_explosion = auto()
+    damage_scales_based_on_distance = auto()
+    travels_instantaneously = auto()
+    steering_adjusts_orientation = auto()
+    dont_noise_up_steering = auto()
+    can_track_behind_itself = auto()
+    robotron_steering = auto()
+    faster_when_owned_by_player = auto()
+
+class ProjectileFunctionsEnum(Enum):
     none = 0
     range_remaining = auto()
     time_remaining = auto()
     tracer = auto()
 
-class _20030504_ResponseEnum(Enum):
+class DamageReportingTypeEnum(Enum):
+    teh_guardians11 = 0
+    falling_damage = auto()
+    generic_collision_damage = auto()
+    generic_melee_damage = auto()
+    generic_explosion = auto()
+    magnum_pistol = auto()
+    plasma_pistol = auto()
+    needler = auto()
+    smg = auto()
+    plasma_rifle = auto()
+    battle_rifle = auto()
+    carbine = auto()
+    shotgun = auto()
+    sniper_rifle = auto()
+    beam_rifle = auto()
+    rocket_launcher = auto()
+    flak_cannon = auto()
+    brute_shot = auto()
+    disintegrator = auto()
+    brute_plasma_rifle = auto()
+    energy_sword = auto()
+    frag_grenade = auto()
+    plasma_grenade = auto()
+    flag_melee_damage = auto()
+    bomb_melee_damage = auto()
+    bomb_explosion_damage = auto()
+    ball_melee_damage = auto()
+    human_turret = auto()
+    plasma_turret = auto()
+    banshee = auto()
+    ghost = auto()
+    mongoose = auto()
+    scorpion = auto()
+    spectre_driver = auto()
+    spectre_gunner = auto()
+    warthog_driver = auto()
+    warthog_gunner = auto()
+    wraith = auto()
+    tank = auto()
+    sentinel_beam = auto()
+    sentinel_rpg = auto()
+    teleporter = auto()
+    warthog_gunner_gauss = auto()
+    warthog_gunner_rocket = auto()
+
+class H1ResponseEnum(Enum):
     disappear = 0
     detonate = auto()
     reflect = auto()
     overpenetrate = auto()
     attach = auto()
 
+class H2ResponseEnum(Enum):
+    impact_detonate = 0
+    fizzle = auto()
+    overpenetrate = auto()
+    attach = auto()
+    bounce = auto()
+    bounce_dud = auto()
+    fizzle_ricochet = auto()
+
+def convert_projectile_flags(object_flags):
+    flags = 0
+    active_h1_flags = H1ProjectileFlags(object_flags)
+    if H1ProjectileFlags.oriented_along_velocity in active_h1_flags:
+        flags += H2ProjectileFlags.oriented_along_velocity.value
+
+    if H1ProjectileFlags.ai_must_use_ballistic_aiming in active_h1_flags:
+        flags += H2ProjectileFlags.ai_must_use_ballistic_aiming.value
+
+    if H1ProjectileFlags.detonation_max_time_if_attached in active_h1_flags:
+        flags += H2ProjectileFlags.detonation_max_time_if_attached.value
+
+    if H1ProjectileFlags.has_super_combining_explosion in active_h1_flags:
+        flags += H2ProjectileFlags.has_super_combining_explosion.value
+
+    return flags
+
 def convert_legacy_response(response_index):
     h2_response_index = 0
-    h1_response = _20030504_ResponseEnum(response_index)
-    if h1_response == _20030504_ResponseEnum.disappear:
-        h2_response_index = ResponseEnum.fizzle.value
-    elif h1_response == _20030504_ResponseEnum.detonate:
-        h2_response_index = ResponseEnum.impact_detonate.value
-    elif h1_response == _20030504_ResponseEnum.reflect:
-        h2_response_index = ResponseEnum.bounce.value
-    elif h1_response == _20030504_ResponseEnum.overpenetrate:
-        h2_response_index = ResponseEnum.overpenetrate.value
-    elif h1_response == _20030504_ResponseEnum.attach:
-        h2_response_index = ResponseEnum.attach.value
+    h1_response = H1ResponseEnum(response_index)
+    if h1_response == H1ResponseEnum.disappear:
+        h2_response_index = H2ResponseEnum.fizzle.value
+    elif h1_response == H1ResponseEnum.detonate:
+        h2_response_index = H2ResponseEnum.impact_detonate.value
+    elif h1_response == H1ResponseEnum.reflect:
+        h2_response_index = H2ResponseEnum.bounce.value
+    elif h1_response == H1ResponseEnum.overpenetrate:
+        h2_response_index = H2ResponseEnum.overpenetrate.value
+    elif h1_response == H1ResponseEnum.attach:
+        h2_response_index = H2ResponseEnum.attach.value
     return h2_response_index
 
-def generate_material_responses(dump_dic, TAG, PROJECTILE):
-    material_responses_tag_block = dump_dic['Data']['Material Responses']
+def generate_projectile_defaults(dump_dic):
+    combine_count = 0
+    damage_report = DamageReportingTypeEnum.teh_guardians11.value
+    if H1ProjectileFlags.has_super_combining_explosion in H1ProjectileFlags(dump_dic["Data"]["flags_1"]):
+        combine_count = 7
 
-    for material_response_element in material_responses_tag_block:
-        between = material_response_element['Between']
-        and_bounds = material_response_element['And']
+    tag_path = dump_dic["TagName"].lower().replace(" ", "_")
+    if "spectre_dig" in tag_path:
+        damage_report = DamageReportingTypeEnum.spectre_gunner.value
+    elif "gauss" in tag_path:
+        damage_report = DamageReportingTypeEnum.warthog_gunner_gauss.value
+    elif "warthog" in tag_path and "at rocket" in tag_path:
+        damage_report = DamageReportingTypeEnum.warthog_gunner_rocket.value
+    elif "anti_air_bolt" in tag_path:
+        damage_report = DamageReportingTypeEnum.flak_cannon.value
+    elif "aa missile" in tag_path:
+        damage_report = DamageReportingTypeEnum.rocket_launcher.value
+    elif "airstrike_round" in tag_path:
+        damage_report = DamageReportingTypeEnum.rocket_launcher.value
+    elif "ar_reticle" in tag_path:
+        damage_report = DamageReportingTypeEnum.teh_guardians11.value
+    elif "rocket_launcher" in tag_path and "at rocket" in tag_path:
+        damage_report = DamageReportingTypeEnum.rocket_launcher.value
+    elif "banshee bolt" in tag_path:
+        damage_report = DamageReportingTypeEnum.banshee.value
+    elif "banshee fuel rod" in tag_path:
+        damage_report = DamageReportingTypeEnum.banshee.value
+    elif "sentinel" in tag_path and "beam" in tag_path:
+        damage_report = DamageReportingTypeEnum.sentinel_beam.value
+    elif "microwave_gun" in tag_path and "beam" in tag_path:
+        damage_report = DamageReportingTypeEnum.sentinel_beam.value
+    elif "beam emitter" in tag_path and "beam" in tag_path:
+        damage_report = DamageReportingTypeEnum.teh_guardians11.value
+    elif "plasma_rifle" in tag_path and "bolt" in tag_path:
+        damage_report = DamageReportingTypeEnum.plasma_rifle.value
+    elif "plasma pistol" in tag_path and "bolt" in tag_path:
+        damage_report = DamageReportingTypeEnum.plasma_pistol.value
+    elif "plasma rifle" in tag_path and "bolt" in tag_path:
+        damage_report = DamageReportingTypeEnum.plasma_rifle.value
+    elif "smg" in tag_path and "bullet" in tag_path:
+        damage_report = DamageReportingTypeEnum.smg.value
+    elif "scorpion" in tag_path and "bullet" in tag_path:
+        damage_report = DamageReportingTypeEnum.scorpion.value
+    elif "warthog" in tag_path and "bullet" in tag_path:
+        damage_report = DamageReportingTypeEnum.warthog_gunner.value
+    elif "assault rifle" in tag_path and "bullet" in tag_path:
+        damage_report = DamageReportingTypeEnum.warthog_gunner.value
+    elif "pistol" in tag_path and "bullet" in tag_path:
+        damage_report = DamageReportingTypeEnum.magnum_pistol.value
+    elif "c gun turret" in tag_path:
+        damage_report = DamageReportingTypeEnum.plasma_turret.value
+    elif "c needle" in tag_path:
+        damage_report = DamageReportingTypeEnum.needler.value
+    elif "particle_beam" in tag_path and "c particle beam ray" in tag_path:
+        damage_report = DamageReportingTypeEnum.beam_rifle.value
+    elif "plasma_rifle" in tag_path and "c particle beam ray" in tag_path:
+        damage_report = DamageReportingTypeEnum.plasma_rifle.value
+    elif "c spectre gun beam" in tag_path:
+        damage_report = DamageReportingTypeEnum.spectre_gunner.value
+    elif "c_particle_beam_ray" in tag_path:
+        damage_report = DamageReportingTypeEnum.plasma_rifle.value
+    elif "plasma_rifle" in tag_path and "charged bolt" in tag_path:
+        damage_report = DamageReportingTypeEnum.plasma_rifle.value
+    elif "plasma rifle" in tag_path and "charged bolt" in tag_path:
+        damage_report = DamageReportingTypeEnum.plasma_rifle.value
+    elif "concussion" in tag_path:
+        damage_report = DamageReportingTypeEnum.plasma_rifle.value
+    return combine_count, damage_report
 
-        material_response = PROJECTILE.MaterialResponse()
-        material_response.flags = material_response_element["Flags"]
-        material_response.result_response = convert_legacy_response(material_response_element["Default Response"]['Value'])
-        material_response.result_effect = TAG.TagRef().convert_from_json(material_response_element['Default Effect'])
-        material_response.material_name = ""
-        material_response.material_name_length = len(material_response.material_name)
-        material_response.potential_result_response = convert_legacy_response(material_response_element["Potential Response"]['Value'])
-        material_response.potential_result_flags = material_response_element["Potential Flags"]
-        material_response.chance_fraction = material_response_element["Skip Fraction"]
-        material_response.between = (between["Min"], between["Max"])
-        material_response.and_bounds = (and_bounds["Min"] * 30, and_bounds["Max"] * 30)
-        material_response.potential_result_effect = TAG.TagRef().convert_from_json(material_response_element['Potential Effect'])
-        material_response.scale_effects_by = material_response_element["Scale Effects By"]['Value']
-        material_response.angular_noise = material_response_element["Angular Noise"]
-        material_response.velocity_noise = material_response_element["Velocity Noise"]
-        material_response.detonation_effect = TAG.TagRef().convert_from_json(material_response_element['Detonation Effect'])
-        material_response.initial_friction = material_response_element["Initial Friction"]
-        material_response.maximum_distance = material_response_element["Maximum Distance"]
-        material_response.parallel_friction = material_response_element["Parallel Friction"]
-        material_response.perpendicular_friction = material_response_element["Perpendicular Friction"]
+def generate_material_responses(dump_dic):
+    material_responses_block = []
+    for response_idx, response_element in enumerate(dump_dic["Data"]["material response"]):
+        material_response_dict = {
+            "flags": response_element["flags"],
+            "response": {
+                "type": "ShortEnum",
+                "value": convert_legacy_response(response_element["default response"]["value"]),
+                "value name": ""
+            },
+            "DO NOT USE (OLD effect)": response_element["default effect"],
+            "material name": get_material_name(response_idx),
+            "response_1": {
+                "type": "ShortEnum",
+                "value": convert_legacy_response(response_element["potential response"]["value"]),
+                "value name": ""
+            },
+            "flags_1": response_element["potential flags"],
+            "chance fraction": response_element["potential skip fraction"],
+            "between": {
+                "Min": 0.0,
+                "Max": 0.0
+            },
+            "and": response_element["potential and"],
+            "DO NOT USE (OLD effect)_1": response_element["potential effect"],
+            "scale effects by": {
+                "type": "ShortEnum",
+                "value": response_element["scale effects by"]["value"],
+                "value name": ""
+            },
+            "angular noise": response_element["angular noise"],
+            "velocity noise": response_element["velocity noise"],
+            "DO NOT USE (OLD detonation effect)": response_element["detonation effect"],
+            "initial friction": response_element["initial friction"],
+            "maximum distance": response_element["maximum distance"],
+            "parallel friction": response_element["parallel friction"],
+            "perpendicular friction": response_element["perpendicular friction"],
+        }
 
-        PROJECTILE.material_responses.append(material_response)
+        material_responses_block.apppend(material_response_dict)
+ 
+    return material_responses_block
 
-    material_response_count = len(PROJECTILE.material_responses)
-    PROJECTILE.material_responses_header = TAG.TagBlockHeader("tbfd", 0, material_response_count, 112)
+def upgrade_projectile(h1_proj_asset, EngineTag):
+    h1_proj_data = h1_proj_asset["Data"]
 
-    return TAG.TagBlock(material_response_count)
+    function_keywords = [("Object", ObjectFunctionsEnum), ("Projectile", ProjectileFunctionsEnum)]
 
-def upgrade_projectile(H2_ASSET, patch_txt_path, report):
-    dump_dic = json.load(H2_ASSET)
+    h2_proj_asset = {
+        "TagName": h1_proj_asset["TagName"],
+        "Header": {
+            "unk1": 0,
+            "flags": 0,
+            "tag type": 0,
+            "name": "",
+            "tag group": "proj",
+            "checksum": 0,
+            "data offset": 64,
+            "data length": 0,
+            "unk2": 0,
+            "version": 5,
+            "destination": 0,
+            "plugin handle": -1,
+            "engine tag": EngineTag.H2Latest.value
+        },
+        "Data": {
+            "flags": convert_object_flags(h1_proj_data["flags"]),
+            "bounding radius": h1_proj_data["bounding radius"],
+            "bounding offset": h1_proj_data["bounding offset"],
+            "acceleration scale": h1_proj_data["acceleration scale"],
+            "model": {"group name": "hlmt", "path": ""},
+            "ai properties": generate_ai_properties(h1_proj_asset),
+            "hud text message index": h1_proj_data["hud text message index"],
+            "attachments": generate_attachments(h1_proj_asset, function_keywords),
+            "widgets": generate_widgets(h1_proj_asset),
+            "change colors": generate_change_colors(h1_proj_asset, function_keywords),
+            "flags_1": convert_projectile_flags(h1_proj_data["flags_1"]),
+            "detonation timer starts": {
+                "type": "ShortEnum",
+                "value": h1_proj_data["detonation timer starts"]["value"],
+                "value name": ""
+            },
+            "impact noise": {
+                "type": "ShortEnum",
+                "value": h1_proj_data["impact noise"]["value"],
+                "value name": ""
+            },
+            "AI perception radius": h1_proj_data["ai perception radius"],
+            "collision radius": h1_proj_data["collision radius"],
+            "arming time": h1_proj_data["arming time"],
+            "danger radius": h1_proj_data["danger radius"],
+            "timer": h1_proj_data["timer"],
+            "minimum velocity": h1_proj_data["minimum velocity"] * 30,
+            "maximum range": h1_proj_data["maximum range"],
+            "detonation noise": {
+                "type": "ShortEnum",
+                "value": h1_proj_data["detonation noise"]["value"],
+                "value name": ""
+            },
+            "super det. projectile count": 0,
+            "detonation started": h1_proj_data["detonation started"],
+            "detonation effect (airborne)": {"group name": "effe", "path": ""},
+            "detonation effect (ground)": {"group name": "effe", "path": ""},
+            "detonation damage": {"group name": "jpt!", "path": ""},
+            "attached detonation damage": h1_proj_data["attached detonation damage"],
+            "super detonation": {"group name": "effe", "path": ""},
+            "super detonation damage": {"group name": "jpt!", "path": ""},
+            "detonation sound": {"group name": "snd!", "path": ""},
+            "damage reporting type": {
+                "type": "CharEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "super attached detonation damage": {"group name": "jpt!", "path": ""},
+            "material effect radius": 0.0,
+            "flyby sound": h1_proj_data["flyby sound"],
+            "impact effect": {"group name": "effe", "path": ""},
+            "impact damage": h1_proj_data["impact damage"],
+            "boarding detonation time": 0.0,
+            "boarding detonation damage": {"group name": "jpt!", "path": ""},
+            "boarding attached detonation damage": {"group name": "jpt!", "path": ""},
+            "air gravity scale": h1_proj_data["air gravity scale"],
+            "air damage range": h1_proj_data["air damage range"],
+            "water gravity scale": h1_proj_data["water gravity scale"],
+            "water damage range": h1_proj_data["water damage range"],
+            "initial velocity": h1_proj_data["initial velocity"] * 30,
+            "final velocity": h1_proj_data["final velocity"] * 30,
+            "guided angular velocity (lower)": h1_proj_data["guided angular velocity"],
+            "guided angular velocity (upper)": h1_proj_data["guided angular velocity"],
+            "acceleration range": {
+                "Min": 0.0,
+                "Max": 0.0
+            },
+            "targeted leading fraction": 0.0,
+            "material responses": generate_material_responses(h1_proj_asset)
+        }
+    }
 
-    TAG = tag_format.TagAsset()
-    PROJECTILE = ProjectileAsset()
-    TAG.upgrade_patches = tag_format.get_patch_set(patch_txt_path)
-
-    PROJECTILE.header = TAG.Header()
-    PROJECTILE.header.unk1 = 0
-    PROJECTILE.header.flags = 0
-    PROJECTILE.header.type = 0
-    PROJECTILE.header.name = ""
-    PROJECTILE.header.tag_group = "proj"
-    PROJECTILE.header.checksum = 0
-    PROJECTILE.header.data_offset = 64
-    PROJECTILE.header.data_length = 0
-    PROJECTILE.header.unk2 = 0
-    PROJECTILE.header.version = 5
-    PROJECTILE.header.destination = 0
-    PROJECTILE.header.plugin_handle = -1
-    PROJECTILE.header.engine_tag = "BLM!"
-
-    PROJECTILE.ai_properties = []
-    PROJECTILE.functions = []
-    PROJECTILE.attachments = []
-    PROJECTILE.widgets = []
-    PROJECTILE.old_functions = []
-    PROJECTILE.change_colors = []
-    PROJECTILE.predicted_resources = []
-    PROJECTILE.material_responses = []
-
-    timer = dump_dic['Data']['Timer']
-    air_damage_range = dump_dic['Data']['Air Damage Range']
-    water_damage_range = dump_dic['Data']['Water Damage Range']
-
-    function_keywords = [("Object", _20030504_ObjectFunctionsEnum), ("Projectile", _20030504_ProjectileFunctionsEnum)]
-
-    PROJECTILE.body_header = TAG.TagBlockHeader("tbfd", 1, 1, 604)
-    PROJECTILE.object_flags = upgrade_e3_object_flags(dump_dic['Data']['Flags'])
-    PROJECTILE.bounding_radius = dump_dic['Data']['Bounding Radius']
-    PROJECTILE.bounding_offset = dump_dic['Data']['Bounding Offset']
-    PROJECTILE.acceleration_scale = dump_dic['Data']['Acceleration Scale']
-    PROJECTILE.lightmap_shadow_mode = 0
-    PROJECTILE.sweetner_size = 0
-    PROJECTILE.dynamic_light_sphere_radius = 0.0
-    PROJECTILE.dynamic_light_sphere_offset = Vector()
-    PROJECTILE.default_model_variant = dump_dic['Data']['Default Model Variant']
-    PROJECTILE.default_model_variant_length = len(dump_dic['Data']['Default Model Variant'])
-    PROJECTILE.model = TAG.TagRef().convert_from_json(dump_dic['Data']['Model'])
-    PROJECTILE.crate_object = TAG.TagRef()
-    PROJECTILE.modifier_shader = TAG.TagRef()
-    PROJECTILE.creation_effect = TAG.TagRef()
-    PROJECTILE.material_effects = TAG.TagRef()
-    PROJECTILE.ai_properties_tag_block = TAG.TagBlock()
-    PROJECTILE.functions_tag_block = TAG.TagBlock()
-    PROJECTILE.apply_collision_damage_scale = 0.0
-    PROJECTILE.min_game_acc = 0.0
-    PROJECTILE.max_game_acc = 0.0
-    PROJECTILE.min_game_scale = 0.0
-    PROJECTILE.max_game_scale = 0.0
-    PROJECTILE.min_abs_acc = 0.0
-    PROJECTILE.max_abs_acc = 0.0
-    PROJECTILE.min_abs_scale = 0.0
-    PROJECTILE.max_abs_scale = 0.0
-    PROJECTILE.hud_text_message_index = dump_dic['Data']['Hud Text Message Index']
-    PROJECTILE.attachments_tag_block = generate_attachments(dump_dic, TAG, PROJECTILE, function_keywords)
-    PROJECTILE.widgets_tag_block = generate_widgets(dump_dic, TAG, PROJECTILE)
-    PROJECTILE.old_functions_tag_block = TAG.TagBlock()
-    PROJECTILE.change_colors_tag_block = generate_change_colors(dump_dic, TAG, PROJECTILE, function_keywords)
-    PROJECTILE.predicted_resources_tag_block = TAG.TagBlock()
-    PROJECTILE.projectile_flags = dump_dic['Data']['Projectile Flags']
-    PROJECTILE.detonation_timer_starts = dump_dic['Data']['Detonation Timer Starts']['Value']
-    PROJECTILE.impact_noise = dump_dic['Data']['Impact Noise']['Value']
-    PROJECTILE.ai_perception_radius = dump_dic['Data']['Ai Perception Radius']
-    PROJECTILE.collision_radius = dump_dic['Data']['Collision Radius']
-    PROJECTILE.arming_time = dump_dic['Data']['Arming Time']
-    PROJECTILE.danger_radius = dump_dic['Data']['Danger Radius']
-    PROJECTILE.timer = (timer["Min"], timer["Max"])
-    PROJECTILE.minimum_velocity = dump_dic['Data']['Minimum Velocity'] * 30
-    PROJECTILE.maximum_range = dump_dic['Data']['Maximum Range']
-    PROJECTILE.detonation_noise = dump_dic['Data']['Detonation Noise']['Value']
-    PROJECTILE.super_detonation_projectile_count = 0
-    PROJECTILE.detonation_started = TAG.TagRef().convert_from_json(dump_dic['Data']['Detonation Started'])
-    PROJECTILE.detonation_effect_airborne = TAG.TagRef().convert_from_json(dump_dic['Data']['Effect'])
-    PROJECTILE.detonation_effect_ground = TAG.TagRef().convert_from_json(dump_dic['Data']['Effect'])
-    PROJECTILE.detonation_damage = TAG.TagRef()
-    PROJECTILE.attached_detonation_damage = TAG.TagRef().convert_from_json(dump_dic['Data']['Attached Detonation Damage'])
-    PROJECTILE.super_detonation = TAG.TagRef().convert_from_json(dump_dic['Data']['Super Detonation'])
-    PROJECTILE.super_detonation_damage = TAG.TagRef()
-    PROJECTILE.detonation_sound = TAG.TagRef()
-    PROJECTILE.damage_reporting_type = 0
-    PROJECTILE.super_attached_detonation_damage_effect = TAG.TagRef()
-    PROJECTILE.material_effect_radius = 0.0
-    PROJECTILE.flyby_sound = TAG.TagRef().convert_from_json(dump_dic['Data']['Flyby Sound'])
-    PROJECTILE.impact_effect = TAG.TagRef()
-    PROJECTILE.impact_damage = TAG.TagRef().convert_from_json(dump_dic['Data']['Impact Damage'])
-    PROJECTILE.boarding_detonation_time = 0.0
-    PROJECTILE.boarding_detonation_damage_effect = TAG.TagRef()
-    PROJECTILE.boarding_attached_detonation_damage_effect = TAG.TagRef()
-    PROJECTILE.air_gravity_scale = dump_dic['Data']['Air Gravity Scale']
-    PROJECTILE.air_damage_range = (air_damage_range["Min"], air_damage_range["Max"])
-    PROJECTILE.water_gravity_scale = dump_dic['Data']['Water Gravity Scale']
-    PROJECTILE.water_damage_range = (water_damage_range["Min"], water_damage_range["Max"])
-    PROJECTILE.initial_velocity = dump_dic['Data']['Initial Velocity'] * 30
-    PROJECTILE.final_velocity = dump_dic['Data']['Final Velocity'] * 30
-    PROJECTILE.guided_angular_velocity_lower = dump_dic['Data']['Guided Angular Velocity']
-    PROJECTILE.guided_angular_velocity_upper = dump_dic['Data']['Guided Angular Velocity']
-    PROJECTILE.acceleration_range = (0.0, 0.0)
-    PROJECTILE.targeted_leading_fraction = 0.0
-    PROJECTILE.material_responses_tag_block = generate_material_responses(dump_dic, TAG, PROJECTILE)
-
-    return PROJECTILE
+    return h2_proj_asset

@@ -24,118 +24,188 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import json
+from enum import Flag, Enum, auto
 
-from ....global_functions import tag_format, shader_processing
-from ....file_tag.h2.file_light.format import LightAsset, DefaultLightmapSettingEnum
-from ....file_tag.h2.file_shader.format import FunctionTypeEnum
+class H1LightFlags(Flag):
+    dynamic = auto()
+    no_specular = auto()
+    dont_light_own_object = auto()
+    supersize_in_first_person = auto()
+    first_person_flashlight = auto()
+    dont_fade_active_camouflage = auto()
 
-def convert_default_lightmap_setting(default_lightmap_setting_index):
-    default_lightmap_setting_result = 0
-    try:
-        default_lightmap_setting_result = DefaultLightmapSettingEnum(default_lightmap_setting_index).value
-    except:
-        print("bad value")
+class H2LightFlags(Flag):
+    no_illumination = auto()
+    no_specular = auto()
+    force_cast_environment_shadows_through_portals = auto()
+    no_shadow = auto()
+    force_frustum_visibility_on_small_light = auto()
+    only_render_in_first_person = auto()
+    only_render_in_third_person = auto()
+    dont_fade_when_invisible = auto()
+    multiplayer_override = auto()
+    animated_gel = auto()
+    only_in_dynamic_envmap = auto()
+    ignore_parent_object = auto()
+    dont_shadow_parent = auto()
+    ignore_all_parents = auto()
+    march_milestone_hack = auto()
+    force_light_inside_world = auto()
+    environment_doesnt_cast_stencil_shadows = auto()
+    objects_dont_cast_stencil_shadows = auto()
+    first_person_from_camera = auto()
+    texture_camera_gel = auto()
+    light_framerate_killer = auto()
+    allowed_in_split_screen = auto()
+    only_on_parent_bipeds = auto()
 
-    return default_lightmap_setting_result
+class DefaultLightmapSettingEnum(Enum):
+    dynamic_only = 0
+    dynamic_with_lightmaps = auto()
+    lightmaps_only = auto()
 
-def generate_brightness_animation(dump_dic, TAG, LIGHT):
-    brightness_animation_tag_block = dump_dic['Data']['Brightness Animation']
+def convert_light_flags(object_flags):
+    flags = 0
+    active_h1_flags = H1LightFlags(object_flags)
+    if H1LightFlags.no_specular in active_h1_flags:
+        flags += H2LightFlags.no_specular.value
 
-    for brightness_animation_element in brightness_animation_tag_block:
-        function_type = FunctionTypeEnum(brightness_animation_element["Function Type"])
-        flag_value = brightness_animation_element["Flags"]
-        rgb_0 = brightness_animation_element["Color 0"]
-        rgb_1 = brightness_animation_element["Color 1"]
-        rgb_2 = brightness_animation_element["Color 2"]
-        rgb_3 = brightness_animation_element["Color 3"]
-        value_0 = brightness_animation_element["Float 0"]
-        value_1 = brightness_animation_element["Float 1"]
-        value_2 = brightness_animation_element["Float 2"]
-        value_3 = brightness_animation_element["Float 3"]
-        function_0_type = brightness_animation_element["Function 1"]
-        function_1_type = brightness_animation_element["Function 2"]
-        function_values = [element["Value"] for element in brightness_animation_element["Values"]]
+    if H1LightFlags.dont_fade_active_camouflage in active_h1_flags:
+        flags += H2LightFlags.dont_fade_when_invisible.value
 
-        shader_processing.convert_legacy_function(LIGHT, TAG, LIGHT.brightness_animation, 0, 0, function_type, flag_value, 0, 0, rgb_0, rgb_1, rgb_2, rgb_3, value_0, value_1,
-                                                  value_2, value_3, function_0_type, function_1_type, function_values)
+    return flags
 
-    brightness_animation_count = len(LIGHT.brightness_animation)
-    LIGHT.brightness_animation_header = TAG.TagBlockHeader("tbfd", 0, brightness_animation_count, 12)
+def upgrade_light(h1_ligh_asset, EngineTag):
+    h1_lens_data = h1_ligh_asset["Data"]
 
-    return TAG.TagBlock(brightness_animation_count)
+    light_flags = H1LightFlags(h1_lens_data["flags"])
 
-def upgrade_light(H2_ASSET, patch_txt_path, report):
-    dump_dic = json.load(H2_ASSET)
+    lightmap_setting = DefaultLightmapSettingEnum.lightmaps_only.value
+    if H1LightFlags.dynamic in light_flags:
+        lightmap_setting = DefaultLightmapSettingEnum.dynamic_only.value
 
-    TAG = tag_format.TagAsset()
-    LIGHT = LightAsset()
-    TAG.upgrade_patches = tag_format.get_patch_set(patch_txt_path)
+    h2_lens_asset = {
+        "TagName": h1_ligh_asset["TagName"],
+        "Header": {
+            "unk1": 0,
+            "flags": 0,
+            "tag type": 0,
+            "name": "",
+            "tag group": "ligh",
+            "checksum": 0,
+            "data offset": 64,
+            "data length": 0,
+            "unk2": 0,
+            "version": 4,
+            "destination": 0,
+            "plugin handle": -1,
+            "engine tag": EngineTag.H2Latest.value
+        },
+        "Data": {
+            "flags": convert_light_flags(h1_lens_data["flags"]),
+            "type": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "size modifer": h1_lens_data["radius modifer"],
+            "shadow quality bias": 0,
+            "shadow tap bias": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "radius": h1_lens_data["radius"],
+            "specular radius": 0.0,
+            "near width": 0.0,
+            "height stretch": 0.0,
+            "field of view": 0.0,
+            "falloff distance": 0.0,
+            "cutoff distance": 0.0,
+            "interpolation flags": h1_lens_data["interpolation flags"],
+            "bloom bounds": {
+                "Min": 0.0,
+                "Max": 0.0
+            },
+            "specular lower bound": h1_lens_data["color lower bound"],
+            "specular upper bound": h1_lens_data["color upper bound"],
+            "diffuse lower bound": h1_lens_data["color lower bound"],
+            "diffuse upper bound": h1_lens_data["color upper bound"],
+            "brightness bounds": {
+                "Min": 0.0,
+                "Max": 0.0
+            },
+            "gel map": {
+                "group name": "bitm",
+                "unk1": 0,
+                "length": 0,
+                "unk2": -1,
+                "path": ""
+            },
+            "specular mask": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "falloff function": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "diffuse contrast": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "specular contrast": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "falloff geometry": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "lens flare": h1_lens_data["lens flare"],
+            "bounding radius": 0.0,
+            "light volume": {
+                "group name": "MGS2",
+                "unk1": 0,
+                "length": 0,
+                "unk2": -1,
+                "path": ""
+            },
+            "default lightmap setting": {
+                "type": "ShortEnum",
+                "value": lightmap_setting,
+                "value name": ""
+            },
+            "lightmap half life": h1_lens_data["intensity"],
+            "lightmap light scale": 0.0,
+            "duration": h1_lens_data["duration"],
+            "falloff function_1": {
+                "type": "ShortEnum",
+                "value": h1_lens_data["falloff function"]["value"],
+                "value name": ""
+            },
+            "illumination fade": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "shadow fade": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "specular fade": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "flags_1": 0
+        }
+    }
 
-    LIGHT.header = TAG.Header()
-    LIGHT.header.unk1 = 0
-    LIGHT.header.flags = 0
-    LIGHT.header.type = 0
-    LIGHT.header.name = ""
-    LIGHT.header.tag_group = "ligh"
-    LIGHT.header.checksum = 0
-    LIGHT.header.data_offset = 64
-    LIGHT.header.data_length = 0
-    LIGHT.header.unk2 = 0
-    LIGHT.header.version = 4
-    LIGHT.header.destination = 0
-    LIGHT.header.plugin_handle = -1
-    LIGHT.header.engine_tag = "BLM!"
-
-    LIGHT.brightness_animation = []
-    LIGHT.color_animation = []
-    LIGHT.gel_animation = []
-
-    size_modifer = dump_dic['Data']['Size Modifier']
-    bloom_bounds = dump_dic['Data']['Bloom Bounds']
-    brightness_bounds = dump_dic['Data']['Brightness Bounds']
-
-    LIGHT.body_header = TAG.TagBlockHeader("tbfd", 0, 1, 272)
-    LIGHT.flags = dump_dic['Data']['Flags']
-    LIGHT.shape_type = dump_dic['Data']['Type']['Value']
-    LIGHT.size_modifier = (size_modifer["Min"], size_modifer["Max"])
-    LIGHT.shadow_quality_bias = 0.0
-    LIGHT.shadow_tap_bias = 0
-    LIGHT.radius = dump_dic['Data']['Radius']
-    LIGHT.specular_radius = dump_dic['Data']['Specular Radius']
-    LIGHT.near_width = dump_dic['Data']['Near Width']
-    LIGHT.height_stretch = dump_dic['Data']['Height Stretch']
-    LIGHT.field_of_view = dump_dic['Data']['Field Of View']
-    LIGHT.falloff_distance = dump_dic['Data']['Falloff Distance']
-    LIGHT.cutoff_distance = dump_dic['Data']['Cutoff Distance']
-    LIGHT.interpolation_flags = dump_dic['Data']['Interpolation Flags']
-    LIGHT.bloom_bounds = (bloom_bounds["Min"], bloom_bounds["Max"])
-    LIGHT.specular_lower_bound = shader_processing.get_rgb_percentage(dump_dic['Data']["Specular Lower Bound"])
-    LIGHT.specular_upper_bound = shader_processing.get_rgb_percentage(dump_dic['Data']["Specular Upper Bound"])
-    LIGHT.diffuse_lower_bound = shader_processing.get_rgb_percentage(dump_dic['Data']["Diffuse Lower Bound"])
-    LIGHT.diffuse_upper_bound = shader_processing.get_rgb_percentage(dump_dic['Data']["Diffuse Upper Bound"])
-    LIGHT.brightness_bounds = (brightness_bounds["Min"], brightness_bounds["Max"])
-    LIGHT.gel_map = TAG.TagRef().convert_from_json(dump_dic['Data']['Gel Map'])
-    LIGHT.specular_mask = dump_dic['Data']['Specular Mask']['Value']
-    LIGHT.falloff_function = dump_dic['Data']['Falloff Function']['Value']
-    LIGHT.diffuse_contrast = dump_dic['Data']['Diffuse Contrast']['Value']
-    LIGHT.specular_contrast = dump_dic['Data']['Specular Contrast']['Value']
-    LIGHT.falloff_geometry = dump_dic['Data']['Falloff Geometry']['Value']
-    LIGHT.lens_flare = TAG.TagRef().convert_from_json(dump_dic['Data']['Lens Flare'])
-    LIGHT.bounding_radius = dump_dic['Data']['Bounding Radius'] # Does E3 even use this?
-    LIGHT.light_volume = TAG.TagRef("MGS2")
-    LIGHT.default_lightmap_setting = 0#convert_default_lightmap_setting(dump_dic['Data']['Default Lightmap Setting']['Value']) # Unused?
-    LIGHT.lightmap_half_life = 0.0
-    LIGHT.lightmap_light_scale = 0.0
-    LIGHT.duration = dump_dic['Data']['Duration'] / 30
-    LIGHT.effect_falloff_function = dump_dic['Data']['Effect Falloff Function']['Value']
-    LIGHT.illumination_fade = 4#dump_dic['Data']['Illumination Fade']['Value']
-    LIGHT.shadow_fade = 4#dump_dic['Data']['Stencil Shadow Fade']['Value']
-    LIGHT.specular_fade = 4#dump_dic['Data']['Specular Fade']['Value']
-    LIGHT.animation_flags = 0
-    LIGHT.brightness_animation_tag_block = generate_brightness_animation(dump_dic, TAG, LIGHT)
-    LIGHT.color_animation_tag_block = TAG.TagBlock()
-    LIGHT.gel_animation_tag_block = TAG.TagBlock()
-    LIGHT.shader = TAG.TagRef("shad", "", 0)
-
-    return LIGHT
+    return h2_lens_asset

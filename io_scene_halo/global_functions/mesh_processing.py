@@ -1287,7 +1287,7 @@ def get_mesh_data(level_data, asset_cache, section_data, mesh, random_color_gen,
                 material_index = mesh.materials.values().index(mat)
                 mesh.polygons[triangle_idx].material_index = material_index
             else:
-                material_name = "invalid"
+                material_name = "invalid_%sidx" % triangle_material_index
                 mat = bpy.data.materials.get(material_name)
                 if mat is None:
                     mat = bpy.data.materials.new(name=material_name)

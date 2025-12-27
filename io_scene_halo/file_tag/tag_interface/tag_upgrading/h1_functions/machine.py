@@ -24,113 +24,88 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import os
-import json
+from ..h1_functions.object import (
+    convert_object_flags, 
+    generate_ai_properties, 
+    generate_attachments, 
+    generate_widgets, 
+    generate_change_colors, 
+    FunctionEnum as ObjectFunctionsEnum
+    )
 
-from mathutils import Vector
-from enum import Flag, Enum, auto
-from ....global_functions import tag_format, shader_processing
-from ....file_tag.h2_20030504.file_object.format import upgrade_e3_object_flags
-from ....file_tag.h2.file_machine.format import MachineAsset
-from ....file_tag.h2_20030504.file_object.upgrade_json import generate_attachments, generate_widgets, generate_change_colors, _20030504_ObjectFunctionsEnum
+def upgrade_machine(h1_mach_asset, EngineTag):
+    h1_mach_data = h1_mach_asset["Data"]
 
-class _20030504_DeviceFunctionsEnum(Enum):
-    none = 0
-    power = auto()
-    change_in_power = auto()
-    position = auto()
-    change_in_position = auto()
-    locked = auto()
-    delay = auto()
+    function_keywords = [("Object", ObjectFunctionsEnum)]
 
-def upgrade_machine(H2_ASSET, patch_txt_path, report):
-    dump_dic = json.load(H2_ASSET)
+    h2_mach_asset = {
+        "TagName": h1_mach_asset["TagName"],
+        "Header": {
+            "unk1": 0,
+            "flags": 0,
+            "tag type": 0,
+            "name": "",
+            "tag group": "mach",
+            "checksum": 0,
+            "data offset": 64,
+            "data length": 0,
+            "unk2": 0,
+            "version": 1,
+            "destination": 0,
+            "plugin handle": -1,
+            "engine tag": EngineTag.H2Latest.value
+        },
+        "Data": {
+            "flags": convert_object_flags(h1_mach_data["flags"]),
+            "bounding radius": h1_mach_data["bounding radius"],
+            "bounding offset": h1_mach_data["bounding offset"],
+            "acceleration scale": h1_mach_data["acceleration scale"],
+            "model": {"group name": "hlmt", "path": ""},
+            "ai properties": generate_ai_properties(h1_mach_asset),
+            "hud text message index": h1_mach_data["hud text message index"],
+            "attachments": generate_attachments(h1_mach_asset, function_keywords),
+            "widgets": generate_widgets(h1_mach_asset),
+            "change colors": generate_change_colors(h1_mach_asset, function_keywords),
+            "flags_1": h1_mach_data["flags_1"],
+            "power transition time": h1_mach_data["power transition time"],
+            "power acceleration time": h1_mach_data["power acceleration time"],
+            "position transition time": h1_mach_data["position transition time"],
+            "position acceleration time": h1_mach_data["position acceleration time"],
+            "depowered position transition time": h1_mach_data["depowered position transition time"],
+            "depowered position acceleration time": h1_mach_data["depowered position acceleration time"],
+            "lightmap flags": 0,
+            "open (up)": h1_mach_data["open"],
+            "close (down)": h1_mach_data["close"],
+            "opened": h1_mach_data["opened"],
+            "closed": h1_mach_data["closed"],
+            "depowered": h1_mach_data["depowered"],
+            "repowered": h1_mach_data["repowered"],
+            "delay time": h1_mach_data["delay time"],
+            "delay effect": h1_mach_data["delay effect"],
+            "automatic activation radius": h1_mach_data["automatic activation radius"],
+            "type": {
+                "type": "ShortEnum",
+                "value": h1_mach_data["type_1"]["value"],
+                "value name": ""
+            },
+            "flags_2": h1_mach_data["flags_2"],
+            "door open time": h1_mach_data["door open time"],
+            "door occlusion bounds": {
+                "Min": 0.0,
+                "Max": 0.0
+            },
+            "collision response": {
+                "type": "ShortEnum",
+                "value": h1_mach_data["collision response"]["value"],
+                "value name": ""
+            },
+            "elevator node": h1_mach_data["elevator node"],
+            "pathfinding policy": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            }
+        }
+    }
 
-    TAG = tag_format.TagAsset()
-    MACHINE = MachineAsset()
-    TAG.upgrade_patches = tag_format.get_patch_set(patch_txt_path)
-
-    MACHINE.header = TAG.Header()
-    MACHINE.header.unk1 = 0
-    MACHINE.header.flags = 0
-    MACHINE.header.type = 0
-    MACHINE.header.name = ""
-    MACHINE.header.tag_group = "mach"
-    MACHINE.header.checksum = 0
-    MACHINE.header.data_offset = 64
-    MACHINE.header.data_length = 0
-    MACHINE.header.unk2 = 0
-    MACHINE.header.version = 1
-    MACHINE.header.destination = 0
-    MACHINE.header.plugin_handle = -1
-    MACHINE.header.engine_tag = "BLM!"
-
-    MACHINE.ai_properties = []
-    MACHINE.functions = []
-    MACHINE.attachments = []
-    MACHINE.widgets = []
-    MACHINE.old_functions = []
-    MACHINE.change_colors = []
-    MACHINE.predicted_resources = []
-
-    function_keywords = [("Object", _20030504_ObjectFunctionsEnum), ("Device", _20030504_DeviceFunctionsEnum)]
-
-    MACHINE.body_header = TAG.TagBlockHeader("tbfd", 0, 1, 432)
-    MACHINE.object_flags = upgrade_e3_object_flags(dump_dic['Data']['Flags'])
-    MACHINE.bounding_radius = dump_dic['Data']['Bounding Radius']
-    MACHINE.bounding_offset = dump_dic['Data']['Bounding Offset']
-    MACHINE.acceleration_scale = dump_dic['Data']['Acceleration Scale']
-    MACHINE.lightmap_shadow_mode = 0
-    MACHINE.sweetner_size = 0
-    MACHINE.dynamic_light_sphere_radius = 0.0
-    MACHINE.dynamic_light_sphere_offset = Vector()
-    MACHINE.default_model_variant = dump_dic['Data']['Default Model Variant']
-    MACHINE.default_model_variant_length = len(dump_dic['Data']['Default Model Variant'])
-    MACHINE.model = TAG.TagRef().convert_from_json(dump_dic['Data']['Model'])
-    MACHINE.crate_object = TAG.TagRef()
-    MACHINE.modifier_shader = TAG.TagRef()
-    MACHINE.creation_effect = TAG.TagRef()
-    MACHINE.material_effects = TAG.TagRef()
-    MACHINE.ai_properties_tag_block = TAG.TagBlock()
-    MACHINE.functions_tag_block = TAG.TagBlock()
-    MACHINE.apply_collision_damage_scale = 0.0
-    MACHINE.min_game_acc = 0.0
-    MACHINE.max_game_acc = 0.0
-    MACHINE.min_game_scale = 0.0
-    MACHINE.max_game_scale = 0.0
-    MACHINE.min_abs_acc = 0.0
-    MACHINE.max_abs_acc = 0.0
-    MACHINE.min_abs_scale = 0.0
-    MACHINE.max_abs_scale = 0.0
-    MACHINE.hud_text_message_index = dump_dic['Data']['Hud Text Message Index']
-    MACHINE.attachments_tag_block = generate_attachments(dump_dic, TAG, MACHINE, function_keywords)
-    MACHINE.widgets_tag_block = generate_widgets(dump_dic, TAG, MACHINE)
-    MACHINE.old_functions_tag_block = TAG.TagBlock()
-    MACHINE.change_colors_tag_block = generate_change_colors(dump_dic, TAG, MACHINE, function_keywords)
-    MACHINE.predicted_resources_tag_block = TAG.TagBlock()
-    MACHINE.device_flags = dump_dic['Data']['Device Flags']
-    MACHINE.power_transition_time = dump_dic['Data']['Power Transition Time']
-    MACHINE.power_acceleration_time = dump_dic['Data']['Power Acceleration Time']
-    MACHINE.position_transition_time = dump_dic['Data']['Position Transition Time']
-    MACHINE.position_acceleration_time = dump_dic['Data']['Position Acceleration Time']
-    MACHINE.depowered_position_transition_time = dump_dic['Data']['Depowered Position Transition Time']
-    MACHINE.depowered_position_acceleration_time = dump_dic['Data']['Depowered Position Acceleration Time']
-    MACHINE.lightmap_flags = 0
-    MACHINE.open_up = TAG.TagRef().convert_from_json(dump_dic['Data']['Open (Up)'])
-    MACHINE.close_down = TAG.TagRef().convert_from_json(dump_dic['Data']['Close (Down)'])
-    MACHINE.opened = TAG.TagRef().convert_from_json(dump_dic['Data']['Opened'])
-    MACHINE.closed = TAG.TagRef().convert_from_json(dump_dic['Data']['Closed'])
-    MACHINE.depowered = TAG.TagRef().convert_from_json(dump_dic['Data']['Depowered'])
-    MACHINE.repowered = TAG.TagRef().convert_from_json(dump_dic['Data']['Repowered'])
-    MACHINE.delay_time = dump_dic['Data']['Delay Time']
-    MACHINE.delay_effect = TAG.TagRef().convert_from_json(dump_dic['Data']['Delay Effect'])
-    MACHINE.automatic_activation_radius = dump_dic['Data']['Automatic Activation Radius']
-    MACHINE.machine_type = dump_dic['Data']['Type']['Value']
-    MACHINE.machine_flags = dump_dic['Data']['Machine Flags']
-    MACHINE.door_open_time = dump_dic['Data']['Door Open Time']
-    MACHINE.door_occlusion_time = (0.0, 0.0)
-    MACHINE.collision_response = dump_dic['Data']['Collision Response']['Value']
-    MACHINE.elevator_node = dump_dic['Data']['Elevator Node']
-    MACHINE.pathfinding_policy = 0
-
-    return MACHINE
+    return h2_mach_asset

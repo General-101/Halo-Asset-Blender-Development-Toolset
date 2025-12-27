@@ -426,8 +426,8 @@ def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_
                                     SHAD_ASSET["blender_assets"][material_name] = mat
 
                             else:
-                                material_name = "invalid"
-                                if global_functions.string_empty_check(shader_name):
+                                material_name = "invalid_%sidx" % material_idx
+                                if not global_functions.string_empty_check(shader_name):
                                     material_name = os.path.basename(shader_name)
 
                                 if has_permutation:
@@ -654,7 +654,7 @@ def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_
                         path = split_result[1]
                         shader_collection_dic[path] = prefix
 
-        for material in level_data["materials"]:
+        for material_idx, material in enumerate(level_data["materials"]):
             shader_tag = material["shader"]
             old_shader_tag = material["old shader"]
             shader_group = shader_tag["group name"]
@@ -709,8 +709,8 @@ def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_
                     SHAD_ASSET["blender_assets"][material_name] = mat
   
             else:
-                material_name = "invalid"
-                if global_functions.string_empty_check(shader_name):
+                material_name = "invalid_%sidx" % material_idx
+                if not global_functions.string_empty_check(shader_name):
                     material_name = os.path.basename(shader_name)
 
                 if has_collection:
