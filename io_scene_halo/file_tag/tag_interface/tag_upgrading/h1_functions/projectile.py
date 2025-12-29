@@ -167,7 +167,7 @@ def generate_projectile_defaults(dump_dic):
         combine_count = 7
 
     tag_path = dump_dic["TagName"].lower().replace(" ", "_")
-    if "spectre_dig" in tag_path:
+    if r"digsite\vehicles\spectre\_dig\spectre_dig" in tag_path:
         damage_report = DamageReportingTypeEnum.spectre_gunner.value
     elif "gauss" in tag_path:
         damage_report = DamageReportingTypeEnum.warthog_gunner_gauss.value
@@ -221,12 +221,55 @@ def generate_projectile_defaults(dump_dic):
         damage_report = DamageReportingTypeEnum.spectre_gunner.value
     elif "c_particle_beam_ray" in tag_path:
         damage_report = DamageReportingTypeEnum.plasma_rifle.value
-    elif "plasma_rifle" in tag_path and "charged bolt" in tag_path:
+    elif "plasma_rifle" in tag_path and "charged_bolt" in tag_path:
         damage_report = DamageReportingTypeEnum.plasma_rifle.value
-    elif "plasma rifle" in tag_path and "charged bolt" in tag_path:
+    elif "plasma_rifle" in tag_path and "charged_bolt" in tag_path:
         damage_report = DamageReportingTypeEnum.plasma_rifle.value
     elif "concussion" in tag_path:
+        damage_report = DamageReportingTypeEnum.shotgun.value
+    elif "covenant_blast_bolt" in tag_path:
+        damage_report = DamageReportingTypeEnum.teh_guardians11.value
+    elif "plasma_pistol" in tag_path and "energy ball" in tag_path:
+        damage_report = DamageReportingTypeEnum.plasma_pistol.value
+    elif "plasma_rifle" in tag_path and "energy ball" in tag_path:
         damage_report = DamageReportingTypeEnum.plasma_rifle.value
+    elif "flame" in tag_path:
+        damage_report = DamageReportingTypeEnum.disintegrator.value
+    elif "frag_grenade" in tag_path:
+        damage_report = DamageReportingTypeEnum.disintegrator.value
+    elif "fuel_rod_rocket" in tag_path:
+        damage_report = DamageReportingTypeEnum.flak_cannon.value
+    elif "fuel_rod" in tag_path:
+        damage_report = DamageReportingTypeEnum.flak_cannon.value
+    elif "ghost_bolt" in tag_path:
+        damage_report = DamageReportingTypeEnum.ghost.value
+    elif "chaingun" in tag_path and "h_assault_rifle_bullet" in tag_path:
+        damage_report = DamageReportingTypeEnum.warthog_gunner.value
+    elif "assault_rifle" in tag_path and "h_assault_rifle_bullet" in tag_path:
+        damage_report = DamageReportingTypeEnum.smg.value
+    elif "assault_rifle" in tag_path and "h_assault_rifle_grenade" in tag_path:
+        damage_report = DamageReportingTypeEnum.frag_grenade.value
+    elif "h_pistol_bullet" in tag_path:
+        damage_report = DamageReportingTypeEnum.magnum_pistol.value
+    elif "h_shotgun_bullet" in tag_path:
+        damage_report = DamageReportingTypeEnum.shotgun.value
+    elif "h_sniper_rifle_bullet" in tag_path:
+        damage_report = DamageReportingTypeEnum.sniper_rifle.value
+    elif "info" in tag_path:
+        damage_report = DamageReportingTypeEnum.teh_guardians11.value
+    elif "light" in tag_path:
+        damage_report = DamageReportingTypeEnum.teh_guardians11.value
+    elif "mp_gun_turret" in tag_path:
+        damage_report = DamageReportingTypeEnum.plasma_turret.value
+    elif "mp_banshee_fuel_rod" in tag_path:
+        damage_report = DamageReportingTypeEnum.banshee.value
+    elif "mp_needle" in tag_path:
+        damage_report = DamageReportingTypeEnum.needler.value
+    elif "needle" in tag_path:
+        damage_report = DamageReportingTypeEnum.needler.value
+    elif "particle_beam" in tag_path and "99_mac" in tag_path:
+        damage_report = DamageReportingTypeEnum.needler.value
+
     return combine_count, damage_report
 
 def generate_material_responses(dump_dic):

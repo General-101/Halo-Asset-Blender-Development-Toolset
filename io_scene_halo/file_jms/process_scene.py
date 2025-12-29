@@ -658,10 +658,10 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
                                 break
 
         else:
-            lod, permutation, region = global_functions.material_definition_parser(False, variant_name, default_region, default_permutation)
+            lod, permutation, region = global_functions.material_definition_parser(variant_name.split(), default_region, default_permutation) 
             texture_path = '<none>'
             if not material == None:
-                name = mesh_processing.append_material_symbols(material[0], game_version, False)
+                name = mesh_processing.append_material_symbols(material, game_version, False)
                 if not material.node_tree == None and write_textures:
                     for node in material.node_tree.nodes:
                         if node.type == 'TEX_IMAGE':

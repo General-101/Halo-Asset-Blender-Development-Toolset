@@ -1113,100 +1113,53 @@ def material_definition_helper(triangle_material_index, mat):
 
     return material_definition
 
-def material_definition_parser(is_import, material_definition_items, default_region, default_permutation):
-    lod_list = ['l1', 'l2', 'l3', 'l4', 'l5', 'l6']
-    slot_index = None
-    lod = None
+def element_is_slot(element):
+    is_slot = False
+    if element.startswith("(") and element.startswith(")"):
+        is_slot = True
+
+    return is_slot
+
+def element_is_lod(element):
+    element_lower = element.lower()
+    is_lod = False
+    if element_lower[0].startswith("l") and element_lower[1].isdigit():
+        is_lod = True
+
+    return is_lod
+
+def material_definition_parser(material_definition_items, default_region, default_permutation):
     region = None
     permutation = None
+    lod = None
+    while not region and material_definition_items:
+        element = material_definition_items.pop()
+        if element_is_slot(element):
+            continue
+        if element_is_lod(element):
+            continue
 
-    if len(material_definition_items) == 1:
-        item_0 = material_definition_items[0].lower()
-        if item_0.startswith("(") and item_0.endswith(')'):
-            slot_index = material_definition_items[0]
+        region = element
 
-        elif item_0 in lod_list:
-            lod = material_definition_items[0]
+    if not region:   
+        region = default_region
+        
+    while not permutation and material_definition_items:
+        element = material_definition_items.pop()
+        if element_is_slot(element):
+            continue
+        if element_is_lod(element):
+            continue
 
-        else:
-            permutation = material_definition_items[0]
+        permutation = element
 
-    elif len(material_definition_items) == 2:
-        item_0 = material_definition_items[0].lower()
-        item_1 = material_definition_items[1].lower()
-        if item_0.startswith("(") and item_0.endswith(')'):
-            slot_index = material_definition_items[0]
+    if not permutation:   
+        permutation = default_permutation
 
-        elif item_0 in lod_list:
-            lod = material_definition_items[0]
-
-        else:
-            permutation = material_definition_items[0]
-
-        if item_1.startswith("(") and item_1.endswith(')'):
-            slot_index = material_definition_items[1]
-
-        elif item_1 in lod_list:
-            lod = material_definition_items[1]
-
-        else:
-            if permutation == None:
-                permutation = material_definition_items[1]
-
-            else:
-                region = material_definition_items[1]
-
-    elif len(material_definition_items) == 3:
-        item_0 = material_definition_items[0].lower()
-        item_1 = material_definition_items[1].lower()
-        item_2 = material_definition_items[2].lower()
-        if item_0.startswith("(") and item_0.endswith(')'):
-            slot_index = material_definition_items[0]
-
-        elif item_0 in lod_list:
-            lod = material_definition_items[0]
-
-        else:
-            permutation = material_definition_items[0]
-
-        if item_1.startswith("(") and item_1.endswith(')'):
-            slot_index = material_definition_items[1]
-
-        elif item_1 in lod_list:
-            lod = material_definition_items[1]
-
-        else:
-            if permutation == None:
-                permutation = material_definition_items[1]
-
-            else:
-                region = material_definition_items[1]
-
-        if item_2.startswith("(") and item_2.endswith(')'):
-            slot_index = material_definition_items[2]
-
-        elif item_2 in lod_list:
-            lod = material_definition_items[2]
-
-        else:
-            if permutation == None:
-                permutation = material_definition_items[2]
-
-            else:
-                region = material_definition_items[2]
-
-    elif len(material_definition_items) == 4:
-        slot_index = material_definition_items[0]
-        lod = material_definition_items[1]
-        permutation = material_definition_items[2]
-        region = material_definition_items[3]
-
-    if not is_import:
-        if permutation == None:
-            permutation = default_permutation
-
-        if region == None:
-            region = default_region
+    while not lod and material_definition_items:
+        element = material_definition_items.pop()
+        if element_is_lod(element):
+            lod = element.lower()
 
     return lod, permutation, region
 

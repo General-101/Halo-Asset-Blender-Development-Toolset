@@ -391,9 +391,10 @@ def find_h1_shader_tag(import_filepath, material_name):
     shader_path = None
     shader_tag = {"group name": None, "path": ""}
     shader_extension = None
-    if not global_functions.string_empty_check(data_path) and not global_functions.string_empty_check(tag_path):
+    if not global_functions.string_empty_check(data_path) and not global_functions.string_empty_check(tag_path) and import_filepath.startswith(data_path):
         import_directory = os.path.dirname(os.path.dirname(import_filepath))
         local_path = os.path.relpath(import_directory, data_path)
+
         import_directory = os.path.join(tag_path, local_path)
         for root, dirs, files in os.walk(import_directory):
             for file in files:
@@ -474,7 +475,7 @@ def find_h2_shader_tag(import_filepath, material_name):
     tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path
     shader_path = None
     shader_tag = {"group name": None, "path": ""}
-    if not global_functions.string_empty_check(data_path) and not global_functions.string_empty_check(tag_path):
+    if not global_functions.string_empty_check(data_path) and not global_functions.string_empty_check(tag_path) and import_filepath.startswith(data_path):
         shader_collection_dic = {}
         shader_collection_path = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, r"scenarios\shaders\shader_collections.shader_collections")
         if os.path.isfile(shader_collection_path):

@@ -503,10 +503,18 @@ def generate_marker(context, collection, game_title, filepath, ASSET, region_ele
 
     if is_intermediate:
         matrix_translate = Matrix.Translation(marker_obj.translation)
-        matrix_rotation = marker_obj.rotation.to_matrix().to_4x4()
+        if game_title == 'halo1':
+            matrix_rotation = marker_obj.rotation.inverted().to_matrix().to_4x4()
+        else:
+            matrix_rotation = marker_obj.rotation.to_matrix().to_4x4()
+
     else:
         matrix_translate = Matrix.Translation(Vector(marker_obj["translation"]) * 100)
-        matrix_rotation = global_functions.convert_quaternion(marker_obj["rotation"]).to_matrix().to_4x4()
+        if game_title == 'halo1':
+            matrix_rotation = global_functions.convert_quaternion(marker_obj["rotation"]).inverted().to_matrix().to_4x4()
+        else:
+            matrix_rotation = global_functions.convert_quaternion(marker_obj["rotation"]).to_matrix().to_4x4()
+
     transform_matrix = matrix_translate @ matrix_rotation
     if not parent_idx == -1:
         pose_bone = armature.pose.bones[bone_name]
@@ -990,21 +998,6 @@ def process_mesh_export_vert(vertex_data, file_type, original_geo_matrix, custom
         final_translation = custom_scale * vertex_data.co
 
     return final_translation
-
-def process_mesh_export_face_set(default_permutation, default_region, game_version, original_geo, region_idx):
-    if game_version == "halo1":
-        if not region_idx == -1:
-            region = original_geo.data.region_list[region_idx].name
-            face_set = (None, None, region)
-
-    else:
-        if not region_idx == -1:
-            face_set = original_geo.data.region_list[region_idx].name.split()
-
-        lod, permutation, region = global_functions.material_definition_parser(False, face_set, default_region, default_permutation)
-        face_set = (lod, permutation, region)
-
-    return face_set
 
 def get_default_region_permutation_name(game_version):
     default_name = None

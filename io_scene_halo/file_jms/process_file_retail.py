@@ -69,8 +69,7 @@ def process_file_retail(JMS, game_version, extension, version_list, default_regi
             JMS.materials.append(JMSAsset.Material(name, material_definition, None, None, None, None))
 
         elif JMS.game_version == "halo2" or JMS.game_version == "halo3":
-            material_definition_items = material_definition.split()
-            lod, permutation, region = global_functions.material_definition_parser(True, material_definition_items, default_region, default_permutation)
+            lod, permutation, region = global_functions.material_definition_parser(material_definition.split(), default_region, default_permutation)
 
             JMS.materials.append(JMSAsset.Material(name, None, material, lod, permutation, region))
 
