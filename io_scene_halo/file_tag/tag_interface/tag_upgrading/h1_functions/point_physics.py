@@ -47,8 +47,8 @@ def upgrade_point_physics(h1_pphy_asset, EngineTag):
         "Data": {
             "flags": h1_pphy_data["flags"],
             "density": h1_pphy_data["density"],
-            "air friction": h1_pphy_data["air friction"] / 10000,
-            "water friction": h1_pphy_data["water friction"] / 10000,
+            "air friction": h1_pphy_data["air friction"] / 10000, # No idea why I'm doing this. I think it was from a fix_tags.cpp file but I don't have that stuff anymore.
+            "water friction": h1_pphy_data["water friction"] / 10000, # Same as above. - Gen
             "surface friction": h1_pphy_data["surface friction"],
             "elasticity": h1_pphy_data["elasticity"]
         }

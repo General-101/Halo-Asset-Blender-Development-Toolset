@@ -164,111 +164,182 @@ def generate_projectile_defaults(dump_dic):
     combine_count = 0
     damage_report = DamageReportingTypeEnum.teh_guardians11.value
     if H1ProjectileFlags.has_super_combining_explosion in H1ProjectileFlags(dump_dic["Data"]["flags_1"]):
-        combine_count = 7
+        # According to community members it takes 7 projectiles to do a super combine in Halo 1. 
+        # In Halo 2 it is also 7 internally but because of how the check is done it becomes 8 effectively.
+        # Doing 6 so that it's 7 ingame.
+        combine_count = 6
 
-    tag_path = dump_dic["TagName"].lower().replace(" ", "_")
-    if r"digsite\vehicles\spectre\_dig\spectre_dig" in tag_path:
+    tag_path = dump_dic["TagName"].lower().replace(" ", "_").replace("-", "_")
+    if tag_path.endswith(r"characters\sentinel\beam.projectile"):
+        damage_report = DamageReportingTypeEnum.sentinel_beam.value
+    elif tag_path.endswith(r"cinematics\effects\cortana_powerup_fx\info.projectile"):
+        damage_report = DamageReportingTypeEnum.teh_guardians11.value
+    elif tag_path.endswith(r"cinematics\effects\lights\covenant_blast_bolt\covenant_blast_bolt.projectile"):
+        damage_report = DamageReportingTypeEnum.teh_guardians11.value
+    elif tag_path.endswith(r"cinematics\effects\teleportation\teleport_ring.projectile"):
+        damage_report = DamageReportingTypeEnum.teh_guardians11.value
+    elif tag_path.endswith(r"cinematics\effects\teleportation\teleport_ring_fast.projectile"):
+        damage_report = DamageReportingTypeEnum.teh_guardians11.value
+    elif tag_path.endswith(r"digsite\ui\hud\effects\ar_reticle.projectile"):
+        damage_report = DamageReportingTypeEnum.teh_guardians11.value
+    elif tag_path.endswith(r"digsite\ui\hud\effects\reticle_ar.projectile"):
+        damage_report = DamageReportingTypeEnum.teh_guardians11.value
+    elif tag_path.endswith(r"digsite\ui\hud\effects\reticle_pr.projectile"):
+        damage_report = DamageReportingTypeEnum.teh_guardians11.value
+    elif tag_path.endswith(r"digsite\ui\hud\effects\reticle_rl.projectile"):
+        damage_report = DamageReportingTypeEnum.teh_guardians11.value
+    elif tag_path.endswith(r"digsite\vehicles\spectre\00_e3\c_spectre_gun_beam.projectile"):
         damage_report = DamageReportingTypeEnum.spectre_gunner.value
-    elif "gauss" in tag_path:
-        damage_report = DamageReportingTypeEnum.warthog_gunner_gauss.value
-    elif "warthog" in tag_path and "at rocket" in tag_path:
-        damage_report = DamageReportingTypeEnum.warthog_gunner_rocket.value
-    elif "anti_air_bolt" in tag_path:
-        damage_report = DamageReportingTypeEnum.flak_cannon.value
-    elif "aa missile" in tag_path:
-        damage_report = DamageReportingTypeEnum.rocket_launcher.value
-    elif "airstrike_round" in tag_path:
-        damage_report = DamageReportingTypeEnum.rocket_launcher.value
-    elif "ar_reticle" in tag_path:
-        damage_report = DamageReportingTypeEnum.teh_guardians11.value
-    elif "rocket_launcher" in tag_path and "at rocket" in tag_path:
-        damage_report = DamageReportingTypeEnum.rocket_launcher.value
-    elif "banshee bolt" in tag_path:
-        damage_report = DamageReportingTypeEnum.banshee.value
-    elif "banshee fuel rod" in tag_path:
-        damage_report = DamageReportingTypeEnum.banshee.value
-    elif "sentinel" in tag_path and "beam" in tag_path:
-        damage_report = DamageReportingTypeEnum.sentinel_beam.value
-    elif "microwave_gun" in tag_path and "beam" in tag_path:
-        damage_report = DamageReportingTypeEnum.sentinel_beam.value
-    elif "beam emitter" in tag_path and "beam" in tag_path:
-        damage_report = DamageReportingTypeEnum.teh_guardians11.value
-    elif "plasma_rifle" in tag_path and "bolt" in tag_path:
-        damage_report = DamageReportingTypeEnum.plasma_rifle.value
-    elif "plasma pistol" in tag_path and "bolt" in tag_path:
-        damage_report = DamageReportingTypeEnum.plasma_pistol.value
-    elif "plasma rifle" in tag_path and "bolt" in tag_path:
-        damage_report = DamageReportingTypeEnum.plasma_rifle.value
-    elif "smg" in tag_path and "bullet" in tag_path:
-        damage_report = DamageReportingTypeEnum.smg.value
-    elif "scorpion" in tag_path and "bullet" in tag_path:
+    elif tag_path.endswith(r"digsite\vehicles\spectre\_dig\spectre_dig.projectile"):
+        damage_report = DamageReportingTypeEnum.spectre_gunner.value
+    elif tag_path.endswith(r"digsite\vehicles\stealthtank\99_mac\shell_shrapnel.projectile"):
         damage_report = DamageReportingTypeEnum.scorpion.value
-    elif "warthog" in tag_path and "bullet" in tag_path:
+    elif tag_path.endswith(r"digsite\vehicles\stealthtank\99_mac\tank_shell.projectile"):
+        damage_report = DamageReportingTypeEnum.scorpion.value
+    elif tag_path.endswith(r"digsite\vehicles\warthog\00_e3\chaingun\h_assault_rifle_bullet.projectile"):
         damage_report = DamageReportingTypeEnum.warthog_gunner.value
-    elif "assault rifle" in tag_path and "bullet" in tag_path:
-        damage_report = DamageReportingTypeEnum.warthog_gunner.value
-    elif "pistol" in tag_path and "bullet" in tag_path:
-        damage_report = DamageReportingTypeEnum.magnum_pistol.value
-    elif "c gun turret" in tag_path:
-        damage_report = DamageReportingTypeEnum.plasma_turret.value
-    elif "c needle" in tag_path:
-        damage_report = DamageReportingTypeEnum.needler.value
-    elif "particle_beam" in tag_path and "c particle beam ray" in tag_path:
-        damage_report = DamageReportingTypeEnum.beam_rifle.value
-    elif "plasma_rifle" in tag_path and "c particle beam ray" in tag_path:
-        damage_report = DamageReportingTypeEnum.plasma_rifle.value
-    elif "c spectre gun beam" in tag_path:
-        damage_report = DamageReportingTypeEnum.spectre_gunner.value
-    elif "c_particle_beam_ray" in tag_path:
-        damage_report = DamageReportingTypeEnum.plasma_rifle.value
-    elif "plasma_rifle" in tag_path and "charged_bolt" in tag_path:
-        damage_report = DamageReportingTypeEnum.plasma_rifle.value
-    elif "plasma_rifle" in tag_path and "charged_bolt" in tag_path:
-        damage_report = DamageReportingTypeEnum.plasma_rifle.value
-    elif "concussion" in tag_path:
-        damage_report = DamageReportingTypeEnum.shotgun.value
-    elif "covenant_blast_bolt" in tag_path:
-        damage_report = DamageReportingTypeEnum.teh_guardians11.value
-    elif "plasma_pistol" in tag_path and "energy ball" in tag_path:
-        damage_report = DamageReportingTypeEnum.plasma_pistol.value
-    elif "plasma_rifle" in tag_path and "energy ball" in tag_path:
-        damage_report = DamageReportingTypeEnum.plasma_rifle.value
-    elif "flame" in tag_path:
-        damage_report = DamageReportingTypeEnum.disintegrator.value
-    elif "frag_grenade" in tag_path:
-        damage_report = DamageReportingTypeEnum.disintegrator.value
-    elif "fuel_rod_rocket" in tag_path:
-        damage_report = DamageReportingTypeEnum.flak_cannon.value
-    elif "fuel_rod" in tag_path:
-        damage_report = DamageReportingTypeEnum.flak_cannon.value
-    elif "ghost_bolt" in tag_path:
-        damage_report = DamageReportingTypeEnum.ghost.value
-    elif "chaingun" in tag_path and "h_assault_rifle_bullet" in tag_path:
-        damage_report = DamageReportingTypeEnum.warthog_gunner.value
-    elif "assault_rifle" in tag_path and "h_assault_rifle_bullet" in tag_path:
+    elif tag_path.endswith(r"digsite\vehicles\warthog\00_e3\rocket\at_rocket.projectile"):
+        damage_report = DamageReportingTypeEnum.warthog_gunner_rocket.value
+    elif tag_path.endswith(r"digsite\vehicles\warthog\_dig\gauss\gauss.projectile"):
+        damage_report = DamageReportingTypeEnum.warthog_gunner_gauss.value
+    elif tag_path.endswith(r"digsite\vehicles\wraith\anti_air\anti_air_bolt.projectile"):
+        damage_report = DamageReportingTypeEnum.wraith.value
+    elif tag_path.endswith(r"digsite\weapons\assault_rifle\00_e3\h_assault_rifle_bullet.projectile"):
         damage_report = DamageReportingTypeEnum.smg.value
-    elif "assault_rifle" in tag_path and "h_assault_rifle_grenade" in tag_path:
+    elif tag_path.endswith(r"digsite\weapons\assault_rifle\00_e3\h_assault_rifle_grenade.projectile"):
         damage_report = DamageReportingTypeEnum.frag_grenade.value
-    elif "h_pistol_bullet" in tag_path:
-        damage_report = DamageReportingTypeEnum.magnum_pistol.value
-    elif "h_shotgun_bullet" in tag_path:
+    elif tag_path.endswith(r"digsite\weapons\assault_rifle\99_mac\_dig\rifle_bullet.projectile"):
+        damage_report = DamageReportingTypeEnum.smg.value
+    elif tag_path.endswith(r"digsite\weapons\assault_rifle\99_mac\rifle_bullet.projectile"):
+        damage_report = DamageReportingTypeEnum.smg.value
+    elif tag_path.endswith(r"digsite\weapons\assault_rifle\99_mac\rifle_grenade.projectile"):
+        damage_report = DamageReportingTypeEnum.frag_grenade.value
+    elif tag_path.endswith(r"digsite\weapons\chaingun\99_mac\_dig\rifle_bullet.projectile"):
+        damage_report = DamageReportingTypeEnum.smg.value
+    elif tag_path.endswith(r"digsite\weapons\chaingun\99_mac\rifle_bullet.projectile"):
+        damage_report = DamageReportingTypeEnum.smg.value
+    elif tag_path.endswith(r"digsite\weapons\concussion_gun\99_mac\concussion.projectile"):
         damage_report = DamageReportingTypeEnum.shotgun.value
-    elif "h_sniper_rifle_bullet" in tag_path:
+    elif tag_path.endswith(r"digsite\weapons\energy_sword\00_e3\slice.projectile"):
+        damage_report = DamageReportingTypeEnum.energy_sword.value
+    elif tag_path.endswith(r"digsite\weapons\energy_sword\00_e3\stab.projectile"):
+        damage_report = DamageReportingTypeEnum.energy_sword.value
+    elif tag_path.endswith(r"digsite\weapons\excavator\99_mac\rifle_bullet.projectile"):
+        damage_report = DamageReportingTypeEnum.shotgun.value
+    elif tag_path.endswith(r"digsite\weapons\flak_cannon\99_mac\rifle_grenade.projectile"):
+        damage_report = DamageReportingTypeEnum.frag_grenade.value
+    elif tag_path.endswith(r"digsite\weapons\flamethrower\99_mac\flame.projectile"):
+        damage_report = DamageReportingTypeEnum.disintegrator.value
+    elif tag_path.endswith(r"digsite\weapons\fuel_rod_gun\99_mac\fuel_rod_rocket.projectile"):
+        damage_report = DamageReportingTypeEnum.flak_cannon.value
+    elif tag_path.endswith(r"digsite\weapons\machete\99_mac\slice.projectile"):
+        damage_report = DamageReportingTypeEnum.energy_sword.value
+    elif tag_path.endswith(r"digsite\weapons\machete\99_mac\stab.projectile"):
+        damage_report = DamageReportingTypeEnum.energy_sword.value
+    elif tag_path.endswith(r"digsite\weapons\microwave_gun\99_mac\beam.projectile"):
+        damage_report = DamageReportingTypeEnum.disintegrator.value
+    elif tag_path.endswith(r"digsite\weapons\missile_launcher\99_mac\aa_missile.projectile"):
+        damage_report = DamageReportingTypeEnum.rocket_launcher.value
+    elif tag_path.endswith(r"digsite\weapons\needler\00_e3\c_needle.projectile"):
+        damage_report = DamageReportingTypeEnum.needler.value
+    elif tag_path.endswith(r"digsite\weapons\particle_beam\00_e3\c_particle_beam_ray.projectile"):
+        damage_report = DamageReportingTypeEnum.beam_rifle.value
+    elif tag_path.endswith(r"digsite\weapons\particle_beam\99_mac\particle_beam.projectile"):
+        damage_report = DamageReportingTypeEnum.beam_rifle.value
+    elif tag_path.endswith(r"digsite\weapons\pistol\00_e3\h_pistol_bullet.projectile"):
+        damage_report = DamageReportingTypeEnum.magnum_pistol.value
+    elif tag_path.endswith(r"digsite\weapons\pistol\99_mac\_dig\airstrike_round.projectile"):
+        damage_report = DamageReportingTypeEnum.rocket_launcher.value
+    elif tag_path.endswith(r"digsite\weapons\pistol\99_mac\_dig\pistol_tracer.projectile"):
+        damage_report = DamageReportingTypeEnum.teh_guardians11.value
+    elif tag_path.endswith(r"digsite\weapons\pistol\99_mac\pistol_laser.projectile"):
+        damage_report = DamageReportingTypeEnum.teh_guardians11.value
+    elif tag_path.endswith(r"digsite\weapons\pistol\99_mac\rifle_bullet.projectile"):
+        damage_report = DamageReportingTypeEnum.smg.value
+    elif tag_path.endswith(r"digsite\weapons\plasma_pistol\99_mac\energy_ball.projectile"):
+        damage_report = DamageReportingTypeEnum.plasma_pistol.value
+    elif tag_path.endswith(r"digsite\weapons\plasma_rifle\00_e3\c_particle_beam_ray.projectile"):
+        damage_report = DamageReportingTypeEnum.plasma_rifle.value
+    elif tag_path.endswith(r"digsite\weapons\plasma_rifle\00_e3\charged_bolt.projectile"):
+        damage_report = DamageReportingTypeEnum.plasma_rifle.value
+    elif tag_path.endswith(r"digsite\weapons\plasma_rifle\01_beta\bolt.projectile"):
+        damage_report = DamageReportingTypeEnum.plasma_rifle.value
+    elif tag_path.endswith(r"digsite\weapons\plasma_rifle\01_beta\charged_bolt.projectile"):
+        damage_report = DamageReportingTypeEnum.plasma_rifle.value
+    elif tag_path.endswith(r"digsite\weapons\plasma_rifle\01_gs\c_particle_beam_ray.projectile"):
+        damage_report = DamageReportingTypeEnum.plasma_rifle.value
+    elif tag_path.endswith(r"digsite\weapons\plasma_rifle\99_mac\energy_ball.projectile"):
+        damage_report = DamageReportingTypeEnum.plasma_rifle.value
+    elif tag_path.endswith(r"digsite\weapons\rocket_launcher\99_mac\at_rocket.projectile"):
+        damage_report = DamageReportingTypeEnum.rocket_launcher.value
+    elif tag_path.endswith(r"digsite\weapons\shotgun\00_e3\h_shotgun_bullet.projectile"):
+        damage_report = DamageReportingTypeEnum.shotgun.value
+    elif tag_path.endswith(r"digsite\weapons\shotgun\99_mac\rifle_bullet.projectile"):
+        damage_report = DamageReportingTypeEnum.shotgun.value
+    elif tag_path.endswith(r"digsite\weapons\smg\99_mac\_dig\bullet.projectile"):
+        damage_report = DamageReportingTypeEnum.smg.value
+    elif tag_path.endswith(r"digsite\weapons\smg\99_mac\rifle_bullet.projectile"):
+        damage_report = DamageReportingTypeEnum.smg.value
+    elif tag_path.endswith(r"digsite\weapons\sniper_rifle\00_e3\h_sniper_rifle_bullet.projectile"):
         damage_report = DamageReportingTypeEnum.sniper_rifle.value
-    elif "info" in tag_path:
+    elif tag_path.endswith(r"digsite\weapons\sniper_rifle\99_mac\rifle_bullet.projectile"):
+        damage_report = DamageReportingTypeEnum.sniper_rifle.value
+    elif tag_path.endswith(r"digsite\weapons\speargun\99_mac\speargun_spear.projectile"):
+        damage_report = DamageReportingTypeEnum.sniper_rifle.value
+    elif tag_path.endswith(r"levels\a30\devices\beam_emitter\beam.projectile"):
         damage_report = DamageReportingTypeEnum.teh_guardians11.value
-    elif "light" in tag_path:
+    elif tag_path.endswith(r"levels\c20\devices\index_platform\light.projectile"):
         damage_report = DamageReportingTypeEnum.teh_guardians11.value
-    elif "mp_gun_turret" in tag_path:
-        damage_report = DamageReportingTypeEnum.plasma_turret.value
-    elif "mp_banshee_fuel_rod" in tag_path:
+    elif tag_path.endswith(r"vehicles\banshee\banshee_bolt.projectile"):
         damage_report = DamageReportingTypeEnum.banshee.value
-    elif "mp_needle" in tag_path:
+    elif tag_path.endswith(r"vehicles\banshee\banshee_fuel_rod.projectile"):
+        damage_report = DamageReportingTypeEnum.banshee.value
+    elif tag_path.endswith(r"vehicles\banshee\mp_banshee_fuel_rod.projectile"):
+        damage_report = DamageReportingTypeEnum.banshee.value
+    elif tag_path.endswith(r"vehicles\c_gun_turret\c_gun_turret.projectile"):
+        damage_report = DamageReportingTypeEnum.plasma_turret.value
+    elif tag_path.endswith(r"vehicles\c_gun_turret\mp_gun_turret.projectile"):
+        damage_report = DamageReportingTypeEnum.plasma_turret.value
+    elif tag_path.endswith(r"vehicles\ghost\ghost_bolt.projectile"):
+        damage_report = DamageReportingTypeEnum.ghost.value
+    elif tag_path.endswith(r"vehicles\scorpion\bullet.projectile"):
+        damage_report = DamageReportingTypeEnum.scorpion.value
+    elif tag_path.endswith(r"vehicles\scorpion\tank_shell.projectile"):
+        damage_report = DamageReportingTypeEnum.scorpion.value
+    elif tag_path.endswith(r"vehicles\warthog\bullet.projectile"):
+        damage_report = DamageReportingTypeEnum.warthog_gunner.value
+    elif tag_path.endswith(r"vehicles\wraith\wraith_mortar.projectile"):
+        damage_report = DamageReportingTypeEnum.wraith.value
+    elif tag_path.endswith(r"weapons\assault_rifle\bullet.projectile"):
+        damage_report = DamageReportingTypeEnum.smg.value
+    elif tag_path.endswith(r"weapons\flamethrower\flame.projectile"):
+        damage_report = DamageReportingTypeEnum.disintegrator.value
+    elif tag_path.endswith(r"weapons\frag_grenade\frag_grenade.projectile"):
+        damage_report = DamageReportingTypeEnum.frag_grenade.value
+    elif tag_path.endswith(r"weapons\fuel_rod_gun\fuel_rod.projectile"):
+        damage_report = DamageReportingTypeEnum.flak_cannon.value
+    elif tag_path.endswith(r"weapons\needler\mp_needle.projectile"):
         damage_report = DamageReportingTypeEnum.needler.value
-    elif "needle" in tag_path:
+    elif tag_path.endswith(r"weapons\needler\needle.projectile"):
         damage_report = DamageReportingTypeEnum.needler.value
-    elif "particle_beam" in tag_path and "99_mac" in tag_path:
-        damage_report = DamageReportingTypeEnum.needler.value
+    elif tag_path.endswith(r"weapons\pistol\bullet.projectile"):
+        damage_report = DamageReportingTypeEnum.magnum_pistol.value
+    elif tag_path.endswith(r"weapons\plasma_cannon\plasma_cannon.projectile"):
+        damage_report = DamageReportingTypeEnum.flak_cannon.value
+    elif tag_path.endswith(r"weapons\plasma_grenade\plasma_grenade.projectile"):
+        damage_report = DamageReportingTypeEnum.plasma_grenade.value
+    elif tag_path.endswith(r"weapons\plasma_pistol\bolt.projectile"):
+        damage_report = DamageReportingTypeEnum.plasma_pistol.value
+    elif tag_path.endswith(r"weapons\plasma_rifle\bolt.projectile"):
+        damage_report = DamageReportingTypeEnum.plasma_rifle.value
+    elif tag_path.endswith(r"weapons\plasma_rifle\charged_bolt.projectile"):
+        damage_report = DamageReportingTypeEnum.plasma_rifle.value
+    elif tag_path.endswith(r"weapons\rocket_launcher\rocket.projectile"):
+        damage_report = DamageReportingTypeEnum.rocket_launcher.value
+    elif tag_path.endswith(r"weapons\shotgun\pellet.projectile"):
+        damage_report = DamageReportingTypeEnum.shotgun.value
+    elif tag_path.endswith(r"weapons\sniper_rifle\sniper_bullet.projectile"):
+        damage_report = DamageReportingTypeEnum.sniper_rifle.value
 
     return combine_count, damage_report
 
@@ -319,6 +390,8 @@ def upgrade_projectile(h1_proj_asset, EngineTag):
     h1_proj_data = h1_proj_asset["Data"]
 
     function_keywords = [("Object", ObjectFunctionsEnum), ("Projectile", ProjectileFunctionsEnum)]
+
+    combine_count, damage_report_value = generate_projectile_defaults(h1_proj_asset)
 
     h2_proj_asset = {
         "TagName": h1_proj_asset["TagName"],
@@ -371,7 +444,7 @@ def upgrade_projectile(h1_proj_asset, EngineTag):
                 "value": h1_proj_data["detonation noise"]["value"],
                 "value name": ""
             },
-            "super det. projectile count": 0,
+            "super det. projectile count": combine_count,
             "detonation started": h1_proj_data["detonation started"],
             "detonation effect (airborne)": {"group name": "effe", "path": ""},
             "detonation effect (ground)": {"group name": "effe", "path": ""},
@@ -382,7 +455,7 @@ def upgrade_projectile(h1_proj_asset, EngineTag):
             "detonation sound": {"group name": "snd!", "path": ""},
             "damage reporting type": {
                 "type": "CharEnum",
-                "value": 0,
+                "value": damage_report_value,
                 "value name": ""
             },
             "super attached detonation damage": {"group name": "jpt!", "path": ""},

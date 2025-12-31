@@ -24,48 +24,42 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import json
+def upgrade_sound_environment(h1_snde_asset, EngineTag):
+    h1_snde_data = h1_snde_asset["Data"]
 
-from ....global_functions import tag_format, shader_processing
-from ....file_tag.h2.file_sound_environment.format import SoundEnvironmentAsset
+    h2_snde_asset = {
+        "TagName": h1_snde_asset["TagName"],
+        "Header": {
+            "unk1": 0,
+            "flags": 0,
+            "tag type": 0,
+            "name": "",
+            "tag group": "snde",
+            "checksum": 0,
+            "data offset": 64,
+            "data length": 0,
+            "unk2": 0,
+            "version": 1,
+            "destination": 0,
+            "plugin handle": -1,
+            "engine tag": EngineTag.H2Latest.value
+        },
+        "Data": {
+            "priority": h1_snde_data["priority"],
+            "room intensity": h1_snde_data["room intensity"],
+            "room intensity hf": h1_snde_data["room intensity hf"],
+            "room rolloff (0 to 10)": h1_snde_data["room rolloff"],
+            "decay time (.1 to 20)": h1_snde_data["decay time"],
+            "decay hf ratio (.1 to 2)": h1_snde_data["decay hf ratio"],
+            "reflections intensity": h1_snde_data["reflections intensity"],
+            "reflections delay (0 to .3)": h1_snde_data["reflections delay"],
+            "reverb intensity": h1_snde_data["reverb intensity"],
+            "reverb delay (0 to .1)": h1_snde_data["reverb delay"],
+            "diffusion": h1_snde_data["diffusion"],
+            "density": h1_snde_data["density"],
+            "hf reference(20 to 20,000)": h1_snde_data["hf reference"],
+            "reflection type": "",
+        }
+    }
 
-def upgrade_sound_environment(H2_ASSET, patch_txt_path, report):
-    dump_dic = json.load(H2_ASSET)
-
-    TAG = tag_format.TagAsset()
-    SOUNDENV = SoundEnvironmentAsset()
-    TAG.upgrade_patches = tag_format.get_patch_set(patch_txt_path)
-
-    SOUNDENV.header = TAG.Header()
-    SOUNDENV.header.unk1 = 0
-    SOUNDENV.header.flags = 0
-    SOUNDENV.header.type = 0
-    SOUNDENV.header.name = ""
-    SOUNDENV.header.tag_group = "snde"
-    SOUNDENV.header.checksum = 0
-    SOUNDENV.header.data_offset = 64
-    SOUNDENV.header.data_length = 0
-    SOUNDENV.header.unk2 = 0
-    SOUNDENV.header.version = 1
-    SOUNDENV.header.destination = 0
-    SOUNDENV.header.plugin_handle = -1
-    SOUNDENV.header.engine_tag = "BLM!"
-
-    SOUNDENV.body_header = TAG.TagBlockHeader("tbfd", 1, 1, 72)
-    SOUNDENV.priority = dump_dic['Data']['Priority']
-    SOUNDENV.room_intensity = dump_dic['Data']['Room Intensity']
-    SOUNDENV.room_intensity_hf = dump_dic['Data']['Room Intensity Hf']
-    SOUNDENV.room_rolloff = dump_dic['Data']['Room Rolloff (0 To 10)']
-    SOUNDENV.decay_time = dump_dic['Data']['Decay Time (.1 To 20)']
-    SOUNDENV.decay_hf_ratio = dump_dic['Data']['Decay Hf Ratio (.1 To 2)']
-    SOUNDENV.reflections_intensity = dump_dic['Data']['Reflections Intensity']
-    SOUNDENV.reflections_delay = dump_dic['Data']['Reflections Delay (0 To .3)']
-    SOUNDENV.reverb_intensity = dump_dic['Data']['Reverb Intensity']
-    SOUNDENV.reverb_delay = dump_dic['Data']['Reverb Delay (0 To .1)']
-    SOUNDENV.diffusion = dump_dic['Data']['Diffusion']
-    SOUNDENV.density = dump_dic['Data']['Density']
-    SOUNDENV.hf_reference = dump_dic['Data']['Hf Reference(20 To 20,000)']
-    SOUNDENV.reflection_type = ""
-    SOUNDENV.reflection_type_length = 0
-
-    return SOUNDENV
+    return h2_snde_asset
