@@ -459,8 +459,9 @@ def find_h1_shader_tag(import_filepath, material_name):
             elif shader_extension == "swat":
                 tag_group = "shader_transparent_water"
 
-            local_path = os.path.relpath(shader_path, tag_path).rsplit(".", 1)[0]
-            shader_tag = {"group name": tag_group, "path": local_path}
+            if shader_path.startswith(tag_path):
+                local_path = os.path.relpath(shader_path, tag_path).rsplit(".", 1)[0]
+                shader_tag = {"group name": tag_group, "path": local_path}
 
         else:
             print("Halo 1 Shader path wasn't set. Something went terribly wrong when trying to find %s shader" % material_name)
@@ -522,19 +523,20 @@ def find_h2_shader_tag(import_filepath, material_name):
 
         if shader_path == None:
             import_directory = os.path.dirname(os.path.dirname(import_filepath))
-            local_path = os.path.relpath(import_directory, data_path)
-            import_shader_directory = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, local_path, "shaders")
-            if os.path.exists(import_shader_directory):
-                for file in os.listdir(import_shader_directory):
-                    file_name = os.path.basename(file)
-                    extension = None
-                    result = file_name.rsplit(".", 1)
-                    if len(result) == 2:
-                        file_name = result[0]
-                        extension = result[1]
-                    if shader_name == file_name and extension.lower() in "shader":
-                        shader_path = os.path.join(import_shader_directory, file)
-                        break
+            if import_directory.startswith(data_path):
+                local_path = os.path.relpath(import_directory, data_path)
+                import_shader_directory = os.path.join(bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path, local_path, "shaders")
+                if os.path.exists(import_shader_directory):
+                    for file in os.listdir(import_shader_directory):
+                        file_name = os.path.basename(file)
+                        extension = None
+                        result = file_name.rsplit(".", 1)
+                        if len(result) == 2:
+                            file_name = result[0]
+                            extension = result[1]
+                        if shader_name == file_name and extension.lower() in "shader":
+                            shader_path = os.path.join(import_shader_directory, file)
+                            break
                         
         if shader_path == None:
             for root, dirs, filenames in os.walk(tag_path):
@@ -552,7 +554,7 @@ def find_h2_shader_tag(import_filepath, material_name):
                         shader_path = file
                         break
 
-        if not shader_path == None:
+        if not shader_path == None and shader_path.startswith(tag_path):
             local_path, tag_extension = os.path.relpath(shader_path, tag_path).rsplit(".", 1)
             shader_tag = {"group name": "shad", "path": local_path}
 
@@ -625,21 +627,22 @@ def find_h3_shader_tag(import_filepath, material_name):
 
         if shader_path == None:
             import_directory = os.path.dirname(os.path.dirname(import_filepath))
-            local_path = os.path.relpath(import_directory, data_path)
-            if local_path:
-                import_shader_directory = os.path.join(tag_path, local_path, "shaders")
-                if os.path.exists(import_shader_directory):
-                    for file in os.listdir(import_shader_directory):
-                        file_name = os.path.basename(file)
-                        extension = None
-                        result = file_name.rsplit(".", 1)
-                        if len(result) == 2:
-                            file_name = result[0]
-                            extension = result[1]
+            if import_directory.startswith(data_path):
+                local_path = os.path.relpath(import_directory, data_path)
+                if local_path:
+                    import_shader_directory = os.path.join(tag_path, local_path, "shaders")
+                    if os.path.exists(import_shader_directory):
+                        for file in os.listdir(import_shader_directory):
+                            file_name = os.path.basename(file)
+                            extension = None
+                            result = file_name.rsplit(".", 1)
+                            if len(result) == 2:
+                                file_name = result[0]
+                                extension = result[1]
 
-                        if shader_name == file_name and extension in shader_extensions:
-                            shader_path = os.path.join(import_shader_directory, file)
-                            break
+                            if shader_name == file_name and extension in shader_extensions:
+                                shader_path = os.path.join(import_shader_directory, file)
+                                break
                         
         if shader_path == None:
             for root, dirs, filenames in os.walk(tag_path):
@@ -657,7 +660,7 @@ def find_h3_shader_tag(import_filepath, material_name):
                         shader_path = file
                         break
 
-        if not shader_path == None:
+        if not shader_path == None and shader_path.startswith(tag_path):
             local_path = os.path.relpath(shader_path, tag_path).rsplit(".", 1)[0]
 
         else:

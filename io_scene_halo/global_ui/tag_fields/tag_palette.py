@@ -99,7 +99,7 @@ def set_tag_path(self, value):
         tag_extensions = h2_tag_extensions
         config_tag_path = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path
     
-    if not global_functions.string_empty_check(config_tag_path) and config_tag_path in tag_path:
+    if not global_functions.string_empty_check(config_tag_path) and tag_path.startswith(config_tag_path):
         tag_path = os.path.relpath(tag_path, config_tag_path)
 
     tag_path = tag_path.rsplit(".", 1)

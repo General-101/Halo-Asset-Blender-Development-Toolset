@@ -44,95 +44,98 @@ from ..file_tag.tag_interface import tag_interface, tag_common
 
 def load_file(context, file_path, game_title, fix_rotations, empty_markers, report):
     with open(file_path, 'rb') as input_stream:
-        asset_cache = {}
+        valid_header, tag_group, checksum, engine_tag = tag_interface.check_header(input_stream)
+        if valid_header:
+            asset_cache = {}
 
-        if game_title == "auto":
-            valid_header, tag_group, checksum, engine_tag = tag_interface.check_header(input_stream)
-            if engine_tag == "blam":
-                game_title = "halo1"
-            else:
-                game_title = "halo2"
+            if game_title == "auto":
+                if engine_tag == "blam":
+                    game_title = "halo1"
+                else:
+                    game_title = "halo2"
 
-        tag_groups = None
-        tag_extensions = None
-        engine_tag = None
-        merged_defs = None
-        tags_directory = ""
-        
-        if game_title == "halo1":
-            output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h1_merged_output")
-            tag_groups = tag_common.h1_tag_groups
-            tag_extensions = tag_common.h1_tag_extensions
-            engine_tag = tag_common.EngineTag.H1Latest.value
-            merged_defs = h1.generate_defs(tag_common.h1_defs_directory, output_dir)
-            tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path
-            
-        elif game_title == "halo2":
-            output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h2_merged_output")
-            tag_groups = tag_common.h2_tag_groups
-            tag_extensions = tag_common.h2_tag_extensions
-            engine_tag = tag_common.EngineTag.H2Latest.value
-            merged_defs = h2.generate_defs(tag_common.h2_defs_directory, output_dir)
-            tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path
-        else:
-            print("%s is not supported." % game_title)
-
-        if not global_functions.string_empty_check(tags_directory):
-            local_path, tag_extension = os.path.relpath(file_path, tags_directory).rsplit(".", 1)
-            tag_group = tag_extensions.get(tag_extension)
-            tag_ref = {"group name": tag_group, "path": local_path}
-
-            tag_interface.generate_tag_dictionary(game_title, tag_ref, tags_directory, tag_groups, engine_tag, merged_defs, asset_cache)
-
-            context.scene.halo.game_title = game_title
+            tag_groups = None
+            tag_extensions = None
+            engine_tag = None
+            merged_defs = None
+            tags_directory = ""
             
             if game_title == "halo1":
-                shader_groups = ("senv", "soso", "schi", "scex", "sotr", "sgla", "smet", "spla", "swat")
-
+                output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h1_merged_output")
+                tag_groups = tag_common.h1_tag_groups
+                tag_extensions = tag_common.h1_tag_extensions
+                engine_tag = tag_common.EngineTag.H1Latest.value
+                merged_defs = h1.generate_defs(tag_common.h1_defs_directory, output_dir)
+                tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path
+                
             elif game_title == "halo2":
-                shader_groups = ("shad")
+                output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h2_merged_output")
+                tag_groups = tag_common.h2_tag_groups
+                tag_extensions = tag_common.h2_tag_extensions
+                engine_tag = tag_common.EngineTag.H2Latest.value
+                merged_defs = h2.generate_defs(tag_common.h2_defs_directory, output_dir)
+                tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path
+            else:
+                print("%s is not supported." % game_title)
+
+            if not global_functions.string_empty_check(tags_directory) and file_path.startswith(tags_directory):
+                local_path, tag_extension = os.path.relpath(file_path, tags_directory).rsplit(".", 1)
+                tag_group = tag_extensions.get(tag_extension)
+                tag_ref = {"group name": tag_group, "path": local_path}
+
+                tag_interface.generate_tag_dictionary(game_title, tag_ref, tags_directory, tag_groups, engine_tag, merged_defs, asset_cache)
+
+                context.scene.halo.game_title = game_title
+                
+                if game_title == "halo1":
+                    shader_groups = ("senv", "soso", "schi", "scex", "sotr", "sgla", "smet", "spla", "swat")
+
+                elif game_title == "halo2":
+                    shader_groups = ("shad")
+
+                else:
+                    input_stream.close()
+                    report({'ERROR'}, "Not implemented")
+
+                    return {'CANCELLED'}
+
+                build_scene = None
+                if tag_group is not None:
+                    if tag_group == "mode" or tag_group == "mod2":
+                        build_scene = build_mesh
+
+                    elif tag_group == "coll":
+                        build_scene = build_collision
+
+                    elif tag_group == "phys":
+                        build_scene = build_physics
+
+                    elif tag_group == "antr":
+                        build_scene = build_animations
+
+                    elif tag_group == "sbsp":
+                        build_scene = build_bsp
+
+                    elif tag_group == "ltmp":
+                        build_scene = build_lightmap
+
+                    elif tag_group == "scnr":
+                        context.scene.tag_scenario.scenario_path = file_path
+                        build_scene = build_scenario
+
+                    elif tag_group == "trak":
+                        build_scene = build_camera_track
+
+                    elif tag_group in shader_groups:
+                        build_scene = build_shader
+
+                    input_stream.close()
+                    if build_scene:
+                        build_scene.build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, report)
+                    else:
+                        report({'ERROR'}, "Tag file has no support. Contact the plugin author if it should.")
 
             else:
-                input_stream.close()
-                report({'ERROR'}, "Not implemented")
-
-                return {'CANCELLED'}
-
-            build_scene = None
-            if tag_group is not None:
-                if tag_group == "mode" or tag_group == "mod2":
-                    build_scene = build_mesh
-
-                elif tag_group == "coll":
-                    build_scene = build_collision
-
-                elif tag_group == "phys":
-                    build_scene = build_physics
-
-                elif tag_group == "antr":
-                    build_scene = build_animations
-
-                elif tag_group == "sbsp":
-                    build_scene = build_bsp
-
-                elif tag_group == "ltmp":
-                    build_scene = build_lightmap
-
-                elif tag_group == "scnr":
-                    context.scene.tag_scenario.scenario_path = file_path
-                    build_scene = build_scenario
-
-                elif tag_group == "trak":
-                    build_scene = build_camera_track
-
-                elif tag_group in shader_groups:
-                    build_scene = build_shader
-
-                input_stream.close()
-                if build_scene:
-                    build_scene.build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, report)
-                else:
-                    report({'ERROR'}, "Tag file has no support. Contact the plugin author if it should.")
-
+                report({'ERROR'}, "Invalid tag directory path provided. Check your tag directory settings.")
         else:
-            report({'ERROR'}, "Invalid tag directory path provided. Check your tag directory settings.")
+            report({'ERROR'}, "File is not a valid Halo 1 or Halo 2 tag. Check yourself before you wreck yourself.")

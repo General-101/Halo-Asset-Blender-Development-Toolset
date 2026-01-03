@@ -24,30 +24,31 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
-import os
-import json
 
-from math import sqrt
-from mathutils import Vector
+import os
+
 from enum import Flag, Enum, auto
-from ....global_functions import tag_format, shader_processing
-from ....file_tag.h2.file_object.format import AISizeEnum, LeapJumpSpeedEnum
-from ....file_tag.h2_20030504.file_object.format import upgrade_e3_object_flags
-from ....file_tag.h2.file_unit.format import SeatFlags
-from ....file_tag.h2.file_vehicle.format import VehicleAsset, VehicleFlags, VehicleTypeEnum, SpecificTypeEnum, PlayerTrainingVehicleTypeEnum, FrictionPointFlags, FrictionTypeEnum
-from ....file_tag.h2_20030504.file_object.upgrade_json import generate_attachments, generate_widgets, generate_change_colors, _20030504_ObjectFunctionsEnum
-from ....file_tag.h2_20030504.file_unit.upgrade_json import (
-    generate_camera_tracks,
+
+from ..h1_functions.object import (
+    convert_object_flags, 
+    generate_ai_properties, 
+    generate_attachments, 
+    generate_widgets, 
+    generate_change_colors, 
+    FunctionEnum as ObjectFunctionsEnum
+    )
+from ..h1_functions.unit import (
+    get_hand_defaults,
     generate_new_hud_interface,
     generate_dialogue_variants,
     generate_powered_seats,
     generate_weapons,
     generate_seats,
-    _20030504_UnitFunctionsEnum,
+    FunctionEnum as UnitFunctionsEnum,
     get_metagame_data
     )
 
-class _20030504_VehicleFunctionsEnum(Enum):
+class VehicleFunctionsEnum(Enum):
     none = 0
     speed_absolute = auto()
     speed_forward = auto()
@@ -86,7 +87,7 @@ class _20030504_VehicleFunctionsEnum(Enum):
     engine_hack = auto()
     wingtip_contrail_new = auto()
 
-class _20030504_MassPointFlags(Flag):
+class MassPointFlags(Flag):
     metallic = auto()
 
 def generate_vehicle_points(phys_dic, TAG, VEHICLE):
@@ -316,134 +317,6 @@ def generate_gears(TAG, VEHICLE):
 
     return TAG.TagBlock(gear_count)
 
-def generate_ai_properties(dump_dic, TAG, VEHICLE):
-    tag_file_name = os.path.basename(dump_dic['TagName']).lower().replace(" ", "_")
-    if "banshee" in tag_file_name:
-        ai_property = VEHICLE.AIProperty()
-        ai_property.ai_flags = 0
-        ai_property.ai_type_name = ""
-        ai_property.ai_type_name_length = len(ai_property.ai_type_name)
-        ai_property.ai_size = AISizeEnum.large.value
-        ai_property.leap_jump_speed = LeapJumpSpeedEnum.none.value
-        VEHICLE.ai_properties.append(ai_property)
-    elif "c_turret" in tag_file_name:
-        ai_property = VEHICLE.AIProperty()
-        ai_property.ai_flags = 0
-        ai_property.ai_type_name = ""
-        ai_property.ai_type_name_length = len(ai_property.ai_type_name)
-        ai_property.ai_size = AISizeEnum.immobile.value
-        ai_property.leap_jump_speed = LeapJumpSpeedEnum.none.value
-        VEHICLE.ai_properties.append(ai_property)
-    elif "guntower" in tag_file_name:
-        ai_property = VEHICLE.AIProperty()
-        ai_property.ai_flags = 0
-        ai_property.ai_type_name = ""
-        ai_property.ai_type_name_length = len(ai_property.ai_type_name)
-        ai_property.ai_size = AISizeEnum.default.value
-        ai_property.leap_jump_speed = LeapJumpSpeedEnum.none.value
-        VEHICLE.ai_properties.append(ai_property)
-    elif "creep" in tag_file_name:
-        ai_property = VEHICLE.AIProperty()
-        ai_property.ai_flags = 0
-        ai_property.ai_type_name = "creep"
-        ai_property.ai_type_name_length = len(ai_property.ai_type_name)
-        ai_property.ai_size = AISizeEnum.huge.value
-        ai_property.leap_jump_speed = LeapJumpSpeedEnum.none.value
-        VEHICLE.ai_properties.append(ai_property)
-    elif "falcon" in tag_file_name:
-        ai_property = VEHICLE.AIProperty()
-        ai_property.ai_flags = 0
-        ai_property.ai_type_name = ""
-        ai_property.ai_type_name_length = len(ai_property.ai_type_name)
-        ai_property.ai_size = AISizeEnum.large.value
-        ai_property.leap_jump_speed = LeapJumpSpeedEnum.none.value
-        VEHICLE.ai_properties.append(ai_property)
-    elif "ghost" in tag_file_name:
-        ai_property = VEHICLE.AIProperty()
-        ai_property.ai_flags = 0
-        ai_property.ai_type_name = "ghost"
-        ai_property.ai_type_name_length = len(ai_property.ai_type_name)
-        ai_property.ai_size = AISizeEnum.medium.value
-        ai_property.leap_jump_speed = LeapJumpSpeedEnum.none.value
-        VEHICLE.ai_properties.append(ai_property)
-    elif "gravity_thone" in tag_file_name:
-        ai_property = VEHICLE.AIProperty()
-        ai_property.ai_flags = 0
-        ai_property.ai_type_name = ""
-        ai_property.ai_type_name_length = len(ai_property.ai_type_name)
-        ai_property.ai_size = AISizeEnum.medium.value
-        ai_property.leap_jump_speed = LeapJumpSpeedEnum.none.value
-        VEHICLE.ai_properties.append(ai_property)
-    elif "h_turret" in tag_file_name:
-        ai_property = VEHICLE.AIProperty()
-        ai_property.ai_flags = 0
-        ai_property.ai_type_name = ""
-        ai_property.ai_type_name_length = len(ai_property.ai_type_name)
-        ai_property.ai_size = AISizeEnum.medium.value
-        ai_property.leap_jump_speed = LeapJumpSpeedEnum.none.value
-        VEHICLE.ai_properties.append(ai_property)
-    elif "mongoose" in tag_file_name:
-        ai_property = VEHICLE.AIProperty()
-        ai_property.ai_flags = 0
-        ai_property.ai_type_name = "mongoose"
-        ai_property.ai_type_name_length = len(ai_property.ai_type_name)
-        ai_property.ai_size = AISizeEnum.medium.value
-        ai_property.leap_jump_speed = LeapJumpSpeedEnum.none.value
-        VEHICLE.ai_properties.append(ai_property)
-    elif "pelican" in tag_file_name:
-        ai_property = VEHICLE.AIProperty()
-        ai_property.ai_flags = 0
-        ai_property.ai_type_name = "pelican"
-        ai_property.ai_type_name_length = len(ai_property.ai_type_name)
-        ai_property.ai_size = AISizeEnum.huge.value
-        ai_property.leap_jump_speed = LeapJumpSpeedEnum.none.value
-        VEHICLE.ai_properties.append(ai_property)
-    elif "phantom" in tag_file_name:
-        ai_property = VEHICLE.AIProperty()
-        ai_property.ai_flags = 0
-        ai_property.ai_type_name = "phantom"
-        ai_property.ai_type_name_length = len(ai_property.ai_type_name)
-        ai_property.ai_size = AISizeEnum.huge.value
-        ai_property.leap_jump_speed = LeapJumpSpeedEnum.none.value
-        VEHICLE.ai_properties.append(ai_property)
-    elif "scorpion" in tag_file_name:
-        ai_property = VEHICLE.AIProperty()
-        ai_property.ai_flags = 0
-        ai_property.ai_type_name = "scorpion"
-        ai_property.ai_type_name_length = len(ai_property.ai_type_name)
-        ai_property.ai_size = AISizeEnum.huge.value
-        ai_property.leap_jump_speed = LeapJumpSpeedEnum.none.value
-        VEHICLE.ai_properties.append(ai_property)
-    elif "spectre" in tag_file_name:
-        ai_property = VEHICLE.AIProperty()
-        ai_property.ai_flags = 0
-        ai_property.ai_type_name = "spectre"
-        ai_property.ai_type_name_length = len(ai_property.ai_type_name)
-        ai_property.ai_size = AISizeEnum.large.value
-        ai_property.leap_jump_speed = LeapJumpSpeedEnum.none.value
-        VEHICLE.ai_properties.append(ai_property)
-    elif "warthog" in tag_file_name:
-        ai_property = VEHICLE.AIProperty()
-        ai_property.ai_flags = 0
-        ai_property.ai_type_name = "warthog"
-        ai_property.ai_type_name_length = len(ai_property.ai_type_name)
-        ai_property.ai_size = AISizeEnum.large.value
-        ai_property.leap_jump_speed = LeapJumpSpeedEnum.none.value
-        VEHICLE.ai_properties.append(ai_property)
-    elif "wraith" in tag_file_name:
-        ai_property = VEHICLE.AIProperty()
-        ai_property.ai_flags = 0
-        ai_property.ai_type_name = "wraith"
-        ai_property.ai_type_name_length = len(ai_property.ai_type_name)
-        ai_property.ai_size = AISizeEnum.huge.value
-        ai_property.leap_jump_speed = LeapJumpSpeedEnum.none.value
-        VEHICLE.ai_properties.append(ai_property)
-
-    ai_property_count = len(VEHICLE.ai_properties)
-    VEHICLE.ai_properties_header = TAG.TagBlockHeader("tbfd", 0, ai_property_count, 16)
-
-    return TAG.TagBlock(ai_property_count)
-
 def get_vehicle_training_data(dump_dic):
     specific_type = SpecificTypeEnum.none.value
     player_training_vehicle_type = PlayerTrainingVehicleTypeEnum.none.value
@@ -607,164 +480,306 @@ def get_physics_defaults(dump_dic):
 
     return ground_fricton, ground_depth, ground_damp_factor, ground_moving_friction, ground_maximum_slope_0, ground_maximum_slope_1, anti_gravity_bank_lift, steering_bank_reaction_scale, gravity_scale
 
-def upgrade_vehicle(H2_ASSET, patch_txt_path, report, json_directory=None):
-    dump_dic = json.load(H2_ASSET)
-    phys_dic = None
-    model_ref = dump_dic['Data']['Model']["Path"]
-    hlmt_path = "%s[%s].json" % (os.path.join(json_directory, model_ref), "hlmt")
-    if os.path.isfile(hlmt_path):
-        hlmt_stream = open(hlmt_path, 'r')
-        hlmt_dic = json.load(hlmt_stream)
-        hlmt_stream.close()
-        physics_ref = hlmt_dic['Data']['Physics']["Path"]
-        phys_path = "%s[%s].json" % (os.path.join(json_directory, physics_ref), "phys")
-        if os.path.isfile(phys_path):
-            phys_stream = open(phys_path, 'r')
-            phys_dic = json.load(phys_stream)
-            phys_stream.close()
+def upgrade_vehicle(h1_vehi_asset, EngineTag):
+    h1_vehi_data = h1_vehi_asset["Data"]
 
-    TAG = tag_format.TagAsset()
-    VEHICLE = VehicleAsset()
-    TAG.upgrade_patches = tag_format.get_patch_set(patch_txt_path)
+    right_hand_node, left_hand_node, preferred_gun_node = get_hand_defaults(h1_vehi_asset)
+    unit_type, unit_class = get_metagame_data(h1_vehi_asset)
+    specific_type, player_training_vehicle_type, flip_message = get_vehicle_training_data(h1_vehi_asset)
+    overdampen_cusp_angle, overdampen_exponent, engine_moment, engine_max_angular_velocity, flying_torque_scale, seat_enterance_acceleration_scale, seat_exit_acceleration_scale, air_friction_deceleration, thrust_scale = get_engine_defaults(h1_vehi_asset)
+    ground_fricton, ground_depth, ground_damp_factor, ground_moving_friction, ground_maximum_slope_0, ground_maximum_slope_1, anti_gravity_bank_lift, steering_bank_reaction_scale, gravity_scale = get_physics_defaults(h1_vehi_asset)
 
-    VEHICLE.header = TAG.Header()
-    VEHICLE.header.unk1 = 0
-    VEHICLE.header.flags = 0
-    VEHICLE.header.type = 0
-    VEHICLE.header.name = ""
-    VEHICLE.header.tag_group = "vehi"
-    VEHICLE.header.checksum = 0
-    VEHICLE.header.data_offset = 64
-    VEHICLE.header.data_length = 0
-    VEHICLE.header.unk2 = 0
-    VEHICLE.header.version = 1
-    VEHICLE.header.destination = 0
-    VEHICLE.header.plugin_handle = -1
-    VEHICLE.header.engine_tag = "BLM!"
+    function_keywords = [("Object", ObjectFunctionsEnum), ("Unit", UnitFunctionsEnum), ("Vehicle", VehicleFunctionsEnum)]
+    i, j, k = h1_vehi_data["seat acceleration scale"]
 
-    VEHICLE.ai_properties = []
-    VEHICLE.functions = []
-    VEHICLE.attachments = []
-    VEHICLE.widgets = []
-    VEHICLE.old_functions = []
-    VEHICLE.change_colors = []
-    VEHICLE.predicted_resources = []
-    VEHICLE.camera_tracks = []
-    VEHICLE.postures = []
-    VEHICLE.new_hud_interface = []
-    VEHICLE.dialogue_variants = []
-    VEHICLE.powered_seats = []
-    VEHICLE.weapons = []
-    VEHICLE.seats = []
-    VEHICLE.gears = []
-    VEHICLE.anti_gravity_point = []
-    VEHICLE.friction_points = []
-    VEHICLE.phantom_shapes = []
+    h2_vehi_asset = {
+        "TagName": h1_vehi_asset["TagName"],
+        "Header": {
+            "unk1": 0,
+            "flags": 0,
+            "tag type": 0,
+            "name": "",
+            "tag group": "vehi",
+            "checksum": 0,
+            "data offset": 64,
+            "data length": 0,
+            "unk2": 0,
+            "version": 1,
+            "destination": 0,
+            "plugin handle": -1,
+            "engine tag": EngineTag.H2Latest.value
+        },
+        "Data": {
+            "flags": convert_object_flags(h1_vehi_data["flags"]),
+            "bounding radius": h1_vehi_data["bounding radius"],
+            "bounding offset": h1_vehi_data["bounding offset"],
+            "acceleration scale": h1_vehi_data["acceleration scale"],
+            "model": {"group name": "hlmt", "path": ""},
+            "ai properties": generate_ai_properties(h1_vehi_asset),
+            "hud text message index": h1_vehi_data["hud text message index"],
+            "attachments": generate_attachments(h1_vehi_asset, function_keywords),
+            "widgets": generate_widgets(h1_vehi_asset),
+            "change colors": generate_change_colors(h1_vehi_asset, function_keywords),
+            "flags_1": h1_vehi_data["flags_1"],
+            "default team": {
+                "type": "ShortEnum",
+                "value": h1_vehi_data["default team"]["value"],
+                "value name": ""
+            },
+            "constant sound volume": {
+                "type": "ShortEnum",
+                "value": h1_vehi_data["constant sound volume"]["value"],
+                "value name": ""
+            },
+            "integrated light toggle": h1_vehi_data["integrated light toggle"],
+            "camera field of view": h1_vehi_data["camera field of view"],
+            "camera stiffness": h1_vehi_data["camera stiffness"],
+            "camera marker name": h1_vehi_data["camera marker name"],
+            "camera submerged marker name": h1_vehi_data["camera submerged marker name"],
+            "pitch auto-level": h1_vehi_data["pitch auto level"],
+            "pitch range": h1_vehi_data["pitch range"],
+            "camera tracks": h1_vehi_data["camera tracks"],
+            
+            "acceleration range": [(i * 30), (j * 30), (k * 30)],
+            "accel action scale": 0.0,
+            "accel attach scale": 0.0,
+            "soft ping threshold": h1_vehi_data["soft ping threshold"],
+            "soft ping interrupt time": h1_vehi_data["soft ping interrupt time"],
+            "hard ping threshold": h1_vehi_data["hard ping threshold"],
+            "hard ping interrupt time": h1_vehi_data["hard ping interrupt time"],
+            "hard death threshold": h1_vehi_data["hard death threshold"],
+            "feign death threshold": h1_vehi_data["feign death threshold"],
+            "feign death time": h1_vehi_data["feign death time"],
+            "distance of evade anim": h1_vehi_data["distance of evade anim"],
+            "distance of dive anim": h1_vehi_data["distance of dive anim"],
+            "stunned movement threshold": h1_vehi_data["stunned movement threshold"],
+            "feign death chance": h1_vehi_data["feign death chance"],
+            "feign repeat chance": h1_vehi_data["feign repeat chance"],
+            "spawned velocity": h1_vehi_data["spawned velocity"],
+            "aiming velocity maximum": h1_vehi_data["aiming velocity maximum"],
+            "aiming acceleration maximum": h1_vehi_data["aiming acceleration maximum"],
+            "casual aiming modifier": h1_vehi_data["casual aiming modifier"],
+            "looking velocity maximum": h1_vehi_data["looking velocity maximum"],
+            "looking acceleration maximum": h1_vehi_data["looking acceleration maximum"],
+            "right_hand_node": right_hand_node,
+            "left_hand_node": left_hand_node,
+            "preferred_gun_node": preferred_gun_node,
+            "melee damage": h1_vehi_data["melee damage"],
+            "motion sensor blip size": {
+                "type": "ShortEnum",
+                "value": h1_vehi_data["motion sensor blip size"]["value"],
+                "value name": ""
+            },
+            "type": {
+                "type": "CharEnum",
+                "value": unit_type,
+                "value name": ""
+            },
+            "class": {
+                "type": "CharEnum",
+                "value": unit_class,
+                "value name": ""
+            },
+            "NEW HUD INTERFACES": generate_new_hud_interface(h1_vehi_asset),
+            "dialogue variants": generate_dialogue_variants(h1_vehi_asset),
+            "grenade velocity": h1_vehi_data["grenade velocity"],
+            "grenade type": {
+                "type": "ShortEnum",
+                "value": h1_vehi_data["grenade type"]["value"],
+                "value name": ""
+            },
+            "grenade count": h1_vehi_data["grenade count"],
+            "powered seats": generate_powered_seats(h1_vehi_asset),
+            "weapons": generate_weapons(h1_vehi_asset),
+            "seats": generate_seats(h1_vehi_asset),
+            "flags_2": 0,
+            "type": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "control": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "maximum forward speed": 0.0,
+            "maximum reverse speed": 0.0,
+            "speed acceleration": 0.0,
+            "speed deceleration": 0.0,
+            "maximum left turn": 0.0,
+            "maximum right turn (negative)": 0.0,
+            "wheel circumference": 0.0,
+            "turn rate": 0.0,
+            "blur speed": 0.0,
+            "specific type": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "player training vehicle type": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "flip message": "",
+            "flip message_pad": 0,
+            "turn scale": 0.0,
+            "speed turn penalty power (0.5 .. 2)": 0.0,
+            "speed turn penalty (0 = none, 1 = can't turn at top speed)": 0.0,
+            "maximum left slide": 0.0,
+            "maximum right slide": 0.0,
+            "slide acceleration": 0.0,
+            "slide deceleration": 0.0,
+            "minimum flipping angular velocity": 0.0,
+            "maximum flipping angular velocity": 0.0,
+            "vehicle size": {
+                "type": "ShortEnum",
+                "value": 0,
+                "value name": ""
+            },
+            "fixed gun yaw": 0.0,
+            "fixed gun pitch": 0.0,
+            "overdampen cusp angle": 0.0,
+            "overdampen exponent": 0.0,
+            "crouch transition time": 0.0,
+            "engine moment": 0.0,
+            "engine max angular velocity": 0.0,
+            "gears": [
+                {
+                    "StructHeader_loaded torque curve": {
+                        "name": "trcv",
+                        "version": 0,
+                        "size": 24
+                    },
+                    "min torque": 0.0,
+                    "max torque": 0.0,
+                    "peak torque scale": 0.0,
+                    "past peak torque exponent": 0.0,
+                    "torque at max angular velocity": 0.0,
+                    "torque at 2x max angular velocity": 0.0,
+                    "StructHeader_cruising torque curve": {
+                        "name": "trcv",
+                        "version": 0,
+                        "size": 24
+                    },
+                    "min torque_1": 0.0,
+                    "max torque_1": 0.0,
+                    "peak torque scale_1": 0.0,
+                    "past peak torque exponent_1": 0.0,
+                    "torque at max angular velocity_1": 0.0,
+                    "torque at 2x max angular velocity_1": 0.0,
+                    "min time to upshift": 0.0,
+                    "engine up-shift scale": 0.0,
+                    "gear ratio": 0.0,
+                    "min time to downshift": 0.0,
+                    "engine down-shift scale": 0.0
+                }
+            ],
+            "flying torque scale": 0.0,
+            "seat enterance acceleration scale": 0.0,
+            "seat exit accelersation scale": 0.0,
+            "air friction deceleration": 0.0,
+            "thrust scale": 0.0,
+            "suspension sound": {
+                "group name": "snd!",
+                "unk1": 0,
+                "length": 0,
+                "unk2": -1,
+                "path": ""
+            },
+            "crash sound": {
+                "group name": "snd!",
+                "unk1": 0,
+                "length": 0,
+                "unk2": -1,
+                "path": ""
+            },
+            "UNUSED": {
+                "group name": "foot",
+                "unk1": 0,
+                "length": 0,
+                "unk2": -1,
+                "path": ""
+            },
+            "special effect": {
+                "group name": "effe",
+                "unk1": 0,
+                "length": 0,
+                "unk2": -1,
+                "path": ""
+            },
+            "unused effect": {
+                "group name": "effe",
+                "unk1": 0,
+                "length": 0,
+                "unk2": -1,
+                "path": ""
+            },
+            "flags_3": 0,
+            "ground friction": 0.0,
+            "ground depth": 0.0,
+            "ground damp factor": 0.0,
+            "ground moving friction": 0.0,
+            "ground maximum slope 0": 0.0,
+            "ground maximum slope 1": 0.0,
+            "anti_gravity_bank_lift": 0.0,
+            "steering_bank_reaction_scale": 0.0,
+            "gravity scale": 0.0,
+            "radius": 0.0,
+            "anti gravity points": [
+                {
+                    "marker name": "",
+                    "marker name_pad": 0,
+                    "flags": 0,
+                    "antigrav strength": 0.0,
+                    "antigrav offset": 0.0,
+                    "antigrav height": 0.0,
+                    "antigrav damp factor": 0.0,
+                    "antigrav normal k1": 0.0,
+                    "antigrav normal k0": 0.0,
+                    "radius": 0.0,
+                    "damage source region name": "",
+                    "damage source region name_pad": 0,
+                    "default state error": 0.0,
+                    "minor damage error": 0.0,
+                    "medium damage error": 0.0,
+                    "major damage error": 0.0,
+                    "destroyed state error": 0.0
+                }
+            ],
+            "friction points": [
+                {
+                    "marker name": "",
+                    "marker name_pad": 0,
+                    "flags": 0,
+                    "fraction of total mass": 0.0,
+                    "radius": 0.0,
+                    "damaged radius": 0.0,
+                    "friction type": {
+                        "type": "ShortEnum",
+                        "value": 0,
+                        "value name": ""
+                    },
+                    "moving friction velocity diff": 0.0,
+                    "e-brake moving friction": 0.0,
+                    "e-brake friction": 0.0,
+                    "e-brake moving friction vel diff": 0.0,
+                    "collision global material name": "",
+                    "collision global material name_pad": 0,
+                    "model state destroyed": {
+                        "type": "ShortEnum",
+                        "value": 0,
+                        "value name": ""
+                    },
+                    "region name": "",
+                    "region name_pad": 0
+                }
+            ],
+            "shape phantom shape": []
+        }
+    }
 
-    pitch_range = dump_dic['Data']['Pitch Range']
-    seat_acceleration_scale = dump_dic['Data']['Seat Acceleration Scale']
-    spawned_actor_count = dump_dic['Data']['Spawned Actor Count']
-
-    unit_type, unit_class = get_metagame_data(dump_dic)
-    specific_type, player_training_vehicle_type, flip_message = get_vehicle_training_data(dump_dic)
-    overdampen_cusp_angle, overdampen_exponent, engine_moment, engine_max_angular_velocity, flying_torque_scale, seat_enterance_acceleration_scale, seat_exit_acceleration_scale, air_friction_deceleration, thrust_scale = get_engine_defaults(dump_dic)
-    ground_fricton, ground_depth, ground_damp_factor, ground_moving_friction, ground_maximum_slope_0, ground_maximum_slope_1, anti_gravity_bank_lift, steering_bank_reaction_scale, gravity_scale = get_physics_defaults(dump_dic)
-
-    function_keywords = [("Object", _20030504_ObjectFunctionsEnum), ("Unit", _20030504_UnitFunctionsEnum), ("Vehicle", _20030504_VehicleFunctionsEnum)]
-
-    VEHICLE.body_header = TAG.TagBlockHeader("tbfd", 0, 1, 984)
-    VEHICLE.object_flags = upgrade_e3_object_flags(dump_dic['Data']['Flags'])
-    VEHICLE.bounding_radius = dump_dic['Data']['Bounding Radius']
-    VEHICLE.bounding_offset = dump_dic['Data']['Bounding Offset']
-    VEHICLE.acceleration_scale = dump_dic['Data']['Acceleration Scale']
-    VEHICLE.lightmap_shadow_mode = 0
-    VEHICLE.sweetner_size = 0
-    VEHICLE.dynamic_light_sphere_radius = 0.0
-    VEHICLE.dynamic_light_sphere_offset = Vector()
-    VEHICLE.default_model_variant = dump_dic['Data']['Default Model Variant']
-    VEHICLE.default_model_variant_length = len(dump_dic['Data']['Default Model Variant'])
-    VEHICLE.model = TAG.TagRef().convert_from_json(dump_dic['Data']['Model'])
-    VEHICLE.crate_object = TAG.TagRef()
-    VEHICLE.modifier_shader = TAG.TagRef()
-    VEHICLE.creation_effect = TAG.TagRef()
-    VEHICLE.material_effects = TAG.TagRef()
-    VEHICLE.ai_properties_tag_block = generate_ai_properties(dump_dic, TAG, VEHICLE)
-    VEHICLE.functions_tag_block = TAG.TagBlock()
-    VEHICLE.apply_collision_damage_scale = 0.0
-    VEHICLE.min_game_acc = 0.0
-    VEHICLE.max_game_acc = 0.0
-    VEHICLE.min_game_scale = 0.0
-    VEHICLE.max_game_scale = 0.0
-    VEHICLE.min_abs_acc = 0.0
-    VEHICLE.max_abs_acc = 0.0
-    VEHICLE.min_abs_scale = 0.0
-    VEHICLE.max_abs_scale = 0.0
-    VEHICLE.hud_text_message_index = dump_dic['Data']['Hud Text Message Index']
-    VEHICLE.attachments_tag_block = generate_attachments(dump_dic, TAG, VEHICLE, function_keywords)
-    VEHICLE.widgets_tag_block = generate_widgets(dump_dic, TAG, VEHICLE)
-    VEHICLE.old_functions_tag_block = TAG.TagBlock()
-    VEHICLE.change_colors_tag_block = generate_change_colors(dump_dic, TAG, VEHICLE, function_keywords)
-    VEHICLE.predicted_resources_tag_block = TAG.TagBlock()
-    VEHICLE.unit_flags = dump_dic['Data']['Unit Flags']
-    VEHICLE.default_team = dump_dic['Data']['Default Team']['Value']
-    VEHICLE.constant_sound_volume = dump_dic['Data']['Constant Sound Volume']['Value']
-    VEHICLE.integrated_light_toggle = TAG.TagRef().convert_from_json(dump_dic['Data']['Integrated Light Toggle'])
-    VEHICLE.camera_field_of_view = dump_dic['Data']['Camera Field Of View']
-    VEHICLE.camera_stiffness = dump_dic['Data']['Camera Stiffness']
-    VEHICLE.camera_marker_name = dump_dic['Data']['Camera Marker Name']
-    VEHICLE.camera_marker_name_length = len(VEHICLE.camera_marker_name)
-    VEHICLE.camera_submerged_marker_name = dump_dic['Data']['Camera Submerged Marker Name']
-    VEHICLE.camera_submerged_marker_name_length = len(VEHICLE.camera_submerged_marker_name)
-    VEHICLE.pitch_auto_level = dump_dic['Data']['Pitch Auto-Level']
-    VEHICLE.pitch_range = (pitch_range["Min"], pitch_range["Max"])
-    VEHICLE.camera_tracks_tag_block = generate_camera_tracks(dump_dic, TAG, VEHICLE)
-    VEHICLE.acceleration_range = Vector((seat_acceleration_scale[0], seat_acceleration_scale[1], seat_acceleration_scale[2])) / 30
-    VEHICLE.acceleration_action_scale = 0.0
-    VEHICLE.acceleration_attach_scale = 0.0
-    VEHICLE.soft_ping_threshold = dump_dic['Data']['Soft Ping Threshold']
-    VEHICLE.soft_ping_interrupt_time = dump_dic['Data']['Soft Ping Interrupt Time']
-    VEHICLE.hard_ping_threshold = dump_dic['Data']['Hard Ping Threshold']
-    VEHICLE.hard_ping_interrupt_time = dump_dic['Data']['Hard Ping Interrupt Time']
-    VEHICLE.hard_death_threshold = dump_dic['Data']['Hard Death Threshold']
-    VEHICLE.feign_death_threshold = dump_dic['Data']['Feign Death Threshold']
-    VEHICLE.feign_death_time = dump_dic['Data']['Feign Death Time']
-    VEHICLE.distance_of_evade_anim = dump_dic['Data']['Distance Of Evade Anim']
-    VEHICLE.distance_of_dive_anim = dump_dic['Data']['Distance Of Dive Anim']
-    VEHICLE.stunned_movement_threshold = dump_dic['Data']['Stunned Movement Threshold']
-    VEHICLE.feign_death_chance = dump_dic['Data']['Feign Death Chance']
-    VEHICLE.feign_repeat_chance = dump_dic['Data']['Feign Repeat Chance']
-    VEHICLE.spawned_turret_actor = TAG.TagRef().convert_from_json(dump_dic['Data']['Spawned Actor'], "char")
-    VEHICLE.spawned_actor_count = (spawned_actor_count["Min"], spawned_actor_count["Max"])
-    VEHICLE.spawned_velocity = dump_dic['Data']['Spawned Velocity']
-    VEHICLE.aiming_velocity_maximum = dump_dic['Data']['Aiming Velocity Maximum']
-    VEHICLE.aiming_acceleration_maximum = dump_dic['Data']['Aiming Acceleration Maximum']
-    VEHICLE.casual_aiming_modifier = dump_dic['Data']['Casual Aiming Modifier']
-    VEHICLE.looking_velocity_maximum = dump_dic['Data']['Looking Velocity Maximum']
-    VEHICLE.looking_acceleration_maximum = dump_dic['Data']['Looking Acceleration Maximum']
-    VEHICLE.right_hand_node = ""
-    VEHICLE.right_hand_node_length = len(VEHICLE.right_hand_node)
-    VEHICLE.left_hand_node = ""
-    VEHICLE.left_hand_node_length = len(VEHICLE.left_hand_node)
-    VEHICLE.preferred_gun_node = ""
-    VEHICLE.preferred_gun_node_length = len(VEHICLE.preferred_gun_node)
-    VEHICLE.melee_damage = TAG.TagRef().convert_from_json(dump_dic['Data']['Melee Damage'])
-    VEHICLE.boarding_melee_damage = TAG.TagRef()
-    VEHICLE.boarding_melee_response = TAG.TagRef()
-    VEHICLE.landing_melee_damage = TAG.TagRef()
-    VEHICLE.flurry_melee_damage = TAG.TagRef()
-    VEHICLE.obstacle_smash_damage = TAG.TagRef()
-    VEHICLE.motion_sensor_blip_size = dump_dic['Data']['Motion Sensor Blip Size']['Value']
-    VEHICLE.unit_type = unit_type
-    VEHICLE.unit_class = unit_class
-    VEHICLE.postures_tag_block = TAG.TagBlock()
-    VEHICLE.new_hud_interfaces_tag_block = generate_new_hud_interface(dump_dic, TAG, VEHICLE)
-    VEHICLE.dialogue_variants_tag_block = generate_dialogue_variants(dump_dic, TAG, VEHICLE)
-    VEHICLE.grenade_velocity = dump_dic['Data']['Grenade Velocity']
-    VEHICLE.grenade_type = dump_dic['Data']['Grenade Type']['Value']
-    VEHICLE.grenade_count = dump_dic['Data']['Grenade Count']
-    VEHICLE.powered_seats_tag_block = generate_powered_seats(dump_dic, TAG, VEHICLE)
-    VEHICLE.weapons_tag_block = generate_weapons(dump_dic, TAG, VEHICLE)
-    VEHICLE.seats_tag_block = generate_seats(dump_dic, TAG, VEHICLE)
     VEHICLE.boost_peak_power = 0.0
     VEHICLE.boost_rise_power = 0.0
     VEHICLE.boost_peak_time = 0.0

@@ -336,7 +336,7 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
         merged_defs = h1.generate_defs(tag_common.h1_defs_directory, output_dir)
         tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path
         data_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_data_path
-        if not global_functions.string_empty_check(data_directory):
+        if not global_functions.string_empty_check(data_directory) and filepath.startswith(data_directory):
             local_path = os.path.relpath(filepath, data_directory)
             output_directory = os.path.dirname(os.path.dirname(local_path))
             output_filename = os.path.basename(output_directory)

@@ -615,7 +615,7 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
         merged_defs = h2.generate_defs(tag_common.h2_defs_directory, output_dir)
         tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path
 
-        if not global_functions.string_empty_check(tags_directory):
+        if not global_functions.string_empty_check(tags_directory) and scenario_path.startswith(tags_directory):
             local_path, tag_extension = os.path.relpath(scenario_path, tags_directory).rsplit(".", 1)
             tag_group = tag_extensions.get(tag_extension)
             tag_ref = {"group name": tag_group, "path": local_path}

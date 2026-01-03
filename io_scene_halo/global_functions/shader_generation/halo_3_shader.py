@@ -77,7 +77,7 @@ def generate_h3_shader_simple(mat, shader_path, asset_cache, report):
     bitmap_file = None
     bitm_ref = {"group name": None, "path": ""}
     input_file = ""
-    if config_is_valid(data_directory, tags_directory, report):
+    if config_is_valid(data_directory, tags_directory, report) and shader_path.startswith(tags_directory):
         tool_directory = os.path.dirname(os.path.dirname(data_directory))
         output_directory = os.path.join(tool_directory, "blender_dumps")
         tool_path = os.path.join(tool_directory, "tool.exe")

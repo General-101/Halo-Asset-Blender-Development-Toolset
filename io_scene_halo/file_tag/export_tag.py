@@ -60,16 +60,15 @@ def write_file(context, file_path, report):
     else:
         print("%s is not supported." % game_title)
 
-    if tags_directory in file_path and os.path.isfile(file_path):
-        if not global_functions.string_empty_check(tags_directory):
-            local_path, tag_extension = os.path.relpath(file_path, tags_directory).rsplit(".", 1)
-            tag_group = tag_extensions.get(tag_extension)
-            tag_ref = {"group name": tag_group, "path": local_path}
+    if not global_functions.string_empty_check(tags_directory) and os.path.isfile(file_path) and file_path.startswith(tags_directory):
+        local_path, tag_extension = os.path.relpath(file_path, tags_directory).rsplit(".", 1)
+        tag_group = tag_extensions.get(tag_extension)
+        tag_ref = {"group name": tag_group, "path": local_path}
 
-            donor_scnr = tag_interface.read_tag(tag_ref, tags_directory, tag_groups, engine_tag, merged_defs)
+        donor_scnr = tag_interface.read_tag(tag_ref, tags_directory, tag_groups, engine_tag, merged_defs)
 
-        else:
-            report({'ERROR'}, "Invalid tag directory path provided. Check your tag directory settings.")
+    else:
+        report({'ERROR'}, "Invalid tag directory path provided. Check your tag directory settings.")
 
     filename_no_ext = file_path.rsplit('.scenario', 1)[0]
     filepath = "%s%s" % (filename_no_ext, "_blender.scenario")
