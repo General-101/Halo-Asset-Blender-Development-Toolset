@@ -91,31 +91,16 @@ def generate_h3_shader_simple(mat, shader_path, asset_cache, report):
         args = [tool_path, xml_command, shader_path, xml_output]
         subprocess.call(args, cwd=tool_directory)
 
-        xmlp = ET.XMLParser(encoding="ISO-8859-10", recover=True)
-        xml = ET.parse(xml_output, parser=xmlp)
-        root = xml.getroot()
-        bitmap_parameter = None
-        bitmap_path = None
-        for root_fields in root:
-            if root_fields.attrib.get('name') == "parameters":
-                for parameter_fields in root_fields:
-                    if parameter_fields.attrib.get('name') == "base_map":
-                        parameter_type_field = None
-                        bitmap_field = None
-                        for field in parameter_fields:
-                            if field.attrib.get('name') == "parameter type" and field.attrib.get('value') == "bitmap":
-                                parameter_type_field = field
-                            if field.attrib.get('name') == "bitmap":
-                                bitmap_field = field
-
-                        if parameter_type_field is not None:
-                            bitmap_tag_path = os.path.join(tags_directory, "%s.%s" % (bitmap_field.attrib.get('value').rsplit(",", 1)[0], "bitmap"))
-                            if os.path.isfile(bitmap_tag_path):
-                                bitmap_parameter = parameter_fields
-                                break
-
-                    else:
-                        if bitmap_parameter == None:
+        if ET:
+            xmlp = ET.XMLParser(encoding="ISO-8859-10", recover=True)
+            xml = ET.parse(xml_output, parser=xmlp)
+            root = xml.getroot()
+            bitmap_parameter = None
+            bitmap_path = None
+            for root_fields in root:
+                if root_fields.attrib.get('name') == "parameters":
+                    for parameter_fields in root_fields:
+                        if parameter_fields.attrib.get('name') == "base_map":
                             parameter_type_field = None
                             bitmap_field = None
                             for field in parameter_fields:
@@ -128,6 +113,22 @@ def generate_h3_shader_simple(mat, shader_path, asset_cache, report):
                                 bitmap_tag_path = os.path.join(tags_directory, "%s.%s" % (bitmap_field.attrib.get('value').rsplit(",", 1)[0], "bitmap"))
                                 if os.path.isfile(bitmap_tag_path):
                                     bitmap_parameter = parameter_fields
+                                    break
+
+                        else:
+                            if bitmap_parameter == None:
+                                parameter_type_field = None
+                                bitmap_field = None
+                                for field in parameter_fields:
+                                    if field.attrib.get('name') == "parameter type" and field.attrib.get('value') == "bitmap":
+                                        parameter_type_field = field
+                                    if field.attrib.get('name') == "bitmap":
+                                        bitmap_field = field
+
+                                if parameter_type_field is not None:
+                                    bitmap_tag_path = os.path.join(tags_directory, "%s.%s" % (bitmap_field.attrib.get('value').rsplit(",", 1)[0], "bitmap"))
+                                    if os.path.isfile(bitmap_tag_path):
+                                        bitmap_parameter = parameter_fields
 
         if bitmap_parameter is not None:
             for field in bitmap_parameter:
