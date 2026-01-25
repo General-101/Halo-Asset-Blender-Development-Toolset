@@ -148,12 +148,13 @@ def generate_h3_shader_simple(mat, shader_path, asset_cache, report):
 
             bitm_ref = {"group name": "bitm", "path": input_file}
 
-            if asset_cache.get("bitm") is None:
-                asset_cache["bitm"] = {}
+            if asset_cache:
+                if asset_cache.get("bitm") is None:
+                    asset_cache["bitm"] = {}
 
-            if asset_cache["bitm"].get(input_file) is None:
-                asset_cache["bitm"][input_file] = {"blender_assets": {}, "has_disk_asset": False, "matching_checksum": False}
-        
+                if asset_cache["bitm"].get(input_file) is None:
+                    asset_cache["bitm"][input_file] = {"blender_assets": {}, "has_disk_asset": False, "matching_checksum": False}
+            
             bitmap_file = os.path.join(output_directory, bitmap_directory, "pixel_data_%s%s" % (bitmap_name, "_00_00.tga"))
 
     output_material_node = get_output_material_node(mat)

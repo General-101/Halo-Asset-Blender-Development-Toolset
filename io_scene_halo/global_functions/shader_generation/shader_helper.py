@@ -136,7 +136,7 @@ def generate_image_node(mat, tag_ref, permutation_index, asset_cache, game_title
 
     texture = None
     bitmap_asset = tag_interface.get_disk_asset(image_path, tag_groups.get(image_group))
-    if bitmap_asset:
+    if bitmap_asset and asset_cache:
         tag_root = bitmap_asset["Data"]
         color_plate = base64.b64decode(tag_root["compressed color plate data"]["encoded"])
         if bitmap_asset and Image and len(color_plate) > 0:
@@ -167,7 +167,7 @@ def generate_image_node(mat, tag_ref, permutation_index, asset_cache, game_title
 
                 asset_cache[image_group][image_path]["blender_assets"]["blender_asset"] = texture
 
-    if texture is None:
+    if texture is None and asset_cache:
         tag_group_entry = asset_cache.get(image_group)
         if tag_group_entry is not None:
             path_entry = tag_group_entry.get(image_path)

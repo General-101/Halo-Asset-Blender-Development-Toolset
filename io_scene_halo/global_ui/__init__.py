@@ -209,7 +209,7 @@ class Halo_GlobalSettings(Panel):
         row.prop(scene_halo, "expert_mode", text='')
 
 def get_game_title(self):
-    return self.get("game_title", "")
+    return self.get("game_title", 0)
 
 def set_game_title(self, value):
     self["game_title"] = value
@@ -222,7 +222,7 @@ def set_game_title(self, value):
 
 class Halo_ScenePropertiesGroup(PropertyGroup):
     game_title: EnumProperty(
-        name="Game:",
+        name="Game",
         description="What game will you be exporting for",
         items=[ ('halo1', "Halo 1", "Show properties for Halo Custom Edition Or Halo CE MCC"),
                 ('halo2', "Halo 2", "Show properties for Halo 2 Vista or Halo 2 MCC"),
