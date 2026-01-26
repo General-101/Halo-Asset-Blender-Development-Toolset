@@ -130,12 +130,12 @@ def generate_jms_skeleton(JMS_A_nodes, JMS_A, JMS_B_nodes, JMS_B, JMA, armature,
 
 def get_jms_node(node_name, JMS_A, JMS_B):
     jms_name = None
-    if jms_name is None:
+    if jms_name is None and JMS_A is not None:
         for jms_node in JMS_A.nodes:
             if global_functions.remove_node_prefix(jms_node.name).lower() == global_functions.remove_node_prefix(node_name).lower():
                 jms_name = jms_node.name
                 break
-    if jms_name is None:
+    if jms_name is None and JMS_B is not None:
         for jms_node in JMS_B.nodes:
             if global_functions.remove_node_prefix(jms_node.name).lower() == global_functions.remove_node_prefix(node_name).lower():
                 jms_name = jms_node.name
@@ -150,12 +150,6 @@ def get_jms_node(node_name, JMS_A, JMS_B):
 def generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B, JMS_B_invalid, JMA, armature, parent_id_class, fix_rotations, game_version):
     file_version = JMA.version
     jma_frame = JMA.transforms[0]
-
-    jms_a_file_version = JMS_A.version
-    jms_a_frame = JMS_A.transforms[0]
-
-    jms_b_file_version = JMS_B.version
-    jms_b_frame = JMS_B.transforms[0]
 
     file_type = "JMA"
     if JMS_A and not JMS_A_invalid:
@@ -280,6 +274,9 @@ def jms_file_check(JMS_A, JMS_B, JMA_nodes, report):
                 report({'WARNING'}, "Node '%s' from JMS skeleton not found in JMA skeleton." % jms_node_name)
 
         report({'WARNING'}, "No valid armature detected. Attempting to created one and the referenced JMS files will be used for the rest position")
+    else:
+        JMS_A_invalid = True
+        JMS_B_invalid = True
 
     return JMS_A_nodes, JMS_B_nodes, JMS_A_invalid, JMS_B_invalid
 
