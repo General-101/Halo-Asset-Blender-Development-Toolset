@@ -540,19 +540,25 @@ def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_
             if context.scene.objects.get('#%s' % marker["name"]):
                 marker_name_override = marker["name"]
 
-            mesh = bpy.data.meshes.new(object_name_prefix)
-            object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
-            object_mesh.color = (1, 1, 1, 0)
+            if empty_markers:
+                object_mesh = bpy.data.objects.new(object_name_prefix, None)
+                object_mesh.color = (1, 1, 1, 0)
+
+            else:
+                mesh = bpy.data.meshes.new(object_name_prefix)
+                object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+                object_mesh.color = (1, 1, 1, 0)
+
             collection.objects.link(object_mesh)
             object_mesh.hide_set(True)
             object_mesh.hide_render = True
 
             object_mesh.ass_jms.name_override = marker_name_override
-
-            bm = bmesh.new()
-            bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
-            bm.to_mesh(mesh)
-            bm.free()
+            if not empty_markers:
+                bm = bmesh.new()
+                bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
+                bm.to_mesh(mesh)
+                bm.free()
 
             object_mesh.parent = level_root
 
@@ -565,7 +571,11 @@ def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_
                 transform_matrix = Matrix.Rotation(radians(90.0), 4, 'Z') @ transform_matrix
 
             object_mesh.matrix_world = transform_matrix
-            object_mesh.data.ass_jms.Object_Type = 'SPHERE'
+            if empty_markers:
+                object_mesh.empty_display_type = 'ARROWS'
+
+            else:
+                object_mesh.data.ass_jms.Object_Type = 'SPHERE'
             object_mesh.dimensions = (2, 2, 2)
 
         if len(level_data["fog planes"]) > 0:
@@ -835,19 +845,25 @@ def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_
             if context.scene.objects.get('#%s' % marker_name):
                 marker_name_override = marker_name
 
-            mesh = bpy.data.meshes.new(object_name_prefix)
-            object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
-            object_mesh.color = (1, 1, 1, 0)
+            if empty_markers:
+                object_mesh = bpy.data.objects.new(object_name_prefix, None)
+                object_mesh.color = (1, 1, 1, 0)
+
+            else:
+                mesh = bpy.data.meshes.new(object_name_prefix)
+                object_mesh = bpy.data.objects.new(object_name_prefix, mesh)
+                object_mesh.color = (1, 1, 1, 0)
+
             collection.objects.link(object_mesh)
             object_mesh.hide_set(True)
             object_mesh.hide_render = True
 
             object_mesh.ass_jms.name_override = marker_name_override
-
-            bm = bmesh.new()
-            bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
-            bm.to_mesh(mesh)
-            bm.free()
+            if not empty_markers:
+                bm = bmesh.new()
+                bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
+                bm.to_mesh(mesh)
+                bm.free()
 
             object_mesh.parent = level_root
 
@@ -860,7 +876,11 @@ def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_
                 transform_matrix = Matrix.Rotation(radians(90.0), 4, 'Z') @ transform_matrix
 
             object_mesh.matrix_world = transform_matrix
-            object_mesh.data.ass_jms.Object_Type = 'SPHERE'
+            if empty_markers:
+                object_mesh.empty_display_type = 'ARROWS'
+
+            else:
+                object_mesh.data.ass_jms.Object_Type = 'SPHERE'
             object_mesh.dimensions = (2, 2, 2)
 
     for bsp_idx, bsp in enumerate(level_data["collision bsp"]):
