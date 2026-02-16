@@ -280,7 +280,7 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
                 if not variant_name in region_list:
                     region_list.append(variant_name)
 
-            material_index = global_functions.get_material(original_geo.material_slots, evaluted_mesh, face, variant_name, material_list)
+            material_index = global_functions.get_material(spheres.material_slots, mesh_sphere, face, variant_name, material_list)
 
             parent_index = global_functions.get_parent(blend_scene.armature, spheres, joined_list, -1)
             sphere_matrix = global_functions.get_matrix(spheres, spheres, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
@@ -307,7 +307,7 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
                 if not variant_name in region_list:
                     region_list.append(variant_name)
 
-            material_index = global_functions.get_material(original_geo.material_slots, evaluted_mesh, face, variant_name, material_list)
+            material_index = global_functions.get_material(boxes.material_slots, mesh_boxes, face, variant_name, material_list)
 
             parent_index = global_functions.get_parent(blend_scene.armature, boxes, joined_list, -1)
             box_matrix = global_functions.get_matrix(boxes, boxes, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
@@ -336,7 +336,7 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
                 if not variant_name in region_list:
                     region_list.append(variant_name)
 
-            material_index = global_functions.get_material(original_geo.material_slots, evaluted_mesh, face, variant_name, material_list)
+            material_index = global_functions.get_material(capsule.material_slots, mesh_capsule, face, variant_name, material_list)
 
             parent_index = global_functions.get_parent(blend_scene.armature, capsule, joined_list, -1)
             capsule_matrix = global_functions.get_matrix(capsule, capsule, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
@@ -367,7 +367,7 @@ def process_scene(context, version, game_version, generate_checksum, fix_rotatio
                 if not variant_name in region_list:
                     region_list.append(variant_name)
 
-            material_index = global_functions.get_material(original_geo.material_slots, evaluted_mesh, face, variant_name, material_list)
+            material_index = global_functions.get_material(original_geo.material_slots, evaluated_geo, face, variant_name, material_list)
 
             parent_index = global_functions.get_parent(blend_scene.armature, original_geo, joined_list, -1)
             convex_matrix = global_functions.get_matrix(original_geo, original_geo, True, blend_scene.armature, joined_list, False, version, 'JMS', False, custom_scale, fix_rotations)
