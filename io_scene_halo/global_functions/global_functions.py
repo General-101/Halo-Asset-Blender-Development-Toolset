@@ -1642,30 +1642,41 @@ def get_data_checksum():
     return pack_datetime(now.year, now.month, now.day, now.hour, now.minute)
 
 def run_code(code_string):
-    def toolset_exec(code):
-        if bpy.context.preferences.addons["io_scene_halo"].preferences.enable_profiling:
-            import cProfile
-            cProfile.runctx(code, globals(), caller_locals)
+    import inspect
+    import sys
+    from .. import crash_report
 
-        elif bpy.context.preferences.addons["io_scene_halo"].preferences.enable_debug:
+    def toolset_exec(code, glb, loc):
+        prefs = bpy.context.preferences.addons["io_scene_halo"].preferences
+
+        if prefs.enable_profiling:
+            import cProfile
+            cProfile.runctx(code, glb, loc)
+
+        elif prefs.enable_debug:
             import pdb
-            pdb.runctx(code, globals(), caller_locals)
+            pdb.runctx(code, glb, loc)
 
         else:
-            exec(code, globals(), caller_locals)
+            exec(code, glb, loc)
 
-    import inspect
-    from .. import crash_report
     frame = inspect.currentframe()
+
     try:
         caller_locals = frame.f_back.f_locals
         report = caller_locals['self'].report
 
-        # this hack is horrible but it works??
-        toolset_exec(f"""locals()['__this_is_a_horrible_hack'] = {code_string}""")
-        result = caller_locals['__this_is_a_horrible_hack']
-        caller_locals.pop('__this_is_a_horrible_hack', None)
-        return result
+        exec_locals = dict(caller_locals)
+
+        try:
+            result = eval(code_string, globals(), exec_locals)
+            return result
+
+        except SyntaxError:
+            compiled = compile(code_string, "<string>", "exec")
+            toolset_exec(compiled, globals(), exec_locals)
+
+            return exec_locals.get("result")
 
     except ParseError as parse_error:
         crash_report.report_crash()
