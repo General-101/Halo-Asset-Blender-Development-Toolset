@@ -412,22 +412,14 @@ def generate_marker(context, collection, game_title, filepath, ASSET, region_ele
         parent_idx = marker_obj["node index"]
 
     marker_name = ""
-    if game_title == 'halo1':
-        if is_intermediate:
-            marker_name = marker_obj.name
-
-        else:
+    if is_intermediate:
+        marker_name = marker_obj.name
+    else:
+        if game_title == 'halo1':
             marker_name = marker_obj["name"]
 
-    else:
-        marker_name = marker_group
-        if is_intermediate:
-            if not marker_obj.region_index == -1:
-                region_element = ASSET.regions[marker_obj.region_index]
-                permutation_element = region_element.permutations[marker_obj.permutation_index]
-                marker_name = "(%s %s)%s" % (permutation_element.name, region_element.name, marker_group)
-
         else:
+            marker_name = marker_group
             if not marker_obj["region index"] == -1:
                 region_element = ASSET["regions"][marker_obj["region index"]]
                 permutation_element = region_element["permutations"][marker_obj["permutation index"]]
@@ -575,10 +567,8 @@ def generate_mesh_object_retail(asset, object_vertices, object_triangles, object
 
         shader_refs.append(shader_tag_ref)
 
-    asset_cache = None
+    asset_cache = {}
     if not game_title == "halo3":
-        asset_cache = {}
-
         tag_groups = None
         engine_tag = None
         merged_defs = None

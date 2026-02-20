@@ -139,7 +139,7 @@ def generate_image_node(mat, tag_ref, permutation_index, asset_cache, game_title
     if bitmap_asset and asset_cache:
         tag_root = bitmap_asset["Data"]
         color_plate = base64.b64decode(tag_root["compressed color plate data"]["encoded"])
-        if bitmap_asset and Image and len(color_plate) > 0:
+        if Image and len(color_plate) > 0:
             texture = asset_cache[image_group][image_path]["blender_assets"].get("blender_asset")
             if texture is None:
                 x = tag_root["color plate width"]
@@ -166,6 +166,27 @@ def generate_image_node(mat, tag_ref, permutation_index, asset_cache, game_title
                 texture.pack()
 
                 asset_cache[image_group][image_path]["blender_assets"]["blender_asset"] = texture
+
+    else:
+        hek_directory = os.path.dirname(os.path.dirname(data_path))
+        image_directory = os.path.dirname(image_path)
+        image_name = "pixel_data_%s_00_00.tga" % os.path.basename(image_path)
+        pixel_data_path = os.path.join(hek_directory, "blender_dumps", image_directory, image_name)
+        if os.path.isfile(pixel_data_path):
+            texture = bpy.data.images.load(pixel_data_path, check_existing=True)
+
+            tag_group_entry = asset_cache.get(image_group)
+            if tag_group_entry is None:
+                tag_group_entry = asset_cache[image_group] = {}
+
+            tag_path_entry = tag_group_entry.get(image_path)
+            if tag_path_entry is None:
+                tag_path_entry = tag_group_entry[image_path] = {"blender_assets": {}, "has_disk_asset": False, "matching_checksum": False}
+
+
+            tag_path_entry["blender_assets"]["blender_asset"] = texture
+
+            print("No color plate found. Loading texture dumped from pixel data. Expect quality loss.")
 
     if texture is None and asset_cache:
         tag_group_entry = asset_cache.get(image_group)

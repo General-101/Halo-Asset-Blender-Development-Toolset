@@ -173,7 +173,7 @@ def build_scene_retail(context, JMS, filepath, game_version, reuse_armature, fix
                 region_permutation_list.append([permutation, region])
 
     for marker_obj in JMS.markers:
-        mesh_processing.generate_marker(context, collection, "halo1", filepath, JMS, None, "", armature, marker_obj, fix_rotations, empty_markers, True)
+        mesh_processing.generate_marker(context, collection, game_version, filepath, JMS, None, "", armature, marker_obj, fix_rotations, empty_markers, True)
 
     for xref_marker in JMS.xref_markers:
         xref_name = xref_marker.name
