@@ -18,8 +18,8 @@ The following games are or will be supported by this script:
  * Halo 2 Anniversary MCC - Classic
  * Halo 3 MCC
  * Halo 3 ODST MCC
- * Halo Reach MCC (Cinematic cameras specifically Use Foundry if you want levels and meshes.)
- * Halo 4 MCC (Cinematic cameras specifically. Use Foundry if you want levels and meshes.)
+ * Halo Reach MCC (Cinematic cameras specifically Use [Foundry](https://github.com/ILoveAGoodCrisp/Foundry) if you want levels and meshes.)
+ * Halo 4 MCC (Cinematic cameras specifically. Use [Foundry](https://github.com/ILoveAGoodCrisp/Foundry) if you want levels and meshes.)
 
 Script supports the following features:
 
