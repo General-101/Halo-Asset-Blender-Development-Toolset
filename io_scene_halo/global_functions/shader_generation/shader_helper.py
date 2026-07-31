@@ -62,7 +62,12 @@ class ParameterSettings():
 
 def get_output_material_node(mat):
     output_material_node = None
-    if not mat == None and mat.use_nodes and not mat.node_tree == None:
+
+    mat_use_node = True
+    if bpy.app.version < (5, 0, 0):
+        mat_use_node = mat.use_nodes
+
+    if not mat == None and mat_use_node and not mat.node_tree == None:
         for node in mat.node_tree.nodes:
             if node.type == "OUTPUT_MATERIAL" and node.is_active_output:
                 output_material_node = node

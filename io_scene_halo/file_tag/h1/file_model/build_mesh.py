@@ -323,7 +323,11 @@ def get_geometry_layout(tag_ref, asset_cache, armature, is_triangle_list, shader
     visited_geo = set()
     if permutation_indicies is not None:
         for region_idx, region in enumerate(mode_data["regions"]):
-            permutation_element = region["permutations"][permutation_indicies[region_idx]]
+            perm_index = permutation_indicies[region_idx]
+            if perm_index >= len(region["permutations"]):
+                perm_index = -1
+
+            permutation_element = region["permutations"][perm_index]
             superlow_geometry_index = permutation_element["super low"]
             low_geometry_index = permutation_element["low"]
             medium_geometry_index = permutation_element["medium"]

@@ -70,7 +70,8 @@ def config_is_valid(data_directory, tags_directory, report, game_title="halo3"):
     return is_valid
 
 def generate_h3_shader_simple(mat, shader_path, asset_cache, report):
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
 
     data_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_3_data_path
     tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_3_tag_path

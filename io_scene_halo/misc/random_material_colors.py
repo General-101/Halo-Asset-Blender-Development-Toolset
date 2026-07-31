@@ -44,7 +44,11 @@ def random_material_colors(context):
     for material in bpy.data.materials:
         new_diffuse = random_color_gen.next()
         material.diffuse_color = new_diffuse
-        if material.use_nodes:
+        mat_use_node = True
+        if bpy.app.version < (5, 0, 0):
+            mat_use_node = material.use_nodes
+
+        if mat_use_node:
             if not material.node_tree == None:
                 for node in material.node_tree.nodes:
                     if node.type == 'OUTPUT_MATERIAL':

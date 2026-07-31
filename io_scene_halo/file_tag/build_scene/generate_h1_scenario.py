@@ -657,7 +657,7 @@ def get_permutation_slots(model_data, desired_permutation, rng_index, collection
         if desired_permutation != 0:
             permutation_indicies[region_idx] = 0
             for permutation_item in permutaion_items:
-                permutation, region_idx = permutation_item
+                permutation, region_idx, perm_idx = permutation_item
 
                 permutation_slot = ""
                 result_string = "".join(reversed(permutation["name"]))

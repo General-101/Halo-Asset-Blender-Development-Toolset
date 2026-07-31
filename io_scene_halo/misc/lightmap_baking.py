@@ -244,7 +244,11 @@ def set_input_modifiers():
                 power_modifier = float(parameter.split(":", 1)[1])
                 break
 
-        if mat.use_nodes:
+        mat_use_node = True
+        if bpy.app.version < (5, 0, 0):
+            mat_use_node = mat.use_nodes
+
+        if mat_use_node:
             tree = mat.node_tree
             output_node = None
 
@@ -284,7 +288,9 @@ def run_lightmap_postprocessing(image_texture):
                 data_to.node_groups.append(GROUP_NAME)
 
     scene = bpy.context.scene
-    scene.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        scene.use_nodes = True
+
     if bpy.app.version >= (5, 0, 0):
         tree = bpy.data.node_groups.new("lightmap postprocessing", "CompositorNodeTree")
         scene.compositing_node_group = tree
@@ -400,7 +406,9 @@ def light_halo_2_mesh(context, lightmap_ob, bitm_asset, bitm_dict, image_multipl
         image.update()
 
     for material_slot in lightmap_ob.material_slots:
-        material_slot.material.use_nodes = True
+        if bpy.app.version < (5, 0, 0):
+            material_slot.material.use_nodes = True
+
         material_nodes = material_slot.material.node_tree.nodes
         image_node = material_nodes.get("Lightmap Texture")
         if image_node == None:
@@ -538,7 +546,9 @@ def bake_clusters(context, game_title, scenario_path, image_multiplier, report, 
                                                 image.update()
 
                                             for material_slot in cluster_ob.material_slots:
-                                                material_slot.material.use_nodes = True
+                                                if bpy.app.version < (5, 0, 0):
+                                                    material_slot.material.use_nodes = True
+
                                                 material_nodes = material_slot.material.node_tree.nodes
                                                 image_node = material_nodes.get("Lightmap Texture")
                                                 if image_node == None:

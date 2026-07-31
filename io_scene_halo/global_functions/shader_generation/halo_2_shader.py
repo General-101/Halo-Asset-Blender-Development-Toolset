@@ -143,7 +143,8 @@ def get_shader_parameters(shader, shader_template):
 def generate_shader_simple(mat, shader_asset, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
 
     base_parameter = None
     if len(shader_data["parameters"]) > 0:
@@ -178,7 +179,8 @@ def generate_shader(mat, shader_asset, template_asset, asset_cache, report):
     shader_data = shader_asset["Data"]
     template_data = template_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
 
     shader_parameters = get_shader_parameters(shader_data, template_data)
     shader_template_name = os.path.basename(shader_data["template"]["path"])

@@ -942,7 +942,8 @@ def generate_texture_mapping(node_tree, stg_node, map_idx, input_node, input_key
 def generate_shader_environment_simple(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
 
     output_material_node = get_output_material_node(mat)
     place_node(output_material_node)
@@ -965,7 +966,9 @@ def generate_shader_environment_simple(mat, shader_asset, permutation_index, ass
 def generate_shader_environment(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
+
     for node in mat.node_tree.nodes:
         mat.node_tree.nodes.remove(node)
 
@@ -1181,7 +1184,8 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
 def generate_shader_model_simple(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
 
     output_material_node = get_output_material_node(mat)
     place_node(output_material_node)
@@ -1204,7 +1208,9 @@ def generate_shader_model_simple(mat, shader_asset, permutation_index, asset_cac
 def generate_shader_model(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
+
     for node in mat.node_tree.nodes:
         mat.node_tree.nodes.remove(node)
 
@@ -1377,7 +1383,8 @@ def generate_shader_model(mat, shader_asset, permutation_index, asset_cache, rep
 def generate_shader_transparent_chicago_simple(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
 
     output_material_node = get_output_material_node(mat)
     place_node(output_material_node)
@@ -1402,7 +1409,9 @@ def generate_shader_transparent_chicago_simple(mat, shader_asset, permutation_in
 def generate_shader_transparent_chicago(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
+
     for node in mat.node_tree.nodes:
         mat.node_tree.nodes.remove(node)
 
@@ -1515,7 +1524,8 @@ def generate_shader_transparent_chicago(mat, shader_asset, permutation_index, as
 def generate_shader_transparent_chicago_extended_simple(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
 
     output_material_node = get_output_material_node(mat)
     place_node(output_material_node)
@@ -1540,7 +1550,9 @@ def generate_shader_transparent_chicago_extended_simple(mat, shader_asset, permu
 def generate_shader_transparent_chicago_extended(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
+
     for node in mat.node_tree.nodes:
         mat.node_tree.nodes.remove(node)
 
@@ -1698,7 +1710,8 @@ def generate_shader_transparent_chicago_extended(mat, shader_asset, permutation_
 def generate_shader_transparent_generic_simple(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
 
     output_material_node = get_output_material_node(mat)
     place_node(output_material_node)
@@ -1723,7 +1736,8 @@ def generate_shader_transparent_generic_simple(mat, shader_asset, permutation_in
 def generate_shader_transparent_generic(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
 
     for node in mat.node_tree.nodes:
         mat.node_tree.nodes.remove(node)
@@ -1914,7 +1928,8 @@ def generate_shader_transparent_generic(mat, shader_asset, permutation_index, as
 def generate_shader_transparent_glass_simple(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
 
     output_material_node = get_output_material_node(mat)
     place_node(output_material_node)
@@ -1937,7 +1952,9 @@ def generate_shader_transparent_glass_simple(mat, shader_asset, permutation_inde
 def generate_shader_transparent_glass(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
+
     for node in mat.node_tree.nodes:
         mat.node_tree.nodes.remove(node)
 
@@ -2060,7 +2077,8 @@ def generate_shader_transparent_glass(mat, shader_asset, permutation_index, asse
 def generate_shader_transparent_meter_simple(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
 
     output_material_node = get_output_material_node(mat)
     place_node(output_material_node)
@@ -2083,7 +2101,9 @@ def generate_shader_transparent_meter_simple(mat, shader_asset, permutation_inde
 def generate_shader_transparent_meter(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
+
     for node in mat.node_tree.nodes:
         mat.node_tree.nodes.remove(node)
 
@@ -2141,7 +2161,8 @@ def generate_shader_transparent_meter(mat, shader_asset, permutation_index, asse
 def generate_shader_transparent_plasma_simple(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
 
     output_material_node = get_output_material_node(mat)
     place_node(output_material_node)
@@ -2164,7 +2185,9 @@ def generate_shader_transparent_plasma_simple(mat, shader_asset, permutation_ind
 def generate_shader_transparent_plasma(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
+
     for node in mat.node_tree.nodes:
         mat.node_tree.nodes.remove(node)
 
@@ -2231,7 +2254,8 @@ def generate_shader_transparent_plasma(mat, shader_asset, permutation_index, ass
 def generate_shader_transparent_water_simple(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
 
     output_material_node = get_output_material_node(mat)
     place_node(output_material_node)
@@ -2254,7 +2278,9 @@ def generate_shader_transparent_water_simple(mat, shader_asset, permutation_inde
 def generate_shader_transparent_water(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
-    mat.use_nodes = True
+    if bpy.app.version < (5, 0, 0):
+        mat.use_nodes = True
+
     for node in mat.node_tree.nodes:
         mat.node_tree.nodes.remove(node)
 

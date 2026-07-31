@@ -43,7 +43,9 @@ def lightmap_bulk(context, res_x, res_y):
 
             for material_id in assigned_material_id:
                 mat = object.material_slots[material_id].material
-                mat.use_nodes = True
+                if bpy.app.version < (5, 0, 0):
+                    mat.use_nodes = True
+
                 lightmap_tex_node = None
                 diffuse_tex_node = None
                 normal_tex_node = None

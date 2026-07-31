@@ -31,7 +31,11 @@ def export_texture(context, directory):
     scene = context.scene
     for obj in bpy.context.scene.objects:
         for slot in obj.material_slots:
-            if slot.material and slot.material.use_nodes:
+            mat_use_node = True
+            if bpy.app.version < (5, 0, 0):
+                mat_use_node = slot.material.use_nodes
+
+            if slot.material and mat_use_node:
                 for node in slot.material.node_tree.nodes:
                     if node.type == 'TEX_IMAGE':
                         imagename=node.image.name
