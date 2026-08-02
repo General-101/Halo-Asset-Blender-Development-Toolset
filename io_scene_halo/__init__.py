@@ -137,6 +137,12 @@ class HaloAddonPrefs(bpy.types.AddonPreferences):
         subtype="DIR_PATH"
     )
 
+    halo_1_hek_path: StringProperty(
+        name="Halo 1 Editing Kit Path",
+        description="Path to the HEK directory",
+        subtype="DIR_PATH"
+    )
+
     halo_2_data_path: StringProperty(
         name="Halo 2 Data Path",
         description="Path to the data directory",
@@ -146,6 +152,12 @@ class HaloAddonPrefs(bpy.types.AddonPreferences):
     halo_2_tag_path: StringProperty(
         name="Halo 2 Tag Path",
         description="Path to the tag directory",
+        subtype="DIR_PATH"
+    )
+
+    halo_2_hek_path: StringProperty(
+        name="Halo 2 Editing Kit Path",
+        description="Path to the HEK directory",
         subtype="DIR_PATH"
     )
 
@@ -218,11 +230,17 @@ class HaloAddonPrefs(bpy.types.AddonPreferences):
         row.label(text='Halo 1 Tag Path:')
         row.prop(self, "halo_1_tag_path", text='')
         row = col.row()
+        row.label(text='Halo 1 HEK Path:')
+        row.prop(self, "halo_1_hek_path", text='')
+        row = col.row()
         row.label(text='Halo 2 Data Path:')
         row.prop(self, "halo_2_data_path", text='')
         row = col.row()
         row.label(text='Halo 2 Tag Path:')
         row.prop(self, "halo_2_tag_path", text='')
+        row = col.row()
+        row.label(text='Halo 2 HEK Path:')
+        row.prop(self, "halo_2_hek_path", text='')
         row = col.row()
         row.label(text='Halo 3 Data Path:')
         row.prop(self, "halo_3_data_path", text='')

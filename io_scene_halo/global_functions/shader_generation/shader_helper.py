@@ -93,54 +93,8 @@ def get_linked_node(node, input_name, search_type):
 def connect_inputs(tree, output_node, output_name, input_node, input_name):
     tree.links.new(output_node.outputs[output_name], input_node.inputs[input_name])
 
-def generate_image_node(mat, tag_ref, permutation_index, asset_cache, game_title, report):
-    tool_preferences = bpy.context.preferences.addons["io_scene_halo"].preferences
-    if game_title == "halo1":
-        data_path = tool_preferences.halo_1_data_path
-        tag_path = tool_preferences.halo_1_tag_path
-        tag_groups = tag_common.h1_tag_groups
-    elif game_title == "halo2":
-        data_path = tool_preferences.halo_2_data_path
-        tag_path = tool_preferences.halo_2_tag_path
-        tag_groups = tag_common.h2_tag_groups
-    elif game_title == "halo3":
-        data_path = tool_preferences.halo_3_data_path
-        tag_path = tool_preferences.halo_3_tag_path
-        tag_groups = tag_common.h2_tag_groups
-    elif game_title == "haloodst":
-        data_path = tool_preferences.halo_odst_data_path
-        tag_path = tool_preferences.halo_odst_tag_path
-        tag_groups = tag_common.h2_tag_groups
-
-    texture_extensions = ("tif", "tiff")
-    texture_path = None
-    bitmap_name = "White"
-    image_path = tag_ref.get("path", "")
-    image_group = tag_ref.get("group name", None)
-    if not tag_ref == None and len(image_path) > 0:
-        if game_title == "halo1" or game_title == "halo2":
-            bitmap_name = os.path.basename(image_path)
-            for extension in texture_extensions:
-                check_path = os.path.join(data_path, "%s.%s" % (image_path, extension))
-                if os.path.isfile(check_path):
-                    texture_path = check_path
-                    break
-        elif game_title == "halo3":
-            bitmap_directory = os.path.dirname(image_path)
-            bitmap_name = os.path.basename(image_path)
-            check_path = os.path.join(os.path.dirname(os.path.dirname(tool_preferences.halo_3_data_path)), "blender_dumps", bitmap_directory, "pixel_data_%s%s" % (bitmap_name, "_00_00.tga"))
-            if os.path.isfile(check_path):
-                texture_path = check_path
-
-        elif game_title == "haloodst":
-            bitmap_directory = os.path.dirname(image_path)
-            bitmap_name = os.path.basename(image_path)
-            check_path = os.path.join(os.path.dirname(os.path.dirname(tool_preferences.halo_odst_data_path)), "blender_dumps", bitmap_directory, "pixel_data_%s%s" % (bitmap_name, "_00_00.tga"))
-            if os.path.isfile(check_path):
-                texture_path = check_path
-
+def import_color_plate(bitmap_asset, asset_cache, image_group, image_path, permutation_index, bitmap_name):
     texture = None
-    bitmap_asset = tag_interface.get_disk_asset(image_path, tag_groups.get(image_group))
     if bitmap_asset and asset_cache:
         tag_root = bitmap_asset["Data"]
         color_plate = base64.b64decode(tag_root["compressed color plate data"]["encoded"])
@@ -172,13 +126,23 @@ def generate_image_node(mat, tag_ref, permutation_index, asset_cache, game_title
 
                 asset_cache[image_group][image_path]["blender_assets"]["blender_asset"] = texture
 
-    else:
-        hek_directory = os.path.dirname(os.path.dirname(data_path))
-        image_directory = os.path.dirname(image_path)
-        image_name = "pixel_data_%s_00_00.tga" % os.path.basename(image_path)
-        pixel_data_path = os.path.join(hek_directory, "blender_dumps", image_directory, image_name)
-        if os.path.isfile(pixel_data_path):
-            texture = bpy.data.images.load(pixel_data_path, check_existing=True)
+    return texture
+
+def import_pixel_data(game_title, data_path, tag_path, hek_path, image_path, asset_cache, image_group):
+    # bitmap_tex0 is for MEK generated data files. It's not a real extension obviously - Gen
+    image_extensions = ("tif", "tiff", "dds", "bitmap_tex0.dds")
+
+    image_directory = os.path.dirname(image_path)
+    image_name = "pixel_data_%s_00_00.tga" % os.path.basename(image_path)
+    pixel_data_path = os.path.join(hek_path, "blender_dumps", image_directory, image_name)
+
+    bitmap_data_path = os.path.join(data_path, image_path)
+
+    texture = None
+    for image_extension in image_extensions:
+        full_image_path = "%s.%s" % (bitmap_data_path, image_extension)
+        if os.path.isfile(full_image_path):
+            texture = bpy.data.images.load(full_image_path, check_existing=True)
 
             tag_group_entry = asset_cache.get(image_group)
             if tag_group_entry is None:
@@ -188,10 +152,88 @@ def generate_image_node(mat, tag_ref, permutation_index, asset_cache, game_title
             if tag_path_entry is None:
                 tag_path_entry = tag_group_entry[image_path] = {"blender_assets": {}, "has_disk_asset": False, "matching_checksum": False}
 
-
             tag_path_entry["blender_assets"]["blender_asset"] = texture
 
-            print("No color plate found. Loading texture dumped from pixel data. Expect quality loss.")
+    if not game_title == "halo1" and texture is None and os.path.isfile(pixel_data_path):
+        texture = bpy.data.images.load(pixel_data_path, check_existing=True)
+
+        tag_group_entry = asset_cache.get(image_group)
+        if tag_group_entry is None:
+            tag_group_entry = asset_cache[image_group] = {}
+
+        tag_path_entry = tag_group_entry.get(image_path)
+        if tag_path_entry is None:
+            tag_path_entry = tag_group_entry[image_path] = {"blender_assets": {}, "has_disk_asset": False, "matching_checksum": False}
+
+        tag_path_entry["blender_assets"]["blender_asset"] = texture
+
+    return texture
+
+def generate_image_node(mat, tag_ref, permutation_index, asset_cache, game_title, report, reverse_import_order=False):
+    is_color_plate = False
+    tool_preferences = bpy.context.preferences.addons["io_scene_halo"].preferences
+    if game_title == "halo1":
+        data_path = tool_preferences.halo_1_data_path
+        tag_path = tool_preferences.halo_1_tag_path
+        hek_path = tool_preferences.halo_1_hek_path
+        tag_groups = tag_common.h1_tag_groups
+    elif game_title == "halo2":
+        data_path = tool_preferences.halo_2_data_path
+        tag_path = tool_preferences.halo_2_tag_path
+        hek_path = tool_preferences.halo_2_hek_path
+        tag_groups = tag_common.h2_tag_groups
+    elif game_title == "halo3":
+        data_path = tool_preferences.halo_3_data_path
+        tag_path = tool_preferences.halo_3_tag_path
+        hek_path = os.path.dirname(os.path.dirname(tool_preferences.halo_3_tag_path))
+        tag_groups = tag_common.h2_tag_groups
+    elif game_title == "haloodst":
+        data_path = tool_preferences.halo_odst_data_path
+        tag_path = tool_preferences.halo_odst_tag_path
+        hek_path = os.path.dirname(os.path.dirname(tool_preferences.halo_odst_tag_path))
+        tag_groups = tag_common.h2_tag_groups
+
+    texture_extensions = ("tif", "tiff")
+    texture_path = None
+    bitmap_name = "White"
+    image_path = tag_ref.get("path", "")
+    image_group = tag_ref.get("group name", None)
+    if not tag_ref == None and len(image_path) > 0:
+        if game_title == "halo1" or game_title == "halo2":
+            bitmap_name = os.path.basename(image_path)
+            for extension in texture_extensions:
+                check_path = os.path.join(data_path, "%s.%s" % (image_path, extension))
+                if os.path.isfile(check_path):
+                    texture_path = check_path
+                    break
+        elif game_title == "halo3":
+            bitmap_directory = os.path.dirname(image_path)
+            bitmap_name = os.path.basename(image_path)
+            check_path = os.path.join(os.path.dirname(os.path.dirname(tool_preferences.halo_3_data_path)), "blender_dumps", bitmap_directory, "pixel_data_%s%s" % (bitmap_name, "_00_00.tga"))
+            if os.path.isfile(check_path):
+                texture_path = check_path
+
+        elif game_title == "haloodst":
+            bitmap_directory = os.path.dirname(image_path)
+            bitmap_name = os.path.basename(image_path)
+            check_path = os.path.join(os.path.dirname(os.path.dirname(tool_preferences.halo_odst_data_path)), "blender_dumps", bitmap_directory, "pixel_data_%s%s" % (bitmap_name, "_00_00.tga"))
+            if os.path.isfile(check_path):
+                texture_path = check_path
+
+    texture = None
+    bitmap_asset = tag_interface.get_disk_asset(image_path, tag_groups.get(image_group))
+    if reverse_import_order:
+        texture = import_pixel_data(game_title, data_path, tag_path, hek_path, image_path, asset_cache, image_group)
+        is_color_plate = False
+        if texture is None:
+            is_color_plate = True
+            texture = import_color_plate(bitmap_asset, asset_cache, image_group, image_path, permutation_index, bitmap_name)
+    else:
+        texture = import_color_plate(bitmap_asset, asset_cache, image_group, image_path, permutation_index, bitmap_name)
+        is_color_plate = True
+        if texture is None:
+            is_color_plate = False
+            texture = import_pixel_data(game_title, data_path, tag_path, hek_path, image_path, asset_cache, image_group)
 
     if texture is None and asset_cache:
         tag_group_entry = asset_cache.get(image_group)
@@ -203,7 +245,7 @@ def generate_image_node(mat, tag_ref, permutation_index, asset_cache, game_title
                     texture = bpy.data.images.load(texture_path, check_existing=True)
                     asset_cache[image_group][image_path]["blender_assets"]["blender_asset"] = texture
             
-    return texture
+    return texture, is_color_plate
 
 def generate_biased_multiply_node(tree):
     biased_multiply_logic_group = bpy.data.node_groups.get("Biased Multiply")
@@ -856,8 +898,6 @@ def is_group_valid(shader_name):
             found_group = True
 
     return found_group
-
-
 
 def get_fallback_shader_node(tree, shader_name, blacklist=None):
     shader_node = None

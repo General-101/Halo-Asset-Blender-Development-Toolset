@@ -167,7 +167,7 @@ def generate_shader_simple(mat, shader_asset, asset_cache, report):
         connect_inputs(mat.node_tree, bdsf_principled, "BSDF", output_material_node, "Surface")
 
     if base_parameter is not None:
-        base_map_texture = generate_image_node(mat, base_parameter["bitmap"], 0, asset_cache, "halo2", report)
+        base_map_texture, is_color_plate = generate_image_node(mat, base_parameter["bitmap"], 0, asset_cache, "halo2", report)
         if base_map_texture:
             base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
             base_map_node.image = base_map_texture
@@ -211,7 +211,7 @@ def generate_shader(mat, shader_asset, template_asset, asset_cache, report):
                 if halo_name == parameter.name:
                     parameter_type = TypeEnum(parameter.parameter_type["value"])
                     if parameter_type == TypeEnum.bitmap:
-                        bitmap_texture = generate_image_node(mat, parameter.bitmap, 0, asset_cache, "halo2", report)
+                        bitmap_texture, is_color_plate = generate_image_node(mat, parameter.bitmap, 0, asset_cache, "halo2", report)
                         if bitmap_texture:
                             tag_groups = tag_common.h2_tag_groups
                             bitmap_asset = tag_interface.get_disk_asset(parameter.bitmap["path"], tag_groups.get(parameter.bitmap["group name"]))

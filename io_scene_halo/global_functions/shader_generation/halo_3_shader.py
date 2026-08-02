@@ -176,7 +176,7 @@ def generate_h3_shader_simple(mat, shader_path, asset_cache, report):
             texture_path = check_path
             break
 
-    base_map_texture = generate_image_node(mat, bitm_ref, 0, asset_cache, "halo3", report)
+    base_map_texture, is_color_plate = generate_image_node(mat, bitm_ref, 0, asset_cache, "halo3", report)
     if base_map_texture:
         base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         base_map_node.image = base_map_texture

@@ -955,7 +955,7 @@ def generate_shader_environment_simple(mat, shader_asset, permutation_index, ass
 
     place_node(bdsf_principled, 1)
 
-    base_map_texture = generate_image_node(mat, shader_data["base map"], permutation_index, asset_cache, "halo1", report)
+    base_map_texture, is_color_plate = generate_image_node(mat, shader_data["base map"], permutation_index, asset_cache, "halo1", report)
     if base_map_texture:
         base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         base_map_node.image = base_map_texture
@@ -1064,7 +1064,7 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
     shader_environment_node.inputs["Perpendicular Brightness"].default_value = shader_data["perpendicular brightness"]
     shader_environment_node.inputs["Parallel Brightness"].default_value = shader_data["parallel brightness"]
 
-    base_map_texture = generate_image_node(mat, shader_data["base map"], permutation_index, asset_cache, "halo1", report)
+    base_map_texture, is_color_plate = generate_image_node(mat, shader_data["base map"], permutation_index, asset_cache, "halo1", report)
     base_bitmap = tag_interface.get_disk_asset(shader_data["base map"]["path"], tag_common.h1_tag_groups.get(shader_data["base map"]["group name"]))
     if base_map_texture:
         base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
@@ -1074,7 +1074,7 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
         connect_inputs(mat.node_tree, base_map_node, "Color", shader_environment_node, "Base Map")
         connect_inputs(mat.node_tree, base_map_node, "Alpha", shader_environment_node, "Base Map Alpha")
 
-    primary_detail_texture = generate_image_node(mat, shader_data["primary detail map"], permutation_index, asset_cache, "halo1", report)
+    primary_detail_texture, is_color_plate = generate_image_node(mat, shader_data["primary detail map"], permutation_index, asset_cache, "halo1", report)
     if primary_detail_texture:
         primary_detail_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         primary_detail_node.image = primary_detail_texture
@@ -1092,7 +1092,7 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
         primary_detail_bitmap = tag_interface.get_disk_asset(shader_data["primary detail map"]["path"], tag_common.h1_tag_groups.get(shader_data["primary detail map"]["group name"]))
         set_image_scale(mat, primary_detail_node, pdm_image_scale, shader_environment_node.inputs["Rescale Detail Maps"].default_value, base_bitmap, primary_detail_bitmap, permutation_index)
 
-    secondary_detail_texture = generate_image_node(mat, shader_data["secondary detail map"], permutation_index, asset_cache, "halo1", report)
+    secondary_detail_texture, is_color_plate = generate_image_node(mat, shader_data["secondary detail map"], permutation_index, asset_cache, "halo1", report)
     if secondary_detail_texture:
         secondary_detail_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         secondary_detail_node.image = secondary_detail_texture
@@ -1110,7 +1110,7 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
         secondary_detail_bitmap = tag_interface.get_disk_asset(shader_data["secondary detail map"]["path"], tag_common.h1_tag_groups.get(shader_data["secondary detail map"]["group name"]))
         set_image_scale(mat, secondary_detail_node, sdm_image_scale, shader_environment_node.inputs["Rescale Detail Maps"].default_value, base_bitmap, secondary_detail_bitmap, permutation_index)
 
-    micro_detail_texture = generate_image_node(mat, shader_data["micro detail map"], permutation_index, asset_cache, "halo1", report)
+    micro_detail_texture, is_color_plate = generate_image_node(mat, shader_data["micro detail map"], permutation_index, asset_cache, "halo1", report)
     if micro_detail_texture:
         micro_detail_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         micro_detail_node.image = micro_detail_texture
@@ -1128,28 +1128,38 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
         micro_detail_bitmap = tag_interface.get_disk_asset(shader_data["micro detail map"]["path"], tag_common.h1_tag_groups.get(shader_data["micro detail map"]["group name"]))
         set_image_scale(mat, micro_detail_node, mdm_image_scale, shader_environment_node.inputs["Rescale Detail Maps"].default_value, base_bitmap, micro_detail_bitmap, permutation_index)
 
-    bump_texture = generate_image_node(mat, shader_data["bump map"], permutation_index, asset_cache, "halo1", report)
+    bump_texture, is_color_plate = generate_image_node(mat, shader_data["bump map"], permutation_index, asset_cache, "halo1", report, True)
     if bump_texture:
-        bump_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
-        bump_node.image = bump_texture
-        bump_node.image.alpha_mode = 'CHANNEL_PACKED'
-        bump_node.interpolation = 'Cubic'
-        bump_node.image.colorspace_settings.name = 'Non-Color'
-        bump_node.location = (-720.0, -1200.0)
-        connect_inputs(mat.node_tree, bump_node, "Color", shader_environment_node, "Bump Map")
-        connect_inputs(mat.node_tree, bump_node, "Alpha", shader_environment_node, "Bump Map Alpha")
+        bump_bitmap = tag_interface.get_disk_asset(shader_data["bump map"]["path"], tag_common.h1_tag_groups.get(shader_data["bump map"]["group name"]))
+
+        bump_image_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
+        bump_image_node.image = bump_texture
+        bump_image_node.image.alpha_mode = 'CHANNEL_PACKED'
+        bump_image_node.interpolation = 'Cubic'
+        bump_image_node.image.colorspace_settings.name = 'Non-Color'
+        bump_image_node.location = (-720.0, -1200.0)
+        if is_color_plate:
+            bump_node = mat.node_tree.nodes.new("ShaderNodeBump")
+            bump_node.inputs["Strength"].default_value = bump_bitmap["Data"]["bump height"] * 15
+            bump_node.location = (-720.0, -1200.0)
+            connect_inputs(mat.node_tree, bump_image_node, "Color", bump_node, "Height")
+
+        else:
+            bump_node = mat.node_tree.nodes.new("ShaderNodeNormalMap")
+            bump_node.inputs["Strength"].default_value = bump_bitmap["Data"]["bump height"] * 15
+            bump_node.location = (-720.0, -1200.0)
+            connect_inputs(mat.node_tree, bump_image_node, "Color", bump_node, "Color")
+
+        connect_inputs(mat.node_tree, bump_node, "Normal", shader_environment_node, "Bump Map")
 
         bm_scale = shader_data["bump map scale"]
         if bm_scale == 0.0:
             bm_scale = 1.0
 
         bm_image_scale = (bm_scale, bm_scale, bm_scale)
+        set_image_scale(mat, bump_image_node, bm_image_scale, shader_environment_node.inputs["Rescale Bump Map"].default_value, base_bitmap, bump_bitmap, permutation_index)
 
-        bump_bitmap = tag_interface.get_disk_asset(shader_data["bump map"]["path"], tag_common.h1_tag_groups.get(shader_data["bump map"]["group name"]))
-        set_image_scale(mat, bump_node, bm_image_scale, shader_environment_node.inputs["Rescale Bump Map"].default_value, base_bitmap, bump_bitmap, permutation_index)
-        shader_environment_node.inputs["Bump Map Strength"].default_value = bump_bitmap["Data"]["bump height"] * 15
-
-    self_illumination_texture = generate_image_node(mat, shader_data["map"], permutation_index, asset_cache, "halo1", report)
+    self_illumination_texture, is_color_plate = generate_image_node(mat, shader_data["map"], permutation_index, asset_cache, "halo1", report)
     if self_illumination_texture:
         self_illumination_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         self_illumination_node.image = self_illumination_texture
@@ -1164,7 +1174,7 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
 
         set_image_scale(mat, self_illumination_node, sim_image_scale)
 
-    reflection_texture = generate_image_node(mat, shader_data["reflection cube map"], permutation_index, asset_cache, "halo1", report)
+    reflection_texture, is_color_plate = generate_image_node(mat, shader_data["reflection cube map"], permutation_index, asset_cache, "halo1", report)
     if reflection_texture:
         reflection_node = mat.node_tree.nodes.new("ShaderNodeTexEnvironment")
         texcoord_node = mat.node_tree.nodes.new("ShaderNodeTexCoord")
@@ -1197,7 +1207,7 @@ def generate_shader_model_simple(mat, shader_asset, permutation_index, asset_cac
 
     place_node(bdsf_principled, 1)
 
-    base_map_texture = generate_image_node(mat, shader_data["base map"], permutation_index, asset_cache, "halo1", report)
+    base_map_texture, is_color_plate = generate_image_node(mat, shader_data["base map"], permutation_index, asset_cache, "halo1", report)
     if base_map_texture:
         base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         base_map_node.image = base_map_texture
@@ -1288,7 +1298,7 @@ def generate_shader_model(mat, shader_asset, permutation_index, asset_cache, rep
     shader_model_node.inputs["Parallel Brightness"].default_value = shader_data["parallel brightness"]
     shader_model_node.inputs["Parallel Tint Color"].default_value = convert_to_blender_color(shader_data["parallel tint color"], True)
 
-    base_map_texture = generate_image_node(mat, shader_data["base map"], permutation_index, asset_cache, "halo1", report)
+    base_map_texture, is_color_plate = generate_image_node(mat, shader_data["base map"], permutation_index, asset_cache, "halo1", report)
     base_bitmap = None
     base_map_node = None
     if base_map_texture:
@@ -1312,7 +1322,7 @@ def generate_shader_model(mat, shader_asset, permutation_index, asset_cache, rep
         base_bitmap = tag_interface.get_disk_asset(shader_data["base map"]["path"], tag_common.h1_tag_groups.get(shader_data["base map"]["group name"]))
         set_image_scale(mat, base_map_node, bm_image_scale)
 
-    multipurpose_map_texture = generate_image_node(mat, shader_data["multipurpose map"], permutation_index, asset_cache, "halo1", report)
+    multipurpose_map_texture, is_color_plate = generate_image_node(mat, shader_data["multipurpose map"], permutation_index, asset_cache, "halo1", report)
     if multipurpose_map_texture:
         multipurpose_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         multipurpose_map_node.image = multipurpose_map_texture
@@ -1335,7 +1345,7 @@ def generate_shader_model(mat, shader_asset, permutation_index, asset_cache, rep
 
         set_image_scale(mat, multipurpose_map_node, mm_image_scale)
 
-    detail_map_texture = generate_image_node(mat, shader_data["detail map"], permutation_index, asset_cache, "halo1", report)
+    detail_map_texture, is_color_plate = generate_image_node(mat, shader_data["detail map"], permutation_index, asset_cache, "halo1", report)
     if detail_map_texture:
         detail_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         detail_map_node.image = detail_map_texture
@@ -1354,7 +1364,7 @@ def generate_shader_model(mat, shader_asset, permutation_index, asset_cache, rep
 
         set_image_scale(mat, detail_map_node, dm_image_scale)
 
-    cube_map_texture = generate_image_node(mat, shader_data["cube map"], permutation_index, asset_cache, "halo1", report)
+    cube_map_texture, is_color_plate = generate_image_node(mat, shader_data["cube map"], permutation_index, asset_cache, "halo1", report)
     if cube_map_texture:
         cube_map_node = mat.node_tree.nodes.new("ShaderNodeTexEnvironment")
         texcoord_node = mat.node_tree.nodes.new("ShaderNodeTexCoord")
@@ -1398,7 +1408,7 @@ def generate_shader_transparent_chicago_simple(mat, shader_asset, permutation_in
 
     if len(shader_data["maps"]) > 0:
         base_map = shader_data["maps"][0]["map"]
-        base_map_texture = generate_image_node(mat, base_map, permutation_index, asset_cache, "halo1", report)
+        base_map_texture, is_color_plate = generate_image_node(mat, base_map, permutation_index, asset_cache, "halo1", report)
         if base_map_texture:
             base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
             base_map_node.image = base_map_texture
@@ -1512,7 +1522,7 @@ def generate_shader_transparent_chicago(mat, shader_asset, permutation_index, as
         stc_node.inputs["Map %s Rotation Animation Scale" % map_slots[map_idx]].default_value = map_element["rotation animation scale"]
         stc_node.inputs["Map %s Rotation Animation Center" % map_slots[map_idx]].default_value = map_element["rotation animation center"]
 
-        map_texture = generate_image_node(mat, map_element["map"], permutation_index, asset_cache, "halo1", report)
+        map_texture, is_color_plate = generate_image_node(mat, map_element["map"], permutation_index, asset_cache, "halo1", report)
         if map_texture:
             map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
             map_node.image = map_texture
@@ -1539,7 +1549,7 @@ def generate_shader_transparent_chicago_extended_simple(mat, shader_asset, permu
 
     if len(shader_data["4 stage maps"]) > 0:
         base_map = shader_data["4 stage maps"][0]["map"]
-        base_map_texture = generate_image_node(mat, base_map, permutation_index, asset_cache, "halo1", report)
+        base_map_texture, is_color_plate = generate_image_node(mat, base_map, permutation_index, asset_cache, "halo1", report)
         if base_map_texture:
             base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
             base_map_node.image = base_map_texture
@@ -1655,7 +1665,7 @@ def generate_shader_transparent_chicago_extended(mat, shader_asset, permutation_
         stce_node.inputs["4 Stage Map %s Rotation Animation Scale" % map0_slots[map_idx]].default_value = map_element["rotation animation scale"]
         stce_node.inputs["4 Stage Map %s Rotation Animation Center" % map0_slots[map_idx]].default_value = map_element["rotation animation center"]
 
-        map_texture = generate_image_node(mat, map_element["map"], permutation_index, asset_cache, "halo1", report)
+        map_texture, is_color_plate = generate_image_node(mat, map_element["map"], permutation_index, asset_cache, "halo1", report)
         if map_texture:
             map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
             map_node.image = map_texture
@@ -1698,7 +1708,7 @@ def generate_shader_transparent_chicago_extended(mat, shader_asset, permutation_
         stce_node.inputs["2 Stage Map %s Rotation Animation Scale" % map1_slots[map_idx]].default_value = map_element["rotation animation scale"]
         stce_node.inputs["2 Stage Map %s Rotation Animation Center" % map1_slots[map_idx]].default_value = map_element["rotation animation center"]
 
-        map_texture = generate_image_node(mat, map_element["map"], permutation_index, asset_cache, "halo1", report)
+        map_texture, is_color_plate = generate_image_node(mat, map_element["map"], permutation_index, asset_cache, "halo1", report)
         if map_texture:
             map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
             map_node.image = map_texture
@@ -1725,7 +1735,7 @@ def generate_shader_transparent_generic_simple(mat, shader_asset, permutation_in
 
     if len(shader_data["maps"]) > 0:
         base_map = shader_data["maps"][0]["map"]
-        base_map_texture = generate_image_node(mat, base_map, permutation_index, asset_cache, "halo1", report)
+        base_map_texture, is_color_plate = generate_image_node(mat, base_map, permutation_index, asset_cache, "halo1", report)
         if base_map_texture:
             base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
             base_map_node.image = base_map_texture
@@ -1760,7 +1770,7 @@ def generate_shader_transparent_generic(mat, shader_asset, permutation_index, as
         map_tag_refs[map_idx] = map_element["map"]
 
     if map_tag_refs[0] is not None:
-        map_a_texture = generate_image_node(mat, map_tag_refs[0], permutation_index, asset_cache, "halo1", report)
+        map_a_texture, is_color_plate = generate_image_node(mat, map_tag_refs[0], permutation_index, asset_cache, "halo1", report)
         if map_a_texture:
             map_a_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
             map_a_node.image = map_a_texture
@@ -1771,7 +1781,7 @@ def generate_shader_transparent_generic(mat, shader_asset, permutation_index, as
             generate_texture_mapping(mat.node_tree, stg_node, "A", map_a_node, "Vector")
 
     if map_tag_refs[1] is not None:
-        map_b_texture = generate_image_node(mat, map_tag_refs[1], permutation_index, asset_cache, "halo1", report)
+        map_b_texture, is_color_plate = generate_image_node(mat, map_tag_refs[1], permutation_index, asset_cache, "halo1", report)
         if map_b_texture:
             map_b_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
             map_b_node.image = map_b_texture
@@ -1782,7 +1792,7 @@ def generate_shader_transparent_generic(mat, shader_asset, permutation_index, as
             generate_texture_mapping(mat.node_tree, stg_node, "B", map_b_node, "Vector")
 
     if map_tag_refs[2] is not None:
-        map_c_texture = generate_image_node(mat, map_tag_refs[2], permutation_index, asset_cache, "halo1", report)
+        map_c_texture, is_color_plate = generate_image_node(mat, map_tag_refs[2], permutation_index, asset_cache, "halo1", report)
         if map_c_texture:
             map_c_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
             map_c_node.image = map_c_texture
@@ -1793,7 +1803,7 @@ def generate_shader_transparent_generic(mat, shader_asset, permutation_index, as
             generate_texture_mapping(mat.node_tree, stg_node, "C", map_c_node, "Vector")
 
     if map_tag_refs[3] is not None:
-        map_d_texture = generate_image_node(mat, map_tag_refs[3], permutation_index, asset_cache, "halo1", report)
+        map_d_texture, is_color_plate = generate_image_node(mat, map_tag_refs[3], permutation_index, asset_cache, "halo1", report)
         if map_d_texture:
             map_d_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
             map_d_node.image = map_d_texture
@@ -1941,7 +1951,7 @@ def generate_shader_transparent_glass_simple(mat, shader_asset, permutation_inde
 
     place_node(bdsf_principled, 1)
 
-    base_map_texture = generate_image_node(mat, shader_data["diffuse map"], permutation_index, asset_cache, "halo1", report)
+    base_map_texture, is_color_plate = generate_image_node(mat, shader_data["diffuse map"], permutation_index, asset_cache, "halo1", report)
     if base_map_texture:
         base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         base_map_node.image = base_map_texture
@@ -2001,7 +2011,7 @@ def generate_shader_transparent_glass(mat, shader_asset, permutation_index, asse
     shader_transparent_glass.inputs["Specular Map Scale"].default_value = shader_data["specular map scale"]
     shader_transparent_glass.inputs["Specular Detail Map Scale"].default_value = shader_data["specular detail map scale"]
 
-    background_tint_map_texture = generate_image_node(mat, shader_data["background tint map"], permutation_index, asset_cache, "halo1", report)
+    background_tint_map_texture, is_color_plate = generate_image_node(mat, shader_data["background tint map"], permutation_index, asset_cache, "halo1", report)
     if background_tint_map_texture:
         background_tint_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         background_tint_map_node.image = background_tint_map_texture
@@ -2010,7 +2020,7 @@ def generate_shader_transparent_glass(mat, shader_asset, permutation_index, asse
         connect_inputs(mat.node_tree, background_tint_map_node, "Color", shader_transparent_glass, "Background Tint Map")
         connect_inputs(mat.node_tree, background_tint_map_node, "Alpha", shader_transparent_glass, "Background Tint Map Alpha")
 
-    reflection_map_texture = generate_image_node(mat, shader_data["reflection map"], permutation_index, asset_cache, "halo1", report)
+    reflection_map_texture, is_color_plate = generate_image_node(mat, shader_data["reflection map"], permutation_index, asset_cache, "halo1", report)
     if reflection_map_texture:
         reflection_map_node = mat.node_tree.nodes.new("ShaderNodeTexEnvironment")
         texcoord_node = mat.node_tree.nodes.new("ShaderNodeTexCoord")
@@ -2021,7 +2031,7 @@ def generate_shader_transparent_glass(mat, shader_asset, permutation_index, asse
         connect_inputs(mat.node_tree, reflection_map_node, "Color", shader_transparent_glass, "Reflection Map")
         connect_inputs(mat.node_tree, texcoord_node, "Reflection", reflection_map_node, "Vector")
 
-    bump_map_texture = generate_image_node(mat, shader_data["bump map"], permutation_index, asset_cache, "halo1", report)
+    bump_map_texture, is_color_plate = generate_image_node(mat, shader_data["bump map"], permutation_index, asset_cache, "halo1", report)
     bump_bitmap = None
     if bump_map_texture:
         bump_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
@@ -2035,7 +2045,7 @@ def generate_shader_transparent_glass(mat, shader_asset, permutation_index, asse
 
         bump_bitmap = tag_interface.get_disk_asset(shader_data["bump map"]["path"], tag_common.h1_tag_groups.get(shader_data["bump map"]["group name"]))
 
-    diffuse_map_texture = generate_image_node(mat, shader_data["diffuse map"], permutation_index, asset_cache, "halo1", report)
+    diffuse_map_texture, is_color_plate = generate_image_node(mat, shader_data["diffuse map"], permutation_index, asset_cache, "halo1", report)
     if diffuse_map_texture:
         diffuse_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         diffuse_map_node.image = diffuse_map_texture
@@ -2044,7 +2054,7 @@ def generate_shader_transparent_glass(mat, shader_asset, permutation_index, asse
         connect_inputs(mat.node_tree, diffuse_map_node, "Color", shader_transparent_glass, "Diffuse Map")
         connect_inputs(mat.node_tree, diffuse_map_node, "Alpha", shader_transparent_glass, "Diffuse Map Alpha")
 
-    diffuse_detail_map_texture = generate_image_node(mat, shader_data["diffuse detail map"], permutation_index, asset_cache, "halo1", report)
+    diffuse_detail_map_texture, is_color_plate = generate_image_node(mat, shader_data["diffuse detail map"], permutation_index, asset_cache, "halo1", report)
     if diffuse_detail_map_texture:
         diffuse_detail_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         diffuse_detail_map_node.image = diffuse_detail_map_texture
@@ -2053,7 +2063,7 @@ def generate_shader_transparent_glass(mat, shader_asset, permutation_index, asse
         connect_inputs(mat.node_tree, diffuse_detail_map_node, "Color", shader_transparent_glass, "Diffuse Detail Map")
         connect_inputs(mat.node_tree, diffuse_detail_map_node, "Alpha", shader_transparent_glass, "Diffuse Detail Map Alpha")
 
-    specular_map_texture = generate_image_node(mat, shader_data["specular map"], permutation_index, asset_cache, "halo1", report)
+    specular_map_texture, is_color_plate = generate_image_node(mat, shader_data["specular map"], permutation_index, asset_cache, "halo1", report)
     if specular_map_texture:
         specular_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         specular_map_node.image = specular_map_texture
@@ -2062,7 +2072,7 @@ def generate_shader_transparent_glass(mat, shader_asset, permutation_index, asse
         connect_inputs(mat.node_tree, specular_map_node, "Color", shader_transparent_glass, "Specular Map")
         connect_inputs(mat.node_tree, specular_map_node, "Alpha", shader_transparent_glass, "Specular Map Alpha")
 
-    specular_detail_map_texture = generate_image_node(mat, shader_data["specular detail map"], permutation_index, asset_cache, "halo1", report)
+    specular_detail_map_texture, is_color_plate = generate_image_node(mat, shader_data["specular detail map"], permutation_index, asset_cache, "halo1", report)
     if specular_detail_map_texture:
         specular_detail_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         specular_detail_map_node.image = specular_detail_map_texture
@@ -2090,7 +2100,7 @@ def generate_shader_transparent_meter_simple(mat, shader_asset, permutation_inde
 
     place_node(bdsf_principled, 1)
 
-    base_map_texture = generate_image_node(mat, shader_data["meter map"], permutation_index, asset_cache, "halo1", report)
+    base_map_texture, is_color_plate = generate_image_node(mat, shader_data["meter map"], permutation_index, asset_cache, "halo1", report)
     if base_map_texture:
         base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         base_map_node.image = base_map_texture
@@ -2149,7 +2159,7 @@ def generate_shader_transparent_meter(mat, shader_asset, permutation_index, asse
     stm_node.inputs["Gradient Source"].default_value = shader_data["gradient source"]["value"]
     stm_node.inputs["Flash Extension Source"].default_value = shader_data["flash extension source"]["value"]
 
-    base_map_texture = generate_image_node(mat, shader_data["map"], permutation_index, asset_cache, "halo1", report)
+    base_map_texture, is_color_plate = generate_image_node(mat, shader_data["map"], permutation_index, asset_cache, "halo1", report)
     if base_map_texture:
         base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         base_map_node.image = base_map_texture
@@ -2174,7 +2184,7 @@ def generate_shader_transparent_plasma_simple(mat, shader_asset, permutation_ind
 
     place_node(bdsf_principled, 1)
 
-    base_map_texture = generate_image_node(mat, shader_data["primary noise map"], permutation_index, asset_cache, "halo1", report)
+    base_map_texture, is_color_plate = generate_image_node(mat, shader_data["primary noise map"], permutation_index, asset_cache, "halo1", report)
     if base_map_texture:
         base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         base_map_node.image = base_map_texture
@@ -2233,7 +2243,7 @@ def generate_shader_transparent_plasma(mat, shader_asset, permutation_index, ass
     stp_node.inputs["Secondary Animation Direction"].default_value = shader_data["animation direction_1"]
     stp_node.inputs["Secondary Noise Map Scale"].default_value = shader_data["noise map scale_1"]
 
-    noise_map_texture = generate_image_node(mat, shader_data["noise map"], permutation_index, asset_cache, "halo1", report)
+    noise_map_texture, is_color_plate = generate_image_node(mat, shader_data["noise map"], permutation_index, asset_cache, "halo1", report)
     if noise_map_texture:
         noise_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         noise_map_node.image = noise_map_texture
@@ -2242,7 +2252,7 @@ def generate_shader_transparent_plasma(mat, shader_asset, permutation_index, ass
         connect_inputs(mat.node_tree, noise_map_node, "Color", stp_node, "Primary Noise Map")
         connect_inputs(mat.node_tree, noise_map_node, "Alpha", stp_node, "Primary Noise Map Alpha")
 
-    noise1_map_texture = generate_image_node(mat, shader_data["noise map_1"], permutation_index, asset_cache, "halo1", report)
+    noise1_map_texture, is_color_plate = generate_image_node(mat, shader_data["noise map_1"], permutation_index, asset_cache, "halo1", report)
     if noise1_map_texture:
         noise1_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         noise1_map_node.image = noise1_map_texture
@@ -2267,7 +2277,7 @@ def generate_shader_transparent_water_simple(mat, shader_asset, permutation_inde
 
     place_node(bdsf_principled, 1)
 
-    base_map_texture = generate_image_node(mat, shader_data["base map"], permutation_index, asset_cache, "halo1", report)
+    base_map_texture, is_color_plate = generate_image_node(mat, shader_data["base map"], permutation_index, asset_cache, "halo1", report)
     if base_map_texture:
         base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         base_map_node.image = base_map_texture
@@ -2321,7 +2331,7 @@ def generate_shader_transparent_water(mat, shader_asset, permutation_index, asse
     stw_node.inputs["Ripple Mipmap Fade Factor"].default_value = shader_data["mipmap fade factor"]
     stw_node.inputs["Ripple Mipmap Detail Bias"].default_value = shader_data["mipmap detail bias"]
 
-    base_map_texture = generate_image_node(mat, shader_data["base map"], permutation_index, asset_cache, "halo1", report)
+    base_map_texture, is_color_plate = generate_image_node(mat, shader_data["base map"], permutation_index, asset_cache, "halo1", report)
     if base_map_texture:
         base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         base_map_node.image = base_map_texture
@@ -2332,7 +2342,7 @@ def generate_shader_transparent_water(mat, shader_asset, permutation_index, asse
         connect_inputs(mat.node_tree, base_map_node, "Color", stw_node, "Base Map")
         connect_inputs(mat.node_tree, base_map_node, "Alpha", stw_node, "Base Map Alpha")
 
-    reflection_map_texture = generate_image_node(mat, shader_data["reflection map"], permutation_index, asset_cache, "halo1", report)
+    reflection_map_texture, is_color_plate = generate_image_node(mat, shader_data["reflection map"], permutation_index, asset_cache, "halo1", report)
     if reflection_map_texture:
         reflection_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         reflection_map_node.image = reflection_map_texture
@@ -2341,7 +2351,7 @@ def generate_shader_transparent_water(mat, shader_asset, permutation_index, asse
         connect_inputs(mat.node_tree, reflection_map_node, "Color", stw_node, "Reflection Map")
         connect_inputs(mat.node_tree, reflection_map_node, "Alpha", stw_node, "Reflection Map Alpha")
 
-    ripple_map_texture = generate_image_node(mat, shader_data["maps"], permutation_index, asset_cache, "halo1", report)
+    ripple_map_texture, is_color_plate = generate_image_node(mat, shader_data["maps"], permutation_index, asset_cache, "halo1", report)
     if ripple_map_texture:
         ripple_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         ripple_map_node.image = ripple_map_texture
