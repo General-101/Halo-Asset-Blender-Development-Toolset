@@ -24,6 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import io
 import os
 import bpy
 import zlib
@@ -35,6 +36,7 @@ from mathutils import Vector
 from ...global_functions import global_functions
 from .image_helper import get_texture_from_plate
 from ...file_tag.tag_interface import tag_interface, tag_common
+from .halo_palette_data import H1_PALETTE, H2_PALETTE
 try:
     from PIL import Image
 
@@ -128,17 +130,203 @@ def import_color_plate(bitmap_asset, asset_cache, image_group, image_path, permu
 
     return texture
 
-def import_pixel_data(game_title, data_path, tag_path, hek_path, image_path, asset_cache, image_group):
+def calculate_mip_size(width, height, bytes_per_pixel, mip_count):
+    mip_size = 0
+    for mip in range(mip_count + 1):
+        w = max(1, width >> mip)
+        h = max(1, height >> mip)
+
+        size = w * h * bytes_per_pixel
+
+        mip_size += size
+
+    return mip_size
+
+def palettized_p8_bump_to_rgba(data, palette):
+    image_array = bytearray(len(data) * 4)
+
+    for i, index in enumerate(data):
+        src = index * 4
+        dst = i * 4
+
+        image_array[dst + 0] = palette[src + 2]
+        image_array[dst + 1] = palette[src + 1]
+        image_array[dst + 2] = palette[src + 0]
+        image_array[dst + 3] = palette[src + 3]
+
+    return image_array
+
+def palettized_a8y8_to_rgba(data, palette):
+    image_array = bytearray((len(data) // 2) * 4)
+
+    dst = 0
+    for i in range(0, len(data), 2):
+        index = data[i]
+        alpha = data[i + 1]
+
+        src = index * 4
+
+        image_array[dst + 0] = palette[src + 2]
+        image_array[dst + 1] = palette[src + 1]
+        image_array[dst + 2] = palette[src + 0]
+        image_array[dst + 3] = alpha
+
+        dst += 4
+
+    return image_array
+
+class FunctionEnum(Enum):
+    A8 = 0
+    Y8 = auto()
+    AY8 = auto()
+    A8Y8 = auto()
+    unused1 = auto()
+    unused2 = auto()
+    R5G6B5 = auto()
+    unused3 = auto()
+    A1R5G5B5 = auto()
+    A4R4G4B4 = auto()
+    X8R8G8B8 = auto()
+    A8R8G8B8 = auto()
+    unused4 = auto()
+    unused5 = auto()
+    DXT1 = auto()
+    DXT3 = auto()
+    DXT5 = auto()
+    P8 = auto()
+    BC7 = auto()
+
+def decode_pixel_data(tag_dict, read_path, palette):
+    texture_data = None
+    image_stream = io.BytesIO(base64.b64decode(tag_dict["Data"]["processed pixel data"]["encoded"]))
+    for sequence in tag_dict["Data"]["bitmaps"]:
+        bitmap_encoding = FunctionEnum(sequence["format"]["value"])
+        if bitmap_encoding == FunctionEnum.A8:
+            print("NO SUPPORT FOR A8")
+            print(read_path)
+        elif bitmap_encoding == FunctionEnum.Y8:
+            print("NO SUPPORT FOR Y8")
+            print(read_path)
+        elif bitmap_encoding == FunctionEnum.AY8:
+            print("NO SUPPORT FOR AY8")
+            print(read_path)
+        elif bitmap_encoding == FunctionEnum.A8Y8:
+            image_size = (sequence["width"] * sequence["height"]) * 2
+            sequence_data = image_stream.read(image_size)
+            rgba_data = palettized_a8y8_to_rgba(sequence_data, palette)
+            
+            texture_data = Image.frombytes("RGBA", (sequence["width"], sequence["height"]), rgba_data)
+            mip_size = calculate_mip_size(sequence["width"], sequence["height"], 2, sequence["mipmap count"])
+            image_stream.read(mip_size)
+        elif bitmap_encoding == FunctionEnum.unused1:
+            print("NO SUPPORT FOR unused1")
+            print(read_path)
+        elif bitmap_encoding == FunctionEnum.unused2:
+            print("NO SUPPORT FOR unused2")
+            print(read_path)
+        elif bitmap_encoding == FunctionEnum.R5G6B5:
+            print("NO SUPPORT FOR R5G6B5")
+            print(read_path)
+        elif bitmap_encoding == FunctionEnum.unused3:
+            print("NO SUPPORT FOR unused3")
+            print(read_path)
+        elif bitmap_encoding == FunctionEnum.A1R5G5B5:
+            print("NO SUPPORT FOR A1R5G5B5")
+            print(read_path)
+        elif bitmap_encoding == FunctionEnum.A4R4G4B4:
+            print("NO SUPPORT FOR A4R4G4B4")
+            print(read_path)
+        elif bitmap_encoding == FunctionEnum.X8R8G8B8:
+            image_size = (sequence["width"] * sequence["height"]) * 4
+            sequence_data = image_stream.read(image_size)
+            
+            texture_data = Image.frombytes("RGBA", (sequence["width"], sequence["height"]), sequence_data, "raw", "BGRA")
+            mip_size = calculate_mip_size(sequence["width"], sequence["height"], 4, sequence["mipmap count"])
+            image_stream.read(mip_size)
+        elif bitmap_encoding == FunctionEnum.A8R8G8B8:
+            image_size = (sequence["width"] * sequence["height"]) * 4
+            sequence_data = image_stream.read(image_size)
+            
+            texture_data = Image.frombytes("RGBA", (sequence["width"], sequence["height"]), sequence_data, "raw", "BGRA")
+            mip_size = calculate_mip_size(sequence["width"], sequence["height"], 4, sequence["mipmap count"])
+            image_stream.read(mip_size)
+        elif bitmap_encoding == FunctionEnum.unused4:
+            print("NO SUPPORT FOR unused4")
+            print(read_path)
+        elif bitmap_encoding == FunctionEnum.unused5:
+            print("NO SUPPORT FOR unused5")
+            print(read_path)
+        elif bitmap_encoding == FunctionEnum.DXT1:
+            print("NO SUPPORT FOR DXT1")
+            print(read_path)
+        elif bitmap_encoding == FunctionEnum.DXT3:
+            print("NO SUPPORT FOR DXT3")
+            print(read_path)
+        elif bitmap_encoding == FunctionEnum.DXT5:
+            print("NO SUPPORT FOR DXT5")
+            print(read_path)
+        elif bitmap_encoding == FunctionEnum.P8:
+            image_size = sequence["width"] * sequence["height"]
+            sequence_data = image_stream.read(image_size)
+            rgba_data = palettized_p8_bump_to_rgba(sequence_data, palette)
+            
+            texture_data = Image.frombytes("RGBA", (sequence["width"], sequence["height"]), rgba_data)
+            mip_size = calculate_mip_size(sequence["width"], sequence["height"], 1, sequence["mipmap count"])
+            image_stream.read(mip_size)
+        elif bitmap_encoding == FunctionEnum.BC7:
+            print("NO SUPPORT FOR BC7")
+            print(read_path)
+
+        break
+
+    return texture_data
+
+def import_pixel_data(game_title, tag_groups, data_path, tag_path, hek_path, image_path, asset_cache, image_group, palette):
     # bitmap_tex0 is for MEK generated data files. It's not a real extension obviously - Gen
-    image_extensions = ("tif", "tiff", "dds", "bitmap_tex0.dds")
+    image_extensions = ("bitmap_tex0.dds", "tif", "tiff", "dds")
+
+    bitmap_tag_path = os.path.join(tag_path, "%s.bitmap" % image_path)
+    bitmap_name = os.path.basename(image_path)
 
     image_directory = os.path.dirname(image_path)
-    image_name = "pixel_data_%s_00_00.tga" % os.path.basename(image_path)
+    image_name = "pixel_data_%s_00_00.tga" % bitmap_name
     pixel_data_path = os.path.join(hek_path, "blender_dumps", image_directory, image_name)
 
     bitmap_data_path = os.path.join(data_path, image_path)
 
     texture = None
+    group_entry = asset_cache.get(image_group)
+    if group_entry is not None:
+        path_entry = group_entry.get(image_path)
+        if path_entry is not None:
+            blender_assets_entry = path_entry.get("blender_assets")
+            if blender_assets_entry is not None:
+                texture = blender_assets_entry.get("blender_asset")
+
+    if game_title == "halo1" and texture is None:
+        bitmap_asset = tag_interface.get_disk_asset(image_path, tag_groups.get(image_group))
+        if bitmap_asset is not None:
+            pil_image = decode_pixel_data(bitmap_asset, bitmap_tag_path, palette)
+
+            normalized = 1.0 / 255.0
+            
+            blender_pixels = (np.asarray(pil_image.convert('RGBA').transpose(method=Image.Transpose.FLIP_TOP_BOTTOM),dtype=np.float32) * normalized).ravel()
+
+            w, h = pil_image.size
+            texture = bpy.data.images.new(bitmap_name, w, h, alpha = True)
+            texture.pixels[:] = blender_pixels
+            texture.pack()
+
+            tag_group_entry = asset_cache.get(image_group)
+            if tag_group_entry is None:
+                tag_group_entry = asset_cache[image_group] = {}
+
+            tag_path_entry = tag_group_entry.get(image_path)
+            if tag_path_entry is None:
+                tag_path_entry = tag_group_entry[image_path] = {"blender_assets": {}, "has_disk_asset": False, "matching_checksum": False}
+
+            tag_path_entry["blender_assets"]["blender_asset"] = texture
+
     for image_extension in image_extensions:
         full_image_path = "%s.%s" % (bitmap_data_path, image_extension)
         if os.path.isfile(full_image_path):
@@ -177,21 +365,25 @@ def generate_image_node(mat, tag_ref, permutation_index, asset_cache, game_title
         tag_path = tool_preferences.halo_1_tag_path
         hek_path = tool_preferences.halo_1_hek_path
         tag_groups = tag_common.h1_tag_groups
+        palette = H1_PALETTE
     elif game_title == "halo2":
         data_path = tool_preferences.halo_2_data_path
         tag_path = tool_preferences.halo_2_tag_path
         hek_path = tool_preferences.halo_2_hek_path
         tag_groups = tag_common.h2_tag_groups
+        palette = H2_PALETTE
     elif game_title == "halo3":
         data_path = tool_preferences.halo_3_data_path
         tag_path = tool_preferences.halo_3_tag_path
         hek_path = os.path.dirname(os.path.dirname(tool_preferences.halo_3_tag_path))
         tag_groups = tag_common.h2_tag_groups
+        palette = None
     elif game_title == "haloodst":
         data_path = tool_preferences.halo_odst_data_path
         tag_path = tool_preferences.halo_odst_tag_path
         hek_path = os.path.dirname(os.path.dirname(tool_preferences.halo_odst_tag_path))
         tag_groups = tag_common.h2_tag_groups
+        palette = None
 
     texture_extensions = ("tif", "tiff")
     texture_path = None
@@ -223,7 +415,7 @@ def generate_image_node(mat, tag_ref, permutation_index, asset_cache, game_title
     texture = None
     bitmap_asset = tag_interface.get_disk_asset(image_path, tag_groups.get(image_group))
     if reverse_import_order:
-        texture = import_pixel_data(game_title, data_path, tag_path, hek_path, image_path, asset_cache, image_group)
+        texture = import_pixel_data(game_title, tag_groups, data_path, tag_path, hek_path, image_path, asset_cache, image_group, palette)
         is_color_plate = False
         if texture is None:
             is_color_plate = True
@@ -233,7 +425,7 @@ def generate_image_node(mat, tag_ref, permutation_index, asset_cache, game_title
         is_color_plate = True
         if texture is None:
             is_color_plate = False
-            texture = import_pixel_data(game_title, data_path, tag_path, hek_path, image_path, asset_cache, image_group)
+            texture = import_pixel_data(game_title, tag_groups, data_path, tag_path, hek_path, image_path, asset_cache, image_group, palette)
 
     if texture is None and asset_cache:
         tag_group_entry = asset_cache.get(image_group)
