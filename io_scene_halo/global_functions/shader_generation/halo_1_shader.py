@@ -1137,16 +1137,19 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
         bump_image_node.image.alpha_mode = 'CHANNEL_PACKED'
         bump_image_node.interpolation = 'Cubic'
         bump_image_node.image.colorspace_settings.name = 'Non-Color'
+        shader_environment_node.inputs["Bump Map Strength"].default_value = bump_bitmap["Data"]["bump height"] * 15
         bump_image_node.location = (-720.0, -1200.0)
         if is_color_plate:
             bump_node = mat.node_tree.nodes.new("ShaderNodeBump")
             bump_node.inputs["Strength"].default_value = bump_bitmap["Data"]["bump height"] * 15
+            if bpy.app.version >= (5, 2, 0):
+                bump_node.convention = 'DIRECTX'
+
             bump_node.location = (-720.0, -1200.0)
             connect_inputs(mat.node_tree, bump_image_node, "Color", bump_node, "Height")
 
         else:
             bump_node = mat.node_tree.nodes.new("ShaderNodeNormalMap")
-            bump_node.inputs["Strength"].default_value = bump_bitmap["Data"]["bump height"] * 15
             bump_node.location = (-720.0, -1200.0)
             connect_inputs(mat.node_tree, bump_image_node, "Color", bump_node, "Color")
 
@@ -2040,6 +2043,7 @@ def generate_shader_transparent_glass(mat, shader_asset, permutation_index, asse
         bump_image_node.image.alpha_mode = 'CHANNEL_PACKED'
         bump_image_node.interpolation = 'Cubic'
         bump_image_node.image.colorspace_settings.name = 'Non-Color'
+        shader_transparent_glass.inputs["Bump Map Strength"].default_value = bump_bitmap["Data"]["bump height"] * 15
         bump_image_node.location = (-720.0, -1200.0)
         if is_color_plate:
             bump_node = mat.node_tree.nodes.new("ShaderNodeBump")
@@ -2049,7 +2053,6 @@ def generate_shader_transparent_glass(mat, shader_asset, permutation_index, asse
 
         else:
             bump_node = mat.node_tree.nodes.new("ShaderNodeNormalMap")
-            bump_node.inputs["Strength"].default_value = bump_bitmap["Data"]["bump height"] * 15
             bump_node.location = (-720.0, -1200.0)
             connect_inputs(mat.node_tree, bump_image_node, "Color", bump_node, "Color")
 
@@ -2091,9 +2094,6 @@ def generate_shader_transparent_glass(mat, shader_asset, permutation_index, asse
         connect_inputs(mat.node_tree, specular_detail_map_node, "Color", shader_transparent_glass, "Specular Detail Map")
         connect_inputs(mat.node_tree, specular_detail_map_node, "Alpha", shader_transparent_glass, "Specular Detail Map Alpha")
 
-    if bump_bitmap is not None:
-        shader_transparent_glass.inputs["Bump Map Strength"].default_value = bump_bitmap["Data"]["bump height"] * 15
-
 def generate_shader_transparent_meter_simple(mat, shader_asset, permutation_index, asset_cache, report):
     shader_data = shader_asset["Data"]
 
@@ -2110,7 +2110,7 @@ def generate_shader_transparent_meter_simple(mat, shader_asset, permutation_inde
 
     place_node(bdsf_principled, 1)
 
-    base_map_texture, is_color_plate = generate_image_node(mat, shader_data["meter map"], permutation_index, asset_cache, "halo1", report)
+    base_map_texture, is_color_plate = generate_image_node(mat, shader_data["map"], permutation_index, asset_cache, "halo1", report)
     if base_map_texture:
         base_map_node = mat.node_tree.nodes.new("ShaderNodeTexImage")
         base_map_node.image = base_map_texture
