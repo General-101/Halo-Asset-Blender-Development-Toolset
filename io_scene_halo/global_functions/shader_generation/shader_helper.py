@@ -303,7 +303,7 @@ def import_pixel_data(game_title, tag_groups, data_path, tag_path, hek_path, ima
             if blender_assets_entry is not None:
                 texture = blender_assets_entry.get("blender_asset")
 
-    if game_title == "halo1" and texture is None:
+    if Image is not None and game_title == "halo1" and texture is None:
         bitmap_asset = tag_interface.get_disk_asset(image_path, tag_groups.get(image_group))
         if bitmap_asset is not None:
             pil_image = decode_pixel_data(bitmap_asset, bitmap_tag_path, palette)
