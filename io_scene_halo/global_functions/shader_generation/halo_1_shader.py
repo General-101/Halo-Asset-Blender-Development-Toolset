@@ -1142,14 +1142,14 @@ def generate_shader_environment(mat, shader_asset, permutation_index, asset_cach
         if is_color_plate:
             bump_node = mat.node_tree.nodes.new("ShaderNodeBump")
             bump_node.inputs["Strength"].default_value = bump_bitmap["Data"]["bump height"] * 15
-            if bpy.app.version >= (5, 2, 0):
-                bump_node.convention = 'DIRECTX'
-
             bump_node.location = (-720.0, -1200.0)
             connect_inputs(mat.node_tree, bump_image_node, "Color", bump_node, "Height")
 
         else:
             bump_node = mat.node_tree.nodes.new("ShaderNodeNormalMap")
+            if bpy.app.version >= (5, 2, 0):
+                bump_node.convention = 'DIRECTX'
+
             bump_node.location = (-720.0, -1200.0)
             connect_inputs(mat.node_tree, bump_image_node, "Color", bump_node, "Color")
 
@@ -2053,6 +2053,9 @@ def generate_shader_transparent_glass(mat, shader_asset, permutation_index, asse
 
         else:
             bump_node = mat.node_tree.nodes.new("ShaderNodeNormalMap")
+            if bpy.app.version >= (5, 2, 0):
+                bump_node.convention = 'DIRECTX'
+
             bump_node.location = (-720.0, -1200.0)
             connect_inputs(mat.node_tree, bump_image_node, "Color", bump_node, "Color")
 
