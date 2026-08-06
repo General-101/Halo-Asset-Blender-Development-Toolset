@@ -486,7 +486,7 @@ def process_scene(context, version, game_version, generate_checksum, file_checks
             permutation = default_permutation
             variant_name = ""
             if not spheres.data.active_region == -1:
-                variant_name = spheres.data.region_list[spheres.data.active_region].name.split()
+                variant_name = spheres.data.region_list[spheres.data.active_region].name
                 if not variant_name in region_list:
                     region_list.append(variant_name)
 
