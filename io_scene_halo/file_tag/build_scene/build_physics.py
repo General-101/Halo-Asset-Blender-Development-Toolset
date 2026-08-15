@@ -133,7 +133,7 @@ def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_
                 object_mesh.matrix_world = transform_matrix
 
             else:
-                object_mesh.ass_jms.marker_mask_type = '2'
+                object_mesh.ass_jms.marker_mask_type = '1'
 
     else:
         report({'ERROR'}, "No valid armature is active. Import will now be aborted")
