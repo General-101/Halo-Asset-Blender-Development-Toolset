@@ -137,7 +137,7 @@ class ImportTag(Operator, ImportHelper):
         else:
             shader_gen_setting += -1
 
-        global_functions.run_code("import_tag.load_file(context, filepath, self.game_title, self.fix_rotations, self.empty_markers, self.shader_gen_override, self.report)")
+        global_functions.run_code("import_tag.load_file(context, filepath, self.game_title, self.fix_rotations, self.empty_markers, shader_gen_setting, self.report)")
 
     if (4, 1, 0) <= bpy.app.version:
         def invoke(self, context, event):

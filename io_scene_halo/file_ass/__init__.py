@@ -532,7 +532,7 @@ class ImportASS(Operator, ImportHelper):
         else:
             shader_gen_setting += -1
 
-        return global_functions.run_code("import_ass.load_file(context, self.filepath, self.shader_gen_override, self.report)")
+        return global_functions.run_code("import_ass.load_file(context, self.filepath, shader_gen_setting, self.report)")
 
     if (4, 1, 0) <= bpy.app.version:
         def invoke(self, context, event):
