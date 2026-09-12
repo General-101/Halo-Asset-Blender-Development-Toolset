@@ -658,7 +658,4 @@ def process_file(game_title, QUA, report):
     elif game_title == "halor" or game_title == "halo4":
         parse_new_file(QUA, report)
 
-    if QUA.left() != 0: # is something wrong with the parser?
-        report({'WARNING'}, "%s elements left after parse end" % QUA.left())
-
     return QUA

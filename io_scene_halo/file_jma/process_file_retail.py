@@ -199,7 +199,4 @@ def process_file_retail(JMA, extension, game_title, retail_version_list, report)
         read_header_16390(JMA)
         read_node_transforms_16390(JMA)
 
-    if JMA.left() != 0: # is something wrong with the parser?
-        report({'WARNING'}, "%s elements left after parse end" % JMA.left())
-
     return JMA

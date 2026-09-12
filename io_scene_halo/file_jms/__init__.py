@@ -59,6 +59,12 @@ class JMS_PhysicsPropertiesGroup(PropertyGroup):
             )
         )
 
+    jms_friction_limit: FloatProperty(
+        name="Friction Limit",
+        description="???"
+        )
+
+
 class JMS_PhysicsProps(Panel):
     bl_label = "Halo Physics Properties"
     bl_idname = "JMS_PT_PhysicsPanel"
@@ -67,7 +73,6 @@ class JMS_PhysicsProps(Panel):
     bl_context = "physics"
     bl_options = {'DEFAULT_CLOSED'}
     bl_parent_id = "PHYSICS_PT_rigid_body_constraint"
-    COMPAT_ENGINES = {'BLENDER_RENDER', 'BLENDER_EEVEE', 'BLENDER_WORKBENCH'}
 
     @classmethod
     def poll(cls, context):
@@ -77,25 +82,45 @@ class JMS_PhysicsProps(Panel):
         scene = context.scene
         scene_halo = scene.halo
 
-        if not scene_halo.game_title == "halo1":
-            return (ob and rbc and (rbc.type in {'GENERIC_SPRING'})
-                    and context.engine in cls.COMPAT_ENGINES)
+        return (scene_halo.game_title is not "halo1" and ob and rbc and (rbc.type in ('SLIDER', 'GENERIC_SPRING')))
 
     def draw(self, context):
         layout = self.layout
+
+        box = layout.box()
+        box.label(text="Halo Physics:")
+        col = box.column(align=True)
 
         scene = context.scene
         scene_halo = scene.halo
 
         ob = context.object
         obj_jms = ob.jms
+        rbc = None
+        if ob is not None:
+            rbc = ob.rigid_body_constraint
 
         if not scene_halo.game_title == "halo1":
-            box = layout.box()
-            box.label(text="Spring Type:")
-            col = box.column(align=True)
-            row = col.row()
-            row.prop(obj_jms, "jms_spring_type", text='')
+            if rbc.type == "FIXED":
+                val = 0
+            elif rbc.type == "POINT":
+                val = 0
+            elif rbc.type == "HINGE":
+                val = 0
+            elif rbc.type == "SLIDER":
+                row = col.row()
+                row.label(text='Friction Limit:')
+                row.prop(obj_jms, "jms_friction_limit", text='')
+            elif rbc.type == "PISTON":
+                val = 0
+            elif rbc.type == "GENERIC":
+                val = 0
+            elif rbc.type == "GENERIC_SPRING":
+                row = col.row()
+                row.label(text='Spring Type:')
+                row.prop(obj_jms, "jms_spring_type", text='')
+            elif rbc.type == "MOTOR":
+                val = 0
 
 class JMS_SceneProps(Panel):
     bl_label = "JMS Scene Properties"

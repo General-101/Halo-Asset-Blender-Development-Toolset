@@ -186,7 +186,4 @@ def process_file(filepath):
 
         ASS.instances.append(ASSAsset.Instance(name, object_index, unique_id, parent_id, inheritance_flag, local_transform, pivot_transform, bone_groups))
 
-    if ASS.left() != 0: # is something wrong with the parser?
-        raise RuntimeError("%s elements left after parse end" % ASS.left())
-
     return ASS

@@ -484,9 +484,6 @@ def process_file_retail(JMS, game_version, extension, version_list, default_regi
 
             JMS.skylights.append(JMSAsset.Skylight(direction, radiant_intensity, solid_angle))
 
-    if JMS.left() != 0: # is something wrong with the parser?
-        raise RuntimeError("%s elements left after parse end" % JMS.left())
-
     # update node graph
     if JMS.version >= 8205:
         # loop over nodes and

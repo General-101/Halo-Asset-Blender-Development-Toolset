@@ -735,117 +735,159 @@ class ParseError(Exception):
     pass
 
 class HaloAsset:
-    """Helper class for reading in JMS/JMA/ASS files"""
-
-    __comment_regex = re.compile("[^\"]*?;(?!.*\")")
+    """Streaming helper class for reading JMS/JMA/ASS files."""
 
     def __init__(self, file):
-        self._elements = []
-        self._index = 0
-        if not isinstance(file, TextIOWrapper):
-            with open(file, "r", encoding=test_encoding(file)) as file:
-                self.__init_from_textio(file)
+        self.file = None
+        self.line_tokens = []
+        self.line_index = 0
+        self.first_line = None
 
+        if isinstance(file, TextIOWrapper):
+            self.file = file
         else:
-            self.__init_from_textio(file)
+            self.file = open(file, "r", encoding=test_encoding(file))
 
-    def __init_from_textio(self, io):
-        for line in io:
-            for element in line.strip().split("\t"):
-                if element != '':
-                    comment_match = re.search(self.__comment_regex, element)
-                    if comment_match is None:
-                        self._elements.append(element)
+        self.read_next_line()
 
-                    else:
-                        processed_element = element[: comment_match.end() - 1]
-                        if processed_element != '':
-                            self._elements.append(element)
+    def __del__(self):
+        try:
+            if self.file and not self.file.closed:
+                self.file.close()
+        except:
+            pass
 
-                        break # ignore the rest of the line if we found a comment
-    def left(self):
-        """Returns the number of elements left"""
-        if self._index < len(self._elements):
-            return len(self._elements) - self._index
+    def read_next_line(self):
+        for line in self.file:
+            line = line.rstrip("\r\n")
 
-        else:
-            return 0
+            if not line:
+                continue
+
+            if ";" not in line:
+                self.line_tokens = line.split("\t")
+                self.line_index = 0
+
+                if self.first_line is None:
+                    self.first_line = self.line_tokens[0]
+
+                return
+
+            tokens = []
+            for element in line.split("\t"):
+                if not element:
+                    continue
+
+                semi = element.find(";")
+                if semi != -1:
+                    quote = element.find('"')
+                    if quote == -1 or semi < quote:
+                        if semi > 0:
+                            tokens.append(element[:semi])
+                        break
+
+                tokens.append(element)
+
+            if tokens:
+                self.line_tokens = tokens
+                self.line_index = 0
+                if self.first_line is None:
+                    self.first_line = tokens[0]
+
+                return
+
+        self.line_tokens = []
+        self.line_index = 0
 
     def skip(self, count):
-        """Skip forwards n elements"""
-        self._index += count
+        for _ in range(count):
+            self.next()
 
     def next(self):
-        """Return the next element, raises AssetParseError on error"""
-        try:
-            self._index += 1
-            return self._elements[self._index - 1]
+        tokens = self.line_tokens
+        idx = self.line_index
 
-        except:
-            raise ParseError()
+        if idx >= len(tokens):
+            self.read_next_line()
+
+            tokens = self.line_tokens
+            idx = 0
+
+            if not tokens:
+                raise ParseError()
+
+        self.line_index = idx + 1
+        return tokens[idx]
 
     def get_first_line(self):
-        """Return the first line in the file, raises AssetParseError on error"""
-        try:
-            return self._elements[0]
-
-        except:
+        if self.first_line is None:
             raise ParseError()
 
-    def next_multiple(self, count):
-        """Returns an array of the next n elements, raises AssetParseError on error"""
-        try:
-            list = self._elements[self._index: self._index + count]
-            self._index += count
-            return list
+        return self.first_line
 
-        except:
-            raise ParseError()
+    def next_multiple(self, line_count):
+        values = []
+        for line_idx in range(line_count):
+            values.append(self.next())
+
+        return values
+
+    @staticmethod
+    def parse_float(value):
+        if "," in value:
+            value = value.replace(",", ".")
+
+        try:
+            return float(value)
+
+        except ValueError:
+            return float(value.rsplit(".", 1)[0])
 
     def next_vector(self):
-        """Return the next vector as mathutils.Vector, raises AssetParseError on error"""
-        next_p0 = self.next()
-        next_p1 = self.next()
-        next_p2 = self.next()
-        try:
-            p0 = float(next_p0.replace(",", "."))
-            p1 = float(next_p1.replace(",", "."))
-            p2 = float(next_p2.replace(",", "."))
+        tokens = self.line_tokens
+        idx = self.line_index
 
-        except ValueError:
-            p0 = float(next_p0.rsplit('.', 1)[0])
-            p1 = float(next_p1.rsplit('.', 1)[0])
-            p2 = float(next_p2.rsplit('.', 1)[0])
+        if idx + 3 <= len(tokens):
+            self.line_index = idx + 3
 
-        return Vector((p0, p1, p2))
+            pf = self.parse_float
+
+            return Vector((
+                pf(tokens[idx]),
+                pf(tokens[idx + 1]),
+                pf(tokens[idx + 2])
+            ))
+
+        return Vector((
+            self.parse_float(self.next()),
+            self.parse_float(self.next()),
+            self.parse_float(self.next())
+        ))
 
     def next_vector_space(self):
-        """Return the next vector as mathutils.Vector, raises AssetParseError on error"""
-        next_p0, next_p1, next_p2 = self.next().split(" ")
-        try:
-            p0 = float(next_p0.replace(",", "."))
-            p1 = float(next_p1.replace(",", "."))
-            p2 = float(next_p2.replace(",", "."))
+        x, y, z = self.next().split(" ")
 
-        except ValueError:
-            p0 = float(next_p0.rsplit('.', 1)[0])
-            p1 = float(next_p1.rsplit('.', 1)[0])
-            p2 = float(next_p2.rsplit('.', 1)[0])
+        pf = self.parse_float
 
-        return Vector((p0, p1, p2))
+        return Vector((
+            pf(x),
+            pf(y),
+            pf(z)
+        ))
 
     def are_quaternions_inverted(self):
         """Override this to enable quaternion inversion for next_quaternion()"""
         return False
 
     def next_quaternion(self):
-        """Return the next quaternion as mathutils.Quaternion, raises AssetParseError on error"""
-        x = float(self.next().replace(",", "."))
-        y = float(self.next().replace(",", "."))
-        z = float(self.next().replace(",", "."))
-        w = float(self.next().replace(",", "."))
-        quat = Quaternion((w, x, y, z))
-        if self.are_quaternions_inverted():
+        pf = self.parse_float
+        i = pf(self.next())
+        j = pf(self.next())
+        k = pf(self.next())
+        w = pf(self.next())
+
+        quat = Quaternion((w, i, j, k))
+        if self.are_quaternions_inverted:
             quat.invert()
 
         return quat
