@@ -1,0 +1,147 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="isls" name="island_scenario" version="1">
+  <Layout regolithID="block:island_scenario" internalName="island_scenario_block" name="island_scenario">
+    <FieldSet version="0" sizeofValue="672" sizeofSource="sizeof(struct island_scenario_group)" isLatest="true">
+      <TagReference CStyleName="materials_group" pascalStyleName="MaterialsGroup" name="materials group" />
+      <TagReference CStyleName="script" pascalStyleName="Script" name="script" />
+      <TagReference CStyleName="structure_style" pascalStyleName="StructureStyle" name="structure style" />
+      <TagReference CStyleName="lightmap_collection" pascalStyleName="LightmapCollection" name="lightmap collection" />
+      <Pad name="pad" length="196" />
+      <LongInteger CStyleName="next_marker_type_identifier" pascalStyleName="NextMarkerTypeIdentifier" name="next marker type identifier" />
+      <ShortInteger CStyleName="exterior_root_bsp_node_index" pascalStyleName="ExteriorRootBspNodeIndex" name="exterior root bsp node index" />
+      <ShortInteger CStyleName="interior_root_bsp_node_index" pascalStyleName="InteriorRootBspNodeIndex" name="interior root bsp node index" />
+      <Pad name="pad" length="12" />
+      <Block CStyleName="teams" pascalStyleName="Teams" name="teams resources" >
+        <Layout regolithID="block:teams" internalName="teams_block" name="teams_block">
+          <FieldSet version="0" sizeofValue="200" isLatest="true">
+            <TagReference CStyleName="team" pascalStyleName="Team" name="team" />
+            <Pad name="pad" length="160" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="marker_types" pascalStyleName="MarkerTypes" name="markertypes" >
+        <Layout regolithID="block:marker types" internalName="marker types_block" name="marker types_block">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <TagReference CStyleName="object" pascalStyleName="Object" name="object" />
+			<LongInteger CStyleName="identifier" pascalStyleName="Identifier" name="identifier" />
+            <Pad name="pad" length="20" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="markers" pascalStyleName="Markers" name="markers" >
+        <Layout regolithID="block:markers" internalName="markers_block" name="markers_block">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <Pad name="pad" length="4" />
+			<LongInteger CStyleName="type_identifier" pascalStyleName="TypeIdentifier" name="type identifier" />
+            <ShortBlockIndex CStyleName="type_index" pascalStyleName="TypeIndex" name="type index" blockReference="block:marker types" />
+			<ShortInteger CStyleName="team_index" pascalStyleName="TeamIndex" name="team index" />
+            <Pad name="pad" length="32" />
+			<Data CStyleName="data" pascalStyleName="Data" name="data" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="bsp_nodes" pascalStyleName="BspNodes" name="bsp nodes" >
+        <Layout regolithID="block:bsp nodes" internalName="bsp nodes_block" name="bsp nodes_block">
+          <FieldSet version="0" sizeofValue="20" isLatest="true">
+            <RealPlane3D CStyleName="plane" pascalStyleName="Plane" name="plane" />
+			<ShortInteger CStyleName="back_bsp_node_index" pascalStyleName="BackBspNodeIndex" name="back bsp node index" />
+            <ShortInteger CStyleName="front_bsp_node_index" pascalStyleName="FrontBspNodeIndex" name="front bsp node index" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="structure_primitives" pascalStyleName="StructurePrimitives" name="structure primitives" >
+        <Layout regolithID="block:structure primitives" internalName="structure primitives_block" name="structure primitives_block">
+          <FieldSet version="0" sizeofValue="252" isLatest="true">
+			<ShortInteger CStyleName="definition_index" pascalStyleName="DefinitionIndex" name="definition index" />
+            <ShortInteger CStyleName="identifier" pascalStyleName="Identifier" name="identifier" />
+			<Point2D CStyleName="hex_position" pascalStyleName="HexPosition" name="hex position" />
+			<ShortInteger CStyleName="height" pascalStyleName="Height" name="height" />
+			<ShortEnum CStyleName="orientation" pascalStyleName="Orientation" name="orientation">
+              <Options regolithID="enum:orientation" CStyleName="orientation" pascalStyleName="Orientation">
+                <Enum name="0 degrees" CStyleName="0_degrees" pascalStyleName="0Degrees" />
+                <Enum name="60 degrees" CStyleName="60_degrees" pascalStyleName="60Degrees" />
+                <Enum name="120 degrees" CStyleName="120_degrees" pascalStyleName="120Degrees" />
+                <Enum name="180 degrees" CStyleName="180_degrees" pascalStyleName="180Degrees" />
+                <Enum name="240 degrees" CStyleName="240_degrees" pascalStyleName="240Degrees" />
+                <Enum name="300 degrees" CStyleName="300_degrees" pascalStyleName="300Degrees" />
+                <Enum name="0 degrees mirrored" CStyleName="0_degrees_mirrored" pascalStyleName="0DegreesMirrored" />
+                <Enum name="60 degrees mirrored" CStyleName="60_degrees_mirrored" pascalStyleName="60DegreesMirrored" />
+                <Enum name="120 degrees mirrored" CStyleName="120_degrees_mirrored" pascalStyleName="120DegreesMirrored" />
+                <Enum name="180 degrees mirrored" CStyleName="180_degrees_mirrored" pascalStyleName="180DegreesMirrored" />
+                <Enum name="240 degrees mirrored" CStyleName="240_degrees_mirrored" pascalStyleName="240DegreesMirrored" />
+                <Enum name="300 degrees mirrored" CStyleName="300_degrees_mirrored" pascalStyleName="300DegreesMirrored" />
+              </Options>
+			</ShortEnum>
+			<Pad name="pad" length="52" />
+			<Data CStyleName="placement_data" pascalStyleName="PlacementData" name="placement data" />
+            <Block CStyleName="lightmap_geometries" pascalStyleName="LightmapGeometries" name="lightmap geometries" >
+              <Layout regolithID="block:lightmap geometries" internalName="lightmap geometries_block" name="lightmap geometries_block">
+                <FieldSet version="0" sizeofValue="12" isLatest="true">
+                  <Block CStyleName="lightmap_parts" pascalStyleName="LightmapParts" name="lightmap parts" >
+                    <Layout regolithID="block:lightmap parts" internalName="lightmap parts_block" name="lightmap parts_block">
+                      <FieldSet version="0" sizeofValue="16" isLatest="true">
+			            <ShortInteger CStyleName="lightmap_bitmap_index" pascalStyleName="LightmapBitmapIndex" name="lightmap bitmap index" />
+                        <Pad name="pad" length="2" />
+                        <Block CStyleName="lightmap_uvs" pascalStyleName="LightmapUvs" name="lightmap uvs" >
+                          <Layout regolithID="block:lightmap uvs" internalName="lightmap uvs" name="lightmap uvs">
+                            <FieldSet version="0" sizeofValue="8" isLatest="true">
+			                  <Real CStyleName="u" pascalStyleName="U" name="u" />
+                              <Real CStyleName="v" pascalStyleName="V" name="v" />
+                            </FieldSet>
+                          </Layout>
+                        </Block>
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="connections" pascalStyleName="Connections" name="connections" >
+              <Layout regolithID="block:connections" internalName="connections_block" name="connections_block">
+                <FieldSet version="0" sizeofValue="4" isLatest="true">
+                  <ShortBlockIndex CStyleName="primitive_index" pascalStyleName="PrimitiveIndex" name="primitive index" blockReference="block:structure primitives" />
+			      <ShortInteger CStyleName="seam_index" pascalStyleName="SeamIndex" name="seam index" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="visible_neighbors" pascalStyleName="VisibleNeighbors" name="visible neighbors" >
+              <Layout regolithID="block:visible neighbors" internalName="visible neighbors_block" name="visible neighbors_block">
+                <FieldSet version="0" sizeofValue="4" isLatest="true">
+                  <ShortBlockIndex CStyleName="primitive_index" pascalStyleName="PrimitiveIndex" name="primitive index" blockReference="block:structure primitives" />
+			      <Pad name="pad" length="2" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="audible_neighbors" pascalStyleName="AudibleNeighbors" name="audible neighbors" >
+              <Layout regolithID="block:audible neighbors" internalName="audible neighbors_block" name="audible neighbors_block">
+                <FieldSet version="0" sizeofValue="8" isLatest="true">
+                  <ShortBlockIndex CStyleName="primitive_index" pascalStyleName="PrimitiveIndex" name="primitive index" blockReference="block:structure primitives" />
+			      <Pad name="pad" length="2" />
+				  <Real CStyleName="sound_attenuation" pascalStyleName="SoundAttenuation" name="sound attenuation" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Pad name="pad" length="120" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="exterior_visible_primitives" pascalStyleName="ExteriorVisiblePrimitives" name="exterior visible primitives" >
+        <Layout regolithID="block:exterior visible primitives" internalName="exterior visible primitives_block" name="exterior visible primitives_block">
+          <FieldSet version="0" sizeofValue="4" isLatest="true">
+            <ShortBlockIndex CStyleName="primitive_index" pascalStyleName="PrimitiveIndex" name="primitive index" blockReference="block:structure primitives" />
+            <Pad name="pad" length="2" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="exterior_audible_primitivess" pascalStyleName="ExteriorAudiblePrimitivess" name="exterior audible primitives" >
+        <Layout regolithID="block:exterior audible primitives" internalName="exterior audible primitives_block" name="exterior audible primitives_block">
+          <FieldSet version="0" sizeofValue="4" isLatest="true">
+            <ShortBlockIndex CStyleName="primitive_index" pascalStyleName="PrimitiveIndex" name="primitive index" blockReference="block:structure primitives" />
+            <Pad name="pad" length="2" />
+          </FieldSet>
+        </Layout>
+      </Block>
+	  <Pad name="pad" length="212" />
+    </FieldSet>
+  </Layout>
+</TagGroup>
