@@ -459,9 +459,9 @@ def build_scene(context, JMA, JMS_A, JMS_B, filepath, game_version, fix_parents,
 
             generate_jma_skeleton(JMS_A_nodes, JMS_A, JMS_A_invalid, JMS_B_nodes, JMS_B, JMS_B_invalid, JMA, armature, parent_id_class, fix_rotations, game_version)
             if not JMS_A_invalid:
-                build_scene_retail(context, JMS_A, filepath, game_version, True, fix_parents, fix_rotations, True, report)
+                build_scene_retail(context, JMS_A, filepath, game_version, True, fix_parents, fix_rotations, True, "0", report)
             if not JMS_B_invalid:
-                build_scene_retail(context, JMS_B, filepath, game_version, True, fix_parents, fix_rotations, True, report)
+                build_scene_retail(context, JMS_B, filepath, game_version, True, fix_parents, fix_rotations, True, "0", report)
 
         elif JMS_A:
             armdata = bpy.data.armatures.new('Armature')

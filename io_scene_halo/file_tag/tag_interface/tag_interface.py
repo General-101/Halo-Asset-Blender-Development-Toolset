@@ -90,6 +90,7 @@ class FileModeEnum(Enum):
 FILE_MODE = FileModeEnum.read
 FIELD_ENDIAN = "<"
 
+HAS_LEGACY_FIELDS = False
 HAS_LEGACY_PADDING = False
 HAS_LEGACY_STRINGS = False
 HAS_LEGACY_HEADER = False
@@ -429,21 +430,34 @@ def get_fields(tag_stream, block_stream, tag_header, tag_block_header, field_nod
                 else:    
                     block_stream.write(struct.pack(struct_string, *field_default))
     elif field_tag == "Block":
-        field_default = (0, 0, 0)
-        field_size = 12
-        if return_size:
-            return field_size
-        struct_string = '%siii' % endian_override
-        if unsigned_key:
-            struct_string = uppercase_struct_letters(struct_string)
+        if HAS_LEGACY_FIELDS:
+            field_default = (0, 0, 0, 0)
+            field_size = 12
+            if return_size:
+                return field_size
+            struct_string = '%sHHii' % endian_override
+            if unsigned_key:
+                struct_string = uppercase_struct_letters(struct_string)
+        else:
+            field_default = (0, 0, 0)
+            field_size = 12
+            if return_size:
+                return field_size
+            struct_string = '%siii' % endian_override
+            if unsigned_key:
+                struct_string = uppercase_struct_letters(struct_string)
+
         if FILE_MODE == FileModeEnum.read:
             result = field_default
             tag_block_fields["TagBlock_%s" % field_key] = {"unk1": 0, "unk2": 0}
             tag_block_fields["TagBlockHeader_%s" % field_key] = {"name": "tbfd", "version": 0, "size": 0}
             if not unread_data_size < field_size:
-                result = struct.unpack(struct_string, block_stream.read(12))
+                result = struct.unpack(struct_string, block_stream.read(field_size))
             set_block_result(field_key, tag_block_fields)
-            block_count, unk1, unk2 = result
+            if HAS_LEGACY_FIELDS:
+                block_count, unk1_l, unk1, unk2 = result
+            else:
+                block_count, unk1, unk2 = result
             tag_block_fields["TagBlock_%s" % field_key] = {"unk1": unk1, "unk2": unk2}
             if block_count > 0:
                 if tag_header["engine tag"] == tag_common.EngineTag.H1Latest.value:
@@ -487,15 +501,22 @@ def get_fields(tag_stream, block_stream, tag_header, tag_block_header, field_nod
         else:
             if not unread_data_size < field_size:
                 result = get_result(field_key, tag_block_fields)
+                unk1_l = 0
                 unk1 = 0
                 unk2 = 0
                 tag_block_padding = tag_block_fields.get("TagBlock_%s" % field_key)
                 if tag_block_padding is not None and PRESERVE_PADDING:
                     unk1, unk2 = tag_block_padding.values()
-                if result is not None:
-                    block_stream.write(struct.pack(struct_string, len(result), unk1, unk2))
+                if HAS_LEGACY_FIELDS:
+                    if result is not None:
+                        block_stream.write(struct.pack(struct_string, len(result), unk1_l, unk1, unk2))
+                    else:
+                        block_stream.write(struct.pack(struct_string, 0, unk1_l, unk1, unk2))
                 else:
-                    block_stream.write(struct.pack(struct_string, 0, unk1, unk2))
+                    if result is not None:
+                        block_stream.write(struct.pack(struct_string, len(result), unk1, unk2))
+                    else:
+                        block_stream.write(struct.pack(struct_string, 0, unk1, unk2))
 
                 block_field_set = None
                 current_block = tag_block_fields.get(field_node.get("name"))
@@ -1598,11 +1619,18 @@ def get_fields(tag_stream, block_stream, tag_header, tag_block_header, field_nod
                     write_variable_string(block_stream, field_default, endian_override, fixed_length=field_size, terminator_length=0, append_terminator=False)
     elif field_tag == "TagReference":
         field_default = (None, 0, 0, -1, "")
-        field_size = 16
-        if return_size:
-            return field_size
-        struct_string = '%s4siii' % endian_override
-        struct_default_string = '%siiii' % endian_override
+        if HAS_LEGACY_FIELDS:
+            field_size = 40
+            if return_size:
+                return field_size
+            struct_string = '%s4s32shh' % endian_override
+            struct_default_string = '%si32shh' % endian_override
+        else:
+            field_size = 16
+            if return_size:
+                return field_size
+            struct_string = '%s4siii' % endian_override
+            struct_default_string = '%siiii' % endian_override
         if unsigned_key:
             struct_string = uppercase_struct_letters(struct_string)
             struct_default_string = uppercase_struct_letters(struct_default_string)
@@ -1610,16 +1638,27 @@ def get_fields(tag_stream, block_stream, tag_header, tag_block_header, field_nod
             tag_block_fields[field_key] = {"group name": None, "unk1": 0, "length": 0, "unk2": -1, "path": ""}
             result = field_default
             if not unread_data_size < field_size:
-                tag_group, unk1, length, unk2 = struct.unpack(struct_string, block_stream.read(16))
-                if int.from_bytes(tag_group, 'little' if endian_override == '<' else 'big', signed=True) == -1:
-                    tag_group = None
-                else:
-                    tag_group = tag_group.decode('utf-8', 'replace')
-                    if endian_override == "<":
-                        tag_group = tag_group[::-1]
+                if HAS_LEGACY_FIELDS:
+                    tag_group, path, unk1, unk2 = struct.unpack(struct_string, block_stream.read(field_size))
+                    if int.from_bytes(tag_group, 'little' if endian_override == '<' else 'big', signed=True) == -1:
+                        tag_group = None
+                    else:
+                        tag_group = tag_group.decode('utf-8', 'replace')
+                        if endian_override == "<":
+                            tag_group = tag_group[::-1]
 
-                path = read_variable_string(tag_stream, length, endian_override, terminator_length=1, append_terminator=True) 
-                result = (tag_group, unk1, length, unk2, path)
+                    result = (tag_group, unk1, 0, unk2, path.decode('utf-8', 'replace').split('\x00', 1)[0].strip('\x20'))
+                else:
+                    tag_group, unk1, length, unk2 = struct.unpack(struct_string, block_stream.read(field_size))
+                    if int.from_bytes(tag_group, 'little' if endian_override == '<' else 'big', signed=True) == -1:
+                        tag_group = None
+                    else:
+                        tag_group = tag_group.decode('utf-8', 'replace')
+                        if endian_override == "<":
+                            tag_group = tag_group[::-1]
+
+                    path = read_variable_string(tag_stream, length, endian_override, terminator_length=1, append_terminator=True) 
+                    result = (tag_group, unk1, length, unk2, path)
             set_tag_reference_result(field_key, tag_block_fields, result)
         else:
             if not unread_data_size < field_size:
@@ -1637,16 +1676,25 @@ def get_fields(tag_stream, block_stream, tag_header, tag_block_header, field_nod
                         length = len(base64.b64decode(path).decode('utf-8', 'replace').split('\x00', 1)[0].strip('\x20'))
                     else:
                         length = len(path)
-                    if tag_group == None:
-                        tag_group = -1
-                        block_stream.write(struct.pack(struct_default_string, tag_group, unk1, length, unk2))
+                    if HAS_LEGACY_FIELDS:
+                        if tag_group == None:
+                            tag_group = -1
+                            block_stream.write(struct.pack(struct_default_string, tag_group, string_to_bytes(path, field_endian), unk1, unk2))
+                        else:
+                            tag_group = string_to_bytes(tag_group, endian_override)
+                            block_stream.write(struct.pack(struct_string, tag_group, string_to_bytes(path, field_endian), unk1, unk2))
                     else:
-                        tag_group = string_to_bytes(tag_group, endian_override)
-                        block_stream.write(struct.pack(struct_string, tag_group, unk1, length, unk2))
+                        if tag_group == None:
+                            tag_group = -1
+                            block_stream.write(struct.pack(struct_default_string, tag_group, unk1, length, unk2))
+                        else:
+                            tag_group = string_to_bytes(tag_group, endian_override)
+                            block_stream.write(struct.pack(struct_string, tag_group, unk1, length, unk2))
 
                     pos = block_stream.tell()
                     block_stream.seek(0, io.SEEK_END)
-                    write_variable_string(block_stream, path, ">", fixed_length=length, terminator_length=1, append_terminator=True)
+                    if not HAS_LEGACY_FIELDS:
+                        write_variable_string(block_stream, path, ">", fixed_length=length, terminator_length=1, append_terminator=True)
                     block_stream.seek(pos)
                 else:
                     block_stream.write(struct.pack(struct_default_string, -1, 0, 0, -1))
@@ -1753,8 +1801,9 @@ def get_fields(tag_stream, block_stream, tag_header, tag_block_header, field_nod
                 else:    
                     block_stream.write(struct.pack(struct_string, *field_default))
 
-def read_file(merged_defs, tag_directory, file_path="", engine_tag=tag_common.EngineTag.H2Latest.value, file_endian_override=None):
+def read_file(merged_defs, tag_directory, file_path="", engine_tag=tag_common.EngineTag.H2Latest.value, file_endian_override=None, engine_version=None):
     global PRESERVE_VERSION
+    global HAS_LEGACY_FIELDS
     if engine_tag == tag_common.EngineTag.H1Latest.value:
         file_endian = ">"
         if file_endian_override:
@@ -1805,9 +1854,15 @@ def read_file(merged_defs, tag_directory, file_path="", engine_tag=tag_common.En
     
         tag_header = tag_dict["Header"]
         if tag_header["engine tag"] == tag_common.EngineTag.H1Latest.value:
-            tag_groups = tag_common.h1_tag_groups
-            tag_extensions = tag_common.h1_tag_extensions
-            postprocess_functions =  h1_postprocess_functions
+            if engine_version == tag_common.H1Versions._20000525:
+                tag_groups = tag_common.h1_20000525_tag_groups
+                tag_extensions = tag_common.h1_20000525_tag_extensions
+                postprocess_functions = None
+                HAS_LEGACY_FIELDS = True
+            else:
+                tag_groups = tag_common.h1_tag_groups
+                tag_extensions = tag_common.h1_tag_extensions
+                postprocess_functions =  h1_postprocess_functions
         else:
             tag_groups = tag_common.h2_tag_groups
             tag_extensions = tag_common.h2_tag_extensions
@@ -1874,9 +1929,11 @@ def read_file(merged_defs, tag_directory, file_path="", engine_tag=tag_common.En
                     leftover_data = block_stream.read(read_size)
                     set_encoded_result("LeftOverData_%s" % tag_extension, tag_dict["Data"], leftover_data)
 
-        postprocess_step = postprocess_functions.get(tag_header["tag group"])
-        if postprocess_step is not None and not PRESERVE_VERSION:
-            postprocess_step(merged_defs, tag_dict, file_endian, tag_directory)
+        postprocess_step = None
+        if postprocess_functions is not None:
+            postprocess_step = postprocess_functions.get(tag_header["tag group"])
+            if postprocess_step is not None and not PRESERVE_VERSION:
+                postprocess_step(merged_defs, tag_dict, file_endian, tag_directory)
 
         if sound_hack:
             #This is here because snd! tags are complicated. 
@@ -1887,15 +1944,23 @@ def read_file(merged_defs, tag_directory, file_path="", engine_tag=tag_common.En
 
         return tag_dict
 
-def write_file(merged_defs, tag_dict, obfuscation_buffer, file_path="", engine_tag=tag_common.EngineTag.H2Latest.value, file_endian_override=None):
+def write_file(merged_defs, tag_dict, obfuscation_buffer, file_path="", engine_tag=tag_common.EngineTag.H2Latest.value, file_endian_override=None, engine_version=None):
     global PRESERVE_VERSION
+    global HAS_LEGACY_FIELDS
     if engine_tag == tag_common.EngineTag.H1Latest.value:
         file_endian = ">"
         if file_endian_override:
             file_endian = file_endian_override
-        tag_groups = tag_common.h1_tag_groups
-        tag_extensions = tag_common.h1_tag_extensions
-        postprocess_functions =  h1_postprocess_functions
+        if engine_version == tag_common.H1Versions._20000525:
+            tag_groups = tag_common.h1_20000525_tag_groups
+            tag_extensions = tag_common.h1_20000525_tag_extensions
+            postprocess_functions = None
+            HAS_LEGACY_FIELDS = True
+        else:
+            tag_groups = tag_common.h1_tag_groups
+            tag_extensions = tag_common.h1_tag_extensions
+            postprocess_functions =  h1_postprocess_functions
+
         upgrade_functions =  None
         downgrade_functions = None
         
@@ -2076,6 +2141,24 @@ def update_interface(mode_enum=FileModeEnum.read, file_endian="<"):
 
     FILE_MODE = mode_enum
     FIELD_ENDIAN = file_endian
+
+def h1_single_tag_legacy():
+    output_dir = os.path.join(os.path.dirname(tag_common.h1_20000525_defs_directory), "h1_20000525_merged_output")
+    merged_defs = h1.generate_defs(tag_common.h1_20000525_defs_directory, output_dir, tag_common.h1_20000525_tag_groups, tag_common.h1_20000525_tag_extensions)
+
+    read_path = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\HPEK\Halo CE 2000-05-25\local\islands.scenarios\spasm"
+    output_path = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\HPEK\Halo CE 2000-05-25\local\islands.scenarios\spasm2"
+    tag_directory = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\1\Vanilla\tags"
+
+    tag_dict = read_file(merged_defs, tag_directory, read_path, engine_tag=tag_common.EngineTag.H1Latest.value, engine_version=tag_common.H1Versions._20000525)
+    result = find_unserializable(tag_dict)
+
+    with open(os.path.join(os.path.dirname(output_path), "%s.json" % os.path.basename(output_path).rsplit(".", 1)[0]), 'w', encoding ='utf8') as json_file:
+        json.dump(tag_dict, json_file, ensure_ascii = True, indent=4)
+
+    write_file(merged_defs, tag_dict, obfuscation_buffer_prepare(), output_path, engine_tag=tag_common.EngineTag.H1Latest.value, engine_version=tag_common.H1Versions._20000525)
+
+
 
 def h1_single_tag():
     output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h1_merged_output")

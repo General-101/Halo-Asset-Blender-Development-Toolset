@@ -29,8 +29,13 @@ import os
 from enum import Flag, Enum, auto
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
+h1_20000525_defs_directory = os.path.join(current_dir, "layouts", "h1_20000525")
 h1_defs_directory = os.path.join(current_dir, "layouts", "h1")
 h2_defs_directory = os.path.join(current_dir, "layouts", "h2")
+
+h1_20000525_tag_groups = {
+    "isls": "islands_scenarios"
+    }
 
 h1_tag_groups = {
     "actr": "actor",
@@ -241,9 +246,11 @@ h2_tag_groups = {
             "mcsr": "mouse_cursor_definition",
             "tag+": "tag_database"}
 
+h1_20000525_tag_extensions = {ext: group for group, ext in h1_20000525_tag_groups.items()}
 h1_tag_extensions = {ext: group for group, ext in h1_tag_groups.items()}
 h2_tag_extensions = {ext: group for group, ext in h2_tag_groups.items()}
 
+h1_20000525_tag_groups_tuple=[(key, val, f"{val} tag") for key, val in h1_20000525_tag_groups.items()]
 h1_tag_groups_tuple=[(key, val, f"{val} tag") for key, val in h1_tag_groups.items()]
 h2_tag_groups_tuple=[(key, val, f"{val} tag") for key, val in h2_tag_groups.items()]
 
@@ -381,5 +388,15 @@ class EngineTag(Enum):
     H2V3 = "MLAB"
     H2V4 = "BLM!"
     H2Latest = H2V4
+
+class H1Versions(Enum):
+    # halo 1 types
+    _20000525 = 0
+    RETAIL = auto()
+
+class H2Versions(Enum):
+    # halo 1 types
+    _20000525 = 0
+    RETAIL = auto()
 
 engine_tag_values = {e.value for e in EngineTag}

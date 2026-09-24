@@ -178,7 +178,7 @@ def generate_cstyle_name(field_name, is_struct=False):
 
     return c_name
 
-def generate_defs_from_jsons(base_dir, output_dir):
+def generate_defs_from_jsons(base_dir, output_dir, tag_groups=tag_common.h1_tag_groups, tag_extensions=tag_common.h1_tag_extensions):
     all_data = []
     for filename in os.listdir(base_dir):
         if filename.endswith('.json'):
@@ -198,7 +198,7 @@ def generate_defs_from_jsons(base_dir, output_dir):
         name = group_entry['name']
         struct_name = group_entry['struct']
         version = str(group_entry.get('version', 0))
-        fourcc = next((k for k, v in tag_common.h1_tag_groups.items() if v == name), "unknown")
+        fourcc = next((k for k, v in tag_groups.items() if v == name), "unknown")
 
         root = ET.Element('TagGroup', group=fourcc, name=name, version=version)
         layout = ET.SubElement(root, 'Layout', regolithID="%s:%s" % ("block", name), internalName="%s_block" % name, name=name)
@@ -528,26 +528,26 @@ def generate_defs_from_jsons(base_dir, output_dir):
 
     merged_cache = {}
     for group in generated_xmls:
-        merge_parent_tag(group, generated_xmls, merged_cache, tag_common.h1_tag_groups, tag_common.h1_tag_extensions)
+        merge_parent_tag(group, generated_xmls, merged_cache, tag_groups, tag_extensions)
 
     for tag_def in merged_cache:
         initialize_definitions(merged_cache[tag_def], regolith_map)
 
     if DUMP_XML:
-        dump_merged_xml(merged_cache, output_dir, tag_common.h1_tag_groups)
+        dump_merged_xml(merged_cache, output_dir, tag_groups)
 
     return merged_cache
 
-def generate_defs(base_dir, output_dir):
+def generate_defs(base_dir, output_dir, tag_groups=tag_common.h1_tag_groups, tag_extensions=tag_common.h1_tag_extensions):
     tag_defs, regolith_map = parse_all_xmls(base_dir)
     merged_cache = {}
     for tag_def in tag_defs:
-        merge_parent_tag(tag_def, tag_defs, merged_cache, tag_common.h1_tag_groups, tag_common.h1_tag_extensions)
+        merge_parent_tag(tag_def, tag_defs, merged_cache, tag_groups, tag_extensions)
 
     for tag_def in merged_cache:
         initialize_definitions(merged_cache[tag_def], regolith_map)
 
     if DUMP_XML:
-        dump_merged_xml(merged_cache, output_dir, tag_common.h1_tag_groups)
+        dump_merged_xml(merged_cache, output_dir, tag_groups)
 
     return merged_cache
