@@ -1,0 +1,143 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="stst" name="structure_styles" version="1">
+  <Layout regolithID="block:structure_styles" internalName="structure_styles_block" name="structure_styles">
+    <FieldSet version="0" sizeofValue="1024" sizeofSource="sizeof(struct structure_styles_group)" isLatest="true">
+      <Real CStyleName="unknown" pascalStyleName="Unknown" name="unknown" />
+      <Real CStyleName="hex_width" pascalStyleName="HexWidth" name="hex width" />
+      <Real CStyleName="story_height" pascalStyleName="StoryHeight" name="story height" />
+      <ShortInteger CStyleName="last_identifier" pascalStyleName="LastIdentifier" name="last identifier" />
+      <Pad name="pad" length="150" />
+      <Block CStyleName="seams" pascalStyleName="Seams" name="seams">
+        <Layout regolithID="block:seams" internalName="seams_block" name="seams_block">
+          <FieldSet version="0" sizeofValue="56" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <Block CStyleName="convex_hulls" pascalStyleName="ConvexHulls" name="convex hull">
+              <Layout regolithID="block:convex hull" internalName="convex hull_block" name="convex hull_block">
+                <FieldSet version="0" sizeofValue="2" isLatest="true">
+                  <ShortInteger CStyleName="vertex_index" pascalStyleName="VertexIndex" name="vertex index" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="unique_orientations" pascalStyleName="UniqueOrientations" name="unique orientations">
+              <Layout regolithID="block:unique orientations" internalName="unique orientations_block" name="unique orientations_block">
+                <FieldSet version="0" sizeofValue="44" isLatest="true">
+                  <ShortEnum CStyleName="orientation" pascalStyleName="Orientation" name="orientation">
+                    <Options regolithID="enum:orientation" CStyleName="orientation" pascalStyleName="Orientation">
+                      <Enum name="0 degrees" CStyleName="0_degrees" pascalStyleName="0Degrees" />
+                      <Enum name="60 degrees" CStyleName="60_degrees" pascalStyleName="60Degrees" />
+                      <Enum name="120 degrees" CStyleName="120_degrees" pascalStyleName="120Degrees" />
+                      <Enum name="180 degrees" CStyleName="180_degrees" pascalStyleName="180Degrees" />
+                      <Enum name="240 degrees" CStyleName="240_degrees" pascalStyleName="240Degrees" />
+                      <Enum name="300 degrees" CStyleName="300_degrees" pascalStyleName="300Degrees" />
+                      <Enum name="0 degrees mirrored" CStyleName="0_degrees_mirrored" pascalStyleName="0DegreesMirrored" />
+                      <Enum name="60 degrees mirrored" CStyleName="60_degrees_mirrored" pascalStyleName="60DegreesMirrored" />
+                      <Enum name="120 degrees mirrored" CStyleName="120_degrees_mirrored" pascalStyleName="120DegreesMirrored" />
+                      <Enum name="180 degrees mirrored" CStyleName="180_degrees_mirrored" pascalStyleName="180DegreesMirrored" />
+                      <Enum name="240 degrees mirrored" CStyleName="240_degrees_mirrored" pascalStyleName="240DegreesMirrored" />
+                      <Enum name="300 degrees mirrored" CStyleName="300_degrees_mirrored" pascalStyleName="300DegreesMirrored" />
+                    </Options>
+                  </ShortEnum>
+                  <Pad name="pad" length="2" />
+                  <RealPoint3D CStyleName="centroid" pascalStyleName="Centroid" name="centroid" />
+                  <RealPlane3D CStyleName="plane" pascalStyleName="Plane" name="plane" />
+                  <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices">
+                    <Layout regolithID="block:vertices" internalName="vertices_block" name="vertices_block">
+                      <FieldSet version="0" sizeofValue="12" isLatest="true">
+                        <RealPoint3D CStyleName="point" pascalStyleName="Point" name="point" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="primitives" pascalStyleName="Primitives" name="primitives">
+        <Layout regolithID="block:primitives" internalName="primitives_block" name="primitives_block">
+          <FieldSet version="0" sizeofValue="256" isLatest="true">
+            <ShortEnum CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Enum name="visible from exterior" CStyleName="visible_from_exterior" pascalStyleName="VisibleFromExterior" />
+                <Enum name="contains a mirror" CStyleName="contains_a_mirror" pascalStyleName="ContainsAMirror" />
+              </Options>
+            </ShortEnum>
+            <ShortInteger CStyleName="identifier" pascalStyleName="Identifier" name="identifier" />
+            <Pad name="pad" length="40" />
+            <TagReference CStyleName="machine" pascalStyleName="Machine" name="machine" />
+            <Pad name="pad" length="54" />
+            <ShortInteger CStyleName="mirror_node_index" pascalStyleName="MirrorNodeIndex" name="mirror node index" />
+            <RealPlane3D CStyleName="mirror_plane" pascalStyleName="MirrorPlane" name="mirror plane" />
+            <RealPoint3D CStyleName="center_of_rotation" pascalStyleName="CenterOfRotation" name="center of rotation" />
+            <Block CStyleName="hex_extents" pascalStyleName="HexExtents" name="hex extents">
+              <Layout regolithID="block:hex extents" internalName="hex extents_block" name="hex extents_block">
+                <FieldSet version="0" sizeofValue="4" isLatest="true">
+                  <Point2D CStyleName="hex" pascalStyleName="Hex" name="hex" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="seam_instances" pascalStyleName="SeamInstances" name="seams">
+              <Layout regolithID="block:seams" internalName="seams_block" name="seams_block">
+                <FieldSet version="0" sizeofValue="16" isLatest="true">
+                  <ShortBlockIndex CStyleName="style_seam" pascalStyleName="StyleSeam" name="style seam" blockReference="structure_seam_block" />
+                  <Pad name="pad" length="2" />
+                  <Block CStyleName="seam_vertices" pascalStyleName="SeamVertices" name="vertices">
+                    <Layout regolithID="block:vertices" internalName="vertices_block" name="vertices_block">
+                      <FieldSet version="0" sizeofValue="12" isLatest="true">
+                        <Block CStyleName="model_vertices" pascalStyleName="ModelVertices" name="model vertices">
+                          <Layout regolithID="block:model vertices" internalName="model vertices_block" name="model vertices_block">
+                            <FieldSet version="0" sizeofValue="0" isLatest="true" />
+                          </Layout>
+                        </Block>
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="orientations" pascalStyleName="Orientations" name="orientations">
+              <Layout regolithID="block:orientations" internalName="orientations_block" name="orientations_block">
+                <FieldSet version="0" sizeofValue="12" isLatest="true">
+                  <Block CStyleName="transformed_seam_instances" pascalStyleName="TransformedSeamInstances" name="transformed seams">
+                    <Layout regolithID="block:transformed seams" internalName="transformed seams_block" name="transformed seams_block">
+                      <FieldSet version="0" sizeofValue="24" isLatest="true">
+                        <ShortInteger CStyleName="seam_unique_orientation_index" pascalStyleName="SeamUniqueOrientationIndex" name="seam unique orientation index" />
+                        <ShortEnum CStyleName="side" pascalStyleName="Side" name="side">
+                          <Options regolithID="enum:side" CStyleName="side" pascalStyleName="Side">
+                            <Enum name="alpha" CStyleName="alpha" pascalStyleName="Alpha" />
+                            <Enum name="beta" CStyleName="beta" pascalStyleName="Beta" />
+                          </Options>
+                        </ShortEnum>
+                        <Point2D CStyleName="grid_offset" pascalStyleName="GridOffset" name="grid offset" />
+                        <ShortInteger CStyleName="height" pascalStyleName="Height" name="height" />
+                        <Pad name="pad" length="2" />
+                        <Block CStyleName="vertex_maps" pascalStyleName="VertexMaps" name="vertex maps">
+                          <Layout regolithID="block:vertex maps" internalName="vertex maps_block" name="vertex maps_block">
+                            <FieldSet version="0" sizeofValue="4" isLatest="true">
+                              <ShortInteger CStyleName="unique_orientation_from_instance" pascalStyleName="UniqueOrientationFromInstance" name="unique orientation from instance" />
+                              <ShortInteger CStyleName="instance_from_unique_orientation" pascalStyleName="InstanceFromUniqueOrientation" name="instance from unique orientation" />
+                            </FieldSet>
+                          </Layout>
+                        </Block>
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="axis_extents" pascalStyleName="AxisExtents" name="axis extents">
+              <Layout regolithID="block:axis extents" internalName="axis extents_block" name="axis extents_block">
+                <FieldSet version="0" sizeofValue="8" isLatest="true">
+                  <Real CStyleName="minimum" pascalStyleName="Minimum" name="minimum" />
+                  <Real CStyleName="maximum" pascalStyleName="Maximum" name="maximum" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Pad name="pad" length="40" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="836" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,117 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="envi" name="environment" version="1">
+  <Layout regolithID="block:environment" internalName="environment_block" name="environment">
+    <FieldSet version="0" sizeofValue="1772" sizeofSource="sizeof(struct environment_group)" isLatest="true">
+      <Pad name="pad" length="16" />
+      <RealPoint3D CStyleName="world_to_sky_box" pascalStyleName="WorldToSkyBox" name="world to sky box" />
+      <Real CStyleName="world_to_sky_scale" pascalStyleName="WorldToSkyScale" name="world to sky scale" />
+      <RealRgbColor CStyleName="fog_color" pascalStyleName="FogColor" name="fog color" />
+      <Pad name="pad" length="8" />
+      <Real CStyleName="ground_fog_start_height" pascalStyleName="GroundFogStartHeight" name="ground fog start height" />
+      <Real CStyleName="ground_fog_thickness" pascalStyleName="GroundFogThickness" name="ground fog thickness" />
+      <Real CStyleName="ground_fog_minimum_density" pascalStyleName="GroundFogMinimumDensity" name="ground fog minimum density" />
+      <RealBounds CStyleName="ground_fog_distance" pascalStyleName="GroundFogDistance" name="ground fog distance" />
+      <Pad name="pad" length="8" />
+      <RealBounds CStyleName="atmospheric_fog_distance" pascalStyleName="AtmosphericFogDistance" name="atmospheric fog distance" />
+      <Pad name="pad" length="8" />
+      <Pad name="pad" length="16" />
+      <TagReference CStyleName="sky_model" pascalStyleName="SkyModel" name="sky model" />
+      <TagReference CStyleName="sky_animations" pascalStyleName="SkyAnimations" name="sky animations" />
+      <TagReference CStyleName="sky_particle_system" pascalStyleName="SkyParticleSystem" name="sky particle system" />
+      <Pad name="pad" length="120" />
+      <Pad name="pad" length="620" />
+      <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+      <AngleBounds CStyleName="direction" pascalStyleName="Direction" name="direction" />
+      <Pad name="pad" length="32" />
+      <RealRgbColor CStyleName="ambient_color" pascalStyleName="AmbientColor" name="ambient color" />
+      <Pad name="pad" length="32" />
+      <RealRgbColor CStyleName="sun_color" pascalStyleName="SunColor" name="sun color" />
+      <AngleBounds CStyleName="sun_direction" pascalStyleName="SunDirection" name="sun direction" />
+      <RealRgbColor CStyleName="fill_color" pascalStyleName="FillColor" name="fill color" />
+      <AngleBounds CStyleName="fill_direction" pascalStyleName="FillDirection" name="fill direction" />
+      <RealRgbColor CStyleName="ambient_color" pascalStyleName="AmbientColor" name="ambient color" />
+      <Real CStyleName="ambient_power" pascalStyleName="AmbientPower" name="ambient power" />
+      <Pad name="pad" length="32" />
+      <RealRgbColor CStyleName="sun_color" pascalStyleName="SunColor" name="sun color" />
+      <Real CStyleName="sun_power" pascalStyleName="SunPower" name="sun power" />
+      <AngleBounds CStyleName="sun_direction" pascalStyleName="SunDirection" name="sun direction" />
+      <Angle CStyleName="sun_diameter" pascalStyleName="SunDiameter" name="sun diameter" />
+      <RealRgbColor CStyleName="fill_color" pascalStyleName="FillColor" name="fill color" />
+      <Real CStyleName="fill_power" pascalStyleName="FillPower" name="fill power" />
+      <AngleBounds CStyleName="fill_direction" pascalStyleName="FillDirection" name="fill direction" />
+      <Angle CStyleName="fill_diameter" pascalStyleName="FillDiameter" name="fill diameter" />
+      <AngleBounds CStyleName="wind_direction" pascalStyleName="WindDirection" name="wind direction" />
+      <RealBounds CStyleName="wind_velocity_bounds" pascalStyleName="WindVelocityBounds" name="wind velocity bounds" />
+      <AngleBounds CStyleName="wind_variation_area" pascalStyleName="WindVariationArea" name="wind variation area" />
+      <Real CStyleName="local_variation_weight" pascalStyleName="LocalVariationWeight" name="local variation weight" />
+      <Real CStyleName="local_variation_rate" pascalStyleName="LocalVariationRate" name="local variation rate" />
+      <Real CStyleName="wind_damping" pascalStyleName="WindDamping" name="wind damping" />
+      <Pad name="pad" length="20" />
+      <Pad name="pad" length="468" />
+      <Block CStyleName="water_levels" pascalStyleName="WaterLevels" name="water levels">
+        <Layout regolithID="block:water levels" internalName="water levels_block" name="water levels_block">
+          <FieldSet version="0" sizeofValue="512" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <RealPoint2D CStyleName="seed_point" pascalStyleName="SeedPoint" name="seed point" />
+            <Real CStyleName="height" pascalStyleName="Height" name="height" />
+            <Pad name="pad" length="8" />
+            <Real CStyleName="layer_1_scale" pascalStyleName="Layer1Scale" name="layer 1 scale" />
+            <Angle CStyleName="layer_1_angle" pascalStyleName="Layer1Angle" name="layer 1 angle" />
+            <Real CStyleName="layer_1_velocity" pascalStyleName="Layer1Velocity" name="layer 1 velocity" />
+            <Real CStyleName="layer_2_scale" pascalStyleName="Layer2Scale" name="layer 2 scale" />
+            <Angle CStyleName="layer_2_angle" pascalStyleName="Layer2Angle" name="layer 2 angle" />
+            <Real CStyleName="layer_2_velocity" pascalStyleName="Layer2Velocity" name="layer 2 velocity" />
+            <Real CStyleName="layer_3_scale" pascalStyleName="Layer3Scale" name="layer 3 scale" />
+            <Angle CStyleName="layer_3_angle" pascalStyleName="Layer3Angle" name="layer 3 angle" />
+            <Real CStyleName="layer_3_velocity" pascalStyleName="Layer3Velocity" name="layer 3 velocity" />
+            <Real CStyleName="environment_map_height" pascalStyleName="EnvironmentMapHeight" name="environment map height" />
+            <Real CStyleName="environment_map_width" pascalStyleName="EnvironmentMapWidth" name="environment map width" />
+            <RealArgbColor CStyleName="surface_color" pascalStyleName="SurfaceColor" name="surface color" />
+            <Pad name="pad" length="16" />
+            <TagReference CStyleName="water_alpha_bitmaps" pascalStyleName="WaterAlphaBitmaps" name="water alpha bitmaps" />
+            <TagReference CStyleName="water_environment_map_bitmap" pascalStyleName="WaterEnvironmentMapBitmap" name="water environment map bitmap" />
+            <Pad name="pad" length="80" />
+            <Real CStyleName="current_variation_weight" pascalStyleName="CurrentVariationWeight" name="current variation weight" />
+            <Real CStyleName="current_variation_rate" pascalStyleName="CurrentVariationRate" name="current variation rate" />
+            <Real CStyleName="current_variation_magnitude" pascalStyleName="CurrentVariationMagnitude" name="current variation magnitude" />
+            <Real CStyleName="current_damping" pascalStyleName="CurrentDamping" name="current damping" />
+            <Pad name="pad" length="8" />
+            <RealRgbColor CStyleName="fog_color" pascalStyleName="FogColor" name="fog color" />
+            <Pad name="pad" length="8" />
+            <Real CStyleName="ground_fog_start_height" pascalStyleName="GroundFogStartHeight" name="ground fog start height" />
+            <Real CStyleName="ground_fog_thickness" pascalStyleName="GroundFogThickness" name="ground fog thickness" />
+            <Real CStyleName="ground_fog_minimum_density" pascalStyleName="GroundFogMinimumDensity" name="ground fog minimum density" />
+            <RealBounds CStyleName="ground_fog_distance" pascalStyleName="GroundFogDistance" name="ground fog distance" />
+            <Pad name="pad" length="8" />
+            <RealBounds CStyleName="atmospheric_fog_distance" pascalStyleName="AtmosphericFogDistance" name="atmospheric fog distance" />
+            <Pad name="pad" length="8" />
+            <Pad name="pad" length="16" />
+            <TagReference CStyleName="water_particle_system" pascalStyleName="WaterParticleSystem" name="water particle system" />
+            <TagReference CStyleName="water_density_bitmaps" pascalStyleName="WaterDensityBitmaps" name="water density bitmaps" />
+            <Pad name="pad" length="40" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="animated_values" pascalStyleName="AnimatedValues" name="animated values">
+        <Layout regolithID="block:animated values" internalName="animated values_block" name="animated values_block">
+          <FieldSet version="0" sizeofValue="32" isLatest="true">
+            <ShortInteger CStyleName="controls_animation" pascalStyleName="ControlsAnimation" name="controls animation" />
+            <Pad name="pad" length="2" />
+            <Real CStyleName="offset" pascalStyleName="Offset" name="offset" />
+            <Real CStyleName="velocity" pascalStyleName="Velocity" name="velocity" />
+            <Pad name="pad" length="20" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="lights" pascalStyleName="Lights" name="lights">
+        <Layout regolithID="block:lights" internalName="lights_block" name="lights_block">
+          <FieldSet version="0" sizeofValue="96" isLatest="true">
+            <String CStyleName="marker_name" pascalStyleName="MarkerName" name="marker name" />
+            <TagReference CStyleName="light" pascalStyleName="Light" name="light" />
+            <Pad name="pad" length="24" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

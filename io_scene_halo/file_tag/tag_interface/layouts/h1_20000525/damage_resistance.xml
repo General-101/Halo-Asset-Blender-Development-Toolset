@@ -1,0 +1,155 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="damr" name="damage_resistance" version="1">
+  <Layout regolithID="block:damage_resistance" internalName="damage_resistance_block" name="damage_resistance">
+    <FieldSet version="0" sizeofValue="720" sizeofSource="sizeof(struct damage_resistance_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="takes shield damage for children" CStyleName="takes_shield_damage_for_children" pascalStyleName="TakesShieldDamageForChildren" />
+          <Bit name="takes body damage for children" CStyleName="takes_body_damage_for_children" pascalStyleName="TakesBodyDamageForChildren" />
+          <Bit name="always shields friendly damage" CStyleName="always_shields_friendly_damage" pascalStyleName="AlwaysShieldsFriendlyDamage" />
+        </Options>
+      </LongFlags>
+      <ShortBlockIndex CStyleName="indirect_damage_material" pascalStyleName="IndirectDamageMaterial" name="indirect damage material" blockReference="damage_material" />
+      <Pad name="pad" length="2" />
+      <Real CStyleName="maximum_body_vitality" pascalStyleName="MaximumBodyVitality" name="maximum body vitality" />
+      <Real CStyleName="body_system_shock" pascalStyleName="BodySystemShock" name="body system shock" />
+      <Pad name="pad" length="24" />
+      <Real CStyleName="body_minimum_stun_damage" pascalStyleName="BodyMinimumStunDamage" name="body minimum stun damage" />
+      <RealBounds CStyleName="body_stun_time" pascalStyleName="BodyStunTime" name="body stun time" />
+      <Pad name="pad" length="16" />
+      <Real CStyleName="friendly_damage_resistance" pascalStyleName="FriendlyDamageResistance" name="friendly damage resistance" />
+      <Pad name="pad" length="8" />
+      <Pad name="pad" length="68" />
+      <Real CStyleName="body_damaged_threshold" pascalStyleName="BodyDamagedThreshold" name="body damaged threshold" />
+      <TagReference CStyleName="body_damaged_effect" pascalStyleName="BodyDamagedEffect" name="body damaged effect" />
+      <TagReference CStyleName="body_depleted_effect" pascalStyleName="BodyDepletedEffect" name="body depleted effect" />
+      <Real CStyleName="body_destroyed_threshold" pascalStyleName="BodyDestroyedThreshold" name="body destroyed threshold" />
+      <TagReference CStyleName="body_destroyed_effect" pascalStyleName="BodyDestroyedEffect" name="body destroyed effect" />
+      <Real CStyleName="maximum_shield_vitality" pascalStyleName="MaximumShieldVitality" name="maximum shield vitality" />
+      <Pad name="pad" length="2" />
+      <ShortEnum CStyleName="shield_material_type" pascalStyleName="ShieldMaterialType" name="shield material type">
+        <Options regolithID="enum:shield_material_type" CStyleName="shield_material_type" pascalStyleName="ShieldMaterialType">
+          <Enum name="dirt and grass" CStyleName="dirt_and_grass" pascalStyleName="DirtAndGrass" />
+          <Enum name="sand" CStyleName="sand" pascalStyleName="Sand" />
+          <Enum name="stone" CStyleName="stone" pascalStyleName="Stone" />
+          <Enum name="snow" CStyleName="snow" pascalStyleName="Snow" />
+          <Enum name="ice" CStyleName="ice" pascalStyleName="Ice" />
+          <Enum name="air" CStyleName="air" pascalStyleName="Air" />
+          <Enum name="water" CStyleName="water" pascalStyleName="Water" />
+          <Enum name="metal" CStyleName="metal" pascalStyleName="Metal" />
+          <Enum name="rubber" CStyleName="rubber" pascalStyleName="Rubber" />
+          <Enum name="glass" CStyleName="glass" pascalStyleName="Glass" />
+          <Enum name="forerunner force field" CStyleName="forerunner_force_field" pascalStyleName="ForerunnerForceField" />
+          <Enum name="human infantry shield" CStyleName="human_infantry_shield" pascalStyleName="HumanInfantryShield" />
+          <Enum name="covenant infantry shield" CStyleName="covenant_infantry_shield" pascalStyleName="CovenantInfantryShield" />
+          <Enum name="skin" CStyleName="skin" pascalStyleName="Skin" />
+          <Enum name="armored skin" CStyleName="armored_skin" pascalStyleName="ArmoredSkin" />
+          <Enum name="wood" CStyleName="wood" pascalStyleName="Wood" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="24" />
+      <ShortEnum CStyleName="shield_failure_function" pascalStyleName="ShieldFailureFunction" name="shield failure function">
+        <Options regolithID="enum:shield_failure_function" CStyleName="shield_failure_function" pascalStyleName="ShieldFailureFunction">
+          <Enum name="linear" CStyleName="linear" pascalStyleName="Linear" />
+          <Enum name="early" CStyleName="early" pascalStyleName="Early" />
+          <Enum name="very early" CStyleName="very_early" pascalStyleName="VeryEarly" />
+          <Enum name="late" CStyleName="late" pascalStyleName="Late" />
+          <Enum name="very late" CStyleName="very_late" pascalStyleName="VeryLate" />
+          <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="2" />
+      <Real CStyleName="shield_failure_threshold" pascalStyleName="ShieldFailureThreshold" name="shield failure threshold" />
+      <Real CStyleName="failing_shield_leak_fraction" pascalStyleName="FailingShieldLeakFraction" name="failing shield leak fraction" />
+      <Pad name="pad" length="16" />
+      <Real CStyleName="shield_minimum_stun_damage" pascalStyleName="ShieldMinimumStunDamage" name="shield minimum stun damage" />
+      <Real CStyleName="shield_stun_time" pascalStyleName="ShieldStunTime" name="shield stun time" />
+      <Real CStyleName="recharge_time" pascalStyleName="RechargeTime" name="recharge time" />
+      <Pad name="pad" length="16" />
+      <Real CStyleName="recent_damage_scale" pascalStyleName="RecentDamageScale" name="recent damage scale" />
+      <Real CStyleName="recent_damage_decay" pascalStyleName="RecentDamageDecay" name="recent damage decay" />
+      <Pad name="pad" length="8" />
+      <Pad name="pad" length="80" />
+      <Real CStyleName="shield_damaged_threshold" pascalStyleName="ShieldDamagedThreshold" name="shield damaged threshold" />
+      <TagReference CStyleName="shield_damaged_effect" pascalStyleName="ShieldDamagedEffect" name="shield damaged effect" />
+      <TagReference CStyleName="shield_depleted_effect" pascalStyleName="ShieldDepletedEffect" name="shield depleted effect" />
+      <Pad name="pad" length="20" />
+      <Pad name="pad" length="120" />
+      <Block CStyleName="materials" pascalStyleName="Materials" name="materials">
+        <Layout regolithID="block:materials" internalName="materials_block" name="materials_block">
+          <FieldSet version="0" sizeofValue="72" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags" />
+            <ShortEnum CStyleName="material_type" pascalStyleName="MaterialType" name="material type">
+              <Options regolithID="enum:material_type" CStyleName="material_type" pascalStyleName="MaterialType">
+                <Enum name="dirt and grass" CStyleName="dirt_and_grass" pascalStyleName="DirtAndGrass" />
+                <Enum name="sand" CStyleName="sand" pascalStyleName="Sand" />
+                <Enum name="stone" CStyleName="stone" pascalStyleName="Stone" />
+                <Enum name="snow" CStyleName="snow" pascalStyleName="Snow" />
+                <Enum name="ice" CStyleName="ice" pascalStyleName="Ice" />
+                <Enum name="air" CStyleName="air" pascalStyleName="Air" />
+                <Enum name="water" CStyleName="water" pascalStyleName="Water" />
+                <Enum name="metal" CStyleName="metal" pascalStyleName="Metal" />
+                <Enum name="rubber" CStyleName="rubber" pascalStyleName="Rubber" />
+                <Enum name="glass" CStyleName="glass" pascalStyleName="Glass" />
+                <Enum name="forerunner force field" CStyleName="forerunner_force_field" pascalStyleName="ForerunnerForceField" />
+                <Enum name="human infantry shield" CStyleName="human_infantry_shield" pascalStyleName="HumanInfantryShield" />
+                <Enum name="covenant infantry shield" CStyleName="covenant_infantry_shield" pascalStyleName="CovenantInfantryShield" />
+                <Enum name="skin" CStyleName="skin" pascalStyleName="Skin" />
+                <Enum name="armored skin" CStyleName="armored_skin" pascalStyleName="ArmoredSkin" />
+                <Enum name="wood" CStyleName="wood" pascalStyleName="Wood" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Real CStyleName="shield_leak_percentage" pascalStyleName="ShieldLeakPercentage" name="shield leak percentage" />
+            <Real CStyleName="shield_damage_multiplier" pascalStyleName="ShieldDamageMultiplier" name="shield damage multiplier" />
+            <Pad name="pad" length="12" />
+            <Real CStyleName="body_damage_multiplier" pascalStyleName="BodyDamageMultiplier" name="body damage multiplier" />
+            <Pad name="pad" length="8" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="regions" pascalStyleName="Regions" name="regions">
+        <Layout regolithID="block:regions" internalName="regions_block" name="regions_block">
+          <FieldSet version="0" sizeofValue="108" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="lives until object dies" CStyleName="lives_until_object_dies" pascalStyleName="LivesUntilObjectDies" />
+                <Bit name="forces object to die" CStyleName="forces_object_to_die" pascalStyleName="ForcesObjectToDie" />
+                <Bit name="dies when object dies" CStyleName="dies_when_object_dies" pascalStyleName="DiesWhenObjectDies" />
+                <Bit name="dies when object is damaged" CStyleName="dies_when_object_is_damaged" pascalStyleName="DiesWhenObjectIsDamaged" />
+              </Options>
+            </LongFlags>
+            <ShortEnum CStyleName="region_type" pascalStyleName="RegionType" name="region type">
+              <Options regolithID="enum:region_type" CStyleName="region_type" pascalStyleName="RegionType">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="head" CStyleName="head" pascalStyleName="Head" />
+                <Enum name="left arm" CStyleName="left_arm" pascalStyleName="LeftArm" />
+                <Enum name="right arm" CStyleName="right_arm" pascalStyleName="RightArm" />
+                <Enum name="upper body" CStyleName="upper_body" pascalStyleName="UpperBody" />
+                <Enum name="lower body" CStyleName="lower_body" pascalStyleName="LowerBody" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Real CStyleName="damage_threshold" pascalStyleName="DamageThreshold" name="damage threshold" />
+            <Pad name="pad" length="24" />
+            <TagReference CStyleName="destroyed_effect" pascalStyleName="DestroyedEffect" name="destroyed effect" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="damage_modifiers" pascalStyleName="DamageModifiers" name="damage modifiers">
+        <Layout regolithID="block:damage modifiers" internalName="damage modifiers_block" name="damage modifiers_block">
+          <FieldSet version="0" sizeofValue="52" isLatest="true">
+            <Real CStyleName="leaked_by_shield" pascalStyleName="LeakedByShield" name="leaked by shield" />
+            <Real CStyleName="damage_before_leaking" pascalStyleName="DamageBeforeLeaking" name="damage before leaking" />
+            <Real CStyleName="reflection_chance" pascalStyleName="ReflectionChance" name="reflection chance" />
+            <Real CStyleName="shield_resistance_fraction" pascalStyleName="ShieldResistanceFraction" name="shield resistance fraction" />
+            <Real CStyleName="body_resistance_fraction" pascalStyleName="BodyResistanceFraction" name="body resistance fraction" />
+            <Pad name="pad" length="32" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

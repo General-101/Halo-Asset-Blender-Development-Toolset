@@ -2151,14 +2151,10 @@ def h1_single_tag_legacy():
     tag_directory = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\1\Vanilla\tags"
 
     tag_dict = read_file(merged_defs, tag_directory, read_path, engine_tag=tag_common.EngineTag.H1Latest.value, engine_version=tag_common.H1Versions._20000525)
-    result = find_unserializable(tag_dict)
-
     with open(os.path.join(os.path.dirname(output_path), "%s.json" % os.path.basename(output_path).rsplit(".", 1)[0]), 'w', encoding ='utf8') as json_file:
         json.dump(tag_dict, json_file, ensure_ascii = True, indent=4)
 
     write_file(merged_defs, tag_dict, obfuscation_buffer_prepare(), output_path, engine_tag=tag_common.EngineTag.H1Latest.value, engine_version=tag_common.H1Versions._20000525)
-
-
 
 def h1_single_tag():
     output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h1_merged_output")

@@ -1,0 +1,53 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="ligh" name="lights" version="1">
+  <Layout regolithID="block:lights" internalName="lights_block" name="lights">
+    <FieldSet version="0" sizeofValue="272" sizeofSource="sizeof(struct lights_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="illuminates interiors" CStyleName="illuminates_interiors" pascalStyleName="IlluminatesInteriors" />
+          <Bit name="casts shadows" CStyleName="casts_shadows" pascalStyleName="CastsShadows" />
+        </Options>
+      </LongFlags>
+      <Real CStyleName="falloff_radius" pascalStyleName="FalloffRadius" name="falloff radius" />
+      <Real CStyleName="cutoff_radius" pascalStyleName="CutoffRadius" name="cutoff radius" />
+      <RealBounds CStyleName="radius_scales" pascalStyleName="RadiusScales" name="radius scales" />
+      <Angle CStyleName="falloff_angle" pascalStyleName="FalloffAngle" name="falloff angle" />
+      <Angle CStyleName="cutoff_angle" pascalStyleName="CutoffAngle" name="cutoff angle" />
+      <RealBounds CStyleName="angle_scales" pascalStyleName="AngleScales" name="angle scales" />
+      <Pad name="pad" length="16" />
+      <TagReference CStyleName="bitmaps" pascalStyleName="Bitmaps" name="bitmaps" />
+      <ShortInteger CStyleName="sequence_index" pascalStyleName="SequenceIndex" name="sequence index" />
+      <Pad name="pad" length="2" />
+      <Real CStyleName="size" pascalStyleName="Size" name="size" />
+      <RealBounds CStyleName="size_scales" pascalStyleName="SizeScales" name="size scales" />
+      <Angle CStyleName="rotation" pascalStyleName="Rotation" name="rotation" />
+      <Angle CStyleName="scaled_rotation" pascalStyleName="ScaledRotation" name="scaled rotation" />
+      <Pad name="pad" length="20" />
+      <LongFlags CStyleName="color_blend_flags" pascalStyleName="ColorBlendFlags" name="color blend flags">
+        <Options regolithID="enum:color_blend_flags" CStyleName="color_blend_flags" pascalStyleName="ColorBlendFlags">
+          <Bit name="blend in hsv" CStyleName="blend_in_hsv" pascalStyleName="BlendInHsv" />
+          <Bit name="more colors" CStyleName="more_colors" pascalStyleName="MoreColors" />
+        </Options>
+      </LongFlags>
+      <Real CStyleName="darken_light_by" pascalStyleName="DarkenLightBy" name="darken light by" />
+      <Pad name="pad" length="12" />
+      <Real CStyleName="radiosity_intensity" pascalStyleName="RadiosityIntensity" name="radiosity intensity" />
+      <RealArgbColor CStyleName="color_lower_bound" pascalStyleName="ColorLowerBound" name="color lower bound" />
+      <RealArgbColor CStyleName="color_upper_bound" pascalStyleName="ColorUpperBound" name="color upper bound" />
+      <Real CStyleName="decay_time" pascalStyleName="DecayTime" name="decay time" />
+      <ShortEnum CStyleName="decay_function" pascalStyleName="DecayFunction" name="decay function">
+        <Options regolithID="enum:decay_function" CStyleName="decay_function" pascalStyleName="DecayFunction">
+          <Enum name="linear" CStyleName="linear" pascalStyleName="Linear" />
+          <Enum name="early" CStyleName="early" pascalStyleName="Early" />
+          <Enum name="very early" CStyleName="very_early" pascalStyleName="VeryEarly" />
+          <Enum name="late" CStyleName="late" pascalStyleName="Late" />
+          <Enum name="very late" CStyleName="very_late" pascalStyleName="VeryLate" />
+          <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="2" />
+      <Pad name="pad" length="24" />
+      <Pad name="pad" length="48" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

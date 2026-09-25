@@ -34,7 +34,50 @@ h1_defs_directory = os.path.join(current_dir, "layouts", "h1")
 h2_defs_directory = os.path.join(current_dir, "layouts", "h2")
 
 h1_20000525_tag_groups = {
-    "isls": "islands_scenarios"
+    "ant!": "antennas",
+    "antr": "models_animations",
+    "bipd": "bipeds",
+    "bitm": "bitmaps",
+    "boom": "spheroids",
+    "cafx": "camera_effects",
+    "camr": "cameras",
+    "col2": "models_collision_geometry",
+    "coll": "models_old_collision_geometry",
+    "colo": "color_tables",
+    "cont": "contrails",
+    "damg": "area_of_effect_damage",
+    "damr": "damage_resistance",
+    "deta": "detail_objects",
+    "devo": "cellular_automata",
+    "effe": "effects",
+    "envi": "environment",
+    "eqip": "equipment",
+    "flag": "flags",
+    "font": "fonts",
+    "glw!": "glow",
+    "isla": "islands",
+    "isls": "islands_scenarios",
+    "ligh": "lights",
+    "mach": "devices_machines",
+    "matg": "materials",
+    "mode": "models",
+    "part": "particles",
+    "pctl": "particle_systems",
+    "phys": "physics",
+    "plac": "placeholders",
+    "pphy": "point_physics",
+    "proj": "projectiles",
+    "rain": "weather_particle_systems",
+    "scen": "scenery",
+    "snd!": "sounds",
+    "str#": "string_lists",
+    "stst": "structure_styles",
+    "suit": "suit_interface",
+    "trak": "camera_track",
+    "turr": "turrets",
+    "vehi": "vehicles",
+    "weap": "weapons",
+    "whip": "cellular_automata2d",
     }
 
 h1_tag_groups = {
@@ -390,13 +433,10 @@ class EngineTag(Enum):
     H2Latest = H2V4
 
 class H1Versions(Enum):
-    # halo 1 types
     _20000525 = 0
     RETAIL = auto()
 
 class H2Versions(Enum):
-    # halo 1 types
-    _20000525 = 0
     RETAIL = auto()
 
 engine_tag_values = {e.value for e in EngineTag}

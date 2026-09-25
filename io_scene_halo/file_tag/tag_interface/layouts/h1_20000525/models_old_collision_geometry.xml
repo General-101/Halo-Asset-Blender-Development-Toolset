@@ -1,0 +1,114 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="coll" name="models_old_collision_geometry" version="1">
+  <Layout regolithID="block:models_old_collision_geometry" internalName="models_old_collision_geometry_block" name="models_old_collision_geometry">
+    <FieldSet version="0" sizeofValue="128" sizeofSource="sizeof(struct models_old_collision_geometry_group)" isLatest="true">
+      <Pad name="pad" length="12" />
+      <Real CStyleName="radius" pascalStyleName="Radius" name="radius" />
+      <Pad name="pad" length="52" />
+      <Block CStyleName="regions" pascalStyleName="Regions" name="regions">
+        <Layout regolithID="block:regions" internalName="regions_block" name="regions_block">
+          <FieldSet version="0" sizeofValue="128" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <Pad name="pad" length="84" />
+            <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations">
+              <Layout regolithID="block:permutations" internalName="permutations_block" name="permutations_block">
+                <FieldSet version="0" sizeofValue="64" isLatest="true">
+                  <String CStyleName="name" pascalStyleName="Name" name="name" />
+                  <Pad name="pad" length="4" />
+                  <ShortInteger CStyleName="geometry_index" pascalStyleName="GeometryIndex" name="geometry index" />
+                  <Pad name="pad" length="26" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes">
+        <Layout regolithID="block:nodes" internalName="nodes_block" name="nodes_block">
+          <FieldSet version="0" sizeofValue="128" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <Pad name="pad" length="6" />
+            <ShortInteger CStyleName="parent_node_index" pascalStyleName="ParentNodeIndex" name="parent node index" />
+            <ShortInteger CStyleName="next_sibling_node_index" pascalStyleName="NextSiblingNodeIndex" name="next sibling node index" />
+            <ShortInteger CStyleName="first_child_node_index" pascalStyleName="FirstChildNodeIndex" name="first child node index" />
+            <Pad name="pad" length="84" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="12" />
+      <Block CStyleName="materials" pascalStyleName="Materials" name="materials">
+        <Layout regolithID="block:materials" internalName="materials_block" name="materials_block">
+          <FieldSet version="0" sizeofValue="128" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <Pad name="pad" length="96" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="geometries" pascalStyleName="Geometries" name="geometries">
+        <Layout regolithID="block:geometries" internalName="geometries_block" name="geometries_block">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <Pad name="pad" length="52" />
+            <Block CStyleName="polyhedra" pascalStyleName="Polyhedra" name="polyhedra">
+              <Layout regolithID="block:polyhedra" internalName="polyhedra_block" name="polyhedra_block">
+                <FieldSet version="0" sizeofValue="64" isLatest="true">
+                  <RealPoint3D CStyleName="center" pascalStyleName="Center" name="center" />
+                  <Real CStyleName="radius" pascalStyleName="Radius" name="radius" />
+                  <Pad name="pad" length="2" />
+                  <ShortInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" />
+                  <Pad name="pad" length="8" />
+                  <Block CStyleName="surfaces" pascalStyleName="Surfaces" name="surfaces">
+                    <Layout regolithID="block:surfaces" internalName="surfaces_block" name="surfaces_block">
+                      <FieldSet version="0" sizeofValue="32" isLatest="true">
+                        <RealPlane3D CStyleName="plane" pascalStyleName="Plane" name="plane" />
+                        <Pad name="pad" length="4" />
+                        <ShortBlockIndex CStyleName="material_index" pascalStyleName="MaterialIndex" name="material index" blockReference="collision_material_block" />
+                        <CharInteger CStyleName="edge_count" pascalStyleName="EdgeCount" name="edge count" />
+                        <CharInteger CStyleName="edge_reversed_flags" pascalStyleName="EdgeReversedFlags" name="edge reversed flags" />
+                        <CharInteger CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" />
+                        <CharInteger CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" />
+                        <CharInteger CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" />
+                        <CharInteger CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" />
+                        <CharInteger CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" />
+                        <CharInteger CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" />
+                        <CharInteger CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" />
+                        <CharInteger CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="edges" pascalStyleName="Edges" name="edges">
+                    <Layout regolithID="block:edges" internalName="edges_block" name="edges_block">
+                      <FieldSet version="0" sizeofValue="4" isLatest="true">
+                        <CharInteger CStyleName="start_vertex_index" pascalStyleName="StartVertexIndex" name="start vertex index" />
+                        <CharInteger CStyleName="end_vertex_index" pascalStyleName="EndVertexIndex" name="end vertex index" />
+                        <CharInteger CStyleName="left_surface_index" pascalStyleName="LeftSurfaceIndex" name="left surface index" />
+                        <CharInteger CStyleName="right_surface_index" pascalStyleName="RightSurfaceIndex" name="right surface index" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices">
+                    <Layout regolithID="block:vertices" internalName="vertices_block" name="vertices_block">
+                      <FieldSet version="0" sizeofValue="24" isLatest="true">
+                        <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" />
+                        <Pad name="pad" length="2" />
+                        <CharInteger CStyleName="edge_count" pascalStyleName="EdgeCount" name="edge count" />
+                        <CharInteger CStyleName="edge_reversed_flags" pascalStyleName="EdgeReversedFlags" name="edge reversed flags" />
+                        <CharInteger CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" />
+                        <CharInteger CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" />
+                        <CharInteger CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" />
+                        <CharInteger CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" />
+                        <CharInteger CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" />
+                        <CharInteger CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" />
+                        <CharInteger CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" />
+                        <CharInteger CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,76 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="snd!" name="sounds" version="1">
+  <Layout regolithID="block:sounds" internalName="sounds_block" name="sounds">
+    <FieldSet version="0" sizeofValue="136" sizeofSource="sizeof(struct sounds_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="speech" CStyleName="speech" pascalStyleName="Speech" />
+        </Options>
+      </LongFlags>
+      <ShortEnum CStyleName="priority" pascalStyleName="Priority" name="priority">
+        <Options regolithID="enum:priority" CStyleName="priority" pascalStyleName="Priority">
+          <Enum name="atmospheric" CStyleName="atmospheric" pascalStyleName="Atmospheric" />
+          <Enum name="relevant" CStyleName="relevant" pascalStyleName="Relevant" />
+          <Enum name="dangerous" CStyleName="dangerous" pascalStyleName="Dangerous" />
+          <Enum name="game essential" CStyleName="game_essential" pascalStyleName="GameEssential" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="2" />
+      <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+      <Real CStyleName="maximum_distance" pascalStyleName="MaximumDistance" name="maximum distance" />
+      <ShortEnum CStyleName="encoding" pascalStyleName="Encoding" name="encoding">
+        <Options regolithID="enum:encoding" CStyleName="encoding" pascalStyleName="Encoding">
+          <Enum name="mono" CStyleName="mono" pascalStyleName="Mono" />
+          <Enum name="stereo" CStyleName="stereo" pascalStyleName="Stereo" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="2" />
+      <ShortInteger CStyleName="looping_start_permutation" pascalStyleName="LoopingStartPermutation" name="looping start permutation" />
+      <ShortInteger CStyleName="looping_stop_permutation" pascalStyleName="LoopingStopPermutation" name="looping stop permutation" />
+      <Pad name="pad" length="12" />
+      <Angle CStyleName="inner_cone_angle" pascalStyleName="InnerConeAngle" name="inner cone angle" />
+      <Angle CStyleName="outer_cone_angle" pascalStyleName="OuterConeAngle" name="outer cone angle" />
+      <Real CStyleName="outer_cone_gain" pascalStyleName="OuterConeGain" name="outer cone gain" />
+      <Pad name="pad" length="20" />
+      <RealBounds CStyleName="random_pitch_bounds" pascalStyleName="RandomPitchBounds" name="random pitch bounds" />
+      <Real CStyleName="scale_zero_skip_fraction_modifier" pascalStyleName="ScaleZeroSkipFractionModifier" name="scale zero_skip fraction modifier" />
+      <Real CStyleName="scale_zero_gain_modifier" pascalStyleName="ScaleZeroGainModifier" name="scale zero gain modifier" />
+      <Real CStyleName="scale_zero_pitch_modifier" pascalStyleName="ScaleZeroPitchModifier" name="scale zero pitch modifier" />
+      <Real CStyleName="scale_zero_cone_angles_modifier" pascalStyleName="ScaleZeroConeAnglesModifier" name="scale zero cone angles modifier" />
+      <Pad name="pad" length="8" />
+      <Real CStyleName="scale_one_skip_fraction_modifier" pascalStyleName="ScaleOneSkipFractionModifier" name="scale one skip fraction modifier" />
+      <Real CStyleName="scale_one_gain_modifier" pascalStyleName="ScaleOneGainModifier" name="scale one gain modifier" />
+      <Real CStyleName="scale_one_pitch_modifier" pascalStyleName="ScaleOnePitchModifier" name="scale one pitch modifier" />
+      <Real CStyleName="scale_one_cone_angles_modifier" pascalStyleName="ScaleOneConeAnglesModifier" name="scale one cone angles modifier" />
+      <Pad name="pad" length="8" />
+      <Block CStyleName="pitch_ranges" pascalStyleName="PitchRanges" name="pitch ranges">
+        <Layout regolithID="block:pitch ranges" internalName="pitch ranges_block" name="pitch ranges_block">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <Real CStyleName="natural_pitch" pascalStyleName="NaturalPitch" name="natural pitch" />
+            <RealBounds CStyleName="bend_bounds" pascalStyleName="BendBounds" name="bend bounds" />
+            <Pad name="pad" length="8" />
+            <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations">
+              <Layout regolithID="block:permutations" internalName="permutations_block" name="permutations_block">
+                <FieldSet version="0" sizeofValue="128" isLatest="true">
+                  <String CStyleName="name" pascalStyleName="Name" name="name" />
+                  <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+                  <Real CStyleName="gain" pascalStyleName="Gain" name="gain" />
+                  <Pad name="pad" length="64" />
+                  <ShortEnum CStyleName="compression" pascalStyleName="Compression" name="compression">
+                    <Options regolithID="enum:compression" CStyleName="compression" pascalStyleName="Compression">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="ima adpcm" CStyleName="ima_adpcm" pascalStyleName="ImaAdpcm" />
+                    </Options>
+                  </ShortEnum>
+                  <Pad name="pad" length="2" />
+                  <Data CStyleName="samples" pascalStyleName="Samples" name="samples" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

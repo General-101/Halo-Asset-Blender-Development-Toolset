@@ -1,0 +1,38 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="devo" name="cellular_automata" version="1">
+  <Layout regolithID="block:cellular_automata" internalName="cellular_automata_block" name="cellular_automata">
+    <FieldSet version="0" sizeofValue="640" sizeofSource="sizeof(struct cellular_automata_group)" isLatest="true">
+      <ShortInteger CStyleName="updates_per_second" pascalStyleName="UpdatesPerSecond" name="updates per second" />
+      <ShortInteger CStyleName="x" pascalStyleName="X" name="x" />
+      <ShortInteger CStyleName="y" pascalStyleName="Y" name="y" />
+      <ShortInteger CStyleName="z" pascalStyleName="Z" name="z" />
+      <Real CStyleName="x" pascalStyleName="X" name="x" />
+      <Real CStyleName="y" pascalStyleName="Y" name="y" />
+      <Real CStyleName="z" pascalStyleName="Z" name="z" />
+      <Pad name="pad" length="32" />
+      <String CStyleName="marker" pascalStyleName="Marker" name="marker" />
+      <Real CStyleName="cell_birth_chance" pascalStyleName="CellBirthChance" name="cell birth chance" />
+      <Pad name="pad" length="32" />
+      <LongInteger CStyleName="cell_gene_mutates_1_in" pascalStyleName="CellGeneMutates1In" name="cell gene mutates 1 in" />
+      <LongInteger CStyleName="virus_gene_mutations_1_in" pascalStyleName="VirusGeneMutations1In" name="virus gene mutations 1 in" />
+      <Pad name="pad" length="32" />
+      <ShortBounds CStyleName="infected_cell_lifespan" pascalStyleName="InfectedCellLifespan" name="infected cell lifespan" />
+      <ShortInteger CStyleName="minimum_infection_age" pascalStyleName="MinimumInfectionAge" name="minimum infection age" />
+      <Pad name="pad" length="2" />
+      <Real CStyleName="cell_infection_chance" pascalStyleName="CellInfectionChance" name="cell infection chance" />
+      <Real CStyleName="infection_threshold" pascalStyleName="InfectionThreshold" name="infection threshold" />
+      <Pad name="pad" length="32" />
+      <Real CStyleName="new_cell_filled_chance" pascalStyleName="NewCellFilledChance" name="new cell filled chance" />
+      <Real CStyleName="new_cell_infected_chance" pascalStyleName="NewCellInfectedChance" name="new cell infected chance" />
+      <Pad name="pad" length="32" />
+      <Real CStyleName="detail_texture_change_chance" pascalStyleName="DetailTextureChangeChance" name="detail texture change chance" />
+      <Pad name="pad" length="32" />
+      <ShortInteger CStyleName="detail_texture_width" pascalStyleName="DetailTextureWidth" name="detail texture width" />
+      <Pad name="pad" length="2" />
+      <TagReference CStyleName="detail_texture" pascalStyleName="DetailTexture" name="detail texture" />
+      <Pad name="pad" length="32" />
+      <TagReference CStyleName="mask_bitmap" pascalStyleName="MaskBitmap" name="mask bitmap" />
+      <Pad name="pad" length="240" />
+    </FieldSet>
+  </Layout>
+</TagGroup>
