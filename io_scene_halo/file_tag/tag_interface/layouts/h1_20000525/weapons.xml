@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8-sig'?>
-<TagGroup group="weap" name="weapons" version="1">
+<TagGroup group="weap" name="weapons" version="2">
   <Layout regolithID="block:weapons" internalName="weapons_block" name="weapons">
     <FieldSet version="0" sizeofValue="1480" sizeofSource="sizeof(struct weapons_group)" isLatest="true">
       <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
@@ -275,7 +275,7 @@
             <RealBounds CStyleName="bounds" pascalStyleName="Bounds" name="bounds" />
             <Pad name="pad" length="4" />
             <Pad name="pad" length="2" />
-            <ShortBlockIndex CStyleName="turn_off_with" pascalStyleName="TurnOffWith" name="turn off with" blockReference="object_function_block" />
+            <ShortBlockIndex CStyleName="turn_off_with" pascalStyleName="TurnOffWith" name="turn off with" blockReference="block:functions" />
             <Pad name="pad" length="256" />
             <Pad name="pad" length="16" />
             <String CStyleName="usage" pascalStyleName="Usage" name="usage" />
@@ -571,7 +571,7 @@
             <Real CStyleName="deceleration_time" pascalStyleName="DecelerationTime" name="deceleration time" />
             <Real CStyleName="blurred_rate_of_fire" pascalStyleName="BlurredRateOfFire" name="blurred rate of fire" />
             <Pad name="pad" length="8" />
-            <ShortBlockIndex CStyleName="magazine" pascalStyleName="Magazine" name="magazine" blockReference="magazines" />
+            <ShortBlockIndex CStyleName="magazine" pascalStyleName="Magazine" name="magazine" blockReference="block:magazines" />
             <ShortInteger CStyleName="rounds_per_shot" pascalStyleName="RoundsPerShot" name="rounds per shot" />
             <ShortInteger CStyleName="minimum_rounds_loaded" pascalStyleName="MinimumRoundsLoaded" name="minimum rounds loaded" />
             <ShortInteger CStyleName="rounds_between_tracers" pascalStyleName="RoundsBetweenTracers" name="rounds between tracers" />

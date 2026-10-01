@@ -1,0 +1,44 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="phys" name="physics" version="1">
+  <Layout regolithID="block:physics" internalName="physics_block" name="physics">
+    <FieldSet version="0" sizeofValue="52" sizeofSource="sizeof(struct physics_group)" isLatest="true">
+      <Real CStyleName="gravity" pascalStyleName="Gravity" name="gravity" />
+      <Real CStyleName="static_ground_friction" pascalStyleName="StaticGroundFriction" name="static ground friction" />
+      <Real CStyleName="kinetic_ground_friction" pascalStyleName="KineticGroundFriction" name="kinetic ground friction" />
+      <Real CStyleName="air_friction" pascalStyleName="AirFriction" name="air friction" />
+      <Real CStyleName="ground_depth" pascalStyleName="GroundDepth" name="ground depth" />
+      <Real CStyleName="damp_fraction" pascalStyleName="DampFraction" name="damp fraction" />
+      <Pad name="pad" length="16" />
+      <Block CStyleName="mass_points" pascalStyleName="MassPoints" name="mass points">
+        <Layout regolithID="block:mass points" internalName="mass points_block" name="mass points_block">
+          <FieldSet version="0" sizeofValue="48" isLatest="true">
+            <ShortEnum CStyleName="power_type" pascalStyleName="PowerType" name="power type">
+              <Options regolithID="enum:power_type" CStyleName="power_type" pascalStyleName="PowerType">
+                <Enum name="unpowered" CStyleName="unpowered" pascalStyleName="Unpowered" />
+                <Enum name="friction powered" CStyleName="friction_powered" pascalStyleName="FrictionPowered" />
+                <Enum name="cushion powered" CStyleName="cushion_powered" pascalStyleName="CushionPowered" />
+                <Enum name="lift powered" CStyleName="lift_powered" pascalStyleName="LiftPowered" />
+                <Enum name="thrust powered" CStyleName="thrust_powered" pascalStyleName="ThrustPowered" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="position_type" pascalStyleName="PositionType" name="position type">
+              <Options regolithID="enum:position_type" CStyleName="position_type" pascalStyleName="PositionType">
+                <Enum name="left tread" CStyleName="left_tread" pascalStyleName="LeftTread" />
+                <Enum name="right tread" CStyleName="right_tread" pascalStyleName="RightTread" />
+                <Enum name="front left tire" CStyleName="front_left_tire" pascalStyleName="FrontLeftTire" />
+                <Enum name="front right tire" CStyleName="front_right_tire" pascalStyleName="FrontRightTire" />
+                <Enum name="back left tire" CStyleName="back_left_tire" pascalStyleName="BackLeftTire" />
+                <Enum name="back right tire" CStyleName="back_right_tire" pascalStyleName="BackRightTire" />
+              </Options>
+            </ShortEnum>
+            <Real CStyleName="mass" pascalStyleName="Mass" name="mass" />
+            <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" />
+            <Real CStyleName="power" pascalStyleName="Power" name="power" />
+            <RealVector3D CStyleName="direction" pascalStyleName="Direction" name="direction" />
+            <RealVector3D CStyleName="forward" pascalStyleName="Forward" name="forward" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

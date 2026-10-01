@@ -1,0 +1,47 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="phys" name="physics" version="1">
+  <Layout regolithID="block:physics" internalName="physics_block" name="physics">
+    <FieldSet version="0" sizeofValue="180" sizeofSource="sizeof(struct physics_group)" isLatest="true">
+      <Real CStyleName="gravity" pascalStyleName="Gravity" name="gravity" />
+      <Real CStyleName="minimum_normal_k" pascalStyleName="MinimumNormalK" name="minimum normal k" />
+      <Real CStyleName="ground_friction" pascalStyleName="GroundFriction" name="ground friction" />
+      <Real CStyleName="air_friction" pascalStyleName="AirFriction" name="air friction" />
+      <Real CStyleName="ground_depth" pascalStyleName="GroundDepth" name="ground depth" />
+      <Real CStyleName="damp_fraction" pascalStyleName="DampFraction" name="damp fraction" />
+      <Real CStyleName="movement_constant" pascalStyleName="MovementConstant" name="movement constant" />
+      <Real CStyleName="total_mass" pascalStyleName="TotalMass" name="total mass" />
+      <RealPoint3D CStyleName="center_of_mass" pascalStyleName="CenterOfMass" name="center of mass" />
+      <Real CStyleName="radius" pascalStyleName="Radius" name="radius" />
+      <Real CStyleName="water_density" pascalStyleName="WaterDensity" name="water density" />
+      <Real CStyleName="water_friction" pascalStyleName="WaterFriction" name="water friction" />
+      <Real CStyleName="water_depth" pascalStyleName="WaterDepth" name="water depth" />
+      <Pad name="pad" length="108" />
+      <Block CStyleName="mass_points" pascalStyleName="MassPoints" name="mass points">
+        <Layout regolithID="block:mass points" internalName="mass points_block" name="mass points_block">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <Options regolithID="enum:type" CStyleName="type" pascalStyleName="Type">
+                <Enum name="normal" CStyleName="normal" pascalStyleName="Normal" />
+                <Enum name="left tread" CStyleName="left_tread" pascalStyleName="LeftTread" />
+                <Enum name="right tread" CStyleName="right_tread" pascalStyleName="RightTread" />
+                <Enum name="front tire" CStyleName="front_tire" pascalStyleName="FrontTire" />
+                <Enum name="back tire" CStyleName="back_tire" pascalStyleName="BackTire" />
+                <Enum name="propeller" CStyleName="propeller" pascalStyleName="Propeller" />
+                <Enum name="fixed propeller" CStyleName="fixed_propeller" pascalStyleName="FixedPropeller" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Real CStyleName="mass" pascalStyleName="Mass" name="mass" />
+            <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" />
+            <RealVector3D CStyleName="forward" pascalStyleName="Forward" name="forward" />
+            <RealVector3D CStyleName="up" pascalStyleName="Up" name="up" />
+            <Real CStyleName="density" pascalStyleName="Density" name="density" />
+            <Real CStyleName="forward_friction_scale" pascalStyleName="ForwardFrictionScale" name="forward friction scale" />
+            <Real CStyleName="nonforward_friction_scale" pascalStyleName="NonforwardFrictionScale" name="nonforward friction scale" />
+            <Pad name="pad" length="8" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

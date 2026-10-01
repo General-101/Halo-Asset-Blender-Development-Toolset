@@ -1,0 +1,9 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="islt" name="islands.textures" version="1">
+  <Layout regolithID="block:islands.textures" internalName="islands.textures_block" name="islands.textures">
+    <FieldSet version="0" sizeofValue="100" sizeofSource="sizeof(struct islands.textures_group)" isLatest="true">
+      <Data CStyleName="pixels" pascalStyleName="Pixels" name="pixels" />
+      <Pad name="pad" length="80" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

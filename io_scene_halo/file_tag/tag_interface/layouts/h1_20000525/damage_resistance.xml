@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8-sig'?>
-<TagGroup group="damr" name="damage_resistance" version="1">
+<TagGroup group="damr" name="damage_resistance" version="3">
   <Layout regolithID="block:damage_resistance" internalName="damage_resistance_block" name="damage_resistance">
     <FieldSet version="0" sizeofValue="720" sizeofSource="sizeof(struct damage_resistance_group)" isLatest="true">
       <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
@@ -9,7 +9,7 @@
           <Bit name="always shields friendly damage" CStyleName="always_shields_friendly_damage" pascalStyleName="AlwaysShieldsFriendlyDamage" />
         </Options>
       </LongFlags>
-      <ShortBlockIndex CStyleName="indirect_damage_material" pascalStyleName="IndirectDamageMaterial" name="indirect damage material" blockReference="damage_material" />
+      <ShortBlockIndex CStyleName="indirect_damage_material" pascalStyleName="IndirectDamageMaterial" name="indirect damage material" blockReference="block:materials" />
       <Pad name="pad" length="2" />
       <Real CStyleName="maximum_body_vitality" pascalStyleName="MaximumBodyVitality" name="maximum body vitality" />
       <Real CStyleName="body_system_shock" pascalStyleName="BodySystemShock" name="body system shock" />

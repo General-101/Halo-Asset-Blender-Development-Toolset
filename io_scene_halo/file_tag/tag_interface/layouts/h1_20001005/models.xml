@@ -1,0 +1,440 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="mode" name="models" version="2">
+  <Layout regolithID="block:models" internalName="models_block" name="models">
+    <FieldSet version="0" sizeofValue="248" sizeofSource="sizeof(struct models_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="can have more than two nodes per triangle" CStyleName="can_have_more_than_two_nodes_per_triangle" pascalStyleName="CanHaveMoreThanTwoNodesPerTriangle" />
+          <Bit name="rigorous visibility testing" CStyleName="rigorous_visibility_testing" pascalStyleName="RigorousVisibilityTesting" />
+        </Options>
+      </LongFlags>
+      <LongInteger CStyleName="node_list_checksum" pascalStyleName="NodeListChecksum" name="node list checksum" />
+      <Real CStyleName="radius" pascalStyleName="Radius" name="radius" />
+      <Real CStyleName="super-high_detail_cutoff" pascalStyleName="Super-highDetailCutoff" name="super-high detail cutoff" />
+      <Real CStyleName="high_detail_cutoff" pascalStyleName="HighDetailCutoff" name="high detail cutoff" />
+      <Real CStyleName="medium_detail_cutoff" pascalStyleName="MediumDetailCutoff" name="medium detail cutoff" />
+      <Real CStyleName="low_detail_cutoff" pascalStyleName="LowDetailCutoff" name="low detail cutoff" />
+      <ShortEnum CStyleName="fade_out_mode" pascalStyleName="FadeOutMode" name="fade out mode">
+        <Options regolithID="enum:fade_out_mode" CStyleName="fade_out_mode" pascalStyleName="FadeOutMode">
+          <Enum name="never" CStyleName="never" pascalStyleName="Never" />
+          <Enum name="after low detail" CStyleName="after_low_detail" pascalStyleName="AfterLowDetail" />
+          <Enum name="after medium detail" CStyleName="after_medium_detail" pascalStyleName="AfterMediumDetail" />
+          <Enum name="after high detail" CStyleName="after_high_detail" pascalStyleName="AfterHighDetail" />
+          <Enum name="after super high detail" CStyleName="after_super_high_detail" pascalStyleName="AfterSuperHighDetail" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="2" />
+      <Pad name="pad" length="128" />
+      <TagReference CStyleName="lightmaps" pascalStyleName="Lightmaps" name="lightmaps" />
+      <Block CStyleName="materials" pascalStyleName="Materials" name="materials">
+        <Layout regolithID="block:materials" internalName="materials_block" name="materials_block">
+          <FieldSet version="0" sizeofValue="136" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="primary change color" CStyleName="primary_change_color" pascalStyleName="PrimaryChangeColor" />
+                <Bit name="secondary change color" CStyleName="secondary_change_color" pascalStyleName="SecondaryChangeColor" />
+                <Bit name="structure support surface" CStyleName="structure_support_surface" pascalStyleName="StructureSupportSurface" />
+                <Bit name="edge density" CStyleName="edge_density" pascalStyleName="EdgeDensity" />
+                <Bit name="reverse edge density" CStyleName="reverse_edge_density" pascalStyleName="ReverseEdgeDensity" />
+                <Bit name="structure mirror" CStyleName="structure_mirror" pascalStyleName="StructureMirror" />
+                <Bit name="double sided" CStyleName="double_sided" pascalStyleName="DoubleSided" />
+                <Bit name="not lighted" CStyleName="not_lighted" pascalStyleName="NotLighted" />
+              </Options>
+            </LongFlags>
+            <Real CStyleName="alpha" pascalStyleName="Alpha" name="alpha" />
+            <Real CStyleName="shininess" pascalStyleName="Shininess" name="shininess" />
+            <Real CStyleName="shininess_strength" pascalStyleName="ShininessStrength" name="shininess strength" />
+            <RealArgbColor CStyleName="specular_color" pascalStyleName="SpecularColor" name="specular color" />
+            <Pad name="pad" length="2" />
+            <ShortEnum CStyleName="animated_self-illumination_mode" pascalStyleName="AnimatedSelf-illuminationMode" name="animated self-illumination mode">
+              <Options regolithID="enum:animated_self-illumination_mode" CStyleName="animated_self-illumination_mode" pascalStyleName="AnimatedSelf-illuminationMode">
+                <Enum name="off" CStyleName="off" pascalStyleName="Off" />
+                <Enum name="alpha" CStyleName="alpha" pascalStyleName="Alpha" />
+                <Enum name="one alpha" CStyleName="one_alpha" pascalStyleName="OneAlpha" />
+                <Enum name="beta" CStyleName="beta" pascalStyleName="Beta" />
+                <Enum name="one beta" CStyleName="one_beta" pascalStyleName="OneBeta" />
+                <Enum name="gamma" CStyleName="gamma" pascalStyleName="Gamma" />
+                <Enum name="one gamma" CStyleName="one_gamma" pascalStyleName="OneGamma" />
+                <Enum name="delta" CStyleName="delta" pascalStyleName="Delta" />
+                <Enum name="one delta" CStyleName="one_delta" pascalStyleName="OneDelta" />
+              </Options>
+            </ShortEnum>
+            <RealArgbColor CStyleName="self_illumination_color" pascalStyleName="SelfIlluminationColor" name="self illumination color" />
+            <RealArgbColor CStyleName="animated_self_illumination_color" pascalStyleName="AnimatedSelfIlluminationColor" name="animated self illumination color" />
+            <Pad name="pad" length="24" />
+            <Block CStyleName="maps" pascalStyleName="Maps" name="maps">
+              <Layout regolithID="block:maps" internalName="maps_block" name="maps_block">
+                <FieldSet version="0" sizeofValue="80" isLatest="true">
+                  <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+                    <Options regolithID="enum:type" CStyleName="type" pascalStyleName="Type">
+                      <Enum name="diffuse" CStyleName="diffuse" pascalStyleName="Diffuse" />
+                      <Enum name="detail" CStyleName="detail" pascalStyleName="Detail" />
+                      <Enum name="reflection" CStyleName="reflection" pascalStyleName="Reflection" />
+                      <Enum name="refraction" CStyleName="refraction" pascalStyleName="Refraction" />
+                      <Enum name="lightmap" CStyleName="lightmap" pascalStyleName="Lightmap" />
+                      <Enum name="bump" CStyleName="bump" pascalStyleName="Bump" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="mode" pascalStyleName="Mode" name="mode">
+                    <Options regolithID="enum:mode" CStyleName="mode" pascalStyleName="Mode">
+                      <Enum name="opaque" CStyleName="opaque" pascalStyleName="Opaque" />
+                      <Enum name="opaque scaled by fog" CStyleName="opaque_scaled_by_fog" pascalStyleName="OpaqueScaledByFog" />
+                      <Enum name="multiply" CStyleName="multiply" pascalStyleName="Multiply" />
+                      <Enum name="invert" CStyleName="invert" pascalStyleName="Invert" />
+                      <Enum name="invert unknown alpha04" CStyleName="invert_unknown_alpha04" pascalStyleName="InvertUnknownAlpha04" />
+                      <Enum name="invert unknown alpha05" CStyleName="invert_unknown_alpha05" pascalStyleName="InvertUnknownAlpha05" />
+                      <Enum name="invert transparent" CStyleName="invert_transparent" pascalStyleName="InvertTransparent" />
+                      <Enum name="add" CStyleName="add" pascalStyleName="Add" />
+                      <Enum name="add unknown12" CStyleName="add_unknown12" pascalStyleName="AddUnknown12" />
+                      <Enum name="add unknown13" CStyleName="add_unknown13" pascalStyleName="AddUnknown13" />
+                      <Enum name="add unknown alpha14" CStyleName="add_unknown_alpha14" pascalStyleName="AddUnknownAlpha14" />
+                      <Enum name="add unknown alpha15" CStyleName="add_unknown_alpha15" pascalStyleName="AddUnknownAlpha15" />
+                      <Enum name="add multiply" CStyleName="add_multiply" pascalStyleName="AddMultiply" />
+                      <Enum name="add unknown21" CStyleName="add_unknown21" pascalStyleName="AddUnknown21" />
+                      <Enum name="double multiply" CStyleName="double_multiply" pascalStyleName="DoubleMultiply" />
+                      <Enum name="double multiply unknown23" CStyleName="double_multiply_unknown23" pascalStyleName="DoubleMultiplyUnknown23" />
+                      <Enum name="double multiply unknown alpha24" CStyleName="double_multiply_unknown_alpha24" pascalStyleName="DoubleMultiplyUnknownAlpha24" />
+                      <Enum name="double multiply unknown alpha25" CStyleName="double_multiply_unknown_alpha25" pascalStyleName="DoubleMultiplyUnknownAlpha25" />
+                      <Enum name="double multiply unknown30" CStyleName="double_multiply_unknown30" pascalStyleName="DoubleMultiplyUnknown30" />
+                      <Enum name="double multiply unknown31" CStyleName="double_multiply_unknown31" pascalStyleName="DoubleMultiplyUnknown31" />
+                      <Enum name="crystal" CStyleName="crystal" pascalStyleName="Crystal" />
+                      <Enum name="crystal unknown33" CStyleName="crystal_unknown33" pascalStyleName="CrystalUnknown33" />
+                      <Enum name="crystal unknown alpha34" CStyleName="crystal_unknown_alpha34" pascalStyleName="CrystalUnknownAlpha34" />
+                      <Enum name="crystal unknown alpha35" CStyleName="crystal_unknown_alpha35" pascalStyleName="CrystalUnknownAlpha35" />
+                      <Enum name="crystal darken by alpha 0" CStyleName="crystal_darken_by_alpha_0" pascalStyleName="CrystalDarkenByAlpha0" />
+                      <Enum name="crystal unknown alpha41" CStyleName="crystal_unknown_alpha41" pascalStyleName="CrystalUnknownAlpha41" />
+                      <Enum name="crystal unknown alpha42" CStyleName="crystal_unknown_alpha42" pascalStyleName="CrystalUnknownAlpha42" />
+                      <Enum name="crystal unknown alpha43" CStyleName="crystal_unknown_alpha43" pascalStyleName="CrystalUnknownAlpha43" />
+                      <Enum name="crystal unknown alpha44" CStyleName="crystal_unknown_alpha44" pascalStyleName="CrystalUnknownAlpha44" />
+                      <Enum name="crystal reverse alpha blend" CStyleName="crystal_reverse_alpha_blend" pascalStyleName="CrystalReverseAlphaBlend" />
+                      <Enum name="crystal darken by alpha 1" CStyleName="crystal_darken_by_alpha_1" pascalStyleName="CrystalDarkenByAlpha1" />
+                      <Enum name="additive alpha blend" CStyleName="additive_alpha_blend" pascalStyleName="AdditiveAlphaBlend" />
+                      <Enum name="additive alpha blend unknown alpha52" CStyleName="additive_alpha_blend_unknown_alpha52" pascalStyleName="AdditiveAlphaBlendUnknownAlpha52" />
+                      <Enum name="additive alpha blend unknown alpha53" CStyleName="additive_alpha_blend_unknown_alpha53" pascalStyleName="AdditiveAlphaBlendUnknownAlpha53" />
+                      <Enum name="alpha blend" CStyleName="alpha_blend" pascalStyleName="AlphaBlend" />
+                      <Enum name="alpha blend unknown alpha55" CStyleName="alpha_blend_unknown_alpha55" pascalStyleName="AlphaBlendUnknownAlpha55" />
+                    </Options>
+                  </ShortEnum>
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                      <Bit name="unfogged" CStyleName="unfogged" pascalStyleName="Unfogged" />
+                      <Bit name="unfiltered" CStyleName="unfiltered" pascalStyleName="Unfiltered" />
+                      <Bit name="undithered" CStyleName="undithered" pascalStyleName="Undithered" />
+                      <Bit name="vertex color" CStyleName="vertex_color" pascalStyleName="VertexColor" />
+                      <Bit name="vertex color add" CStyleName="vertex_color_add" pascalStyleName="VertexColorAdd" />
+                      <Bit name="vertex alpha" CStyleName="vertex_alpha" pascalStyleName="VertexAlpha" />
+                      <Bit name="clamped" CStyleName="clamped" pascalStyleName="Clamped" />
+                      <Bit name="multitexture" CStyleName="multitexture" pascalStyleName="Multitexture" />
+                      <Bit name="alpha test" CStyleName="alpha_test" pascalStyleName="AlphaTest" />
+                      <Bit name="use render target" CStyleName="use_render_target" pascalStyleName="UseRenderTarget" />
+                    </Options>
+                  </LongFlags>
+                  <ShortEnum CStyleName="u_texture_animation" pascalStyleName="UTextureAnimation" name="u texture animation">
+                    <Options regolithID="enum:u_texture_animation" CStyleName="u_texture_animation" pascalStyleName="UTextureAnimation">
+                      <Enum name="off" CStyleName="off" pascalStyleName="Off" />
+                      <Enum name="alpha" CStyleName="alpha" pascalStyleName="Alpha" />
+                      <Enum name="negative alpha" CStyleName="negative_alpha" pascalStyleName="NegativeAlpha" />
+                      <Enum name="beta" CStyleName="beta" pascalStyleName="Beta" />
+                      <Enum name="negative beta" CStyleName="negative_beta" pascalStyleName="NegativeBeta" />
+                      <Enum name="gamma" CStyleName="gamma" pascalStyleName="Gamma" />
+                      <Enum name="negative gamma" CStyleName="negative_gamma" pascalStyleName="NegativeGamma" />
+                      <Enum name="delta" CStyleName="delta" pascalStyleName="Delta" />
+                      <Enum name="negative delta" CStyleName="negative_delta" pascalStyleName="NegativeDelta" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="u_texture_animation" pascalStyleName="UTextureAnimation" name="u texture animation">
+                    <Options regolithID="enum:u_texture_animation" CStyleName="u_texture_animation" pascalStyleName="UTextureAnimation">
+                      <Enum name="off" CStyleName="off" pascalStyleName="Off" />
+                      <Enum name="alpha" CStyleName="alpha" pascalStyleName="Alpha" />
+                      <Enum name="negative alpha" CStyleName="negative_alpha" pascalStyleName="NegativeAlpha" />
+                      <Enum name="beta" CStyleName="beta" pascalStyleName="Beta" />
+                      <Enum name="negative beta" CStyleName="negative_beta" pascalStyleName="NegativeBeta" />
+                      <Enum name="gamma" CStyleName="gamma" pascalStyleName="Gamma" />
+                      <Enum name="negative gamma" CStyleName="negative_gamma" pascalStyleName="NegativeGamma" />
+                      <Enum name="delta" CStyleName="delta" pascalStyleName="Delta" />
+                      <Enum name="negative delta" CStyleName="negative_delta" pascalStyleName="NegativeDelta" />
+                    </Options>
+                  </ShortEnum>
+                  <Real CStyleName="texture_animation_scale" pascalStyleName="TextureAnimationScale" name="texture animation scale" />
+                  <Real CStyleName="u_scale" pascalStyleName="UScale" name="u scale" />
+                  <Real CStyleName="v_scale" pascalStyleName="VScale" name="v scale" />
+                  <ShortEnum CStyleName="color_multitexture_mode" pascalStyleName="ColorMultitextureMode" name="color multitexture mode">
+                    <Options regolithID="enum:color_multitexture_mode" CStyleName="color_multitexture_mode" pascalStyleName="ColorMultitextureMode">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="add" CStyleName="add" pascalStyleName="Add" />
+                      <Enum name="add 0 plus la" CStyleName="add_0_plus_la" pascalStyleName="Add0PlusLa" />
+                      <Enum name="add 0 minus la" CStyleName="add_0_minus_la" pascalStyleName="Add0MinusLa" />
+                      <Enum name="add 0" CStyleName="add_0" pascalStyleName="Add0" />
+                      <Enum name="add 0 minus l minus la" CStyleName="add_0_minus_l_minus_la" pascalStyleName="Add0MinusLMinusLa" />
+                      <Enum name="add 0 minus l minus la zero" CStyleName="add_0_minus_l_minus_la_zero" pascalStyleName="Add0MinusLMinusLaZero" />
+                      <Enum name="add 0 minus l minus la la minus l" CStyleName="add_0_minus_l_minus_la_la_minus_l" pascalStyleName="Add0MinusLMinusLaLaMinusL" />
+                      <Enum name="multiply" CStyleName="multiply" pascalStyleName="Multiply" />
+                      <Enum name="multiply l times 1 plus 0" CStyleName="multiply_l_times_1_plus_0" pascalStyleName="MultiplyLTimes1Plus0" />
+                      <Enum name="multiply l times 1 plus la" CStyleName="multiply_l_times_1_plus_la" pascalStyleName="MultiplyLTimes1PlusLa" />
+                      <Enum name="multiply l times 1 plus l" CStyleName="multiply_l_times_1_plus_l" pascalStyleName="MultiplyLTimes1PlusL" />
+                      <Enum name="multiply l times 0 minus l plus l" CStyleName="multiply_l_times_0_minus_l_plus_l" pascalStyleName="MultiplyLTimes0MinusLPlusL" />
+                      <Enum name="multiply l times 0 minus l plus la" CStyleName="multiply_l_times_0_minus_l_plus_la" pascalStyleName="MultiplyLTimes0MinusLPlusLa" />
+                      <Enum name="multiply l times 0 minus l plus la l times 1 minus l" CStyleName="multiply_l_times_0_minus_l_plus_la_l_times_1_minus_l" pascalStyleName="MultiplyLTimes0MinusLPlusLaLTimes1MinusL" />
+                      <Enum name="multiply l times 0 minus l plus la la minus l powerof2" CStyleName="multiply_l_times_0_minus_l_plus_la_la_minus_l_powerof2" pascalStyleName="MultiplyLTimes0MinusLPlusLaLaMinusLPowerof2" />
+                      <Enum name="multiply 0 times 1 minus l" CStyleName="multiply_0_times_1_minus_l" pascalStyleName="Multiply0Times1MinusL" />
+                      <Enum name="multiply 0 times 1 plus l plus l" CStyleName="multiply_0_times_1_plus_l_plus_l" pascalStyleName="Multiply0Times1PlusLPlusL" />
+                      <Enum name="multiply 0 times 1 plus l plus la" CStyleName="multiply_0_times_1_plus_l_plus_la" pascalStyleName="Multiply0Times1PlusLPlusLa" />
+                      <Enum name="multiply 0 minus l times l minus l" CStyleName="multiply_0_minus_l_times_l_minus_l" pascalStyleName="Multiply0MinusLTimesLMinusL" />
+                      <Enum name="multiply 0 times 1 minus l plus l powerof2" CStyleName="multiply_0_times_1_minus_l_plus_l_powerof2" pascalStyleName="Multiply0Times1MinusLPlusLPowerof2" />
+                      <Enum name="multiply 0 minus l times l minus la" CStyleName="multiply_0_minus_l_times_l_minus_la" pascalStyleName="Multiply0MinusLTimesLMinusLa" />
+                      <Enum name="multiply 0 minus l times l minus la l powerof2" CStyleName="multiply_0_minus_l_times_l_minus_la_l_powerof2" pascalStyleName="Multiply0MinusLTimesLMinusLaLPowerof2" />
+                      <Enum name="multiply 0 minus l times l minus la l powerof2 plus la" CStyleName="multiply_0_minus_l_times_l_minus_la_l_powerof2_plus_la" pascalStyleName="Multiply0MinusLTimesLMinusLaLPowerof2PlusLa" />
+                      <Enum name="multiply 0 minus l times l minus la 0a times 0" CStyleName="multiply_0_minus_l_times_l_minus_la_0a_times_0" pascalStyleName="Multiply0MinusLTimesLMinusLa0aTimes0" />
+                      <Enum name="multiply 0 minus l times l minus la 0a times 0 plus l" CStyleName="multiply_0_minus_l_times_l_minus_la_0a_times_0_plus_l" pascalStyleName="Multiply0MinusLTimesLMinusLa0aTimes0PlusL" />
+                      <Enum name="multiply 0 minus l times l minus la 0a times 0 plus la" CStyleName="multiply_0_minus_l_times_l_minus_la_0a_times_0_plus_la" pascalStyleName="Multiply0MinusLTimesLMinusLa0aTimes0PlusLa" />
+                      <Enum name="multiply 0 minus l times l minus la 0a times 0 minus l" CStyleName="multiply_0_minus_l_times_l_minus_la_0a_times_0_minus_l" pascalStyleName="Multiply0MinusLTimesLMinusLa0aTimes0MinusL" />
+                      <Enum name="other alpha blend" CStyleName="other_alpha_blend" pascalStyleName="OtherAlphaBlend" />
+                      <Enum name="other alpha blend 0a times 0 minus l plus la" CStyleName="other_alpha_blend_0a_times_0_minus_l_plus_la" pascalStyleName="OtherAlphaBlend0aTimes0MinusLPlusLa" />
+                      <Enum name="other alpha blend l times 1 minus 0a" CStyleName="other_alpha_blend_l_times_1_minus_0a" pascalStyleName="OtherAlphaBlendLTimes1Minus0a" />
+                      <Enum name="other alpha blend la minus l times 0a" CStyleName="other_alpha_blend_la_minus_l_times_0a" pascalStyleName="OtherAlphaBlendLaMinusLTimes0a" />
+                      <Enum name="other alpha blend la minus l times 0a 0 times 1 minus 0a" CStyleName="other_alpha_blend_la_minus_l_times_0a_0_times_1_minus_0a" pascalStyleName="OtherAlphaBlendLaMinusLTimes0a0Times1Minus0a" />
+                      <Enum name="other alpha blend la minus l times 0a 0 times 1 minus 0a plus l" CStyleName="other_alpha_blend_la_minus_l_times_0a_0_times_1_minus_0a_plus_l" pascalStyleName="OtherAlphaBlendLaMinusLTimes0a0Times1Minus0aPlusL" />
+                      <Enum name="other alpha blend la minus l times 0a 0 times 1 minus 0a plus la" CStyleName="other_alpha_blend_la_minus_l_times_0a_0_times_1_minus_0a_plus_la" pascalStyleName="OtherAlphaBlendLaMinusLTimes0a0Times1Minus0aPlusLa" />
+                      <Enum name="other alpha blend la minus l times 0a 0 minus l times 1 minus 0a" CStyleName="other_alpha_blend_la_minus_l_times_0a_0_minus_l_times_1_minus_0a" pascalStyleName="OtherAlphaBlendLaMinusLTimes0a0MinusLTimes1Minus0a" />
+                      <Enum name="reverse other alpha blend" CStyleName="reverse_other_alpha_blend" pascalStyleName="ReverseOtherAlphaBlend" />
+                      <Enum name="reverse other alpha blend 0 minus l times 1 minus 0a plus la" CStyleName="reverse_other_alpha_blend_0_minus_l_times_1_minus_0a_plus_la" pascalStyleName="ReverseOtherAlphaBlend0MinusLTimes1Minus0aPlusLa" />
+                      <Enum name="reverse other alpha blend l times 0a" CStyleName="reverse_other_alpha_blend_l_times_0a" pascalStyleName="ReverseOtherAlphaBlendLTimes0a" />
+                      <Enum name="reverse other alpha blend l times 0a minus 1 plus la" CStyleName="reverse_other_alpha_blend_l_times_0a_minus_1_plus_la" pascalStyleName="ReverseOtherAlphaBlendLTimes0aMinus1PlusLa" />
+                      <Enum name="reverse other alpha blend la times 0" CStyleName="reverse_other_alpha_blend_la_times_0" pascalStyleName="ReverseOtherAlphaBlendLaTimes0" />
+                      <Enum name="reverse other alpha blend la times 0 plus l" CStyleName="reverse_other_alpha_blend_la_times_0_plus_l" pascalStyleName="ReverseOtherAlphaBlendLaTimes0PlusL" />
+                      <Enum name="reverse other alpha blend la times 0 plus 1" CStyleName="reverse_other_alpha_blend_la_times_0_plus_1" pascalStyleName="ReverseOtherAlphaBlendLaTimes0Plus1" />
+                      <Enum name="reverse other alpha blend la times 0 plus L" CStyleName="reverse_other_alpha_blend_la_times_0_plus_L" pascalStyleName="ReverseOtherAlphaBlendLaTimes0PlusL" />
+                      <Enum name="reverse local alpha blend" CStyleName="reverse_local_alpha_blend" pascalStyleName="ReverseLocalAlphaBlend" />
+                      <Enum name="reverse local alpha blend la times 0 minus l plus 1" CStyleName="reverse_local_alpha_blend_la_times_0_minus_l_plus_1" pascalStyleName="ReverseLocalAlphaBlendLaTimes0MinusLPlus1" />
+                      <Enum name="reverse local alpha blend la times 0 minus l plus 1 l times 1 minus la" CStyleName="reverse_local_alpha_blend_la_times_0_minus_l_plus_1_l_times_1_minus_la" pascalStyleName="ReverseLocalAlphaBlendLaTimes0MinusLPlus1LTimes1MinusLa" />
+                      <Enum name="reverse local alpha blend la times 0 minus l plus 1 la times 1 minus l" CStyleName="reverse_local_alpha_blend_la_times_0_minus_l_plus_1_la_times_1_minus_l" pascalStyleName="ReverseLocalAlphaBlendLaTimes0MinusLPlus1LaTimes1MinusL" />
+                      <Enum name="reverse local alpha blend 0 times 1 minus la" CStyleName="reverse_local_alpha_blend_0_times_1_minus_la" pascalStyleName="ReverseLocalAlphaBlend0Times1MinusLa" />
+                      <Enum name="reverse local alpha blend 0 times 1 minus la plus l" CStyleName="reverse_local_alpha_blend_0_times_1_minus_la_plus_l" pascalStyleName="ReverseLocalAlphaBlend0Times1MinusLaPlusL" />
+                      <Enum name="reverse local alpha blend la times 1 minus 0 plus l" CStyleName="reverse_local_alpha_blend_la_times_1_minus_0_plus_l" pascalStyleName="ReverseLocalAlphaBlendLaTimes1Minus0PlusL" />
+                      <Enum name="reverse local alpha blend 0 minus l times 1 minus la" CStyleName="reverse_local_alpha_blend_0_minus_l_times_1_minus_la" pascalStyleName="ReverseLocalAlphaBlend0MinusLTimes1MinusLa" />
+                      <Enum name="local alpha blend" CStyleName="local_alpha_blend" pascalStyleName="LocalAlphaBlend" />
+                      <Enum name="local alpha blend 0 minus l plus la times 1 minus 0 plus l" CStyleName="local_alpha_blend_0_minus_l_plus_la_times_1_minus_0_plus_l" pascalStyleName="LocalAlphaBlend0MinusLPlusLaTimes1Minus0PlusL" />
+                      <Enum name="local alpha blend 0 minus l plus la times 1 minus 0 plus l l times la" CStyleName="local_alpha_blend_0_minus_l_plus_la_times_1_minus_0_plus_l_l_times_la" pascalStyleName="LocalAlphaBlend0MinusLPlusLaTimes1Minus0PlusLLTimesLa" />
+                      <Enum name="local alpha blend 0 minus l plus la times 1 minus 0 plus l la times 1 plus l minus l" CStyleName="local_alpha_blend_0_minus_l_plus_la_times_1_minus_0_plus_l_la_times_1_plus_l_minus_l" pascalStyleName="LocalAlphaBlend0MinusLPlusLaTimes1Minus0PlusLLaTimes1PlusLMinusL" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="alpha_multitexture_mode" pascalStyleName="AlphaMultitextureMode" name="alpha multitexture mode">
+                    <Options regolithID="enum:alpha_multitexture_mode" CStyleName="alpha_multitexture_mode" pascalStyleName="AlphaMultitextureMode">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="add" CStyleName="add" pascalStyleName="Add" />
+                      <Enum name="add 0 plus la" CStyleName="add_0_plus_la" pascalStyleName="Add0PlusLa" />
+                      <Enum name="add 0 minus la" CStyleName="add_0_minus_la" pascalStyleName="Add0MinusLa" />
+                      <Enum name="add 0" CStyleName="add_0" pascalStyleName="Add0" />
+                      <Enum name="add 0 minus l minus la" CStyleName="add_0_minus_l_minus_la" pascalStyleName="Add0MinusLMinusLa" />
+                      <Enum name="add 0 minus l minus la zero" CStyleName="add_0_minus_l_minus_la_zero" pascalStyleName="Add0MinusLMinusLaZero" />
+                      <Enum name="add 0 minus l minus la la minus l" CStyleName="add_0_minus_l_minus_la_la_minus_l" pascalStyleName="Add0MinusLMinusLaLaMinusL" />
+                      <Enum name="multiply" CStyleName="multiply" pascalStyleName="Multiply" />
+                      <Enum name="multiply l times 1 plus 0" CStyleName="multiply_l_times_1_plus_0" pascalStyleName="MultiplyLTimes1Plus0" />
+                      <Enum name="multiply l times 1 plus la" CStyleName="multiply_l_times_1_plus_la" pascalStyleName="MultiplyLTimes1PlusLa" />
+                      <Enum name="multiply l times 1 plus l" CStyleName="multiply_l_times_1_plus_l" pascalStyleName="MultiplyLTimes1PlusL" />
+                      <Enum name="multiply l times 0 minus l plus l" CStyleName="multiply_l_times_0_minus_l_plus_l" pascalStyleName="MultiplyLTimes0MinusLPlusL" />
+                      <Enum name="multiply l times 0 minus l plus la" CStyleName="multiply_l_times_0_minus_l_plus_la" pascalStyleName="MultiplyLTimes0MinusLPlusLa" />
+                      <Enum name="multiply l times 0 minus l plus la l times 1 minus l" CStyleName="multiply_l_times_0_minus_l_plus_la_l_times_1_minus_l" pascalStyleName="MultiplyLTimes0MinusLPlusLaLTimes1MinusL" />
+                      <Enum name="multiply l times 0 minus l plus la la minus l powerof2" CStyleName="multiply_l_times_0_minus_l_plus_la_la_minus_l_powerof2" pascalStyleName="MultiplyLTimes0MinusLPlusLaLaMinusLPowerof2" />
+                      <Enum name="multiply 0 times 1 minus l" CStyleName="multiply_0_times_1_minus_l" pascalStyleName="Multiply0Times1MinusL" />
+                      <Enum name="multiply 0 times 1 plus l plus l" CStyleName="multiply_0_times_1_plus_l_plus_l" pascalStyleName="Multiply0Times1PlusLPlusL" />
+                      <Enum name="multiply 0 times 1 plus l plus la" CStyleName="multiply_0_times_1_plus_l_plus_la" pascalStyleName="Multiply0Times1PlusLPlusLa" />
+                      <Enum name="multiply 0 minus l times l minus l" CStyleName="multiply_0_minus_l_times_l_minus_l" pascalStyleName="Multiply0MinusLTimesLMinusL" />
+                      <Enum name="multiply 0 times 1 minus l plus l powerof2" CStyleName="multiply_0_times_1_minus_l_plus_l_powerof2" pascalStyleName="Multiply0Times1MinusLPlusLPowerof2" />
+                      <Enum name="multiply 0 minus l times l minus la" CStyleName="multiply_0_minus_l_times_l_minus_la" pascalStyleName="Multiply0MinusLTimesLMinusLa" />
+                      <Enum name="multiply 0 minus l times l minus la l powerof2" CStyleName="multiply_0_minus_l_times_l_minus_la_l_powerof2" pascalStyleName="Multiply0MinusLTimesLMinusLaLPowerof2" />
+                      <Enum name="multiply 0 minus l times l minus la l powerof2 plus la" CStyleName="multiply_0_minus_l_times_l_minus_la_l_powerof2_plus_la" pascalStyleName="Multiply0MinusLTimesLMinusLaLPowerof2PlusLa" />
+                      <Enum name="multiply 0 minus l times l minus la 0a times 0" CStyleName="multiply_0_minus_l_times_l_minus_la_0a_times_0" pascalStyleName="Multiply0MinusLTimesLMinusLa0aTimes0" />
+                      <Enum name="multiply 0 minus l times l minus la 0a times 0 plus l" CStyleName="multiply_0_minus_l_times_l_minus_la_0a_times_0_plus_l" pascalStyleName="Multiply0MinusLTimesLMinusLa0aTimes0PlusL" />
+                      <Enum name="multiply 0 minus l times l minus la 0a times 0 plus la" CStyleName="multiply_0_minus_l_times_l_minus_la_0a_times_0_plus_la" pascalStyleName="Multiply0MinusLTimesLMinusLa0aTimes0PlusLa" />
+                      <Enum name="multiply 0 minus l times l minus la 0a times 0 minus l" CStyleName="multiply_0_minus_l_times_l_minus_la_0a_times_0_minus_l" pascalStyleName="Multiply0MinusLTimesLMinusLa0aTimes0MinusL" />
+                      <Enum name="other alpha blend" CStyleName="other_alpha_blend" pascalStyleName="OtherAlphaBlend" />
+                      <Enum name="other alpha blend 0a times 0 minus l plus la" CStyleName="other_alpha_blend_0a_times_0_minus_l_plus_la" pascalStyleName="OtherAlphaBlend0aTimes0MinusLPlusLa" />
+                      <Enum name="other alpha blend l times 1 minus 0a" CStyleName="other_alpha_blend_l_times_1_minus_0a" pascalStyleName="OtherAlphaBlendLTimes1Minus0a" />
+                      <Enum name="other alpha blend la minus l times 0a" CStyleName="other_alpha_blend_la_minus_l_times_0a" pascalStyleName="OtherAlphaBlendLaMinusLTimes0a" />
+                      <Enum name="other alpha blend la minus l times 0a 0 times 1 minus 0a" CStyleName="other_alpha_blend_la_minus_l_times_0a_0_times_1_minus_0a" pascalStyleName="OtherAlphaBlendLaMinusLTimes0a0Times1Minus0a" />
+                      <Enum name="other alpha blend la minus l times 0a 0 times 1 minus 0a plus l" CStyleName="other_alpha_blend_la_minus_l_times_0a_0_times_1_minus_0a_plus_l" pascalStyleName="OtherAlphaBlendLaMinusLTimes0a0Times1Minus0aPlusL" />
+                      <Enum name="other alpha blend la minus l times 0a 0 times 1 minus 0a plus la" CStyleName="other_alpha_blend_la_minus_l_times_0a_0_times_1_minus_0a_plus_la" pascalStyleName="OtherAlphaBlendLaMinusLTimes0a0Times1Minus0aPlusLa" />
+                      <Enum name="other alpha blend la minus l times 0a 0 minus l times 1 minus 0a" CStyleName="other_alpha_blend_la_minus_l_times_0a_0_minus_l_times_1_minus_0a" pascalStyleName="OtherAlphaBlendLaMinusLTimes0a0MinusLTimes1Minus0a" />
+                      <Enum name="reverse other alpha blend" CStyleName="reverse_other_alpha_blend" pascalStyleName="ReverseOtherAlphaBlend" />
+                      <Enum name="reverse other alpha blend 0 minus l times 1 minus 0a plus la" CStyleName="reverse_other_alpha_blend_0_minus_l_times_1_minus_0a_plus_la" pascalStyleName="ReverseOtherAlphaBlend0MinusLTimes1Minus0aPlusLa" />
+                      <Enum name="reverse other alpha blend l times 0a" CStyleName="reverse_other_alpha_blend_l_times_0a" pascalStyleName="ReverseOtherAlphaBlendLTimes0a" />
+                      <Enum name="reverse other alpha blend l times 0a minus 1 plus la" CStyleName="reverse_other_alpha_blend_l_times_0a_minus_1_plus_la" pascalStyleName="ReverseOtherAlphaBlendLTimes0aMinus1PlusLa" />
+                      <Enum name="reverse other alpha blend la times 0" CStyleName="reverse_other_alpha_blend_la_times_0" pascalStyleName="ReverseOtherAlphaBlendLaTimes0" />
+                      <Enum name="reverse other alpha blend la times 0 plus l" CStyleName="reverse_other_alpha_blend_la_times_0_plus_l" pascalStyleName="ReverseOtherAlphaBlendLaTimes0PlusL" />
+                      <Enum name="reverse other alpha blend la times 0 plus 1" CStyleName="reverse_other_alpha_blend_la_times_0_plus_1" pascalStyleName="ReverseOtherAlphaBlendLaTimes0Plus1" />
+                      <Enum name="reverse other alpha blend la times 0 plus L" CStyleName="reverse_other_alpha_blend_la_times_0_plus_L" pascalStyleName="ReverseOtherAlphaBlendLaTimes0PlusL" />
+                      <Enum name="reverse local alpha blend" CStyleName="reverse_local_alpha_blend" pascalStyleName="ReverseLocalAlphaBlend" />
+                      <Enum name="reverse local alpha blend la times 0 minus l plus 1" CStyleName="reverse_local_alpha_blend_la_times_0_minus_l_plus_1" pascalStyleName="ReverseLocalAlphaBlendLaTimes0MinusLPlus1" />
+                      <Enum name="reverse local alpha blend la times 0 minus l plus 1 l times 1 minus la" CStyleName="reverse_local_alpha_blend_la_times_0_minus_l_plus_1_l_times_1_minus_la" pascalStyleName="ReverseLocalAlphaBlendLaTimes0MinusLPlus1LTimes1MinusLa" />
+                      <Enum name="reverse local alpha blend la times 0 minus l plus 1 la times 1 minus l" CStyleName="reverse_local_alpha_blend_la_times_0_minus_l_plus_1_la_times_1_minus_l" pascalStyleName="ReverseLocalAlphaBlendLaTimes0MinusLPlus1LaTimes1MinusL" />
+                      <Enum name="reverse local alpha blend 0 times 1 minus la" CStyleName="reverse_local_alpha_blend_0_times_1_minus_la" pascalStyleName="ReverseLocalAlphaBlend0Times1MinusLa" />
+                      <Enum name="reverse local alpha blend 0 times 1 minus la plus l" CStyleName="reverse_local_alpha_blend_0_times_1_minus_la_plus_l" pascalStyleName="ReverseLocalAlphaBlend0Times1MinusLaPlusL" />
+                      <Enum name="reverse local alpha blend la times 1 minus 0 plus l" CStyleName="reverse_local_alpha_blend_la_times_1_minus_0_plus_l" pascalStyleName="ReverseLocalAlphaBlendLaTimes1Minus0PlusL" />
+                      <Enum name="reverse local alpha blend 0 minus l times 1 minus la" CStyleName="reverse_local_alpha_blend_0_minus_l_times_1_minus_la" pascalStyleName="ReverseLocalAlphaBlend0MinusLTimes1MinusLa" />
+                      <Enum name="local alpha blend" CStyleName="local_alpha_blend" pascalStyleName="LocalAlphaBlend" />
+                      <Enum name="local alpha blend 0 minus l plus la times 1 minus 0 plus l" CStyleName="local_alpha_blend_0_minus_l_plus_la_times_1_minus_0_plus_l" pascalStyleName="LocalAlphaBlend0MinusLPlusLaTimes1Minus0PlusL" />
+                      <Enum name="local alpha blend 0 minus l plus la times 1 minus 0 plus l l times la" CStyleName="local_alpha_blend_0_minus_l_plus_la_times_1_minus_0_plus_l_l_times_la" pascalStyleName="LocalAlphaBlend0MinusLPlusLaTimes1Minus0PlusLLTimesLa" />
+                      <Enum name="local alpha blend 0 minus l plus la times 1 minus 0 plus l la times 1 plus l minus l" CStyleName="local_alpha_blend_0_minus_l_plus_la_times_1_minus_0_plus_l_la_times_1_plus_l_minus_l" pascalStyleName="LocalAlphaBlend0MinusLPlusLaTimes1Minus0PlusLLaTimes1PlusLMinusL" />
+                    </Options>
+                  </ShortEnum>
+                  <Real CStyleName="u_offset" pascalStyleName="UOffset" name="u offset" />
+                  <Real CStyleName="u_offset" pascalStyleName="UOffset" name="u offset" />
+                  <Pad name="pad" length="4" />
+                  <TagReference CStyleName="texture" pascalStyleName="Texture" name="texture" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes">
+        <Layout regolithID="block:nodes" internalName="nodes_block" name="nodes_block">
+          <FieldSet version="0" sizeofValue="156" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <ShortInteger CStyleName="next_sibling_node_index" pascalStyleName="NextSiblingNodeIndex" name="next sibling node index" />
+            <ShortInteger CStyleName="first_child_node_index" pascalStyleName="FirstChildNodeIndex" name="first child node index" />
+            <ShortInteger CStyleName="parent_node_index" pascalStyleName="ParentNodeIndex" name="parent node index" />
+            <Pad name="pad" length="2" />
+            <RealPoint3D CStyleName="default_translation" pascalStyleName="DefaultTranslation" name="default translation" />
+            <RealQuaternion CStyleName="default_rotation" pascalStyleName="DefaultRotation" name="default rotation" />
+            <Pad name="pad" length="36" />
+            <Pad name="pad" length="52" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="regions" pascalStyleName="Regions" name="regions">
+        <Layout regolithID="block:regions" internalName="regions_block" name="regions_block">
+          <FieldSet version="0" sizeofValue="76" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <Pad name="pad" length="32" />
+            <Block CStyleName="permutation" pascalStyleName="Permutation" name="permutations">
+              <Layout regolithID="block:permutations" internalName="permutations_block" name="permutations_block">
+                <FieldSet version="0" sizeofValue="88" isLatest="true">
+                  <String CStyleName="name" pascalStyleName="Name" name="name" />
+                  <Pad name="pad" length="32" />
+                  <Pad name="pad" length="2" />
+                  <ShortBlockIndex CStyleName="super_low" pascalStyleName="SuperLow" name="super low" blockReference="block:geometries" />
+                  <ShortBlockIndex CStyleName="low" pascalStyleName="Low" name="low" blockReference="block:geometries" />
+                  <ShortBlockIndex CStyleName="medium" pascalStyleName="Medium" name="medium" blockReference="block:geometries" />
+                  <ShortBlockIndex CStyleName="high" pascalStyleName="High" name="high" blockReference="block:geometries" />
+                  <ShortBlockIndex CStyleName="super_high" pascalStyleName="SuperHigh" name="super high" blockReference="block:geometries" />
+                  <Block CStyleName="local_marker" pascalStyleName="LocalMarker" name="markers">
+                    <Layout regolithID="block:markers" internalName="markers_block" name="markers_block">
+                      <FieldSet version="0" sizeofValue="80" isLatest="true">
+                        <String CStyleName="name" pascalStyleName="Name" name="name" />
+                        <ShortInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" />
+                        <Pad name="pad" length="2" />
+                        <RealQuaternion CStyleName="rotation" pascalStyleName="Rotation" name="rotation" />
+                        <RealPoint3D CStyleName="translation" pascalStyleName="Translation" name="translation" />
+                        <Pad name="pad" length="16" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="geometries" pascalStyleName="Geometries" name="geometries">
+        <Layout regolithID="block:geometries" internalName="geometries_block" name="geometries_block">
+          <FieldSet version="0" sizeofValue="48" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags" />
+            <Pad name="pad" length="32" />
+            <Block CStyleName="parts" pascalStyleName="Parts" name="parts">
+              <Layout regolithID="block:parts" internalName="parts_block" name="parts_block">
+                <FieldSet version="0" sizeofValue="172" isLatest="true">
+                  <ShortEnum CStyleName="flags" pascalStyleName="Flags" name="flags" />
+                  <LongBlockIndex CStyleName="material" pascalStyleName="Material" name="material" blockReference="block:materials" />
+                  <ShortInteger CStyleName="triangle_strip_count" pascalStyleName="TriangleStripCount" name="triangle strip count" />
+                  <ShortInteger CStyleName="vertex_count" pascalStyleName="VertexCount" name="vertex count" />
+                  <ShortInteger CStyleName="blended_vertex_count" pascalStyleName="BlendedVertexCount" name="blended vertex count" />
+                  <Pad name="pad" length="24" />
+                  <Pad name="pad" length="2" />
+                  <ShortInteger CStyleName="triangle_strip_count" pascalStyleName="TriangleStripCount" name="triangle strip count" />
+                  <Block CStyleName="triangle_strip_vertex_indices" pascalStyleName="TriangleStripVertexIndices" name="triangle strip vertex indices">
+                    <Layout regolithID="block:triangle strip vertex indices" internalName="triangle strip vertex indices_block" name="triangle strip vertex indices_block">
+                      <FieldSet version="0" sizeofValue="2" isLatest="true">
+                        <ShortInteger CStyleName="index" pascalStyleName="Index" name="index" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="vertex_groups" pascalStyleName="VertexGroups" name="vertex groups">
+                    <Layout regolithID="block:vertex groups" internalName="vertex groups_block" name="vertex groups_block">
+                      <FieldSet version="0" sizeofValue="8" isLatest="true">
+                        <ShortInteger CStyleName="vertex_count" pascalStyleName="VertexCount" name="vertex count" />
+                        <ShortBlockIndex CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" blockReference="block:nodes" />
+                        <ShortBlockIndex CStyleName="secondary_node_index" pascalStyleName="SecondaryNodeIndex" name="secondary node index" blockReference="block:nodes" />
+                        <Pad name="pad" length="2" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="triangle_strip_groups" pascalStyleName="TriangleStripGroups" name="triangle strip groups">
+                    <Layout regolithID="block:triangle strip groups" internalName="triangle strip groups_block" name="triangle strip groups_block">
+                      <FieldSet version="0" sizeofValue="8" isLatest="true">
+                        <ShortInteger CStyleName="triangle_count" pascalStyleName="TriangleCount" name="triangle count" />
+                        <ShortBlockIndex CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" blockReference="block:nodes" />
+                        <ShortBlockIndex CStyleName="secondary_node_index" pascalStyleName="SecondaryNodeIndex" name="secondary node index" blockReference="block:nodes" />
+                        <Pad name="pad" length="2" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="normals" pascalStyleName="Normals" name="normals">
+                    <Layout regolithID="block:normals" internalName="normals_block" name="normals_block">
+                      <FieldSet version="0" sizeofValue="12" isLatest="true">
+                        <RealVector3D CStyleName="vector" pascalStyleName="Vector" name="vector" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="points" pascalStyleName="Points" name="points">
+                    <Layout regolithID="block:points" internalName="points_block" name="points_block">
+                      <FieldSet version="0" sizeofValue="12" isLatest="true">
+                        <RealPoint3D CStyleName="point" pascalStyleName="Point" name="point" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="weights" pascalStyleName="Weights" name="weights">
+                    <Layout regolithID="block:weights" internalName="weights_block" name="weights_block">
+                      <FieldSet version="0" sizeofValue="4" isLatest="true">
+                        <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="bump_map_quaternions" pascalStyleName="BumpMapQuaternions" name="bump map quaternions">
+                    <Layout regolithID="block:bump map quaternions" internalName="bump map quaternions_block" name="bump map quaternions_block">
+                      <FieldSet version="0" sizeofValue="4" isLatest="true">
+                        <CharInteger CStyleName="i" pascalStyleName="I" name="i" />
+                        <CharInteger CStyleName="j" pascalStyleName="J" name="j" />
+                        <CharInteger CStyleName="k" pascalStyleName="K" name="k" />
+                        <CharInteger CStyleName="w" pascalStyleName="W" name="w" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="texture_uv" pascalStyleName="TextureUv" name="texture uv">
+                    <Layout regolithID="block:texture uv" internalName="texture uv_block" name="texture uv_block">
+                      <FieldSet version="0" sizeofValue="8" isLatest="true">
+                        <Real CStyleName="u" pascalStyleName="U" name="u" />
+                        <Real CStyleName="v" pascalStyleName="V" name="v" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="lightmap_uv" pascalStyleName="LightmapUv" name="lightmap uv">
+                    <Layout regolithID="block:lightmap uv" internalName="lightmap uv_block" name="lightmap uv_block">
+                      <FieldSet version="0" sizeofValue="8" isLatest="true">
+                        <Real CStyleName="s" pascalStyleName="S" name="s" />
+                        <Real CStyleName="t" pascalStyleName="T" name="t" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Pad name="pad" length="24" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

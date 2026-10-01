@@ -1,0 +1,202 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="antr" name="models.animations" version="3">
+  <Layout regolithID="block:models.animations" internalName="models.animations_block" name="models.animations">
+    <FieldSet version="0" sizeofValue="128" sizeofSource="sizeof(struct models.animations_group)" isLatest="true">
+      <Block CStyleName="unit_animations" pascalStyleName="UnitAnimations" name="unit animations">
+        <Layout regolithID="block:unit animations" internalName="unit animations_block" name="unit animations_block">
+          <FieldSet version="0" sizeofValue="188" isLatest="true">
+            <String CStyleName="seat_label" pascalStyleName="SeatLabel" name="seat label" />
+            <ShortBlockIndex CStyleName="unused" pascalStyleName="Unused" name="unused" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="unused" pascalStyleName="Unused" name="unused" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="sliding_forward" pascalStyleName="SlidingForward" name="sliding forward" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="sliding_backward" pascalStyleName="SlidingBackward" name="sliding backward" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="sliding_left" pascalStyleName="SlidingLeft" name="sliding left" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="sliding_right" pascalStyleName="SlidingRight" name="sliding right" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="sliding_downhill_forward" pascalStyleName="SlidingDownhillForward" name="sliding downhill forward" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="sliding_downhill_backward" pascalStyleName="SlidingDownhillBackward" name="sliding downhill backward" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="sliding_downhill_left" pascalStyleName="SlidingDownhillLeft" name="sliding downhill left" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="sliding_downhill_right" pascalStyleName="SlidingDownhillRight" name="sliding downhill right" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="throw_(charge_up)" pascalStyleName="Throw(chargeUp)" name="throw (charge up)" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="throw_(execute)" pascalStyleName="Throw(execute)" name="throw (execute)" blockReference="block:animations" />
+            <Pad name="pad" length="8" />
+            <ShortBlockIndex CStyleName="celebrate" pascalStyleName="Celebrate" name="celebrate" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="taunt" pascalStyleName="Taunt" name="taunt" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="attract_attention" pascalStyleName="AttractAttention" name="attract attention" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="accept_praise" pascalStyleName="AcceptPraise" name="accept praise" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="give_praise" pascalStyleName="GivePraise" name="give praise" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="show_frustration" pascalStyleName="ShowFrustration" name="show frustration" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="rebuke" pascalStyleName="Rebuke" name="rebuke" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="strike_a_pose" pascalStyleName="StrikeAPose" name="strike a pose" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="bored" pascalStyleName="Bored" name="bored" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="wave" pascalStyleName="Wave" name="wave" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="celebrate_(airborne)" pascalStyleName="Celebrate(airborne)" name="celebrate (airborne)" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="strike_a_pose_(airborne)" pascalStyleName="StrikeAPose(airborne)" name="strike a pose (airborne)" blockReference="block:animations" />
+            <Pad name="pad" length="8" />
+            <ShortBlockIndex CStyleName="backward-forward" pascalStyleName="Backward-forward" name="backward-forward" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="left-right" pascalStyleName="Left-right" name="left-right" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="down-up" pascalStyleName="Down-up" name="down-up" blockReference="block:animations" />
+            <Pad name="pad" length="2" />
+            <ShortBlockIndex CStyleName="head" pascalStyleName="Head" name="head" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="left_shoulder" pascalStyleName="LeftShoulder" name="left shoulder" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="right_shoulder" pascalStyleName="RightShoulder" name="right shoulder" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="upper_body" pascalStyleName="UpperBody" name="upper body" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="lower_body" pascalStyleName="LowerBody" name="lower body" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="unused" pascalStyleName="Unused" name="unused" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="enter" pascalStyleName="Enter" name="enter" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="exit" pascalStyleName="Exit" name="exit" blockReference="block:animations" />
+            <Pad name="pad" length="44" />
+            <Block CStyleName="ik_markers" pascalStyleName="IkMarkers" name="ik markers">
+              <Layout regolithID="block:ik markers" internalName="ik markers_block" name="ik markers_block">
+                <FieldSet version="0" sizeofValue="40" isLatest="true">
+                  <Pad name="pad" length="8" />
+                  <String CStyleName="name" pascalStyleName="Name" name="name" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="weapons" pascalStyleName="Weapons" name="weapons">
+              <Layout regolithID="block:weapons" internalName="weapons_block" name="weapons_block">
+                <FieldSet version="0" sizeofValue="236" isLatest="true">
+                  <String CStyleName="name" pascalStyleName="Name" name="name" />
+                  <String CStyleName="hand_grip_marker" pascalStyleName="HandGripMarker" name="hand grip marker" />
+                  <String CStyleName="off_hand_marker" pascalStyleName="OffHandMarker" name="off hand marker" />
+                  <String CStyleName="off_hand_grip_marker" pascalStyleName="OffHandGripMarker" name="off hand grip marker" />
+                  <ShortBlockIndex CStyleName="stand" pascalStyleName="Stand" name="stand" blockReference="block:animations" />
+                  <ShortBlockIndex CStyleName="move" pascalStyleName="Move" name="move" blockReference="block:animations" />
+                  <ShortBlockIndex CStyleName="crouch" pascalStyleName="Crouch" name="crouch" blockReference="block:animations" />
+                  <Pad name="pad" length="2" />
+                  <Angle CStyleName="right_yaw_per_frame" pascalStyleName="RightYawPerFrame" name="right yaw per frame" />
+                  <Angle CStyleName="left_yaw_per_frame" pascalStyleName="LeftYawPerFrame" name="left yaw per frame" />
+                  <ShortInteger CStyleName="right_frame_count" pascalStyleName="RightFrameCount" name="right frame count" />
+                  <ShortInteger CStyleName="left_frame_count" pascalStyleName="LeftFrameCount" name="left frame count" />
+                  <Angle CStyleName="down_pitch_per_frame" pascalStyleName="DownPitchPerFrame" name="down pitch per frame" />
+                  <Angle CStyleName="up_pitch_per_frame" pascalStyleName="UpPitchPerFrame" name="up pitch per frame" />
+                  <ShortInteger CStyleName="down_pitch_frame_count" pascalStyleName="DownPitchFrameCount" name="down pitch frame count" />
+                  <ShortInteger CStyleName="up_pitch_frame_count" pascalStyleName="UpPitchFrameCount" name="up pitch frame count" />
+                  <Pad name="pad" length="16" />
+                  <ShortBlockIndex CStyleName="active" pascalStyleName="Active" name="active" blockReference="block:animations" />
+                  <ShortBlockIndex CStyleName="move_left" pascalStyleName="MoveLeft" name="move left" blockReference="block:animations" />
+                  <ShortBlockIndex CStyleName="move_right" pascalStyleName="MoveRight" name="move right" blockReference="block:animations" />
+                  <ShortBlockIndex CStyleName="move_forward" pascalStyleName="MoveForward" name="move forward" blockReference="block:animations" />
+                  <ShortBlockIndex CStyleName="move_backward" pascalStyleName="MoveBackward" name="move backward" blockReference="block:animations" />
+                  <ShortBlockIndex CStyleName="airborne" pascalStyleName="Airborne" name="airborne" blockReference="block:animations" />
+                  <ShortBlockIndex CStyleName="charging_jump" pascalStyleName="ChargingJump" name="charging jump" blockReference="block:animations" />
+                  <ShortBlockIndex CStyleName="crouch" pascalStyleName="Crouch" name="crouch" blockReference="block:animations" />
+                  <ShortBlockIndex CStyleName="landing_hard" pascalStyleName="LandingHard" name="landing hard" blockReference="block:animations" />
+                  <ShortBlockIndex CStyleName="turning_left" pascalStyleName="TurningLeft" name="turning left" blockReference="block:animations" />
+                  <ShortBlockIndex CStyleName="turning_right" pascalStyleName="TurningRight" name="turning right" blockReference="block:animations" />
+                  <ShortBlockIndex CStyleName="inactive" pascalStyleName="Inactive" name="inactive" blockReference="block:animations" />
+                  <ShortBlockIndex CStyleName="landing_soft" pascalStyleName="LandingSoft" name="landing soft" blockReference="block:animations" />
+                  <Pad name="pad" length="22" />
+                  <Block CStyleName="weapons_types" pascalStyleName="WeaponsTypes" name="weapons types">
+                    <Layout regolithID="block:weapons types" internalName="weapons types_block" name="weapons types_block">
+                      <FieldSet version="0" sizeofValue="68" isLatest="true">
+                        <String CStyleName="label" pascalStyleName="Label" name="label" />
+                        <ShortBlockIndex CStyleName="ready" pascalStyleName="Ready" name="ready" blockReference="block:animations" />
+                        <ShortBlockIndex CStyleName="put_away" pascalStyleName="PutAway" name="put away" blockReference="block:animations" />
+                        <ShortBlockIndex CStyleName="primary_reload" pascalStyleName="PrimaryReload" name="primary reload" blockReference="block:animations" />
+                        <ShortBlockIndex CStyleName="secondary_reload" pascalStyleName="SecondaryReload" name="secondary reload" blockReference="block:animations" />
+                        <ShortBlockIndex CStyleName="combined_reload" pascalStyleName="CombinedReload" name="combined reload" blockReference="block:animations" />
+                        <ShortBlockIndex CStyleName="primary_recoil" pascalStyleName="PrimaryRecoil" name="primary recoil" blockReference="block:animations" />
+                        <ShortBlockIndex CStyleName="secondary_recoil" pascalStyleName="SecondaryRecoil" name="secondary recoil" blockReference="block:animations" />
+                        <ShortBlockIndex CStyleName="combined_recoil" pascalStyleName="CombinedRecoil" name="combined recoil" blockReference="block:animations" />
+                        <Pad name="pad" length="20" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="item_animations" pascalStyleName="ItemAnimations" name="item animations">
+        <Layout regolithID="block:item animations" internalName="item animations_block" name="item animations_block">
+          <FieldSet version="0" sizeofValue="48" isLatest="true">
+            <Pad name="pad" length="16" />
+            <ShortBlockIndex CStyleName="idle" pascalStyleName="Idle" name="idle" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="heat" pascalStyleName="Heat" name="heat" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="primary_ammunition" pascalStyleName="PrimaryAmmunition" name="primary ammunition" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="secondary_ammunition" pascalStyleName="SecondaryAmmunition" name="secondary ammunition" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="combined_ammunition" pascalStyleName="CombinedAmmunition" name="combined ammunition" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="primary_firing" pascalStyleName="PrimaryFiring" name="primary firing" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="secondary_firing" pascalStyleName="SecondaryFiring" name="secondary firing" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="combined_firing" pascalStyleName="CombinedFiring" name="combined firing" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="primary_rate_of_fire" pascalStyleName="PrimaryRateOfFire" name="primary rate of fire" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="secondary_rate_of_fire" pascalStyleName="SecondaryRateOfFire" name="secondary rate of fire" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="combined_rate_of_fire" pascalStyleName="CombinedRateOfFire" name="combined rate of fire" blockReference="block:animations" />
+            <Pad name="pad" length="10" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="vehicle_animations" pascalStyleName="VehicleAnimations" name="vehicle animations">
+        <Layout regolithID="block:vehicle animations" internalName="vehicle animations_block" name="vehicle animations_block">
+          <FieldSet version="0" sizeofValue="128" isLatest="true">
+            <ShortBlockIndex CStyleName="steering" pascalStyleName="Steering" name="steering" blockReference="block:animations" />
+            <Pad name="pad" length="2" />
+            <Angle CStyleName="right_yaw_per_frame" pascalStyleName="RightYawPerFrame" name="right yaw per frame" />
+            <Angle CStyleName="left_yaw_per_frame" pascalStyleName="LeftYawPerFrame" name="left yaw per frame" />
+            <ShortInteger CStyleName="right_frame_count" pascalStyleName="RightFrameCount" name="right frame count" />
+            <ShortInteger CStyleName="left_frame_count" pascalStyleName="LeftFrameCount" name="left frame count" />
+            <Angle CStyleName="down_pitch_per_frame" pascalStyleName="DownPitchPerFrame" name="down pitch per frame" />
+            <Angle CStyleName="up_pitch_per_frame" pascalStyleName="UpPitchPerFrame" name="up pitch per frame" />
+            <ShortInteger CStyleName="down_pitch_frame_count" pascalStyleName="DownPitchFrameCount" name="down pitch frame count" />
+            <ShortInteger CStyleName="up_pitch_frame_count" pascalStyleName="UpPitchFrameCount" name="up pitch frame count" />
+            <Pad name="pad" length="16" />
+            <ShortBlockIndex CStyleName="roll" pascalStyleName="Roll" name="roll" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="throttle" pascalStyleName="Throttle" name="throttle" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="velocity" pascalStyleName="Velocity" name="velocity" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="brake" pascalStyleName="Brake" name="brake" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="ground_speed" pascalStyleName="GroundSpeed" name="ground_speed" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="occupied" pascalStyleName="Occupied" name="occupied" blockReference="block:animations" />
+            <ShortBlockIndex CStyleName="unoccupied" pascalStyleName="Unoccupied" name="unoccupied" blockReference="block:animations" />
+            <Pad name="pad" length="58" />
+            <Block CStyleName="suspension_animations" pascalStyleName="SuspensionAnimations" name="suspension animations">
+              <Layout regolithID="block:suspension animations" internalName="suspension animations_block" name="suspension animations_block">
+                <FieldSet version="0" sizeofValue="20" isLatest="true">
+                  <ShortInteger CStyleName="mass_point_index" pascalStyleName="MassPointIndex" name="mass point index" />
+                  <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" blockReference="block:animations" />
+                  <Real CStyleName="full_extension_ground_depth" pascalStyleName="FullExtensionGroundDepth" name="full extension ground_depth" />
+                  <Real CStyleName="full_compression_ground_depth" pascalStyleName="FullCompressionGroundDepth" name="full compression ground_depth" />
+                  <Pad name="pad" length="8" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="80" />
+      <Block CStyleName="animations" pascalStyleName="Animations" name="animations">
+        <Layout regolithID="block:animations" internalName="animations_block" name="animations_block">
+          <FieldSet version="0" sizeofValue="180" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <Options regolithID="enum:type" CStyleName="type" pascalStyleName="Type">
+                <Enum name="base" CStyleName="base" pascalStyleName="Base" />
+                <Enum name="overlay" CStyleName="overlay" pascalStyleName="Overlay" />
+                <Enum name="replacement" CStyleName="replacement" pascalStyleName="Replacement" />
+              </Options>
+            </ShortEnum>
+            <ShortInteger CStyleName="frame_count" pascalStyleName="FrameCount" name="frame count" />
+            <ShortInteger CStyleName="frame_size" pascalStyleName="FrameSize" name="frame size" />
+            <Pad name="pad" length="2" />
+            <LongInteger CStyleName="node_list_checksum" pascalStyleName="NodeListChecksum" name="node list checksum" />
+            <ShortInteger CStyleName="node_count" pascalStyleName="NodeCount" name="node count" />
+            <ShortInteger CStyleName="loop_frame_index" pascalStyleName="LoopFrameIndex" name="loop frame index" />
+            <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+            <Pad name="pad" length="4" />
+            <ShortBlockIndex CStyleName="next_animation" pascalStyleName="NextAnimation" name="next animation" blockReference="block:animations" />
+            <Pad name="pad" length="34" />
+            <LongInteger CStyleName="trans_flags0" pascalStyleName="TransFlags0" name="trans flags0" />
+            <Pad name="pad" length="12" />
+            <LongInteger CStyleName="rot_flags0" pascalStyleName="RotFlags0" name="rot flags0" />
+            <Pad name="pad" length="12" />
+            <LongInteger CStyleName="scale_flags0" pascalStyleName="ScaleFlags0" name="scale flags0" />
+            <Pad name="pad" length="12" />
+            <Data CStyleName="default_data" pascalStyleName="DefaultData" name="default data" />
+            <Data CStyleName="frame_data" pascalStyleName="FrameData" name="frame data" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

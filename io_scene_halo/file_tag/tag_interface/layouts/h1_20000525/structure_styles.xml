@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8-sig'?>
-<TagGroup group="stst" name="structure_styles" version="1">
+<TagGroup group="stst" name="structure_styles" version="2">
   <Layout regolithID="block:structure_styles" internalName="structure_styles_block" name="structure_styles">
     <FieldSet version="0" sizeofValue="1024" sizeofSource="sizeof(struct structure_styles_group)" isLatest="true">
       <Real CStyleName="unknown" pascalStyleName="Unknown" name="unknown" />
@@ -79,7 +79,7 @@
             <Block CStyleName="seam_instances" pascalStyleName="SeamInstances" name="seams">
               <Layout regolithID="block:seams" internalName="seams_block" name="seams_block">
                 <FieldSet version="0" sizeofValue="16" isLatest="true">
-                  <ShortBlockIndex CStyleName="style_seam" pascalStyleName="StyleSeam" name="style seam" blockReference="structure_seam_block" />
+                  <ShortBlockIndex CStyleName="style_seam" pascalStyleName="StyleSeam" name="style seam" blockReference="block:seams" />
                   <Pad name="pad" length="2" />
                   <Block CStyleName="seam_vertices" pascalStyleName="SeamVertices" name="vertices">
                     <Layout regolithID="block:vertices" internalName="vertices_block" name="vertices_block">

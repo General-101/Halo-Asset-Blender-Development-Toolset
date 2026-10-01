@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8-sig'?>
-<TagGroup group="ligh" name="lights" version="1">
+<TagGroup group="ligh" name="lights" version="2">
   <Layout regolithID="block:lights" internalName="lights_block" name="lights">
     <FieldSet version="0" sizeofValue="272" sizeofSource="sizeof(struct lights_group)" isLatest="true">
       <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">

@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8-sig'?>
-<TagGroup group="devo" name="cellular_automata" version="1">
+<TagGroup group="devo" name="cellular_automata" version="2">
   <Layout regolithID="block:cellular_automata" internalName="cellular_automata_block" name="cellular_automata">
     <FieldSet version="0" sizeofValue="640" sizeofSource="sizeof(struct cellular_automata_group)" isLatest="true">
       <ShortInteger CStyleName="updates_per_second" pascalStyleName="UpdatesPerSecond" name="updates per second" />

@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8-sig'?>
-<TagGroup group="bitm" name="bitmaps" version="1">
+<TagGroup group="bitm" name="bitmaps" version="2">
   <Layout regolithID="block:bitmaps" internalName="bitmaps_block" name="bitmaps">
     <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(struct bitmaps_group)" isLatest="true">
       <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
@@ -40,7 +40,7 @@
       <Block CStyleName="sequences" pascalStyleName="Sequences" name="sequences">
         <Layout regolithID="block:sequences" internalName="sequences_block" name="sequences_block">
           <FieldSet version="0" sizeofValue="64" isLatest="true">
-            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <Tag CStyleName="name" pascalStyleName="Name" name="name" />
             <ShortInteger CStyleName="first_bitmap_index" pascalStyleName="FirstBitmapIndex" name="first bitmap index" />
             <ShortInteger CStyleName="bitmap_count" pascalStyleName="BitmapCount" name="bitmap count" />
             <Pad name="pad" length="16" />

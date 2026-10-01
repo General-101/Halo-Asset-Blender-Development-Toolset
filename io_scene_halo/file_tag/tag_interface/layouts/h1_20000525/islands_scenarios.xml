@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8-sig'?>
-<TagGroup group="isls" name="islands_scenarios" version="1">
+<TagGroup group="isls" name="islands_scenarios" version="2">
   <Layout regolithID="block:islands_scenarios" internalName="islands_scenarios_block" name="islands_scenarios">
     <FieldSet version="0" sizeofValue="672" sizeofSource="sizeof(struct islands_scenarios_group)" isLatest="true">
       <TagReference CStyleName="materials_group" pascalStyleName="MaterialsGroup" name="materials group" />
@@ -33,7 +33,7 @@
           <FieldSet version="0" sizeofValue="64" isLatest="true">
             <Pad name="pad" length="4" />
             <LongInteger CStyleName="type_identifier" pascalStyleName="TypeIdentifier" name="type identifier" />
-            <ShortBlockIndex CStyleName="type_index" pascalStyleName="TypeIndex" name="type index" blockReference="marker_types_block" />
+            <ShortBlockIndex CStyleName="type_index" pascalStyleName="TypeIndex" name="type index" blockReference="block:marker types" />
             <ShortInteger CStyleName="team_index" pascalStyleName="TeamIndex" name="team index" />
             <Pad name="pad" length="32" />
             <Data CStyleName="data" pascalStyleName="Data" name="data" />
@@ -99,7 +99,7 @@
             <Block CStyleName="connections" pascalStyleName="Connections" name="connections">
               <Layout regolithID="block:connections" internalName="connections_block" name="connections_block">
                 <FieldSet version="0" sizeofValue="4" isLatest="true">
-                  <ShortBlockIndex CStyleName="primitive_index" pascalStyleName="PrimitiveIndex" name="primitive index" blockReference="structure_primitive_block" />
+                  <ShortBlockIndex CStyleName="primitive_index" pascalStyleName="PrimitiveIndex" name="primitive index" blockReference="block:structure primitives" />
                   <ShortInteger CStyleName="seam_index" pascalStyleName="SeamIndex" name="seam index" />
                 </FieldSet>
               </Layout>
@@ -107,7 +107,7 @@
             <Block CStyleName="visible_neighbors" pascalStyleName="VisibleNeighbors" name="visible neighbors">
               <Layout regolithID="block:visible neighbors" internalName="visible neighbors_block" name="visible neighbors_block">
                 <FieldSet version="0" sizeofValue="4" isLatest="true">
-                  <ShortBlockIndex CStyleName="primitive_index" pascalStyleName="PrimitiveIndex" name="primitive index" blockReference="structure_primitive_block" />
+                  <ShortBlockIndex CStyleName="primitive_index" pascalStyleName="PrimitiveIndex" name="primitive index" blockReference="block:structure primitives" />
                   <Pad name="pad" length="2" />
                 </FieldSet>
               </Layout>
@@ -115,7 +115,7 @@
             <Block CStyleName="audible_neighbors" pascalStyleName="AudibleNeighbors" name="audible neighbors">
               <Layout regolithID="block:audible neighbors" internalName="audible neighbors_block" name="audible neighbors_block">
                 <FieldSet version="0" sizeofValue="8" isLatest="true">
-                  <ShortBlockIndex CStyleName="primitive_index" pascalStyleName="PrimitiveIndex" name="primitive index" blockReference="structure_primitive_block" />
+                  <ShortBlockIndex CStyleName="primitive_index" pascalStyleName="PrimitiveIndex" name="primitive index" blockReference="block:structure primitives" />
                   <Pad name="pad" length="2" />
                   <Real CStyleName="sound_attenuation" pascalStyleName="SoundAttenuation" name="sound attenuation" />
                 </FieldSet>
@@ -128,7 +128,7 @@
       <Block CStyleName="exterior_visible_primitives" pascalStyleName="ExteriorVisiblePrimitives" name="exterior visible primitives">
         <Layout regolithID="block:exterior visible primitives" internalName="exterior visible primitives_block" name="exterior visible primitives_block">
           <FieldSet version="0" sizeofValue="4" isLatest="true">
-            <ShortBlockIndex CStyleName="primitive_index" pascalStyleName="PrimitiveIndex" name="primitive index" blockReference="structure_primitive_block" />
+            <ShortBlockIndex CStyleName="primitive_index" pascalStyleName="PrimitiveIndex" name="primitive index" blockReference="block:structure primitives" />
             <Pad name="pad" length="2" />
           </FieldSet>
         </Layout>
@@ -136,7 +136,7 @@
       <Block CStyleName="exterior_audible_primitives" pascalStyleName="ExteriorAudiblePrimitives" name="exterior audible primitives">
         <Layout regolithID="block:exterior audible primitives" internalName="exterior audible primitives_block" name="exterior audible primitives_block">
           <FieldSet version="0" sizeofValue="4" isLatest="true">
-            <ShortBlockIndex CStyleName="primitive_index" pascalStyleName="PrimitiveIndex" name="primitive index" blockReference="structure_primitive_block" />
+            <ShortBlockIndex CStyleName="primitive_index" pascalStyleName="PrimitiveIndex" name="primitive index" blockReference="block:structure primitives" />
             <Pad name="pad" length="2" />
           </FieldSet>
         </Layout>

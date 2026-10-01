@@ -1,11 +1,11 @@
 ﻿<?xml version='1.0' encoding='utf-8-sig'?>
-<TagGroup group="antr" name="models_animations" version="1">
+<TagGroup group="antr" name="models_animations" version="4">
   <Layout regolithID="block:models_animations" internalName="models_animations_block" name="models_animations">
     <FieldSet version="0" sizeofValue="128" sizeofSource="sizeof(struct models_animations_group)" isLatest="true">
       <Block CStyleName="objects" pascalStyleName="Objects" name="objects">
         <Layout regolithID="block:objects" internalName="objects_block" name="objects_block">
           <FieldSet version="0" sizeofValue="20" isLatest="true">
-            <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" blockReference="animation_block" />
+            <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" blockReference="block:animations" />
             <ShortEnum CStyleName="function" pascalStyleName="Function" name="function">
               <Options regolithID="enum:function" CStyleName="function" pascalStyleName="Function">
                 <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
@@ -26,7 +26,7 @@
             <Block CStyleName="animations" pascalStyleName="Animations" name="animations">
               <Layout regolithID="block:animations" internalName="animations_block" name="animations_block">
                 <FieldSet version="0" sizeofValue="2" isLatest="true">
-                  <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" blockReference="animation_block" />
+                  <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" blockReference="block:animations" />
                 </FieldSet>
               </Layout>
             </Block>
@@ -56,8 +56,8 @@
                   <Block CStyleName="animations" pascalStyleName="Animations" name="animations">
                     <Layout regolithID="block:animations" internalName="animations_block" name="animations_block">
                       <FieldSet version="0" sizeofValue="4" isLatest="true">
-                        <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" blockReference="animation_block" />
-                        <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" blockReference="animation_block" />
+                        <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" blockReference="block:animations" />
+                        <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" blockReference="block:animations" />
                       </FieldSet>
                     </Layout>
                   </Block>
@@ -116,7 +116,7 @@
             <Block CStyleName="animations" pascalStyleName="Animations" name="animations">
               <Layout regolithID="block:animations" internalName="animations_block" name="animations_block">
                 <FieldSet version="0" sizeofValue="2" isLatest="true">
-                  <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" blockReference="animation_block" />
+                  <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" blockReference="block:animations" />
                 </FieldSet>
               </Layout>
             </Block>
@@ -124,7 +124,7 @@
               <Layout regolithID="block:suspension animations" internalName="suspension animations_block" name="suspension animations_block">
                 <FieldSet version="0" sizeofValue="20" isLatest="true">
                   <ShortInteger CStyleName="mass_point_index" pascalStyleName="MassPointIndex" name="mass point index" />
-                  <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" blockReference="animations_block" />
+                  <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" blockReference="block:animations" />
                   <Real CStyleName="full_extension_ground_depth" pascalStyleName="FullExtensionGroundDepth" name="full extension ground_depth" />
                   <Real CStyleName="full_compression_ground_depth" pascalStyleName="FullCompressionGroundDepth" name="full compression ground_depth" />
                   <Pad name="pad" length="8" />
@@ -150,7 +150,7 @@
             <Block CStyleName="animations" pascalStyleName="Animations" name="animations">
               <Layout regolithID="block:animations" internalName="animations_block" name="animations_block">
                 <FieldSet version="0" sizeofValue="2" isLatest="true">
-                  <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" blockReference="animation_block" />
+                  <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" blockReference="block:animations" />
                 </FieldSet>
               </Layout>
             </Block>
@@ -183,7 +183,7 @@
             <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
             <ShortInteger CStyleName="key_frame_index" pascalStyleName="KeyFrameIndex" name="key frame index" />
             <Pad name="pad" length="2" />
-            <ShortBlockIndex CStyleName="next_animation" pascalStyleName="NextAnimation" name="next animation" blockReference="animations_block" />
+            <ShortBlockIndex CStyleName="next_animation" pascalStyleName="NextAnimation" name="next animation" blockReference="block:animations" />
             <Pad name="pad" length="14" />
             <Data CStyleName="frame_info" pascalStyleName="FrameInfo" name="frame info" />
             <LongInteger CStyleName="trans_flags0" pascalStyleName="TransFlags0" name="trans flags0" />

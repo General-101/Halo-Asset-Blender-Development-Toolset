@@ -1,0 +1,11 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="antr" name="models.animation graphs" version="1">
+  <Layout regolithID="block:models.animation graphs" internalName="models.animation graphs_block" name="models.animation graphs">
+    <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(struct models.animation graphs_group)" isLatest="true">
+      <ShortInteger CStyleName="frame_count" pascalStyleName="FrameCount" name="frame count" />
+      <ShortInteger CStyleName="node_count" pascalStyleName="NodeCount" name="node count" />
+      <Pad name="pad" length="40" />
+      <Data CStyleName="data" pascalStyleName="Data" name="data" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

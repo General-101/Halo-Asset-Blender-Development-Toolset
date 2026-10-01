@@ -1,0 +1,16 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="snpm" name="sounds.samples" version="1">
+  <Layout regolithID="block:sounds.samples" internalName="sounds.samples_block" name="sounds.samples">
+    <FieldSet version="0" sizeofValue="92" sizeofSource="sizeof(struct sounds.samples_group)" isLatest="true">
+      <String CStyleName="name" pascalStyleName="Name" name="name" />
+      <Pad name="pad" length="4" />
+      <Pad name="pad" length="24" />
+      <LongInteger CStyleName="play_time" pascalStyleName="PlayTime" name="play time" />
+      <ShortInteger CStyleName="compression_type" pascalStyleName="CompressionType" name="compression type" />
+      <ShortInteger CStyleName="sound_encoding" pascalStyleName="SoundEncoding" name="sound encoding" />
+      <ShortInteger CStyleName="sample_rate" pascalStyleName="SampleRate" name="sample rate" />
+      <Pad name="pad" length="2" />
+      <Data CStyleName="sound_samples" pascalStyleName="SoundSamples" name="sound samples" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

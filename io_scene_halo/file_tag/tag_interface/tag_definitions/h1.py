@@ -44,7 +44,9 @@ def calculate_field_size(field_node):
     if tag in tag_common.pad_tags:
         return get_pad_size(field_node)
 
-    return tag_common.field_sizes.get(tag, 0)
+    field_size = tag_common.field_sizes.get(tag, 0)
+
+    return field_size
 
 def calculate_fieldset_size(fieldset_node):
     total_size = 0

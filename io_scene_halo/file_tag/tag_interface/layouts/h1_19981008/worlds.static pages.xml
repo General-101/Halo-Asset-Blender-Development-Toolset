@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="stap" name="worlds.static pages" version="1">
+  <Layout regolithID="block:worlds.static pages" internalName="worlds.static pages_block" name="worlds.static pages">
+    <FieldSet version="0" sizeofValue="900" sizeofSource="sizeof(struct worlds.static pages_group)" isLatest="true">
+      <Data CStyleName="cells" pascalStyleName="Cells" name="cells" />
+      <Data CStyleName="submesh_cells" pascalStyleName="SubmeshCells" name="submesh cells" />
+      <Data CStyleName="secondary_cells" pascalStyleName="SecondaryCells" name="secondary cells" />
+      <Data CStyleName="secondary_submesh_cells" pascalStyleName="SecondarySubmeshCells" name="secondary submesh cells" />
+      <Data CStyleName="low_detail_texture" pascalStyleName="LowDetailTexture" name="low detail texture" />
+      <Data CStyleName="overhead_map_texture" pascalStyleName="OverheadMapTexture" name="overhead map texture" />
+      <LongInteger CStyleName="next_identifier" pascalStyleName="NextIdentifier" name="next identifier" />
+      <Pad name="pad" length="776" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

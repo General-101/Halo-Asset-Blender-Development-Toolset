@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8-sig'?>
-<TagGroup group="mode" name="models" version="1">
+<TagGroup group="mode" name="models" version="2">
   <Layout regolithID="block:models" internalName="models_block" name="models">
     <FieldSet version="0" sizeofValue="248" sizeofSource="sizeof(struct models_group)" isLatest="true">
       <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
@@ -221,11 +221,11 @@
                   <String CStyleName="name" pascalStyleName="Name" name="name" />
                   <Pad name="pad" length="32" />
                   <Pad name="pad" length="2" />
-                  <ShortBlockIndex CStyleName="super_low" pascalStyleName="SuperLow" name="super low" blockReference="model_geometry_block" />
-                  <ShortBlockIndex CStyleName="low" pascalStyleName="Low" name="low" blockReference="model_geometry_block" />
-                  <ShortBlockIndex CStyleName="medium" pascalStyleName="Medium" name="medium" blockReference="model_geometry_block" />
-                  <ShortBlockIndex CStyleName="high" pascalStyleName="High" name="high" blockReference="model_geometry_block" />
-                  <ShortBlockIndex CStyleName="super_high" pascalStyleName="SuperHigh" name="super high" blockReference="model_geometry_block" />
+                  <ShortBlockIndex CStyleName="super_low" pascalStyleName="SuperLow" name="super low" blockReference="block:geometries" />
+                  <ShortBlockIndex CStyleName="low" pascalStyleName="Low" name="low" blockReference="block:geometries" />
+                  <ShortBlockIndex CStyleName="medium" pascalStyleName="Medium" name="medium" blockReference="block:geometries" />
+                  <ShortBlockIndex CStyleName="high" pascalStyleName="High" name="high" blockReference="block:geometries" />
+                  <ShortBlockIndex CStyleName="super_high" pascalStyleName="SuperHigh" name="super high" blockReference="block:geometries" />
                   <Block CStyleName="local_marker" pascalStyleName="LocalMarker" name="markers">
                     <Layout regolithID="block:markers" internalName="markers_block" name="markers_block">
                       <FieldSet version="0" sizeofValue="80" isLatest="true">
@@ -253,7 +253,7 @@
               <Layout regolithID="block:parts" internalName="parts_block" name="parts_block">
                 <FieldSet version="0" sizeofValue="172" isLatest="true">
                   <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags" />
-                  <ShortBlockIndex CStyleName="material" pascalStyleName="Material" name="material" blockReference="model_material_block" />
+                  <ShortBlockIndex CStyleName="material" pascalStyleName="Material" name="material" blockReference="block:shaders" />
                   <LongInteger CStyleName="vertex_count" pascalStyleName="VertexCount" name="vertex count" />
                   <ShortInteger CStyleName="blended_vertex_count" pascalStyleName="BlendedVertexCount" name="blended vertex count" />
                   <Pad name="pad" length="26" />
@@ -269,8 +269,8 @@
                     <Layout regolithID="block:vertex groups" internalName="vertex groups_block" name="vertex groups_block">
                       <FieldSet version="0" sizeofValue="8" isLatest="true">
                         <ShortInteger CStyleName="vertex_count" pascalStyleName="VertexCount" name="vertex count" />
-                        <ShortBlockIndex CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" blockReference="model_node_block" />
-                        <ShortBlockIndex CStyleName="secondary_node_index" pascalStyleName="SecondaryNodeIndex" name="secondary node index" blockReference="model_node_block" />
+                        <ShortBlockIndex CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" blockReference="block:nodes" />
+                        <ShortBlockIndex CStyleName="secondary_node_index" pascalStyleName="SecondaryNodeIndex" name="secondary node index" blockReference="block:nodes" />
                         <Pad name="pad" length="2" />
                       </FieldSet>
                     </Layout>
@@ -279,8 +279,8 @@
                     <Layout regolithID="block:triangle strip groups" internalName="triangle strip groups_block" name="triangle strip groups_block">
                       <FieldSet version="0" sizeofValue="8" isLatest="true">
                         <ShortInteger CStyleName="triangle_count" pascalStyleName="TriangleCount" name="triangle count" />
-                        <ShortBlockIndex CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" blockReference="model_node_block" />
-                        <ShortBlockIndex CStyleName="secondary_node_index" pascalStyleName="SecondaryNodeIndex" name="secondary node index" blockReference="model_node_block" />
+                        <ShortBlockIndex CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" blockReference="block:nodes" />
+                        <ShortBlockIndex CStyleName="secondary_node_index" pascalStyleName="SecondaryNodeIndex" name="secondary node index" blockReference="block:nodes" />
                         <Pad name="pad" length="2" />
                       </FieldSet>
                     </Layout>

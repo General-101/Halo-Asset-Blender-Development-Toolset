@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8-sig'?>
-<TagGroup group="coll" name="models_old_collision_geometry" version="1">
+<TagGroup group="coll" name="models_old_collision_geometry" version="5">
   <Layout regolithID="block:models_old_collision_geometry" internalName="models_old_collision_geometry_block" name="models_old_collision_geometry">
     <FieldSet version="0" sizeofValue="128" sizeofSource="sizeof(struct models_old_collision_geometry_group)" isLatest="true">
       <Pad name="pad" length="12" />
@@ -61,7 +61,7 @@
                       <FieldSet version="0" sizeofValue="32" isLatest="true">
                         <RealPlane3D CStyleName="plane" pascalStyleName="Plane" name="plane" />
                         <Pad name="pad" length="4" />
-                        <ShortBlockIndex CStyleName="material_index" pascalStyleName="MaterialIndex" name="material index" blockReference="collision_material_block" />
+                        <ShortBlockIndex CStyleName="material_index" pascalStyleName="MaterialIndex" name="material index" blockReference="block:materials" />
                         <CharInteger CStyleName="edge_count" pascalStyleName="EdgeCount" name="edge count" />
                         <CharInteger CStyleName="edge_reversed_flags" pascalStyleName="EdgeReversedFlags" name="edge reversed flags" />
                         <CharInteger CStyleName="edge_index" pascalStyleName="EdgeIndex" name="edge index" />

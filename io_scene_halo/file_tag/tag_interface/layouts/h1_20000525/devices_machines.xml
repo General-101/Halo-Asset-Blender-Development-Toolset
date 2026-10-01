@@ -275,7 +275,7 @@
             <RealBounds CStyleName="bounds" pascalStyleName="Bounds" name="bounds" />
             <Pad name="pad" length="4" />
             <Pad name="pad" length="2" />
-            <ShortBlockIndex CStyleName="turn_off_with" pascalStyleName="TurnOffWith" name="turn off with" blockReference="object_function_block" />
+            <ShortBlockIndex CStyleName="turn_off_with" pascalStyleName="TurnOffWith" name="turn off with" blockReference="block:functions" />
             <Pad name="pad" length="256" />
             <Pad name="pad" length="16" />
             <String CStyleName="usage" pascalStyleName="Usage" name="usage" />

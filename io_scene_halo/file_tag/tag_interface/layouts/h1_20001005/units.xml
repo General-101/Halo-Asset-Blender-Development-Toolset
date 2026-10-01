@@ -1,0 +1,124 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="unit" name="units" version="1">
+  <Layout regolithID="block:units" internalName="units_block" name="units">
+    <FieldSet version="0" sizeofValue="256" sizeofSource="sizeof(struct units_group)" isLatest="true">
+      <TagReference CStyleName="reference" pascalStyleName="Reference" name="reference" />
+      <String CStyleName="submerged_marker_name" pascalStyleName="SubmergedMarkerName" name="submerged marker name" />
+      <Real CStyleName="crouch_height" pascalStyleName="CrouchHeight" name="crouch height" />
+      <Pad name="pad" length="8" />
+      <Block CStyleName="camera_tracks" pascalStyleName="CameraTracks" name="camera tracks">
+        <Layout regolithID="block:camera tracks" internalName="camera tracks_block" name="camera tracks_block">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <TagReference CStyleName="track" pascalStyleName="Track" name="track" />
+            <RealVector3D CStyleName="anchor_offset" pascalStyleName="AnchorOffset" name="anchor offset" />
+			<Pad name="pad" length="12" />
+		  </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="48" />
+      <ShortEnum CStyleName="unit_class" pascalStyleName="UnitClass" name="unit class">
+        <Options regolithID="enum:unit_class" CStyleName="unit_class" pascalStyleName="UnitClass">
+          <Enum name="light" CStyleName="light" pascalStyleName="Light" />
+          <Enum name="medium" CStyleName="medium" pascalStyleName="Medium" />
+          <Enum name="heavy" CStyleName="heavy" pascalStyleName="Heavy" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="2" />
+      <ShortInteger CStyleName="equipment_count" pascalStyleName="EquipmentCount" name="equipment count" />
+      <ShortInteger CStyleName="ammunition_count" pascalStyleName="AmmunitionCount" name="ammunition count" />
+      <ShortInteger CStyleName="backpack_count" pascalStyleName="BackpackCount" name="backpack count" />
+      <ShortInteger CStyleName="pistol_weapon_count" pascalStyleName="PistolWeaponCount" name="pistol weapon count" />
+      <ShortInteger CStyleName="rifle_weapon_count" pascalStyleName="RifleWeaponCount" name="rifle weapon count" />
+      <ShortInteger CStyleName="secondary_weapon_count" pascalStyleName="SecondaryWeaponCount" name="secondary weapon count" />
+      <Pad name="pad" length="8" />
+      <RealVector3D CStyleName="acceleration_scale" pascalStyleName="AccelerationScale" name="acceleration scale" />
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="circular aiming" CStyleName="circular_aiming" pascalStyleName="CircularAiming" />
+        </Options>
+      </LongFlags>
+      <Pad name="pad" length="36" />
+      <Block CStyleName="powered_seats" pascalStyleName="PoweredSeats" name="powered seats">
+        <Layout regolithID="block:powered seats" internalName="powered seats_block" name="powered seats_block">
+          <FieldSet version="0" sizeofValue="68" isLatest="true">
+            <LongFlags CStyleName="driver_power_export" pascalStyleName="DriverPowerExport" name="driver power export">
+              <Options regolithID="enum:driver power export" CStyleName="driver_power_export" pascalStyleName="DriverPowerExport">
+                <Bit name="alpha" CStyleName="alpha" pascalStyleName="Alpha" />
+				<Bit name="beta" CStyleName="beta" pascalStyleName="Beta" />
+				<Bit name="gamma" CStyleName="gamma" pascalStyleName="Gamma" />
+				<Bit name="delta" CStyleName="delta" pascalStyleName="Delta" />
+              </Options>
+            </LongFlags>
+	        <Real CStyleName="driver_powerup_time" pascalStyleName="DriverPowerupTime" name="driver powerup time" />
+	        <Real CStyleName="driver_powerdown_time" pascalStyleName="DriverPowerdownTime" name="driver powerdown time" />
+            <LongFlags CStyleName="driver_attachments_active" pascalStyleName="DriverAttachmentsActive" name="driver attachments active">
+              <Options regolithID="enum:driver attachments active" CStyleName="driver_attachments_active" pascalStyleName="DriverAttachmentsActive">
+                <Bit name="alpha" CStyleName="alpha" pascalStyleName="Alpha" />
+				<Bit name="beta" CStyleName="beta" pascalStyleName="Beta" />
+				<Bit name="gamma" CStyleName="gamma" pascalStyleName="Gamma" />
+				<Bit name="delta" CStyleName="delta" pascalStyleName="Delta" />
+              </Options>
+            </LongFlags>
+            <LongFlags CStyleName="driver_attachments_scaled" pascalStyleName="DriverAttachmentsScaled" name="driver attachments scaled">
+              <Options regolithID="enum:driver attachments scaled" CStyleName="driver_attachments_scaled" pascalStyleName="DriverAttachmentsScaled">
+                <Bit name="alpha" CStyleName="alpha" pascalStyleName="Alpha" />
+				<Bit name="beta" CStyleName="beta" pascalStyleName="Beta" />
+				<Bit name="gamma" CStyleName="gamma" pascalStyleName="Gamma" />
+				<Bit name="delta" CStyleName="delta" pascalStyleName="Delta" />
+              </Options>
+            </LongFlags>
+			<Pad name="pad" length="48" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="equipment" pascalStyleName="Equipment" name="equipment">
+        <Layout regolithID="block:equipment" internalName="equipment_block" name="equipment_block">
+          <FieldSet version="0" sizeofValue="60" isLatest="true">
+		    <TagReference CStyleName="item" pascalStyleName="Item" name="item" />
+		    <ShortInteger CStyleName="count" pascalStyleName="Count" name="count" />
+		    <Pad name="pad" length="18" />
+		  </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="seats" pascalStyleName="Seats" name="seats">
+        <Layout regolithID="block:seats" internalName="seats_block" name="seats_block">
+          <FieldSet version="0" sizeofValue="284" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="invisible" CStyleName="invisible" pascalStyleName="Invisible" />
+				<Bit name="locked" CStyleName="locked" pascalStyleName="Locked" />
+				<Bit name="driver" CStyleName="driver" pascalStyleName="Driver" />
+				<Bit name="gunner" CStyleName="gunner" pascalStyleName="Gunner" />
+				<Bit name="camera uses rider origin" CStyleName="camera_uses_rider_origin" pascalStyleName="CameraUsesRiderOrigin" />
+              </Options>
+            </LongFlags>
+			<String CStyleName="label" pascalStyleName="Label" name="label" />
+			<String CStyleName="marker_name" pascalStyleName="MarkerName" name="marker name" />
+			<String CStyleName="submerged_marker_name" pascalStyleName="SSubmergedMarkerName" name="submerged marker name" />
+			<Real CStyleName="crouch_height" pascalStyleName="CrouchHeight" name="crouch height" />
+            <Block CStyleName="camera_tracks" pascalStyleName="CameraTracks" name="camera tracks">
+              <Layout regolithID="block:camera tracks" internalName="camera tracks_block" name="camera tracks_block">
+                <FieldSet version="0" sizeofValue="64" isLatest="true">
+		          <TagReference CStyleName="track" pascalStyleName="Track" name="track" />
+		          <RealVector3D CStyleName="anchor_offset" pascalStyleName="AnchorOffset" name="anchor offset" />
+				  <Pad name="pad" length="12" />
+		        </FieldSet>
+              </Layout>
+            </Block>
+			<Pad name="pad" length="48" />
+			<RealVector3D CStyleName="acceleration_scale" pascalStyleName="AccelerationScale" name="acceleration scale" />
+			<Pad name="pad" length="88" />
+            <Block CStyleName="ik_markers" pascalStyleName="IkMarkers" name="ik markers">
+              <Layout regolithID="block:ik markers" internalName="ik markers_block" name="ik markers_block">
+                <FieldSet version="0" sizeofValue="40" isLatest="true">
+				  <Pad name="pad" length="8" />
+		          <String CStyleName="marker_name" pascalStyleName="MarkerName" name="marker name" />
+		        </FieldSet>
+              </Layout>
+            </Block>
+		  </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

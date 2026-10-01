@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8-sig'?>
-<TagGroup group="col2" name="models_collision_geometry" version="1">
+<TagGroup group="col2" name="models_collision_geometry" version="8">
   <Layout regolithID="block:models_collision_geometry" internalName="models_collision_geometry_block" name="models_collision_geometry">
     <FieldSet version="0" sizeofValue="128" sizeofSource="sizeof(struct models_collision_geometry_group)" isLatest="true">
       <Pad name="pad" length="92" />
@@ -55,10 +55,10 @@
         <Layout regolithID="block:nodes" internalName="nodes_block" name="nodes_block">
           <FieldSet version="0" sizeofValue="64" isLatest="true">
             <String CStyleName="name" pascalStyleName="Name" name="name" />
-            <ShortBlockIndex CStyleName="region" pascalStyleName="Region" name="region" blockReference="region_block" />
-            <ShortBlockIndex CStyleName="parent_node" pascalStyleName="ParentNode" name="parent node" blockReference="collision_node_block" />
-            <ShortBlockIndex CStyleName="next_sibling_node" pascalStyleName="NextSiblingNode" name="next sibling node" blockReference="collision_node_block" />
-            <ShortBlockIndex CStyleName="first_child_node" pascalStyleName="FirstChildNode" name="first child node" blockReference="collision_node_block" />
+            <ShortBlockIndex CStyleName="region" pascalStyleName="Region" name="region" blockReference="block:regions" />
+            <ShortBlockIndex CStyleName="parent_node" pascalStyleName="ParentNode" name="parent node" blockReference="block:nodes" />
+            <ShortBlockIndex CStyleName="next_sibling_node" pascalStyleName="NextSiblingNode" name="next sibling node" blockReference="block:nodes" />
+            <ShortBlockIndex CStyleName="first_child_node" pascalStyleName="FirstChildNode" name="first child node" blockReference="block:nodes" />
             <Pad name="pad" length="12" />
             <Block CStyleName="geometries" pascalStyleName="Geometries" name="geometries">
               <Layout regolithID="block:geometries" internalName="geometries_block" name="geometries_block">
@@ -68,8 +68,8 @@
                     <Layout regolithID="block:3d bsp nodes" internalName="3d bsp nodes_block" name="3d bsp nodes_block">
                       <FieldSet version="0" sizeofValue="24" isLatest="true">
                         <RealPlane3D CStyleName="plane" pascalStyleName="Plane" name="plane" />
-                        <ShortBlockIndex CStyleName="back_node" pascalStyleName="BackNode" name="back node" blockReference="2d_bsp_node_block" />
-                        <ShortBlockIndex CStyleName="front_node" pascalStyleName="FrontNode" name="front node" blockReference="2d_bsp_node_block" />
+                        <ShortBlockIndex CStyleName="back_node" pascalStyleName="BackNode" name="back node" blockReference="block:2d bsp nodes" />
+                        <ShortBlockIndex CStyleName="front_node" pascalStyleName="FrontNode" name="front node" blockReference="block:2d bsp nodes" />
                         <ShortInteger CStyleName="2d_bsp_root_index" pascalStyleName="2dBspRootIndex" name="2d bsp root index" />
                         <Pad name="pad" length="2" />
                       </FieldSet>
@@ -88,20 +88,20 @@
                     <Layout regolithID="block:surfaces" internalName="surfaces_block" name="surfaces_block">
                       <FieldSet version="0" sizeofValue="20" isLatest="true">
                         <RealPlane3D CStyleName="plane" pascalStyleName="Plane" name="plane" />
-                        <ShortBlockIndex CStyleName="material" pascalStyleName="Material" name="material" blockReference="material_block" />
-                        <ShortBlockIndex CStyleName="first_edge" pascalStyleName="FirstEdge" name="first edge" blockReference="edge_block" />
+                        <ShortBlockIndex CStyleName="material" pascalStyleName="Material" name="material" blockReference="block:materials" />
+                        <ShortBlockIndex CStyleName="first_edge" pascalStyleName="FirstEdge" name="first edge" blockReference="block:edges" />
                       </FieldSet>
                     </Layout>
                   </Block>
                   <Block CStyleName="edges" pascalStyleName="Edges" name="edges">
                     <Layout regolithID="block:edges" internalName="edges_block" name="edges_block">
                       <FieldSet version="0" sizeofValue="12" isLatest="true">
-                        <ShortBlockIndex CStyleName="start_vertex" pascalStyleName="StartVertex" name="start vertex" blockReference="vertex_block" />
-                        <ShortBlockIndex CStyleName="end_vertex" pascalStyleName="EndVertex" name="end vertex" blockReference="vertex_block" />
-                        <ShortBlockIndex CStyleName="forward_geometry_edge" pascalStyleName="ForwardGeometryEdge" name="forward geometry edge" blockReference="edge_block" />
-                        <ShortBlockIndex CStyleName="reverse_geometry_edge" pascalStyleName="ReverseGeometryEdge" name="reverse geometry edge" blockReference="edge_block" />
-                        <ShortBlockIndex CStyleName="left_geometry_surface" pascalStyleName="LeftGeometrySurface" name="left geometry surface" blockReference="surface_block" />
-                        <ShortBlockIndex CStyleName="right_geometry_surface" pascalStyleName="RightGeometrySurface" name="right geometry surface" blockReference="surface_block" />
+                        <ShortBlockIndex CStyleName="start_vertex" pascalStyleName="StartVertex" name="start vertex" blockReference="block:vertices" />
+                        <ShortBlockIndex CStyleName="end_vertex" pascalStyleName="EndVertex" name="end vertex" blockReference="block:vertices" />
+                        <ShortBlockIndex CStyleName="forward_geometry_edge" pascalStyleName="ForwardGeometryEdge" name="forward geometry edge" blockReference="block:edges" />
+                        <ShortBlockIndex CStyleName="reverse_geometry_edge" pascalStyleName="ReverseGeometryEdge" name="reverse geometry edge" blockReference="block:edges" />
+                        <ShortBlockIndex CStyleName="left_geometry_surface" pascalStyleName="LeftGeometrySurface" name="left geometry surface" blockReference="block:surfaces" />
+                        <ShortBlockIndex CStyleName="right_geometry_surface" pascalStyleName="RightGeometrySurface" name="right geometry surface" blockReference="block:surfaces" />
                       </FieldSet>
                     </Layout>
                   </Block>
@@ -110,7 +110,7 @@
                       <FieldSet version="0" sizeofValue="16" isLatest="true">
                         <RealPoint3D CStyleName="point" pascalStyleName="Point" name="point" />
                         <Pad name="pad" length="2" />
-                        <ShortBlockIndex CStyleName="first_edge" pascalStyleName="FirstEdge" name="first edge" blockReference="edge_block" />
+                        <ShortBlockIndex CStyleName="first_edge" pascalStyleName="FirstEdge" name="first edge" blockReference="block:edges" />
                       </FieldSet>
                     </Layout>
                   </Block>

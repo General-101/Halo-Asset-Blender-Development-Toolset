@@ -1,0 +1,127 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="antr" name="models.animations" version="1">
+  <Layout regolithID="block:models.animations" internalName="models.animations_block" name="models.animations">
+    <FieldSet version="0" sizeofValue="144" sizeofSource="sizeof(struct models.animations_group)" isLatest="true">
+      <Pad name="pad" length="60" />
+      <Block CStyleName="states" pascalStyleName="States" name="states">
+        <Layout regolithID="block:states" internalName="states_block" name="states_block">
+          <FieldSet version="0" sizeofValue="48" isLatest="true">
+            <LongEnum CStyleName="state" pascalStyleName="State" name="state">
+              <Options regolithID="enum:state" CStyleName="state" pascalStyleName="State">
+                <Enum name="stand" CStyleName="stand" pascalStyleName="Stand" />
+                <Enum name="crouch" CStyleName="crouch" pascalStyleName="Crouch" />
+                <Enum name="prone" CStyleName="prone" pascalStyleName="Prone" />
+              </Options>
+            </LongEnum>
+            <LongFlags CStyleName="state_modifiers" pascalStyleName="StateModifiers" name="state modifiers">
+              <Options regolithID="enum:state_modifiers" CStyleName="state_modifiers" pascalStyleName="StateModifiers">
+                <Bit name="move forward" CStyleName="move_forward" pascalStyleName="MoveForward" />
+                <Bit name="move backward" CStyleName="move_backward" pascalStyleName="MoveBackward" />
+                <Bit name="uphill" CStyleName="uphill" pascalStyleName="Uphill" />
+                <Bit name="downhill" CStyleName="downhill" pascalStyleName="Downhill" />
+                <Bit name="exhausted" CStyleName="exhausted" pascalStyleName="Exhausted" />
+                <Bit name="wounded" CStyleName="wounded" pascalStyleName="Wounded" />
+                <Bit name="in media" CStyleName="in_media" pascalStyleName="InMedia" />
+                <Bit name="ducking" CStyleName="ducking" pascalStyleName="Ducking" />
+              </Options>
+            </LongFlags>
+            <Pad name="pad" length="28" />
+            <Block CStyleName="transitions" pascalStyleName="Transitions" name="transitions">
+              <Layout regolithID="block:transitions" internalName="transitions_block" name="transitions_block">
+                <FieldSet version="0" sizeofValue="44" isLatest="true">
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                      <Bit name="from left foot" CStyleName="from_left_foot" pascalStyleName="FromLeftFoot" />
+                      <Bit name="from right foot" CStyleName="from_right_foot" pascalStyleName="FromRightFoot" />
+                      <Bit name="cannot be stopped" CStyleName="cannot_be_stopped" pascalStyleName="CannotBeStopped" />
+                      <Bit name="random initial frame" CStyleName="random_initial_frame" pascalStyleName="RandomInitialFrame" />
+                    </Options>
+                  </LongFlags>
+                  <ShortEnum CStyleName="verb" pascalStyleName="Verb" name="verb">
+                    <Options regolithID="enum:verb" CStyleName="verb" pascalStyleName="Verb">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="jump" CStyleName="jump" pascalStyleName="Jump" />
+                      <Enum name="punch" CStyleName="punch" pascalStyleName="Punch" />
+                      <Enum name="kick" CStyleName="kick" pascalStyleName="Kick" />
+                      <Enum name="taunt" CStyleName="taunt" pascalStyleName="Taunt" />
+                      <Enum name="throw" CStyleName="throw" pascalStyleName="Throw" />
+                      <Enum name="turn around" CStyleName="turn_around" pascalStyleName="TurnAround" />
+                      <Enum name="turn left" CStyleName="turn_left" pascalStyleName="TurnLeft" />
+                      <Enum name="turn right" CStyleName="turn_right" pascalStyleName="TurnRight" />
+                      <Enum name="move left" CStyleName="move_left" pascalStyleName="MoveLeft" />
+                      <Enum name="move right" CStyleName="move_right" pascalStyleName="MoveRight" />
+                    </Options>
+                  </ShortEnum>
+                  <Pad name="pad" length="2" />
+                  <ShortBlockIndex CStyleName="desired_state_index" pascalStyleName="DesiredStateIndex" name="desired state index" blockReference="block:states" />
+                  <Pad name="pad" length="2" />
+                  <ShortEnum CStyleName="interpolation_mode" pascalStyleName="InterpolationMode" name="interpolation mode">
+                    <Options regolithID="enum:interpolation_mode" CStyleName="interpolation_mode" pascalStyleName="InterpolationMode">
+                      <Enum name="delayed" CStyleName="delayed" pascalStyleName="Delayed" />
+                      <Enum name="freeze" CStyleName="freeze" pascalStyleName="Freeze" />
+                      <Enum name="continuous" CStyleName="continuous" pascalStyleName="Continuous" />
+                      <Enum name="matched" CStyleName="matched" pascalStyleName="Matched" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortInteger CStyleName="interpolation_frame_count" pascalStyleName="InterpolationFrameCount" name="interpolation frame count" />
+                  <Pad name="pad" length="16" />
+                  <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations">
+                    <Layout regolithID="block:permutations" internalName="permutations_block" name="permutations_block">
+                      <FieldSet version="0" sizeofValue="16" isLatest="true">
+                        <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+                        <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" blockReference="block:animations" />
+                        <Pad name="pad" length="10" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="overlays" pascalStyleName="Overlays" name="overlays">
+        <Layout regolithID="block:overlays" internalName="overlays_block" name="overlays_block">
+          <FieldSet version="0" sizeofValue="40" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="primary trigger" CStyleName="primary_trigger" pascalStyleName="PrimaryTrigger" />
+                <Bit name="secondary trigger" CStyleName="secondary_trigger" pascalStyleName="SecondaryTrigger" />
+                <Bit name="struck high" CStyleName="struck_high" pascalStyleName="StruckHigh" />
+                <Bit name="struck middle" CStyleName="struck_middle" pascalStyleName="StruckMiddle" />
+                <Bit name="struck low" CStyleName="struck_low" pascalStyleName="StruckLow" />
+                <Bit name="struck left" CStyleName="struck_left" pascalStyleName="StruckLeft" />
+                <Bit name="struck right" CStyleName="struck_right" pascalStyleName="StruckRight" />
+                <Bit name="struck front" CStyleName="struck_front" pascalStyleName="StruckFront" />
+                <Bit name="struck rear" CStyleName="struck_rear" pascalStyleName="StruckRear" />
+              </Options>
+            </LongFlags>
+            <Pad name="pad" length="24" />
+            <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations">
+              <Layout regolithID="block:permutations" internalName="permutations_block" name="permutations_block">
+                <FieldSet version="0" sizeofValue="16" isLatest="true">
+                  <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+                  <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" blockReference="block:animations" />
+                  <Pad name="pad" length="10" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="48" />
+      <Block CStyleName="animations" pascalStyleName="Animations" name="animations">
+        <Layout regolithID="block:animations" internalName="animations_block" name="animations_block">
+          <FieldSet version="0" sizeofValue="96" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <ShortInteger CStyleName="frame_count" pascalStyleName="FrameCount" name="frame count" />
+            <ShortInteger CStyleName="node_count" pascalStyleName="NodeCount" name="node count" />
+            <LongInteger CStyleName="nodes_used_flags" pascalStyleName="NodesUsedFlags" name="nodes used flags" />
+            <Pad name="pad" length="36" />
+            <Data CStyleName="data" pascalStyleName="Data" name="data" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

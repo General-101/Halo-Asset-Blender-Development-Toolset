@@ -492,6 +492,7 @@ h1_19990924_tag_groups = {
     "ligh": "objects.lights",
     "plac": "objects.placeholders",
     "mhir": "objects.shadows",
+    "pctl": "particle systems",
     "part": "particles",
     "phys": "physics",
     "rzpf": "preferences.rasterizer",
@@ -541,6 +542,7 @@ h1_19990930_tag_groups = {
     "ligh": "objects.lights",
     "plac": "objects.placeholders",
     "mhir": "objects.shadows",
+    "pctl": "particle systems",
     "part": "particles",
     "phys": "physics",
     "rzpf": "preferences.rasterizer",
@@ -1183,12 +1185,5 @@ class EngineTag(Enum):
     H2V3 = "MLAB"
     H2V4 = "BLM!"
     H2Latest = H2V4
-
-class H1Versions(Enum):
-    _20000525 = 0
-    RETAIL = auto()
-
-class H2Versions(Enum):
-    RETAIL = auto()
 
 engine_tag_values = {e.value for e in EngineTag}

@@ -49,15 +49,15 @@
                   <Pad name="pad" length="2" />
                   <Real CStyleName="initial_placement_weight" pascalStyleName="InitialPlacementWeight" name="initial placement weight" />
                   <Pad name="pad" length="24" />
-                  <ShortBlockIndex CStyleName="zero" pascalStyleName="Zero" name="zero" blockReference="states_block" />
-                  <ShortBlockIndex CStyleName="one" pascalStyleName="One" name="one" blockReference="states_block" />
-                  <ShortBlockIndex CStyleName="two" pascalStyleName="Two" name="two" blockReference="states_block" />
-                  <ShortBlockIndex CStyleName="three" pascalStyleName="Three" name="three" blockReference="states_block" />
-                  <ShortBlockIndex CStyleName="four" pascalStyleName="Four" name="four" blockReference="states_block" />
-                  <ShortBlockIndex CStyleName="five" pascalStyleName="Five" name="five" blockReference="states_block" />
-                  <ShortBlockIndex CStyleName="six" pascalStyleName="Six" name="six" blockReference="states_block" />
-                  <ShortBlockIndex CStyleName="seven" pascalStyleName="Seven" name="seven" blockReference="states_block" />
-                  <ShortBlockIndex CStyleName="eight" pascalStyleName="Eight" name="eight" blockReference="states_block" />
+                  <ShortBlockIndex CStyleName="zero" pascalStyleName="Zero" name="zero" blockReference="block:states" />
+                  <ShortBlockIndex CStyleName="one" pascalStyleName="One" name="one" blockReference="block:states" />
+                  <ShortBlockIndex CStyleName="two" pascalStyleName="Two" name="two" blockReference="block:states" />
+                  <ShortBlockIndex CStyleName="three" pascalStyleName="Three" name="three" blockReference="block:states" />
+                  <ShortBlockIndex CStyleName="four" pascalStyleName="Four" name="four" blockReference="block:states" />
+                  <ShortBlockIndex CStyleName="five" pascalStyleName="Five" name="five" blockReference="block:states" />
+                  <ShortBlockIndex CStyleName="six" pascalStyleName="Six" name="six" blockReference="block:states" />
+                  <ShortBlockIndex CStyleName="seven" pascalStyleName="Seven" name="seven" blockReference="block:states" />
+                  <ShortBlockIndex CStyleName="eight" pascalStyleName="Eight" name="eight" blockReference="block:states" />
                   <Pad name="pad" length="2" />
                 </FieldSet>
               </Layout>

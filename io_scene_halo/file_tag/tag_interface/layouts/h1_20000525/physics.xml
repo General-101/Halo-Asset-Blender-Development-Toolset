@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8-sig'?>
-<TagGroup group="phys" name="physics" version="1">
+<TagGroup group="phys" name="physics" version="4">
   <Layout regolithID="block:physics" internalName="physics_block" name="physics">
     <FieldSet version="0" sizeofValue="128" sizeofSource="sizeof(struct physics_group)" isLatest="true">
       <Real CStyleName="radius" pascalStyleName="Radius" name="radius" />
@@ -55,7 +55,7 @@
         <Layout regolithID="block:mass points" internalName="mass points_block" name="mass points_block">
           <FieldSet version="0" sizeofValue="128" isLatest="true">
             <String CStyleName="name" pascalStyleName="Name" name="name" />
-            <ShortBlockIndex CStyleName="powered_mass_point" pascalStyleName="PoweredMassPoint" name="powered mass point" blockReference="powered_mass_point_block" />
+            <ShortBlockIndex CStyleName="powered_mass_point" pascalStyleName="PoweredMassPoint" name="powered mass point" blockReference="block:powered mass points" />
             <ShortInteger CStyleName="model_node" pascalStyleName="ModelNode" name="model node" />
             <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags" />
             <Real CStyleName="relative_mass" pascalStyleName="RelativeMass" name="relative mass" />

@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8-sig'?>
-<TagGroup group="bipd" name="bipeds" version="1">
+<TagGroup group="bipd" name="bipeds" version="3">
   <Layout regolithID="block:bipeds" internalName="bipeds_block" name="bipeds">
     <FieldSet version="0" sizeofValue="1364" sizeofSource="sizeof(struct bipeds_group)" isLatest="true">
       <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
@@ -274,7 +274,7 @@
             <RealBounds CStyleName="bounds" pascalStyleName="Bounds" name="bounds" />
             <Pad name="pad" length="4" />
             <Pad name="pad" length="2" />
-            <ShortBlockIndex CStyleName="turn_off_with" pascalStyleName="TurnOffWith" name="turn off with" blockReference="object_function_block" />
+            <ShortBlockIndex CStyleName="turn_off_with" pascalStyleName="TurnOffWith" name="turn off with" blockReference="block:functions" />
             <Pad name="pad" length="256" />
             <Pad name="pad" length="16" />
             <String CStyleName="usage" pascalStyleName="Usage" name="usage" />

@@ -1,0 +1,98 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="obje" name="objects" version="1">
+  <Layout regolithID="block:objects" internalName="objects_block" name="objects">
+    <FieldSet version="0" sizeofValue="476" sizeofSource="sizeof(struct objects_group)" isLatest="true">
+      <TagReference CStyleName="type" pascalStyleName="Type" name="type" />
+      <TagReference CStyleName="model" pascalStyleName="Model" name="model" />
+      <TagReference CStyleName="animation_graph" pascalStyleName="AnimationGraph" name="animation graph" />
+      <TagReference CStyleName="damage_resistance" pascalStyleName="DamageResistance" name="damage resistance" />
+      <TagReference CStyleName="collision_model" pascalStyleName="CollisionModel" name="collision model" />
+      <TagReference CStyleName="physics" pascalStyleName="Physics" name="physics" />
+      <TagReference CStyleName="shadow" pascalStyleName="Shadow" name="shadow" />
+      <Pad name="pad" length="40" />
+      <Real CStyleName="initial_body_vitality" pascalStyleName="InitialBodyVitality" name="initial body vitality" />
+      <Real CStyleName="initial_shield_vitality" pascalStyleName="InitialShieldVitality" name="initial shield vitality" />
+      <Pad name="pad" length="100" />
+      <Block CStyleName="widgets" pascalStyleName="Widgets" name="widgets">
+        <Layout regolithID="block:widgets" internalName="widgets_block" name="widgets_block">
+          <FieldSet version="0" sizeofValue="56" isLatest="true">
+            <TagReference CStyleName="reference" pascalStyleName="Reference" name="reference" />
+            <Pad name="pad" length="16" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="attachments" pascalStyleName="Attachments" name="attachments">
+        <Layout regolithID="block:attachments" internalName="attachments_block" name="attachments_block">
+          <FieldSet version="0" sizeofValue="420" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="initially inactive" CStyleName="initially_inactive" pascalStyleName="InitiallyInactive" />
+              </Options>
+            </LongFlags>
+            <ShortBlockIndex CStyleName="scale_by" pascalStyleName="ScaleBy" name="scale by" blockReference="block:attachments" />
+            <ShortBlockIndex CStyleName="turn_on_and_off_by" pascalStyleName="TurnOnAndOffBy" name="turn on and off by" blockReference="block:attachments" />
+            <Real CStyleName="activation_threshold" pascalStyleName="ActivationThreshold" name="activation threshold" />
+            <Pad name="pad" length="4" />
+            <Real CStyleName="velocity_lower_bound" pascalStyleName="VelocityLowerBound" name="velocity lower bound" />
+            <Real CStyleName="velocity_upper_boundf" pascalStyleName="VelocityUpperBoundf" name="velocity upper boundf" />
+            <Real CStyleName="constant" pascalStyleName="Constant" name="constant" />
+            <Pad name="pad" length="8" />
+            <String CStyleName="sound_marker_name" pascalStyleName="SoundMarkerName" name="sound marker name" />
+            <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" />
+            <Real CStyleName="minimum_pitch" pascalStyleName="MinimumPitch" name="minimum pitch" />
+            <Real CStyleName="maximum_pitch" pascalStyleName="MaximumPitch" name="maximum pitch" />
+            <Real CStyleName="minimum_volume" pascalStyleName="MinimumVolume" name="minimum volume" />
+            <Real CStyleName="maximum_volume" pascalStyleName="MaximumVolume" name="maximum volume" />
+            <Pad name="pad" length="8" />
+            <String CStyleName="light_marker_name" pascalStyleName="LightMarkerName" name="light marker name" />
+            <TagReference CStyleName="light" pascalStyleName="Light" name="light" />
+            <RealArgbColor CStyleName="minimum_light_intensity" pascalStyleName="MinimumLightIntensity" name="minimum light intensity" />
+            <RealArgbColor CStyleName="maximum_light_intensity" pascalStyleName="MaximumLightIntensity" name="maximum light intensity" />
+            <Real CStyleName="lens_flare_scale_modifier_lower" pascalStyleName="LensFlareScaleModifierLower" name="lens flare scale modifier lower" />
+            <Real CStyleName="lens_flare_scale_modifier_upper" pascalStyleName="LensFlareScaleModifierUpper" name="lens flare scale modifier upper" />
+            <String CStyleName="marker_name" pascalStyleName="MarkerName" name="marker name" />
+            <TagReference CStyleName="attached_effect" pascalStyleName="AttachedEffect" name="attached effect" />
+            <Real CStyleName="minimum_scale" pascalStyleName="MinimumScale" name="minimum scale" />
+            <Real CStyleName="maximum_scale" pascalStyleName="MaximumScale" name="maximum scale" />
+            <Pad name="pad" length="8" />
+            <TagReference CStyleName="repeating_effect" pascalStyleName="RepeatingEffect" name="repeating effect" />
+            <Pad name="pad" length="8" />
+            <Real CStyleName="minimum_heat" pascalStyleName="MinimumHeat" name="minimum heat" />
+            <Real CStyleName="maximum_heat" pascalStyleName="MaximumHeat" name="maximum heat" />
+            <ShortEnum CStyleName="wobble_function" pascalStyleName="WobbleFunction" name="wobble function">
+              <Options regolithID="enum:wobble_function" CStyleName="wobble_function" pascalStyleName="WobbleFunction">
+                <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Real CStyleName="wobble_period" pascalStyleName="WobblePeriod" name="wobble period" />
+            <Real CStyleName="wobble_offset" pascalStyleName="WobbleOffset" name="wobble offset" />
+            <Real CStyleName="wobble_magnitude" pascalStyleName="WobbleMagnitude" name="wobble magnitude" />
+            <Pad name="pad" length="16" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="primary_change_color" pascalStyleName="PrimaryChangeColor" name="primary change color">
+        <Layout regolithID="block:primary change color" internalName="primary change color_block" name="primary change color_block">
+          <FieldSet version="0" sizeofValue="48" isLatest="true">
+            <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+            <Pad name="pad" length="12" />
+            <RealArgbColor CStyleName="color0" pascalStyleName="Color0" name="color0" />
+            <RealArgbColor CStyleName="color1" pascalStyleName="Color1" name="color1" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="secondary_change_color" pascalStyleName="SecondaryChangeColor" name="secondary change color">
+        <Layout regolithID="block:secondary change color" internalName="secondary change color_block" name="secondary change color_block">
+          <FieldSet version="0" sizeofValue="48" isLatest="true">
+            <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+            <Pad name="pad" length="12" />
+            <RealArgbColor CStyleName="color0" pascalStyleName="Color0" name="color0" />
+            <RealArgbColor CStyleName="color1" pascalStyleName="Color1" name="color1" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>
