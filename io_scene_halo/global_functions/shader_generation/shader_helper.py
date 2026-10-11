@@ -413,19 +413,20 @@ def generate_image_node(mat, tag_ref, permutation_index, asset_cache, game_title
                 texture_path = check_path
 
     texture = None
-    bitmap_asset = tag_interface.get_disk_asset(image_path, tag_groups.get(image_group))
-    if reverse_import_order:
-        texture = import_pixel_data(game_title, tag_groups, data_path, tag_path, hek_path, image_path, asset_cache, image_group, palette)
-        is_color_plate = False
-        if texture is None:
-            is_color_plate = True
-            texture = import_color_plate(bitmap_asset, asset_cache, image_group, image_path, permutation_index, bitmap_name)
-    else:
-        texture = import_color_plate(bitmap_asset, asset_cache, image_group, image_path, permutation_index, bitmap_name)
-        is_color_plate = True
-        if texture is None:
-            is_color_plate = False
+    if not game_title == "halo3":
+        bitmap_asset = tag_interface.get_disk_asset(image_path, tag_groups.get(image_group))
+        if reverse_import_order:
             texture = import_pixel_data(game_title, tag_groups, data_path, tag_path, hek_path, image_path, asset_cache, image_group, palette)
+            is_color_plate = False
+            if texture is None:
+                is_color_plate = True
+                texture = import_color_plate(bitmap_asset, asset_cache, image_group, image_path, permutation_index, bitmap_name)
+        else:
+            texture = import_color_plate(bitmap_asset, asset_cache, image_group, image_path, permutation_index, bitmap_name)
+            is_color_plate = True
+            if texture is None:
+                is_color_plate = False
+                texture = import_pixel_data(game_title, tag_groups, data_path, tag_path, hek_path, image_path, asset_cache, image_group, palette)
 
     if texture is None and asset_cache:
         tag_group_entry = asset_cache.get(image_group)

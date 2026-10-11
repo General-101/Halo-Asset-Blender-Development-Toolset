@@ -340,15 +340,15 @@ def read_materials_8197(JMS, game_title, materials, sections, section_map, trian
             material_element = materials[shader_idx]
             shader_group = ""
             shader_name = ""
-            if shader_tag_ref is not None:
-                shader_group = shader_tag_ref["group name"]
-                shader_name = shader_tag_ref["path"]
-
             permutation = 0
             if game_title == "halo1":
                 material_name, permutation = mesh_processing.get_shader_permutation(asset_material_name)
 
             if not game_title == "halo3":
+                if shader_tag_ref is not None:
+                    shader_group = shader_tag_ref["group name"]
+                    shader_name = shader_tag_ref["path"]
+
                 SHAD_ASSET = asset_cache.get(shader_group, {}).get(shader_name) 
                 if SHAD_ASSET:
                     material_name = material_element.name
@@ -1920,7 +1920,6 @@ def load_file(context, filepath, game_title, reuse_armature, fix_parents, fix_ro
     JMS = JMSAsset(filepath)
     jms_version = int(JMS.next())
     JMS.version = jms_version
-    JMS.are_quaternions_inverted = jms_version < 8205
     if game_title == 'auto':
         game_title = global_functions.get_game_title(jms_version, 'JMS')
 
@@ -2213,8 +2212,7 @@ def load_file(context, filepath, game_title, reuse_armature, fix_parents, fix_ro
 
             selected_colors = vertex_colors[used_vertex_indices]
             loop_colors = selected_colors[remapped_triangles]
-
-            loop_colors = np.concatenate((loop_colors, np.ones((len(loop_colors), 1), dtype=loop_colors.dtype)), axis=1)
+            loop_colors = np.concatenate((loop_colors, np.ones((*loop_colors.shape[:-1], 1), dtype=loop_colors.dtype)), axis=-1)
             color_attribute.data.foreach_set("color", loop_colors.reshape(-1).ravel())
 
         selected_material_ids = triangle_material_ids[triangle_mask]

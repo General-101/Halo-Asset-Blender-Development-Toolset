@@ -28,6 +28,7 @@ import io
 import os
 import sys
 import json
+import math
 import base64
 import subprocess
 import tag_common
@@ -731,31 +732,119 @@ def dump_bitmap_data(file_path, output_directory, game_version):
                 if not texture_image == None:
                     texture_image.save(new_path, "TIFF", compression='raw')
 
-def DecodeIsland565(WIDTH, HEIGHT, pixels_offset, pixel_data, big_endian=True):
-    for width_idx in range(WIDTH):
-        for height_idx in range(HEIGHT):
-            a = pixel_data[pixels_offset + (2 * (width_idx + WIDTH * height_idx))]
-            b = pixel_data[pixels_offset + (2 * (width_idx + WIDTH * height_idx) + 1)]
-            if big_endian:
-                value = ((a << 8) | b)
-            else:
-                value = (a | (b << 8))
-
-            red = (((value & 63488) >> 11) << 3)
-            green = (((value & 2016) >> 5) << 2)
-            blue = ((value & 31) << 3)
-
-            yield (red, green, blue)
-
-def decode_island(pixel_data):
+def decode_island(pixel_data, encoding=OldEncodingEnum._16bit_565):
     image = None
     if Image:
         image = Image.new('RGB', (64, 64), color=0)
-        pixels = list(DecodeIsland565(64, 64, 0, pixel_data))
+        if encoding == OldEncodingEnum._16bit_565:
+            pixels = list(DecodeBitmap565(64, 64, 0, pixel_data))
+        elif encoding == OldEncodingEnum._32bit:
+            pixels = list(DecodeBitmap8888(64, 64, 0, pixel_data))
+        elif encoding == OldEncodingEnum._16bit_4444:
+            pixels = list(DecodeBitmap4444(64, 64, 0, pixel_data))
+        elif encoding == OldEncodingEnum._8bit_intensity:
+            pixels = list(DecodeBitmap8BitIntensity(64, 64, 0, pixel_data))
+        
         image.putdata(pixels)
         image.putalpha(255)
 
     return image
+
+def dump_island_texture1(tag_dict, file_path, output_directory):
+    tag_data = tag_dict["Data"]
+    file_name = os.path.basename(file_path)
+
+    #field_name = "submesh textures"
+    #field_name = "low detail texture"
+    field_name = "overhead map texture"
+    pixel_bytes = base64.b64decode(tag_data[field_name]["encoded"])
+    pixel_data = io.BytesIO(pixel_bytes)
+
+    if False:
+        bytes_per_cell = 8192
+        cells_per_submesh = 16
+        bytes_per_submesh = bytes_per_cell * cells_per_submesh
+
+        submesh_count = len(pixel_bytes) // bytes_per_submesh
+        submeshes_per_row = math.isqrt(submesh_count)
+        submeshes_per_column = math.ceil(submesh_count / submeshes_per_row)
+
+        cell_size = 64
+        cells_per_side = 4
+        submesh_size = cell_size * cells_per_side
+
+        image_width = submeshes_per_row * submesh_size
+        image_height = submeshes_per_column * submesh_size
+
+        island_image = Image.new("RGB",(image_width, image_height), color=0)
+        for submesh_idx in range(submesh_count):
+            x_index = submesh_idx // submeshes_per_column
+            y_index = submesh_idx % submeshes_per_column
+            for column_idx in range(cells_per_side):
+                for row_idx in range(cells_per_side):
+                    cell_data = pixel_data.read(bytes_per_cell)
+                    if len(cell_data) != bytes_per_cell:
+                        raise ValueError("Unexpected end of pixel data")
+
+                    cell_image = decode_island(cell_data)
+
+                    x = x_index * submesh_size + column_idx * cell_size
+                    y = y_index * submesh_size + row_idx * cell_size
+
+                    island_image.paste(cell_image, (x, y))
+
+        new_path = os.path.join(output_directory, "%s.tiff" % file_name) 
+        island_image.save(new_path, "TIFF", compression='raw')
+    else:
+        image_count = tag_data[field_name]["length"] / 8192
+        for row_idx in range(int(image_count)):
+            cell_data = pixel_data.read(8192)
+            cell_image = decode_island(cell_data, OldEncodingEnum._16bit_4444)
+
+            new_path = os.path.join(output_directory, "%s_%s.tiff" % (file_name, row_idx) )
+            cell_image.save(new_path, "TIFF", compression='raw')
+
+def dump_island_texture2(tag_dict, file_path, output_directory):
+    tag_data = tag_dict["Data"]
+    file_name = os.path.basename(file_path)
+
+    pixel_bytes = base64.b64decode(tag_data["pixels"]["encoded"])
+    pixel_data = io.BytesIO(pixel_bytes)
+
+    bytes_per_cell = 8192
+    cells_per_submesh = 16
+    bytes_per_submesh = bytes_per_cell * cells_per_submesh
+
+    submesh_count = len(pixel_bytes) // bytes_per_submesh
+    submeshes_per_row = math.isqrt(submesh_count)
+    submeshes_per_column = math.ceil(submesh_count / submeshes_per_row)
+
+    cell_size = 64
+    cells_per_side = 4
+    submesh_size = cell_size * cells_per_side
+
+    image_width = submeshes_per_row * submesh_size
+    image_height = submeshes_per_column * submesh_size
+
+    island_image = Image.new("RGB",(image_width, image_height), color=0)
+    for submesh_idx in range(submesh_count):
+        x_index = submesh_idx // submeshes_per_column
+        y_index = submesh_idx % submeshes_per_column
+        for column_idx in range(cells_per_side):
+            for row_idx in range(cells_per_side):
+                cell_data = pixel_data.read(bytes_per_cell)
+                if len(cell_data) != bytes_per_cell:
+                    raise ValueError("Unexpected end of pixel data")
+
+                cell_image = decode_island(cell_data)
+
+                x = x_index * submesh_size + column_idx * cell_size
+                y = y_index * submesh_size + row_idx * cell_size
+
+                island_image.paste(cell_image, (x, y))
+
+    new_path = os.path.join(output_directory, "%s.tiff" % file_name) 
+    island_image.save(new_path, "TIFF", compression='raw')
 
 def dump_island_texture_data(file_path, output_directory, game_version):
     game_defs, engine_tag, tag_defs, tag_groups, tag_extensions, postprocess_functions, is_prerelease = get_version_args(game_version)
@@ -764,13 +853,7 @@ def dump_island_texture_data(file_path, output_directory, game_version):
     
     tag_dict = read_file(merged_defs, "", file_path, engine_tag=engine_tag, tag_groups=tag_groups, tag_extensions=tag_extensions, postprocess_functions=postprocess_functions, is_prerelease=is_prerelease)
     if game_version == 19981008:
-        tag_data = tag_dict["Data"]
-        file_name = os.path.basename(file_path)
-        for bitmap_idx, bitmap_element in enumerate(tag_data["bitmaps"]):
-            new_path = os.path.join(output_directory, "%s_%s_%s.tiff" % (file_name, OldEncodingEnum(bitmap_element["format"]["value"]).name, bitmap_idx))
-            texture_image = dump_bitmap1(bitmap_element["width"], bitmap_element["height"], 0, base64.b64decode(bitmap_element["pixels"]["encoded"]), OldEncodingEnum(bitmap_element["format"]["value"]))
-            if not texture_image == None:
-                texture_image.save(new_path, "TIFF", compression='raw')
+        dump_island_texture1(tag_dict, file_path, output_directory)
     if game_version == 19981022:
         tag_data = tag_dict["Data"]
         file_name = os.path.basename(file_path)
@@ -796,99 +879,21 @@ def dump_island_texture_data(file_path, output_directory, game_version):
             if not texture_image == None:
                 texture_image.save(new_path, "TIFF", compression='raw')
     elif game_version == 19990426:
-        tag_data = tag_dict["Data"]
-        file_name = os.path.basename(file_path)
-        for format_element in tag_data["formats"]:
-            for bitmap_idx, bitmap_element in enumerate(format_element["bitmaps"]):
-                new_path = os.path.join(output_directory, "%s_%s_%s_%s.tiff" % (file_name, BitmapFormatEnum(format_element["format"]["value"]).name, EncodingEnum(bitmap_element["format"]["value"]).name, bitmap_idx))
-                texture_image = dump_bitmap2(bitmap_element["width"], bitmap_element["height"], bitmap_element["pixels offset"], base64.b64decode(format_element["pixels"]["encoded"]), EncodingEnum(bitmap_element["format"]["value"]))
-                if not texture_image == None:
-                    texture_image.save(new_path, "TIFF", compression='raw')
+        dump_island_texture2(tag_dict, file_path, output_directory)
     elif game_version == 19990608:
-        tag_data = tag_dict["Data"]
-        file_name = os.path.basename(file_path)
-        for format_element in tag_data["formats"]:
-            for bitmap_idx, bitmap_element in enumerate(format_element["bitmaps"]):
-                new_path = os.path.join(output_directory, "%s_%s_%s_%s.tiff" % (file_name, BitmapFormatEnum(format_element["format"]["value"]).name, EncodingEnum(bitmap_element["format"]["value"]).name, bitmap_idx))
-                texture_image = dump_bitmap2(bitmap_element["width"], bitmap_element["height"], bitmap_element["pixels offset"], base64.b64decode(format_element["pixels"]["encoded"]), EncodingEnum(bitmap_element["format"]["value"]))
-                if not texture_image == None:
-                    texture_image.save(new_path, "TIFF", compression='raw')
+        dump_island_texture2(tag_dict, file_path, output_directory)
     elif game_version == 19990623:
-        tag_data = tag_dict["Data"]
-        file_name = os.path.basename(file_path)
-        for format_element in tag_data["formats"]:
-            for bitmap_idx, bitmap_element in enumerate(format_element["bitmaps"]):
-                new_path = os.path.join(output_directory, "%s_%s_%s_%s.tiff" % (file_name, BitmapFormatEnum(format_element["format"]["value"]).name, EncodingEnum(bitmap_element["format"]["value"]).name, bitmap_idx))
-                texture_image = dump_bitmap2(bitmap_element["width"], bitmap_element["height"], bitmap_element["pixels offset"], base64.b64decode(format_element["pixels"]["encoded"]), EncodingEnum(bitmap_element["format"]["value"]))
-                if not texture_image == None:
-                    texture_image.save(new_path, "TIFF", compression='raw')
+        dump_island_texture2(tag_dict, file_path, output_directory)
     elif game_version == 19990730:
-        tag_data = tag_dict["Data"]
-        file_name = os.path.basename(file_path)
-        for format_element in tag_data["formats"]:
-            for bitmap_idx, bitmap_element in enumerate(format_element["bitmaps"]):
-                new_path = os.path.join(output_directory, "%s_%s_%s_%s.tiff" % (file_name, BitmapFormatEnum(format_element["format"]["value"]).name, EncodingEnum(bitmap_element["format"]["value"]).name, bitmap_idx))
-                texture_image = dump_bitmap2(bitmap_element["width"], bitmap_element["height"], bitmap_element["pixels offset"], base64.b64decode(format_element["pixels"]["encoded"]), EncodingEnum(bitmap_element["format"]["value"]))
-                if not texture_image == None:
-                    texture_image.save(new_path, "TIFF", compression='raw')
+        dump_island_texture2(tag_dict, file_path, output_directory)
     elif game_version == 19990924:
-        tag_data = tag_dict["Data"]
-        file_name = os.path.basename(file_path)
-        for format_element in tag_data["formats"]:
-            for bitmap_idx, bitmap_element in enumerate(format_element["bitmaps"]):
-                new_path = os.path.join(output_directory, "%s_%s_%s_%s.tiff" % (file_name, BitmapFormatEnum(format_element["format"]["value"]).name, EncodingEnum(bitmap_element["format"]["value"]).name, bitmap_idx))
-                texture_image = dump_bitmap2(bitmap_element["width"], bitmap_element["height"], bitmap_element["pixels offset"], base64.b64decode(format_element["pixels"]["encoded"]), EncodingEnum(bitmap_element["format"]["value"]))
-                if not texture_image == None:
-                    texture_image.save(new_path, "TIFF", compression='raw')
+        dump_island_texture2(tag_dict, file_path, output_directory)
     elif game_version == 19990930:
-        tag_data = tag_dict["Data"]
-        file_name = os.path.basename(file_path)
-        for format_element in tag_data["formats"]:
-            for bitmap_idx, bitmap_element in enumerate(format_element["bitmaps"]):
-                new_path = os.path.join(output_directory, "%s_%s_%s_%s.tiff" % (file_name, BitmapFormatEnum(format_element["format"]["value"]).name, EncodingEnum(bitmap_element["format"]["value"]).name, bitmap_idx))
-                texture_image = dump_bitmap2(bitmap_element["width"], bitmap_element["height"], bitmap_element["pixels offset"], base64.b64decode(format_element["pixels"]["encoded"]), EncodingEnum(bitmap_element["format"]["value"]))
-                if not texture_image == None:
-                    texture_image.save(new_path, "TIFF", compression='raw')
+        dump_island_texture2(tag_dict, file_path, output_directory)
     elif game_version == 19991021:
-        tag_data = tag_dict["Data"]
-        file_name = os.path.basename(file_path)
-        for format_element in tag_data["formats"]:
-            for bitmap_idx, bitmap_element in enumerate(format_element["bitmaps"]):
-                new_path = os.path.join(output_directory, "%s_%s_%s_%s.tiff" % (file_name, BitmapFormatEnum(format_element["format"]["value"]).name, EncodingEnum(bitmap_element["format"]["value"]).name, bitmap_idx))
-                texture_image = dump_bitmap2(bitmap_element["width"], bitmap_element["height"], bitmap_element["pixels offset"], base64.b64decode(format_element["pixels"]["encoded"]), EncodingEnum(bitmap_element["format"]["value"]))
-                if not texture_image == None:
-                    texture_image.save(new_path, "TIFF", compression='raw')
-    elif game_version == 20000525:
-        tag_data = tag_dict["Data"]
-        file_name = os.path.basename(file_path)
-        for format_element in tag_data["formats"]:
-            for bitmap_idx, bitmap_element in enumerate(format_element["bitmaps"]):
-                new_path = os.path.join(output_directory, "%s_%s_%s_%s.tiff" % (file_name, BitmapFormatEnum(format_element["format"]["value"]).name, EncodingEnum(bitmap_element["format"]["value"]).name, bitmap_idx))
-                texture_image = dump_bitmap2(bitmap_element["width"], bitmap_element["height"], bitmap_element["pixels offset"], base64.b64decode(format_element["pixels"]["encoded"]), EncodingEnum(bitmap_element["format"]["value"]))
-                if not texture_image == None:
-                    texture_image.save(new_path, "TIFF", compression='raw')
+        dump_island_texture2(tag_dict, file_path, output_directory)
     elif game_version == 20001005:
-
-        tag_data = tag_dict["Data"]
-        file_name = os.path.basename(file_path)
-        pixel_data = io.BytesIO(base64.b64decode(tag_data["pixels"]["encoded"]))
-        submesh_count = int(tag_data["pixels"]["length"] / 131072)
-        island_image = Image.new('RGB', (2048, 2048), color=0)
-        x_index = 0
-        y_index = 0
-        for submesh_idx in range(16):
-            for column_idx in range(4):
-                for row_idx in range(4):
-                    cell_image = decode_island(pixel_data.read(8192))
-                    island_image.paste(cell_image, ((x_index * 256) + (column_idx * 64), (y_index * 256) + (row_idx * 64)))
-
-            y_index += 1
-            if y_index >= 4:
-                y_index = 0
-                x_index += 1
-
-        new_path = os.path.join(output_directory, "%s.tiff" % "island_texture")
-        island_image.save(new_path, "TIFF", compression='raw')
+        dump_island_texture2(tag_dict, file_path, output_directory)
 
 def main():
     if len(sys.argv) < 2:
@@ -896,7 +901,7 @@ def main():
         return
 
     file_path = sys.argv[1]
-    game_version = 20011115
+    game_version = 19981008
     if len(sys.argv) >= 3:
         game_version = int(sys.argv[2])
 
@@ -905,7 +910,8 @@ def main():
     if file_path.lower().endswith(".json"):
         export_tag(file_path, game_version)
     else:
-        import_tag(file_path, game_version)
+        output = r"C:\Users\Steven\Desktop\output"
+        dump_island_texture_data(file_path, output, game_version)
 
 if __name__ == "__main__":
         main()

@@ -735,144 +735,155 @@ class ParseError(Exception):
     pass
 
 class HaloAsset:
-    """Streaming helper class for reading JMS/JMA/ASS files."""
+    """Helper class for reading in JMS/JMA/ASS files"""
+
+    __comment_regex = re.compile(r'[^\"]*?;(?!.*\")')
 
     def __init__(self, file):
-        self.file = None
-        self.line_tokens = []
-        self.line_index = 0
-        self.first_line = None
+        self._index = 0
+        self._element_count = 0
+        self._elements = iter(())
+        self._first_element = None
+        self._file = None
+        self._owns_file = False
 
         if isinstance(file, TextIOWrapper):
-            self.file = file
-        else:
-            self.file = open(file, "r", encoding=test_encoding(file))
+            self._file = file
+            self._start_position = file.tell()
 
-        self.read_next_line()
+        else:
+            self._file_path = file
+            self._encoding = test_encoding(file)
+            with open(file, "r", encoding=self._encoding) as stream:
+                self._element_count = sum(1 for _ in self._iter_elements(stream))
+
+            self._file = open(file, "r", encoding=self._encoding)
+            self._owns_file = True
+            self._elements = self._iter_elements(self._file)
+            self._first_element = next(self._elements, None)
+            return
+
+        if not self._file.seekable():
+            raise ValueError("HaloAsset requires a seekable file object.")
+
+        self._element_count = sum(1 for _ in self._iter_elements(self._file))
+
+        self._file.seek(self._start_position)
+        self._elements = self._iter_elements(self._file)
+        self._first_element = next(self._elements, None)
+
+    @classmethod
+    def _iter_elements(cls, stream):
+        for line in stream:
+            for element in line.strip().split("\t"):
+                if element == "":
+                    continue
+
+                comment_match = cls.__comment_regex.search(element)
+
+                if comment_match is None:
+                    yield element
+                else:
+                    processed_element = element[:comment_match.end() - 1]
+
+                    if processed_element != "":
+                        yield element
+
+                    break
+
+    def close(self):
+        """Close the file if this instance opened it."""
+        if self._owns_file and self._file is not None:
+            self._file.close()
+            self._file = None
 
     def __del__(self):
         try:
-            if self.file and not self.file.closed:
-                self.file.close()
-        except:
+            self.close()
+        except Exception:
             pass
 
-    def read_next_line(self):
-        for line in self.file:
-            line = line.rstrip("\r\n")
-
-            if not line:
-                continue
-
-            if ";" not in line:
-                self.line_tokens = line.split("\t")
-                self.line_index = 0
-
-                if self.first_line is None:
-                    self.first_line = self.line_tokens[0]
-
-                return
-
-            tokens = []
-            for element in line.split("\t"):
-                if not element:
-                    continue
-
-                semi = element.find(";")
-                if semi != -1:
-                    quote = element.find('"')
-                    if quote == -1 or semi < quote:
-                        if semi > 0:
-                            tokens.append(element[:semi])
-                        break
-
-                tokens.append(element)
-
-            if tokens:
-                self.line_tokens = tokens
-                self.line_index = 0
-                if self.first_line is None:
-                    self.first_line = tokens[0]
-
-                return
-
-        self.line_tokens = []
-        self.line_index = 0
+    def left(self):
+        """Returns the number of elements left"""
+        return max(0, self._element_count - self._index)
 
     def skip(self, count):
+        """Skip forwards n elements"""
+        count = max(0, count)
+
         for _ in range(count):
-            self.next()
+            if next(self._elements, None) is None:
+                break
+
+            self._index += 1
 
     def next(self):
-        tokens = self.line_tokens
-        idx = self.line_index
+        """Return the next element, raises AssetParseError on error"""
+        try:
+            if self._first_element is not None:
+                element = self._first_element
+                self._first_element = None
+            else:
+                element = next(self._elements)
 
-        if idx >= len(tokens):
-            self.read_next_line()
+            self._index += 1
+            return element
 
-            tokens = self.line_tokens
-            idx = 0
-
-            if not tokens:
-                raise ParseError()
-
-        self.line_index = idx + 1
-        return tokens[idx]
-
-    def get_first_line(self):
-        if self.first_line is None:
+        except StopIteration:
             raise ParseError()
 
-        return self.first_line
+    def get_first_line(self):
+        """Return the first line in the file, raises AssetParseError on error"""
+        if self._element_count == 0:
+            raise ParseError()
 
-    def next_multiple(self, line_count):
-        values = []
-        for line_idx in range(line_count):
-            values.append(self.next())
+        if self._index == 0 and self._first_element is not None:
+            return self._first_element
 
-        return values
+        if hasattr(self, "_first_value"):
+            return self._first_value
+
+        raise ParseError()
+
+    def next_multiple(self, count):
+        """Returns an array of the next n elements, raises AssetParseError on error"""
+        result = []
+
+        for _ in range(count):
+            try:
+                result.append(self.next())
+            except ParseError:
+                break
+
+        return result
 
     @staticmethod
-    def parse_float(value):
-        if "," in value:
-            value = value.replace(",", ".")
-
+    def _parse_float(value):
         try:
-            return float(value)
-
+            return float(value.replace(",", "."))
         except ValueError:
             return float(value.rsplit(".", 1)[0])
 
     def next_vector(self):
-        tokens = self.line_tokens
-        idx = self.line_index
-
-        if idx + 3 <= len(tokens):
-            self.line_index = idx + 3
-
-            pf = self.parse_float
-
-            return Vector((
-                pf(tokens[idx]),
-                pf(tokens[idx + 1]),
-                pf(tokens[idx + 2])
-            ))
+        """Return the next vector as mathutils.Vector, raises AssetParseError on error"""
+        p0 = self.next()
+        p1 = self.next()
+        p2 = self.next()
 
         return Vector((
-            self.parse_float(self.next()),
-            self.parse_float(self.next()),
-            self.parse_float(self.next())
+            self._parse_float(p0),
+            self._parse_float(p1),
+            self._parse_float(p2),
         ))
 
     def next_vector_space(self):
-        x, y, z = self.next().split(" ")
-
-        pf = self.parse_float
+        """Return the next vector as mathutils.Vector, raises AssetParseError on error"""
+        p0, p1, p2 = self.next().split(" ")
 
         return Vector((
-            pf(x),
-            pf(y),
-            pf(z)
+            self._parse_float(p0),
+            self._parse_float(p1),
+            self._parse_float(p2),
         ))
 
     def are_quaternions_inverted(self):
@@ -880,14 +891,15 @@ class HaloAsset:
         return False
 
     def next_quaternion(self):
-        pf = self.parse_float
-        i = pf(self.next())
-        j = pf(self.next())
-        k = pf(self.next())
-        w = pf(self.next())
+        """Return the next quaternion as mathutils.Quaternion, raises AssetParseError on error"""
+        x = float(self.next().replace(",", "."))
+        y = float(self.next().replace(",", "."))
+        z = float(self.next().replace(",", "."))
+        w = float(self.next().replace(",", "."))
 
-        quat = Quaternion((w, i, j, k))
-        if self.are_quaternions_inverted:
+        quat = Quaternion((w, x, y, z))
+
+        if self.are_quaternions_inverted():
             quat.invert()
 
         return quat

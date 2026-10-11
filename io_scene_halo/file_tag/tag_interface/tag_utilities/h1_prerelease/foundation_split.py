@@ -930,7 +930,7 @@ def main():
         return
 
     file_path = sys.argv[1]
-    game_version = None
+    game_version = 19990608
     if len(sys.argv) >= 3:
         game_version = int(sys.argv[2])
 

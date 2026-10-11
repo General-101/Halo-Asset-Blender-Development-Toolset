@@ -252,6 +252,9 @@ def set_bounds_result(field_key, tag_block_fields, result):
 
 def set_tag_reference_result(field_key, tag_block_fields, result):
     tag_group, unk1, length, unk2, path = result
+    if not os.name == "nt":
+        path = path.replace("\\", "/")
+
     tag_block_fields[field_key]["group name"] = tag_group
     tag_block_fields[field_key]["unk1"] = unk1
     tag_block_fields[field_key]["length"] = length
