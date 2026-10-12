@@ -1,11 +1,12 @@
-name: Release - 5.0-beta
+name: Release
 
 on:
   push:
     branches:
-      - 5.0-beta
+      - '**'
     paths-ignore:
       - '*.md'
+
 jobs:
   release_package:
     runs-on: ubuntu-latest
@@ -24,6 +25,9 @@ jobs:
       - name: Build ZIP package
         run: python build/create_zip.py
 
+      - name: Generate commit notes
+        run: python build/create_release_notes.py
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -33,9 +37,9 @@ jobs:
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          prerelease: true              # because it's a beta branch
+          prerelease: ${{ contains(github.ref_name, 'beta') }}
           artifacts: "output/*"
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: "beta-${{ github.run_number }}"
-          name: "5.0-beta Release ${{ github.run_number }}"
-          body: "Automated release for branch 5.0-beta."
+          tag: ${{ contains(github.ref_name, 'beta') && format('beta-{0}', github.run_number) || format('{0}-{1}', github.ref_name, github.run_number) }}
+          name: "${{ github.ref_name }} Release ${{ github.run_number }}"
+          bodyFile: "release_notes.md"
