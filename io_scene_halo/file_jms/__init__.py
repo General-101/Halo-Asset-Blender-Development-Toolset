@@ -43,6 +43,7 @@ from bpy.props import (
         BoolProperty,
         EnumProperty,
         FloatProperty,
+        IntProperty,
         PointerProperty,
         StringProperty,
         CollectionProperty
@@ -58,6 +59,12 @@ class JMS_PhysicsPropertiesGroup(PropertyGroup):
             )
         )
 
+    jms_friction_limit: FloatProperty(
+        name="Friction Limit",
+        description="???"
+        )
+
+
 class JMS_PhysicsProps(Panel):
     bl_label = "Halo Physics Properties"
     bl_idname = "JMS_PT_PhysicsPanel"
@@ -66,7 +73,6 @@ class JMS_PhysicsProps(Panel):
     bl_context = "physics"
     bl_options = {'DEFAULT_CLOSED'}
     bl_parent_id = "PHYSICS_PT_rigid_body_constraint"
-    COMPAT_ENGINES = {'BLENDER_RENDER', 'BLENDER_EEVEE', 'BLENDER_WORKBENCH'}
 
     @classmethod
     def poll(cls, context):
@@ -76,25 +82,45 @@ class JMS_PhysicsProps(Panel):
         scene = context.scene
         scene_halo = scene.halo
 
-        if not scene_halo.game_title == "halo1":
-            return (ob and rbc and (rbc.type in {'GENERIC_SPRING'})
-                    and context.engine in cls.COMPAT_ENGINES)
+        return (scene_halo.game_title is not "halo1" and ob and rbc and (rbc.type in ('SLIDER', 'GENERIC_SPRING')))
 
     def draw(self, context):
         layout = self.layout
+
+        box = layout.box()
+        box.label(text="Halo Physics:")
+        col = box.column(align=True)
 
         scene = context.scene
         scene_halo = scene.halo
 
         ob = context.object
         obj_jms = ob.jms
+        rbc = None
+        if ob is not None:
+            rbc = ob.rigid_body_constraint
 
         if not scene_halo.game_title == "halo1":
-            box = layout.box()
-            box.label(text="Spring Type:")
-            col = box.column(align=True)
-            row = col.row()
-            row.prop(obj_jms, "jms_spring_type", text='')
+            if rbc.type == "FIXED":
+                val = 0
+            elif rbc.type == "POINT":
+                val = 0
+            elif rbc.type == "HINGE":
+                val = 0
+            elif rbc.type == "SLIDER":
+                row = col.row()
+                row.label(text='Friction Limit:')
+                row.prop(obj_jms, "jms_friction_limit", text='')
+            elif rbc.type == "PISTON":
+                val = 0
+            elif rbc.type == "GENERIC":
+                val = 0
+            elif rbc.type == "GENERIC_SPRING":
+                row = col.row()
+                row.label(text='Spring Type:')
+                row.prop(obj_jms, "jms_spring_type", text='')
+            elif rbc.type == "MOTOR":
+                val = 0
 
 class JMS_SceneProps(Panel):
     bl_label = "JMS Scene Properties"
@@ -134,6 +160,10 @@ class JMS_SceneProps(Panel):
             row = col.row()
             row.label(text='Generate Checksum:')
             row.prop(scene_jms, "generate_checksum", text='')
+            if not scene_jms.generate_checksum:
+                row = col.row()
+                row.label(text='File Checksum:')
+                row.prop(scene_jms, "file_checksum", text='')
 
         row = col.row()
         row.label(text='Generate Asset Subdirectories:')
@@ -184,6 +214,9 @@ class JMS_SceneProps(Panel):
         row = col.row()
         row.label(text='Use Maya Sorting:')
         row.prop(scene_jms, "use_maya_sorting", text='')
+        row = col.row()
+        row.label(text='Merge Instances:')
+        row.prop(scene_jms, "merge_instances", text='')
         row = col.row()
         row.label(text='Use As Default Export Settings:')
         row.prop(scene_jms, "use_scene_properties", text='')
@@ -305,6 +338,11 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
         default = True,
         )
 
+    file_checksum: IntProperty(
+        name="File Checksum",
+        description="The checksum that will be used for the file"
+        )
+
     folder_structure: BoolProperty(
         name ="Generate Asset Subdirectories",
         description = "Generate folder subdirectories for exported assets",
@@ -353,6 +391,12 @@ class JMS_ScenePropertiesGroup(PropertyGroup):
     use_maya_sorting: BoolProperty(
         name ="Use Maya Sorting",
         description = "Certain models have different checksums due to how the Maya bipeds worked. Try this if the checksum doesn't match as is.",
+        default = False,
+        )
+
+    merge_instances: BoolProperty(
+        name ="Merge Instances",
+        description = "Exporter will first process the geo to combine and then merge instances with The main mesh using the boolean modifier",
         default = False,
         )
 
@@ -488,6 +532,11 @@ class ExportJMS(Operator, ExportHelper):
         default = True,
         )
 
+    file_checksum: IntProperty(
+        name="File Checksum",
+        description="The checksum that will be used for the file"
+        )
+
     folder_structure: BoolProperty(
         name ="Generate Asset Subdirectories",
         description = "Generate folder subdirectories for exported assets",
@@ -536,6 +585,12 @@ class ExportJMS(Operator, ExportHelper):
     use_maya_sorting: BoolProperty(
         name ="Use Maya Sorting",
         description = "Certain models have different checksums due to how the Maya bipeds worked. Try this if the checksum doesn't match as is.",
+        default = False,
+        )
+    
+    merge_instances: BoolProperty(
+        name ="Merge Instances",
+        description = "Exporter will first process the geo to combine and then merge instances with The main mesh using the boolean modifier",
         default = False,
         )
 
@@ -637,7 +692,7 @@ class ExportJMS(Operator, ExportHelper):
         scale_value = global_functions.set_scale(self.scale_enum, self.scale_float)
         edge_split = global_functions.EdgeSplit(self.edge_split, self.use_edge_angle, self.split_angle, self.use_edge_sharp)
 
-        return global_functions.run_code("export_jms.write_file(context, self.filepath, self.game_title, jms_version, self.permutation_ce, self.level_of_detail_ce, self.generate_checksum, self.folder_structure, self.write_textures, self.hidden_geo, self.nonrender_geo, self.export_render, self.export_collision, self.export_physics, self.apply_modifiers, self.triangulate_faces, self.loop_normals, self.clean_normalize_weights, edge_split, self.fix_rotations, self.use_maya_sorting, folder_type, scale_value, self.report)")
+        return global_functions.run_code("export_jms.write_file(context, self.filepath, self.game_title, jms_version, self.permutation_ce, self.level_of_detail_ce, self.generate_checksum, self.file_checksum, self.folder_structure, self.write_textures, self.hidden_geo, self.nonrender_geo, self.export_render, self.export_collision, self.export_physics, self.apply_modifiers, self.triangulate_faces, self.loop_normals, self.clean_normalize_weights, edge_split, self.fix_rotations, self.use_maya_sorting, folder_type, scale_value, self.merge_instances, self.report)")
 
     def draw(self, context):
         scene = context.scene
@@ -656,6 +711,7 @@ class ExportJMS(Operator, ExportHelper):
             self.permutation_ce = scene_jms.permutation_ce
             self.level_of_detail_ce = scene_jms.level_of_detail_ce
             self.generate_checksum = scene_jms.generate_checksum
+            self.file_checksum = scene_jms.file_checksum
             self.folder_structure = scene_jms.folder_structure
             self.hidden_geo = scene_jms.hidden_geo
             self.nonrender_geo = scene_jms.nonrender_geo
@@ -669,6 +725,7 @@ class ExportJMS(Operator, ExportHelper):
             self.clean_normalize_weights = scene_jms.clean_normalize_weights
             self.edge_split = scene_jms.edge_split
             self.fix_rotations = scene_jms.fix_rotations
+            self.merge_instances = scene_jms.merge_instances
             self.use_maya_sorting = scene_jms.use_maya_sorting
             self.folder_type = scene_jms.folder_type
             self.use_edge_angle = scene_jms.use_edge_angle
@@ -705,6 +762,11 @@ class ExportJMS(Operator, ExportHelper):
             row.enabled = is_enabled
             row.label(text='Generate Checksum:')
             row.prop(self, "generate_checksum", text='')
+            if not self.generate_checksum:
+                row = col.row()
+                row.enabled = is_enabled
+                row.label(text='File Checksum:')
+                row.prop(self, "file_checksum", text='')
 
         row = col.row()
         row.enabled = is_enabled
@@ -769,6 +831,10 @@ class ExportJMS(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Use Maya Sorting:')
         row.prop(self, "use_maya_sorting", text='')
+        row = col.row()
+        row.enabled = is_enabled
+        row.label(text='Merge Instances:')
+        row.prop(self, "merge_instances", text='')
         row = col.row()
         row.label(text='Use Scene Export Settings:')
         row.prop(scene_jms, "use_scene_properties", text='')
@@ -852,6 +918,16 @@ class ImportJMS(Operator, ImportHelper):
         default = True,
         )
 
+    shader_gen_override: EnumProperty(
+        name="Shader Gen Override:",
+        description="Setting for the shader generator",
+        items=[ ('0', "Use Addon Preferences", "Don't use an override and instead use what the toolset has set"),
+                ('1', "Disabled", "No shaders will be generated during import"),
+                ('2', "Simple", "Only the base map or the first bitmap found will be used"),
+                ('3', "Full", "Shaders will try to match ingame appearnce if supported"),
+               ]
+        )
+
     filter_glob: StringProperty(
         default="*.jms;*.jmp",
         options={'HIDDEN'},
@@ -859,7 +935,7 @@ class ImportJMS(Operator, ImportHelper):
 
     if (4, 1, 0) <= bpy.app.version:
         directory: StringProperty(
-            subtype='FILE_PATH', 
+            subtype='DIR_PATH', 
             options={'SKIP_SAVE', 'HIDDEN'}
             )
 
@@ -885,7 +961,14 @@ class ImportJMS(Operator, ImportHelper):
     
     def run_jms_code(self, filepath, context):
         from . import import_jms
-        global_functions.run_code("import_jms.load_file(context, filepath, self.game_title, self.reuse_armature, self.fix_parents, self.fix_rotations, self.empty_markers, self.report)")
+
+        shader_gen_setting = int(self.shader_gen_override)
+        if shader_gen_setting == 0:
+            shader_gen_setting = int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen)
+        else:
+            shader_gen_setting += -1
+        
+        global_functions.run_code("import_jms.load_file(context, filepath, self.game_title, self.reuse_armature, self.fix_parents, self.fix_rotations, self.empty_markers, shader_gen_setting, self.report)")
 
     if (4, 1, 0) <= bpy.app.version:
         def invoke(self, context, event):
@@ -923,6 +1006,9 @@ class ImportJMS(Operator, ImportHelper):
         row = col.row()
         row.label(text='Use Empties For Markers:')
         row.prop(self, "empty_markers", text='')
+        row = col.row()
+        row.label(text='Shader Gen Override:')
+        row.prop(self, "shader_gen_override", text='')
 
 if (4, 1, 0) <= bpy.app.version:
     class ImportJMS_FileHandler(FileHandler):

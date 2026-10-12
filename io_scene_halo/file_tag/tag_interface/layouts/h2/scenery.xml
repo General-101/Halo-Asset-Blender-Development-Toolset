@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="scen" parent="obje" name="scenery" version="1">
+  <Layout regolithID="block:scenery" internalName="scenery_block" name="scenery">
+    <FieldSet version="0" sizeofValue="264" sizeofSource="sizeof(_scenery_definition)" parentVersion="0">
+      <ShortEnum CStyleName="pathfinding_policy" pascalStyleName="PathfindingPolicy" name="pathfinding policy">
+        <Options regolithID="enum:scenery_pathfinding_policy_old_v0" CStyleName="scenery_pathfinding_policy_old_v0" pascalStyleName="SceneryPathfindingPolicyOldV0">
+          <Enum name="Pathfinding DYNAMIC" CStyleName="pathfinding_dynamic" pascalStyleName="PathfindingDynamic" />
+          <Enum name="Pathfinding CUT-OUT" CStyleName="pathfinding_cut_out" pascalStyleName="PathfindingCutOut" />
+          <Enum name="Pathfinding STATIC" CStyleName="pathfinding_static" pascalStyleName="PathfindingStatic" />
+          <Enum name="Pathfinding NONE" CStyleName="pathfinding_none" pascalStyleName="PathfindingNone" />
+        </Options>
+      </ShortEnum>
+      <WordFlags CStyleName="scenery_flags" pascalStyleName="SceneryFlags" name="flags">
+        <Options regolithID="enum:scenery_flags" CStyleName="scenery_flags" pascalStyleName="SceneryFlags">
+          <Bit name="physically simulates" description="stimulates?" CStyleName="physically_simulates_bit" pascalStyleName="PhysicallySimulatesBit" />
+        </Options>
+      </WordFlags>
+      <ShortEnum CStyleName="lightmapping_policy" pascalStyleName="LightmappingPolicy" name="lightmapping policy">
+        <Options regolithID="enum:scenery_light_mapping_policy_old_v0" CStyleName="scenery_light_mapping_policy_old_v0" pascalStyleName="SceneryLightMappingPolicyOldV0">
+          <Enum name="Dynamic" CStyleName="dynamic" pascalStyleName="Dynamic" />
+          <Enum name="Per-Vertex" CStyleName="per_vertex" pascalStyleName="PerVertex" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <UselessPad length="120" />
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="264" sizeofSource="sizeof(_scenery_definition)" parentVersion="0">
+      <Explanation name="Pathfinding" description="Indicate whether, by default, we should create pathfinding data for this type of scenery" />
+      <ShortEnum CStyleName="pathfinding_policy" pascalStyleName="PathfindingPolicy" name="pathfinding policy">
+        <OptionsXRef>enum:scenery_pathfinding_policy_old_v0</OptionsXRef>
+      </ShortEnum>
+      <WordFlags CStyleName="scenery_flags" pascalStyleName="SceneryFlags" name="flags">
+        <OptionsXRef>enum:scenery_flags</OptionsXRef>
+      </WordFlags>
+      <Explanation name="Lightmapping" description="Indicate whether, by default, how we should lightmap this type of scenery" />
+      <ShortEnum CStyleName="lightmapping_policy" pascalStyleName="LightmappingPolicy" name="lightmapping policy">
+        <Options regolithID="enum:scenery_lightmap_policy" CStyleName="scenery_lightmap_policy" pascalStyleName="SceneryLightmapPolicy">
+          <Enum name="Per-Vertex" CStyleName="per_vertex" pascalStyleName="PerVertex" />
+          <Enum name="Per-Pixel (not implemented)" CStyleName="per_pixel_not_implemented" pascalStyleName="PerPixelNotImplemented" />
+          <Enum name="Dynamic" CStyleName="dynamic" pascalStyleName="Dynamic" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <UselessPad length="120" />
+    </FieldSet>
+    <FieldSet version="2" sizeofValue="264" sizeofSource="sizeof(_scenery_definition)" parentVersion="0" isLatest="true">
+      <Explanation name="Pathfinding" description="Indicate whether, by default, we should create pathfinding data for this type of scenery" />
+      <ShortEnum CStyleName="pathfinding_policy" pascalStyleName="PathfindingPolicy" name="pathfinding policy">
+        <Options regolithID="enum:scenery_pathfinding_policy" CStyleName="scenery_pathfinding_policy" pascalStyleName="SceneryPathfindingPolicy">
+          <Enum name="Pathfinding CUT-OUT" CStyleName="pathfinding_cut_out" pascalStyleName="PathfindingCutOut" />
+          <Enum name="Pathfinding STATIC" CStyleName="pathfinding_static" pascalStyleName="PathfindingStatic" />
+          <Enum name="Pathfinding DYNAMIC" CStyleName="pathfinding_dynamic" pascalStyleName="PathfindingDynamic" />
+          <Enum name="Pathfinding NONE" CStyleName="pathfinding_none" pascalStyleName="PathfindingNone" />
+        </Options>
+      </ShortEnum>
+      <WordFlags CStyleName="scenery_flags" pascalStyleName="SceneryFlags" name="flags">
+        <OptionsXRef>enum:scenery_flags</OptionsXRef>
+      </WordFlags>
+      <Explanation name="Lightmapping" description="Indicate whether, by default, how we should lightmap this type of scenery" />
+      <ShortEnum CStyleName="lightmapping_policy" pascalStyleName="LightmappingPolicy" name="lightmapping policy">
+        <OptionsXRef>enum:scenery_lightmap_policy</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <UselessPad length="120" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

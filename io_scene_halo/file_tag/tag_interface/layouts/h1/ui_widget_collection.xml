@@ -1,0 +1,16 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="Soul" name="ui_widget_collection" version="1">
+  <Layout regolithID="block:ui_widget_collection" internalName="ui_widget_collection_block" name="ui_widget_collection">
+    <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct ui_widget_collection_group)" isLatest="true">
+      <Block CStyleName="tags" pascalStyleName="Tags" name="tags" maxElementCount="200">
+        <Layout regolithID="block:tags" internalName="tags_block" name="tags_block">
+          <FieldSet version="0" sizeofValue="16" isLatest="true">
+            <TagReference CStyleName="reference" pascalStyleName="Reference" name="reference">
+              <tag>*</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -38,6 +38,7 @@ def write_file(context,
                permutation_ce,
                level_of_detail_ce,
                generate_checksum,
+               file_checksum,
                folder_structure,
                write_textures,
                hidden_geo,
@@ -54,6 +55,7 @@ def write_file(context,
                use_maya_sorting,
                folder_type,
                scale_value,
+               merge_instances,
                report):
 
     layer_collection_list = []
@@ -83,6 +85,7 @@ def write_file(context,
                                   permutation_ce,
                                   level_of_detail_ce,
                                   generate_checksum,
+                                  file_checksum,
                                   folder_structure,
                                   write_textures,
                                   hidden_geo,
@@ -99,6 +102,7 @@ def write_file(context,
                                   use_maya_sorting,
                                   folder_type,
                                   scale_value,
+                                  merge_instances,
                                   report)
 
     # Restore visibility status for all resources
@@ -117,6 +121,7 @@ def command_queue(is_jmi,
                   permutation_ce,
                   level_of_detail_ce,
                   generate_checksum,
+                  file_checksum,
                   folder_structure,
                   write_textures,
                   hidden_geo,
@@ -133,6 +138,7 @@ def command_queue(is_jmi,
                   use_maya_sorting,
                   folder_type,
                   scale_value,
+                  merge_instances,
                   report):
 
     node_prefix_tuple = ('b ', 'b_', 'bone', 'frame', 'bip01')
@@ -165,6 +171,7 @@ def command_queue(is_jmi,
     prismatic_list = []
     bounding_sphere_list = []
     skylight_list = []
+    union_geometry_list = []
 
     level_of_detail_ce = mesh_processing.get_lod(level_of_detail_ce, game_title)
 
@@ -174,7 +181,7 @@ def command_queue(is_jmi,
                 mesh_processing.vertex_group_clean_normalize(context, obj, limit_value)
 
             if apply_modifiers:
-                mesh_processing.add_modifier(context, obj, triangulate_faces, edge_split, None)
+                mesh_processing.add_modifier(context, obj, triangulate_faces, edge_split, None, None)
 
     depsgraph = context.evaluated_depsgraph_get()
     for obj in object_set:
@@ -272,6 +279,18 @@ def command_queue(is_jmi,
             if export_render:
                 skylight_list.append(obj)
 
+        elif merge_instances and name[0:1] == '%' and len(obj.data.polygons) > 0:
+            if export_render:
+                if obj.parent and (obj.parent.type == 'ARMATURE' or parent_name.startswith(node_prefix_tuple)):
+                    if apply_modifiers:
+                        obj_for_convert = obj.evaluated_get(depsgraph)
+                        evaluted_mesh = obj_for_convert.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
+
+                    else:
+                        evaluted_mesh = obj.to_mesh(preserve_all_data_layers=True)
+
+                    union_geometry_list.append((evaluted_mesh, obj))
+
         elif obj.type== 'MESH':
             if export_render:
                 if not global_functions.string_empty_check(obj.data.ass_jms.XREF_path) and jms_version > 8205:
@@ -300,24 +319,27 @@ def command_queue(is_jmi,
 
                         render_geometry_list.append((evaluted_mesh, obj))
 
-    blend_scene = global_functions.BlendScene(world_node_count, armature_count, mesh_frame_count, render_count, collision_count, physics_count, armature, node_list, render_marker_list, collision_marker_list, physics_marker_list, marker_list, xref_instances, instance_markers, render_geometry_list, collision_geometry_list, sphere_list, box_list, capsule_list, convex_shape_list, ragdoll_list, hinge_list, car_wheel_list, point_to_point_list, prismatic_list, bounding_sphere_list, skylight_list)
+    blend_scene = global_functions.BlendScene(world_node_count, armature_count, mesh_frame_count, render_count, collision_count, physics_count, armature, node_list, 
+                                              render_marker_list, collision_marker_list, physics_marker_list, marker_list, xref_instances, instance_markers, render_geometry_list, 
+                                              collision_geometry_list, sphere_list, box_list, capsule_list, convex_shape_list, ragdoll_list, hinge_list, car_wheel_list, 
+                                              point_to_point_list, prismatic_list, bounding_sphere_list, skylight_list, union_geometry_list)
 
     scene_validation.validate_halo_jms_scene(game_title, jms_version, blend_scene, object_set, is_jmi)
 
     if export_render and blend_scene.render_count > 0:
         model_type = ModelTypeEnum.render
 
-        build_asset(context, blend_scene, filepath, jms_version, game_title, generate_checksum, fix_rotations, use_maya_sorting, folder_structure, folder_type, model_type, is_jmi, permutation_ce, level_of_detail_ce, scale_value, loop_normals, write_textures, report)
+        build_asset(context, blend_scene, filepath, jms_version, game_title, generate_checksum, file_checksum, fix_rotations, use_maya_sorting, folder_structure, folder_type, model_type, is_jmi, permutation_ce, level_of_detail_ce, scale_value, merge_instances, loop_normals, write_textures, report)
 
     if export_collision and blend_scene.collision_count > 0:
         model_type = ModelTypeEnum.collision
 
-        build_asset(context, blend_scene, filepath, jms_version, game_title, generate_checksum, fix_rotations, use_maya_sorting, folder_structure, folder_type, model_type, is_jmi, permutation_ce, level_of_detail_ce, scale_value, loop_normals, write_textures, report)
+        build_asset(context, blend_scene, filepath, jms_version, game_title, generate_checksum, file_checksum, fix_rotations, use_maya_sorting, folder_structure, folder_type, model_type, is_jmi, permutation_ce, level_of_detail_ce, scale_value, False, loop_normals, write_textures, report)
 
     if export_physics and blend_scene.physics_count > 0:
         model_type = ModelTypeEnum.physics
 
-        build_asset(context, blend_scene, filepath, jms_version, game_title, generate_checksum, fix_rotations, use_maya_sorting, folder_structure, folder_type, model_type, is_jmi, permutation_ce, level_of_detail_ce, scale_value, loop_normals, write_textures, report)
+        build_asset(context, blend_scene, filepath, jms_version, game_title, generate_checksum, file_checksum, fix_rotations, use_maya_sorting, folder_structure, folder_type, model_type, is_jmi, permutation_ce, level_of_detail_ce, scale_value, False, loop_normals, write_textures, report)
 
     return {'FINISHED'}
 

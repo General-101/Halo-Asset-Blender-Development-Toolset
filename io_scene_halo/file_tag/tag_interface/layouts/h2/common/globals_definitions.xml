@@ -1,0 +1,367 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedLayouts>
+  <Layout regolithID="structure:sound_response_extra_sounds" tag="masd" internalName="sound_response_extra_sounds_struct" backingBlockInternalName="sound_response_extra_sounds_struct_block" name="sound_response_extra_sounds_struct">
+    <FieldSet version="0" sizeofValue="0" sizeofSource="0" />
+    <FieldSet version="1" sizeofValue="128" sizeofSource="sizeof(struct tag_reference)*(k_language_count - 1)" isLatest="true">
+      <TagReference CStyleName="japanese_sound" pascalStyleName="JapaneseSound" name="japanese sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="german_sound" pascalStyleName="GermanSound" name="german sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="french_sound" pascalStyleName="FrenchSound" name="french sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="spanish_sound" pascalStyleName="SpanishSound" name="spanish sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="italian_sound" pascalStyleName="ItalianSound" name="italian sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="korean_sound" pascalStyleName="KoreanSound" name="korean sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="chinese_sound" pascalStyleName="ChineseSound" name="chinese sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <TagReference CStyleName="portuguese_sound" pascalStyleName="PortugueseSound" name="portuguese sound">
+        <tag>snd!</tag>
+      </TagReference>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:sound_response_definition" internalName="sound_response_definition_block" name="sound_response_definition_block">
+    <FieldSet version="0" sizeofValue="152" sizeofSource="sizeof(s_multiplayer_event_sound_response_definition)" isLatest="true">
+      <WordFlags CStyleName="sound_flags" pascalStyleName="SoundFlags" name="sound flags">
+        <Options regolithID="enum:sound_response_flags" CStyleName="sound_response_flags" pascalStyleName="SoundResponseFlags">
+          <Bit name="announcer sound" CStyleName="announcer_sound_bit" pascalStyleName="AnnouncerSoundBit" />
+        </Options>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <TagReference CStyleName="english_sound" pascalStyleName="EnglishSound" name="english sound" blockNameSource="true">
+        <tag>snd!</tag>
+      </TagReference>
+      <Struct CStyleName="extra_sounds" pascalStyleName="ExtraSounds" name="extra sounds">
+        <LayoutXRef>structure:sound_response_extra_sounds</LayoutXRef>
+      </Struct>
+      <Real CStyleName="probability" pascalStyleName="Probability" name="probability" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:game_engine_general_event" internalName="game_engine_general_event_block" name="game_engine_general_event_block">
+    <FieldSet version="0" sizeofValue="244" sizeofSource="sizeof(struct s_multiplayer_event_response_definition)" isLatest="true">
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:game_engine_quantity_flags" CStyleName="game_engine_quantity_flags" pascalStyleName="GameEngineQuantityFlags">
+          <Bit name="quantity message" CStyleName="quantity_message_bit" pascalStyleName="QuantityMessageBit" />
+        </Options>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <ShortEnum CStyleName="event" pascalStyleName="Event" name="event" blockNameSource="true">
+        <Options regolithID="enum:game_engine_event" CStyleName="game_engine_event" pascalStyleName="GameEngineEvent">
+          <Enum name="kill" CStyleName="kill" pascalStyleName="Kill" />
+          <Enum name="suicide" CStyleName="suicide" pascalStyleName="Suicide" />
+          <Enum name="kill teammate" CStyleName="kill_teammate" pascalStyleName="KillTeammate" />
+          <Enum name="victory" CStyleName="victory" pascalStyleName="Victory" />
+          <Enum name="team victory" CStyleName="team_victory" pascalStyleName="TeamVictory" />
+          <Enum name="unused1" CStyleName="unused1" pascalStyleName="Unused1" />
+          <Enum name="unused2" CStyleName="unused2" pascalStyleName="Unused2" />
+          <Enum name="1 min to win" CStyleName="_1_min_to_win" pascalStyleName="1MinToWin" />
+          <Enum name="team 1 min to win" CStyleName="team_1_min_to_win" pascalStyleName="Team1MinToWin" />
+          <Enum name="30 secs to win" CStyleName="_30_secs_to_win" pascalStyleName="30SecsToWin" />
+          <Enum name="team 30 secs to win" CStyleName="team_30_secs_to_win" pascalStyleName="Team30SecsToWin" />
+          <Enum name="player quit" CStyleName="player_quit" pascalStyleName="PlayerQuit" />
+          <Enum name="player joined" CStyleName="player_joined" pascalStyleName="PlayerJoined" />
+          <Enum name="killed by unknown" CStyleName="killed_by_unknown" pascalStyleName="KilledByUnknown" />
+          <Enum name="30 minutes left" CStyleName="_30_minutes_left" pascalStyleName="30MinutesLeft" />
+          <Enum name="15 minutes left" CStyleName="_15_minutes_left" pascalStyleName="15MinutesLeft" />
+          <Enum name="5 minutes left" CStyleName="_5_minutes_left" pascalStyleName="5MinutesLeft" />
+          <Enum name="1 minute left" CStyleName="_1_minute_left" pascalStyleName="1MinuteLeft" />
+          <Enum name="time expired" CStyleName="time_expired" pascalStyleName="TimeExpired" />
+          <Enum name="game over" CStyleName="game_over" pascalStyleName="GameOver" />
+          <Enum name="respawn tick" CStyleName="respawn_tick" pascalStyleName="RespawnTick" />
+          <Enum name="last respawn tick" CStyleName="last_respawn_tick" pascalStyleName="LastRespawnTick" />
+          <Enum name="teleporter used" CStyleName="teleporter_used" pascalStyleName="TeleporterUsed" />
+          <Enum name="player changed team" CStyleName="player_changed_team" pascalStyleName="PlayerChangedTeam" />
+          <Enum name="player rejoined" CStyleName="player_rejoined" pascalStyleName="PlayerRejoined" />
+          <Enum name="gained lead" CStyleName="gained_lead" pascalStyleName="GainedLead" />
+          <Enum name="gained team lead" CStyleName="gained_team_lead" pascalStyleName="GainedTeamLead" />
+          <Enum name="lost lead" CStyleName="lost_lead" pascalStyleName="LostLead" />
+          <Enum name="lost team lead" CStyleName="lost_team_lead" pascalStyleName="LostTeamLead" />
+          <Enum name="tied leader" CStyleName="tied_leader" pascalStyleName="TiedLeader" />
+          <Enum name="tied team leader" CStyleName="tied_team_leader" pascalStyleName="TiedTeamLeader" />
+          <Enum name="round over" CStyleName="round_over" pascalStyleName="RoundOver" />
+          <Enum name="30 seconds left" CStyleName="_30_seconds_left" pascalStyleName="30SecondsLeft" />
+          <Enum name="10 seconds left" CStyleName="_10_seconds_left" pascalStyleName="10SecondsLeft" />
+          <Enum name="kill (falling)" CStyleName="kill_falling" pascalStyleName="KillFalling" />
+          <Enum name="kill (collision)" CStyleName="kill_collision" pascalStyleName="KillCollision" />
+          <Enum name="kill (melee)" CStyleName="kill_melee" pascalStyleName="KillMelee" />
+          <Enum name="sudden death" CStyleName="sudden_death" pascalStyleName="SuddenDeath" />
+          <Enum name="player booted player" CStyleName="player_booted_player" pascalStyleName="PlayerBootedPlayer" />
+          <Enum name="kill (flag carrier)" CStyleName="kill_flag_carrier" pascalStyleName="KillFlagCarrier" />
+          <Enum name="kill (bomb carrier)" CStyleName="kill_bomb_carrier" pascalStyleName="KillBombCarrier" />
+          <Enum name="kill (sticky grenade)" CStyleName="kill_sticky_grenade" pascalStyleName="KillStickyGrenade" />
+          <Enum name="kill (sniper)" CStyleName="kill_sniper" pascalStyleName="KillSniper" />
+          <Enum name="kill (st. melee)" CStyleName="kill_st_melee" pascalStyleName="KillStMelee" />
+          <Enum name="boarded vehicle" CStyleName="boarded_vehicle" pascalStyleName="BoardedVehicle" />
+          <Enum name="start team noti." CStyleName="start_team_noti" pascalStyleName="StartTeamNoti" />
+          <Enum name="telefrag" CStyleName="telefrag" pascalStyleName="Telefrag" />
+          <Enum name="10 secs to win" CStyleName="_10_secs_to_win" pascalStyleName="10SecsToWin" />
+          <Enum name="team 10 secs to win" CStyleName="team_10_secs_to_win" pascalStyleName="Team10SecsToWin" />
+          <Enum name="pre game over" CStyleName="pre_game_over" pascalStyleName="PreGameOver" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="audience" pascalStyleName="Audience" name="audience" blockNameSource="true">
+        <Options regolithID="enum:game_engine_audience" CStyleName="game_engine_audience" pascalStyleName="GameEngineAudience">
+          <Enum name="cause player" CStyleName="cause_player" pascalStyleName="CausePlayer" />
+          <Enum name="cause team" CStyleName="cause_team" pascalStyleName="CauseTeam" />
+          <Enum name="effect player" CStyleName="effect_player" pascalStyleName="EffectPlayer" />
+          <Enum name="effect team" CStyleName="effect_team" pascalStyleName="EffectTeam" />
+          <Enum name="all" CStyleName="all" pascalStyleName="All" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <StringId CStyleName="display_string" pascalStyleName="DisplayString" name="display string" />
+      <ShortEnum CStyleName="required_field" pascalStyleName="RequiredField" name="required field">
+        <Options regolithID="enum:event_audience" CStyleName="event_audience" pascalStyleName="EventAudience">
+          <Enum name="NONE" CStyleName="none" pascalStyleName="None" />
+          <Enum name="cause player" CStyleName="cause_player" pascalStyleName="CausePlayer" />
+          <Enum name="cause team" CStyleName="cause_team" pascalStyleName="CauseTeam" />
+          <Enum name="effect player" CStyleName="effect_player" pascalStyleName="EffectPlayer" />
+          <Enum name="effect team" CStyleName="effect_team" pascalStyleName="EffectTeam" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="excluded_audience" pascalStyleName="ExcludedAudience" name="excluded audience">
+        <OptionsXRef>enum:event_audience</OptionsXRef>
+      </ShortEnum>
+      <StringId CStyleName="primary_string" pascalStyleName="PrimaryString" name="primary string" />
+      <LongInteger CStyleName="primary_string_duration" pascalStyleName="PrimaryStringDuration" name="primary string duration" units="seconds" />
+      <StringId CStyleName="plural_display_string" pascalStyleName="PluralDisplayString" name="plural display string" />
+      <Pad sizeOfSource="sizeof(long)*7" length="28" />
+      <Real CStyleName="sound_delay_announcer_only" pascalStyleName="SoundDelayAnnouncerOnly" name="sound delay (announcer only)" />
+      <WordFlags CStyleName="sound_flags" pascalStyleName="SoundFlags" name="sound flags">
+        <OptionsXRef>enum:sound_response_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+        <tag>snd!</tag>
+      </TagReference>
+      <Struct CStyleName="extra_sounds" pascalStyleName="ExtraSounds" name="extra sounds">
+        <LayoutXRef>structure:sound_response_extra_sounds</LayoutXRef>
+      </Struct>
+      <Pad sizeOfSource="sizeof(real)*1" length="4" />
+      <Pad sizeOfSource="sizeof(long)*4" length="16" />
+      <Block CStyleName="sound_permutations" pascalStyleName="SoundPermutations" name="sound permutations" maxElementCount="10">
+        <LayoutXRef>block:sound_response_definition</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:game_engine_slayer_event" internalName="game_engine_slayer_event_block" name="game_engine_slayer_event_block">
+    <FieldSet version="0" sizeofValue="244" sizeofSource="sizeof(struct s_multiplayer_event_response_definition)" isLatest="true">
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:game_engine_quantity_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <ShortEnum CStyleName="event" pascalStyleName="Event" name="event" blockNameSource="true">
+        <Options regolithID="enum:game_engine_slayer_event" CStyleName="game_engine_slayer_event" pascalStyleName="GameEngineSlayerEvent">
+          <Enum name="game start" CStyleName="game_start" pascalStyleName="GameStart" />
+          <Enum name="new target" CStyleName="new_target" pascalStyleName="NewTarget" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="audience" pascalStyleName="Audience" name="audience" blockNameSource="true">
+        <OptionsXRef>enum:game_engine_audience</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <StringId CStyleName="display_string" pascalStyleName="DisplayString" name="display string" />
+      <ShortEnum CStyleName="required_field" pascalStyleName="RequiredField" name="required field">
+        <OptionsXRef>enum:event_audience</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="excluded_audience" pascalStyleName="ExcludedAudience" name="excluded audience">
+        <OptionsXRef>enum:event_audience</OptionsXRef>
+      </ShortEnum>
+      <StringId CStyleName="primary_string" pascalStyleName="PrimaryString" name="primary string" />
+      <LongInteger CStyleName="primary_string_duration" pascalStyleName="PrimaryStringDuration" name="primary string duration" units="seconds" />
+      <StringId CStyleName="plural_display_string" pascalStyleName="PluralDisplayString" name="plural display string" />
+      <Pad sizeOfSource="sizeof(long)*7" length="28" />
+      <Real CStyleName="sound_delay_announcer_only" pascalStyleName="SoundDelayAnnouncerOnly" name="sound delay (announcer only)" />
+      <WordFlags CStyleName="sound_flags" pascalStyleName="SoundFlags" name="sound flags">
+        <OptionsXRef>enum:sound_response_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+        <tag>snd!</tag>
+      </TagReference>
+      <Struct CStyleName="extra_sounds" pascalStyleName="ExtraSounds" name="extra sounds">
+        <LayoutXRef>structure:sound_response_extra_sounds</LayoutXRef>
+      </Struct>
+      <Pad sizeOfSource="sizeof(real)*1" length="4" />
+      <Pad sizeOfSource="sizeof(long)*4" length="16" />
+      <Block CStyleName="sound_permutations" pascalStyleName="SoundPermutations" name="sound permutations" maxElementCount="10">
+        <LayoutXRef>block:sound_response_definition</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:game_engine_ctf_event" internalName="game_engine_ctf_event_block" name="game_engine_ctf_event_block">
+    <FieldSet version="0" sizeofValue="244" sizeofSource="sizeof(struct s_multiplayer_event_response_definition)" isLatest="true">
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:game_engine_quantity_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <ShortEnum CStyleName="event" pascalStyleName="Event" name="event" blockNameSource="true">
+        <Options regolithID="enum:ctf_event" CStyleName="ctf_event" pascalStyleName="CtfEvent">
+          <Enum name="game start" CStyleName="game_start" pascalStyleName="GameStart" />
+          <Enum name="flag taken" CStyleName="flag_taken" pascalStyleName="FlagTaken" />
+          <Enum name="flag dropped" CStyleName="flag_dropped" pascalStyleName="FlagDropped" />
+          <Enum name="flag returned by player" CStyleName="flag_returned_by_player" pascalStyleName="FlagReturnedByPlayer" />
+          <Enum name="flag returned by timeout" CStyleName="flag_returned_by_timeout" pascalStyleName="FlagReturnedByTimeout" />
+          <Enum name="flag captured" CStyleName="flag_captured" pascalStyleName="FlagCaptured" />
+          <Enum name="flag new defensive team" CStyleName="flag_new_defensive_team" pascalStyleName="FlagNewDefensiveTeam" />
+          <Enum name="flag return faliure" CStyleName="flag_return_faliure" pascalStyleName="FlagReturnFaliure" />
+          <Enum name="side switch tick" CStyleName="side_switch_tick" pascalStyleName="SideSwitchTick" />
+          <Enum name="side switch final tick" CStyleName="side_switch_final_tick" pascalStyleName="SideSwitchFinalTick" />
+          <Enum name="side switch 30 seconds" CStyleName="side_switch_30_seconds" pascalStyleName="SideSwitch30Seconds" />
+          <Enum name="side switch 10 seconds" CStyleName="side_switch_10_seconds" pascalStyleName="SideSwitch10Seconds" />
+          <Enum name="flag contested" CStyleName="flag_contested" pascalStyleName="FlagContested" />
+          <Enum name="flag capture faliure" CStyleName="flag_capture_faliure" pascalStyleName="FlagCaptureFaliure" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="audience" pascalStyleName="Audience" name="audience" blockNameSource="true">
+        <OptionsXRef>enum:game_engine_audience</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <StringId CStyleName="display_string" pascalStyleName="DisplayString" name="display string" />
+      <ShortEnum CStyleName="required_field" pascalStyleName="RequiredField" name="required field">
+        <OptionsXRef>enum:event_audience</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="excluded_audience" pascalStyleName="ExcludedAudience" name="excluded audience">
+        <OptionsXRef>enum:event_audience</OptionsXRef>
+      </ShortEnum>
+      <StringId CStyleName="primary_string" pascalStyleName="PrimaryString" name="primary string" />
+      <LongInteger CStyleName="primary_string_duration" pascalStyleName="PrimaryStringDuration" name="primary string duration" units="seconds" />
+      <StringId CStyleName="plural_display_string" pascalStyleName="PluralDisplayString" name="plural display string" />
+      <Pad sizeOfSource="sizeof(long)*7" length="28" />
+      <Real CStyleName="sound_delay_announcer_only" pascalStyleName="SoundDelayAnnouncerOnly" name="sound delay (announcer only)" />
+      <WordFlags CStyleName="sound_flags" pascalStyleName="SoundFlags" name="sound flags">
+        <OptionsXRef>enum:sound_response_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+        <tag>snd!</tag>
+      </TagReference>
+      <Struct CStyleName="extra_sounds" pascalStyleName="ExtraSounds" name="extra sounds">
+        <LayoutXRef>structure:sound_response_extra_sounds</LayoutXRef>
+      </Struct>
+      <Pad sizeOfSource="sizeof(real)*1" length="4" />
+      <Pad sizeOfSource="sizeof(long)*4" length="16" />
+      <Block CStyleName="sound_permutations" pascalStyleName="SoundPermutations" name="sound permutations" maxElementCount="10">
+        <LayoutXRef>block:sound_response_definition</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:game_engine_oddball_event" internalName="game_engine_oddball_event_block" name="game_engine_oddball_event_block">
+    <FieldSet version="0" sizeofValue="244" sizeofSource="sizeof(struct s_multiplayer_event_response_definition)" isLatest="true">
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:game_engine_quantity_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <ShortEnum CStyleName="event" pascalStyleName="Event" name="event" blockNameSource="true">
+        <Options regolithID="enum:oddball_game_event" CStyleName="oddball_game_event" pascalStyleName="OddballGameEvent">
+          <Enum name="game start" CStyleName="game_start" pascalStyleName="GameStart" />
+          <Enum name="ball spawned" CStyleName="ball_spawned" pascalStyleName="BallSpawned" />
+          <Enum name="ball picked up" CStyleName="ball_picked_up" pascalStyleName="BallPickedUp" />
+          <Enum name="ball dropped" CStyleName="ball_dropped" pascalStyleName="BallDropped" />
+          <Enum name="ball reset" CStyleName="ball_reset" pascalStyleName="BallReset" />
+          <Enum name="ball tick" CStyleName="ball_tick" pascalStyleName="BallTick" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="audience" pascalStyleName="Audience" name="audience" blockNameSource="true">
+        <OptionsXRef>enum:game_engine_audience</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <StringId CStyleName="display_string" pascalStyleName="DisplayString" name="display string" />
+      <ShortEnum CStyleName="required_field" pascalStyleName="RequiredField" name="required field">
+        <OptionsXRef>enum:event_audience</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="excluded_audience" pascalStyleName="ExcludedAudience" name="excluded audience">
+        <OptionsXRef>enum:event_audience</OptionsXRef>
+      </ShortEnum>
+      <StringId CStyleName="primary_string" pascalStyleName="PrimaryString" name="primary string" />
+      <LongInteger CStyleName="primary_string_duration" pascalStyleName="PrimaryStringDuration" name="primary string duration" units="seconds" />
+      <StringId CStyleName="plural_display_string" pascalStyleName="PluralDisplayString" name="plural display string" />
+      <Pad sizeOfSource="sizeof(long)*7" length="28" />
+      <Real CStyleName="sound_delay_announcer_only" pascalStyleName="SoundDelayAnnouncerOnly" name="sound delay (announcer only)" />
+      <WordFlags CStyleName="sound_flags" pascalStyleName="SoundFlags" name="sound flags">
+        <OptionsXRef>enum:sound_response_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+        <tag>snd!</tag>
+      </TagReference>
+      <Struct CStyleName="extra_sounds" pascalStyleName="ExtraSounds" name="extra sounds">
+        <LayoutXRef>structure:sound_response_extra_sounds</LayoutXRef>
+      </Struct>
+      <Pad sizeOfSource="sizeof(real)*1" length="4" />
+      <Pad sizeOfSource="sizeof(long)*4" length="16" />
+      <Block CStyleName="sound_permutations" pascalStyleName="SoundPermutations" name="sound permutations" maxElementCount="10">
+        <LayoutXRef>block:sound_response_definition</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:game_engine_king_event" internalName="game_engine_king_event_block" name="game_engine_king_event_block">
+    <FieldSet version="0" sizeofValue="244" sizeofSource="sizeof(struct s_multiplayer_event_response_definition)" isLatest="true">
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:game_engine_quantity_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <ShortEnum CStyleName="event" pascalStyleName="Event" name="event" blockNameSource="true">
+        <Options regolithID="enum:king_hill_event" CStyleName="king_hill_event" pascalStyleName="KingHillEvent">
+          <Enum name="game start" CStyleName="game_start" pascalStyleName="GameStart" />
+          <Enum name="hill controlled" CStyleName="hill_controlled" pascalStyleName="HillControlled" />
+          <Enum name="hill contested" CStyleName="hill_contested" pascalStyleName="HillContested" />
+          <Enum name="hill tick" CStyleName="hill_tick" pascalStyleName="HillTick" />
+          <Enum name="hill move" CStyleName="hill_move" pascalStyleName="HillMove" />
+          <Enum name="hill controlled team" CStyleName="hill_controlled_team" pascalStyleName="HillControlledTeam" />
+          <Enum name="hill contested team" CStyleName="hill_contested_team" pascalStyleName="HillContestedTeam" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="audience" pascalStyleName="Audience" name="audience" blockNameSource="true">
+        <OptionsXRef>enum:game_engine_audience</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <StringId CStyleName="display_string" pascalStyleName="DisplayString" name="display string" />
+      <ShortEnum CStyleName="required_field" pascalStyleName="RequiredField" name="required field">
+        <OptionsXRef>enum:event_audience</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="excluded_audience" pascalStyleName="ExcludedAudience" name="excluded audience">
+        <OptionsXRef>enum:event_audience</OptionsXRef>
+      </ShortEnum>
+      <StringId CStyleName="primary_string" pascalStyleName="PrimaryString" name="primary string" />
+      <LongInteger CStyleName="primary_string_duration" pascalStyleName="PrimaryStringDuration" name="primary string duration" units="seconds" />
+      <StringId CStyleName="plural_display_string" pascalStyleName="PluralDisplayString" name="plural display string" />
+      <Pad sizeOfSource="sizeof(long)*7" length="28" />
+      <Real CStyleName="sound_delay_announcer_only" pascalStyleName="SoundDelayAnnouncerOnly" name="sound delay (announcer only)" />
+      <WordFlags CStyleName="sound_flags" pascalStyleName="SoundFlags" name="sound flags">
+        <OptionsXRef>enum:sound_response_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+        <tag>snd!</tag>
+      </TagReference>
+      <Struct CStyleName="extra_sounds" pascalStyleName="ExtraSounds" name="extra sounds">
+        <LayoutXRef>structure:sound_response_extra_sounds</LayoutXRef>
+      </Struct>
+      <Pad sizeOfSource="sizeof(real)*1" length="4" />
+      <Pad sizeOfSource="sizeof(long)*4" length="16" />
+      <Block CStyleName="sound_permutations" pascalStyleName="SoundPermutations" name="sound permutations" maxElementCount="10">
+        <LayoutXRef>block:sound_response_definition</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:multiplayer_color" internalName="multiplayer_color_block" name="multiplayer_color_block">
+    <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(real_rgb_color)" isLatest="true">
+      <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+    </FieldSet>
+  </Layout>
+</SharedLayouts>

@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="ugh!" name="sound_cache_file_gestalt" version="2">
+  <Layout regolithID="block:sound_cache_file_gestalt" internalName="sound_cache_file_gestalt_block" name="sound_cache_file_gestalt">
+    <FieldSet version="0" sizeofValue="180" sizeofSource="sizeof(s_sound_cache_file_gestalt_definition)" isLatest="true">
+      <Block CStyleName="codecs" pascalStyleName="Codecs" name="codecs" maxElementCount="127" maxElementCountSource="(std::numeric_limits&lt;decltype(s_cache_file_sound_definition::codec_index)&gt;::max)()">
+        <Layout regolithID="block:sound_gestalt_codec" internalName="sound_gestalt_codec_block" name="sound_gestalt_codec_block">
+          <FieldSet version="0" sizeofValue="3" sizeofSource="sizeof(s_cache_file_sound_codec)" isLatest="true">
+            <CharEnum CStyleName="sample_rate" pascalStyleName="SampleRate" name="sample rate" readOnly="true">
+              <OptionsXRef>enum:sound_sample_rate</OptionsXRef>
+            </CharEnum>
+            <CharEnum CStyleName="encoding" pascalStyleName="Encoding" name="encoding" readOnly="true">
+              <OptionsXRef>enum:sound_encoding</OptionsXRef>
+            </CharEnum>
+            <CharEnum CStyleName="compression" pascalStyleName="Compression" name="compression" readOnly="true">
+              <OptionsXRef>enum:sound_compression</OptionsXRef>
+            </CharEnum>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="playbacks" pascalStyleName="Playbacks" name="playbacks" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+        <Layout regolithID="block:sound_gestalt_playback" internalName="sound_gestalt_playback_block" name="sound_gestalt_playback_block">
+          <FieldSet version="0" sizeofValue="56" sizeofSource="sizeof(s_sound_definition_playback_parameters)" isLatest="true">
+            <Struct CStyleName="playback" pascalStyleName="Playback" name="playback" expertOnly="true">
+              <LayoutXRef>structure:sound_playback_parameters</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="scales" pascalStyleName="Scales" name="scales" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+        <Layout regolithID="block:sound_gestalt_scale" internalName="sound_gestalt_scale_block" name="sound_gestalt_scale_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_sound_definition_scale_modifiers)" isLatest="true">
+            <Struct CStyleName="scale" pascalStyleName="Scale" name="scale" expertOnly="true">
+              <LayoutXRef>structure:sound_scale_modifiers</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="import_names" pascalStyleName="ImportNames" name="import names" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+        <Layout regolithID="block:sound_gestalt_import_names" internalName="sound_gestalt_import_names_block" name="sound_gestalt_import_names_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(string_id)" isLatest="true">
+            <StringId CStyleName="import_name" pascalStyleName="ImportName" name="import name" blockNameSource="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="pitch_range_parameters" pascalStyleName="PitchRangeParameters" name="pitch range parameters" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+        <Layout regolithID="block:sound_gestalt_pitch_range_parameters" internalName="sound_gestalt_pitch_range_parameters_block" name="sound_gestalt_pitch_range_parameters_block">
+          <FieldSet version="0" sizeofValue="10" sizeofSource="sizeof(s_cache_file_sound_pitch_range_parameters)" isLatest="true">
+            <ShortInteger CStyleName="natural_pitch" pascalStyleName="NaturalPitch" name="natural pitch" units="cents" />
+            <ShortBounds CStyleName="bend_bounds" pascalStyleName="BendBounds" name="bend bounds" units="cents" description="the range of pitches that will be represented using this sample." />
+            <ShortBounds CStyleName="max_gain_pitch_bounds" pascalStyleName="MaxGainPitchBounds" name="max gain pitch bounds" units="cents" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="pitch_ranges" pascalStyleName="PitchRanges" name="pitch ranges" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+        <Layout regolithID="block:sound_gestalt_pitch_ranges" internalName="sound_gestalt_pitch_ranges_block" name="sound_gestalt_pitch_ranges_block">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_cache_file_sound_pitch_range)" isLatest="true">
+            <ShortBlockIndex CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" blockReference="block:sound_gestalt_import_names" />
+            <ShortBlockIndex CStyleName="parameters" pascalStyleName="Parameters" name="parameters" blockReference="block:sound_gestalt_pitch_range_parameters" />
+            <ShortInteger CStyleName="encoded_permutation_data" pascalStyleName="EncodedPermutationData" name="encoded permutation data" />
+            <ShortInteger CStyleName="first_runtime_permutation_flag_index" pascalStyleName="FirstRuntimePermutationFlagIndex" name="first runtime permutation flag index" />
+            <ShortBlockIndex CStyleName="first_permutation" pascalStyleName="FirstPermutation" name="first permutation" blockReference="block:sound_gestalt_permutations" />
+            <ShortInteger CStyleName="permutation_count" pascalStyleName="PermutationCount" name="permutation count" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+        <Layout regolithID="block:sound_gestalt_permutations" internalName="sound_gestalt_permutations_block" name="sound_gestalt_permutations_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_cache_file_sound_permutation)" isLatest="true">
+            <ShortBlockIndex CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" blockReference="block:sound_gestalt_import_names" />
+            <ShortInteger CStyleName="encoded_skip_fraction" pascalStyleName="EncodedSkipFraction" name="encoded skip fraction" />
+            <CharInteger CStyleName="encoded_gain" pascalStyleName="EncodedGain" name="encoded gain" units="dB" />
+            <CharInteger CStyleName="permutation_info_index" pascalStyleName="PermutationInfoIndex" name="permutation info index" />
+            <ShortInteger CStyleName="language_neutral_time" pascalStyleName="LanguageNeutralTime" name="language neutral time" units="ms" />
+            <Block CStyleName="localized_chunks_info" pascalStyleName="LocalizedChunksInfo" name="localized chunks info" maxElementCount="9" maxElementCountSource="k_language_count">
+              <Layout regolithID="block:sound_gestalt_permutation_language_data" internalName="sound_gestalt_permutation_language_data_block" name="sound_gestalt_permutation_language_data_block">
+                <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(s_cache_file_sound_permutation_language_data)" isLatest="true">
+                  <LongInteger CStyleName="sample_size" pascalStyleName="SampleSize" name="sample size" />
+                  <ShortInteger CStyleName="first_index_of_chunk_for_a_language" pascalStyleName="FirstIndexOfChunkForALanguage" name="first index of chunk for a language" />
+                  <ShortInteger CStyleName="number_of_chunks" pascalStyleName="NumberOfChunks" name="number of chunks" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="custom_playbacks" pascalStyleName="CustomPlaybacks" name="custom playbacks" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+        <Layout regolithID="block:sound_gestalt_custom_playback" internalName="sound_gestalt_custom_playback_block" name="sound_gestalt_custom_playback_block">
+          <FieldSet version="0" sizeofValue="72" sizeofSource="sizeof(s_platform_sound_playback_definition)" isLatest="true">
+            <Struct CStyleName="playback_definition" pascalStyleName="PlaybackDefinition" name="playback definition">
+              <LayoutXRef>structure:simple_platform_sound_playback</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="reflections" pascalStyleName="Reflections" name="reflections" maxElementCount="32767" maxElementCountSource="(std::numeric_limits&lt;decltype(s_cache_file_sound_definition::first_reflection_parameters_index)&gt;::max)()">
+        <Layout regolithID="block:sound_gestalt_reflections" internalName="sound_gestalt_reflections_block" name="sound_gestalt_reflections_block">
+          <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(s_sound_reflection)" isLatest="true">
+            <StringId CStyleName="reflection_type" pascalStyleName="ReflectionType" name="reflection type" description="type which is compared with type in current sound_environment tag" blockNameSource="true" />
+            <TagReference name="reflection sound">
+              <tag>snd!</tag>
+            </TagReference>
+            <LongInteger name="reflection sound" units="ms" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="lowpass_cut_off_parameters" pascalStyleName="LowpassCutOffParameters" name="lowpass cut off parameters" maxElementCount="128" maxElementCountSource="decltype(s_cache_file_sound_definition::low_pass_cut_off_parameters_index)::get_max_count()">
+        <Layout regolithID="block:sound_gestalt_lowpass" internalName="sound_gestalt_lowpass_block" name="sound_gestalt_lowpass_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_sound_lowpass_parameters)" isLatest="true">
+            <Struct CStyleName="lowpass_cut_off_parameters" pascalStyleName="LowpassCutOffParameters" name="lowpass cut off parameters">
+              <LayoutXRef>structure:sound_lowpass</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="remastered_sound" pascalStyleName="RemasteredSound" name="remastered sound" maxElementCount="32767" maxElementCountSource="(std::numeric_limits&lt;decltype(s_cache_file_sound_definition::remastered_sound_reference_index)&gt;::max)()">
+        <Layout regolithID="block:sound_gestalt_remastered_sound_references" internalName="sound_gestalt_remastered_sound_references_block" name="sound_gestalt_remastered_sound_references_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(tag_reference)" isLatest="true">
+            <TagReference CStyleName="remastered_sound" pascalStyleName="RemasteredSound" name="remastered sound" blockNameSource="true">
+              <tag>snd!</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="runtime_permutation_flags" pascalStyleName="RuntimePermutationFlags" name="runtime permutation flags" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+        <Layout regolithID="block:sound_gestalt_runtime_permutation_bit_vector" internalName="sound_gestalt_runtime_permutation_bit_vector_block" name="sound_gestalt_runtime_permutation_bit_vector_block">
+          <FieldSet version="0" sizeofValue="1" sizeofSource="sizeof(char)" isLatest="true">
+            <CharInteger CStyleName="runtime_permutation_bit_vector" pascalStyleName="RuntimePermutationBitVector" name="runtime permutation bit vector~" expertOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="language_chunks" pascalStyleName="LanguageChunks" name="language_chunks" maxElementCount="9" maxElementCountSource="k_language_count">
+        <Layout regolithID="block:sound_gestalt_language_chunks" internalName="sound_gestalt_language_chunks_block" name="sound_gestalt_language_chunks_block">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_sound_cache_file_gestalt_language_chunks)" isLatest="true">
+            <Block CStyleName="chunks" pascalStyleName="Chunks" name="chunks" maxElementCount="32767" maxElementCountSource="MAXIMUM_CHUNKS_PER_PERMUTATION">
+              <LayoutXRef>block:sound_permutation_chunk</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="promotions" pascalStyleName="Promotions" name="promotions" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+        <Layout regolithID="block:sound_gestalt_promotions" internalName="sound_gestalt_promotions_block" name="sound_gestalt_promotions_block">
+          <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(s_sound_promotion_parameters)" isLatest="true">
+            <Struct CStyleName="runtime_promotion_storage" pascalStyleName="RuntimePromotionStorage" name="runtime promotion storage~" expertOnly="true">
+              <LayoutXRef>structure:sound_promotion_parameters</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="extra_infos" pascalStyleName="ExtraInfos" name="extra infos" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+        <Layout regolithID="block:sound_gestalt_extra_info" internalName="sound_gestalt_extra_info_block" name="sound_gestalt_extra_info_block">
+          <FieldSet version="0" sizeofValue="372" sizeofSource="sizeof(s_cache_file_sound_definition_extra_info)" isLatest="true">
+            <Block CStyleName="encoded_permutation_section" pascalStyleName="EncodedPermutationSection" name="encoded permutation section" maxElementCount="1">
+              <LayoutXRef>block:sound_encoded_dialogue_section</LayoutXRef>
+            </Block>
+            <Array CStyleName="localized_geometry_block_info" pascalStyleName="LocalizedGeometryBlockInfo" name="localized geometry block info" readOnly="true" count="9">
+              <Struct CStyleName="geometry_block_info" pascalStyleName="GeometryBlockInfo" name="geometry block info" readOnly="true">
+                <LayoutXRef>structure:global_geometry_block_info</LayoutXRef>
+              </Struct>
+            </Array>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

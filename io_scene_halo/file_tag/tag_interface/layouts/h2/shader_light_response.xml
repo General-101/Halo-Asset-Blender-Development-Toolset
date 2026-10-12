@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="slit" name="shader_light_response" version="2">
+  <Layout regolithID="block:shader_light_response" internalName="shader_light_response_block" name="shader_light_response">
+    <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(s_shader_light_response_definition)" isLatest="true">
+      <Block CStyleName="categories" pascalStyleName="Categories" name="categories" maxElementCount="16" maxElementCountSource="k_maximum_categories_per_shader_template">
+        <LayoutXRef>block:shader_template_category</LayoutXRef>
+      </Block>
+      <Block CStyleName="shader_lods" pascalStyleName="ShaderLods" name="shader LODs" maxElementCount="8" maxElementCountSource="k_shader_level_of_detail_count">
+        <LayoutXRef>block:shader_template_level_of_detail</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

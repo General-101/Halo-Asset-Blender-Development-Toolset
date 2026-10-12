@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="devo" name="cellular_automata" version="2">
+  <Layout regolithID="block:cellular_automata" internalName="cellular_automata_block" name="cellular_automata">
+    <FieldSet version="0" sizeofValue="564" sizeofSource="sizeof(struct ca_definition)" isLatest="true">
+      <Explanation name="parameters" />
+      <ShortInteger CStyleName="updates_per_second" pascalStyleName="UpdatesPerSecond" name="updates per second" units="Hz" />
+      <ShortInteger name="x (width)" units="cells" />
+      <ShortInteger name="y (depth)" units="cells" />
+      <ShortInteger name="z (height)" units="cells" />
+      <Real name="x (width)" units="world units" />
+      <Real name="y (depth)" units="world units" />
+      <Real name="z (height)" units="world units" />
+      <Pad sizeOfSource="8*sizeof(long)" length="32" />
+      <OldStringId CStyleName="marker" pascalStyleName="Marker" name="marker" />
+      <Explanation name="cell birth" />
+      <RealFraction CStyleName="cell_birth_chance" pascalStyleName="CellBirthChance" name="cell birth chance" units="[0,1]" />
+      <Pad sizeOfSource="8*sizeof(long)" length="32" />
+      <Explanation name="gene mutation" />
+      <LongInteger CStyleName="cell_gene_mutates_1_in" pascalStyleName="CellGeneMutates1In" name="cell gene mutates 1 in" units="times" />
+      <LongInteger CStyleName="virus_gene_mutations_1_in" pascalStyleName="VirusGeneMutations1In" name="virus gene mutations 1 in" units="times" />
+      <Pad sizeOfSource="8*sizeof(long)" length="32" />
+      <Explanation name="cell infection" />
+      <ShortBounds CStyleName="infected_cell_lifespan" pascalStyleName="InfectedCellLifespan" name="infected cell lifespan" units="updates" description="the lifespan of a cell once infected" />
+      <ShortInteger CStyleName="minimum_infection_age" pascalStyleName="MinimumInfectionAge" name="minimum infection age" units="updates" description="no cell can be infected before it has been alive this number of updates" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <RealFraction CStyleName="cell_infection_chance" pascalStyleName="CellInfectionChance" name="cell infection chance" units="[0,1]" />
+      <RealFraction CStyleName="infection_threshold" pascalStyleName="InfectionThreshold" name="infection threshold" units="[0,1]" description="0.0 is most difficult for the virus, 1.0 means any virus can infect any cell" />
+      <Pad sizeOfSource="8*sizeof(long)" length="32" />
+      <Explanation name="initial state" />
+      <RealFraction CStyleName="new_cell_filled_chance" pascalStyleName="NewCellFilledChance" name="new cell filled chance" units="[0,1]" />
+      <RealFraction CStyleName="new_cell_infected_chance" pascalStyleName="NewCellInfectedChance" name="new cell infected chance" units="[0,1]" />
+      <Pad sizeOfSource="8*sizeof(long)" length="32" />
+      <Explanation name="detail texture" />
+      <RealFraction CStyleName="detail_texture_change_chance" pascalStyleName="DetailTextureChangeChance" name="detail texture change chance" units="[0,1]" />
+      <Pad sizeOfSource="8*sizeof(long)" length="32" />
+      <ShortInteger CStyleName="detail_texture_width" pascalStyleName="DetailTextureWidth" name="detail texture width" units="cells" description="the number of cells repeating across the detail texture in both dimensions" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <TagReference CStyleName="detail_texture" pascalStyleName="DetailTexture" name="detail texture">
+        <tag>bitm</tag>
+      </TagReference>
+      <Explanation name="mask texture" />
+      <Pad sizeOfSource="8*sizeof(long)" length="32" />
+      <TagReference CStyleName="mask_bitmap" pascalStyleName="MaskBitmap" name="mask bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <Pad sizeOfSource="60*sizeof(long)" length="240" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

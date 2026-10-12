@@ -1,0 +1,843 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="jmad" name="model_animation_graph" version="1">
+  <Layout regolithID="block:model_animation_graph" internalName="model_animation_graph_block" name="model_animation_graph">
+    <FieldSet version="0" sizeofValue="236" sizeofSource="sizeof(c_model_animation_graph)" isLatest="true">
+      <Struct CStyleName="resources" pascalStyleName="Resources" name="resources">
+        <Layout regolithID="structure:animation_graph_resources" tag="MAgr" internalName="animation_graph_resources_struct" backingBlockInternalName="animation_graph_resources_struct_block" name="animation_graph_resources_struct">
+          <FieldSet version="0" sizeofValue="104" sizeofSource="sizeof(c_animation_graph_resources_v0)">
+            <Explanation name="GRAPH DATA" />
+            <TagReference CStyleName="parent_animation_graph" pascalStyleName="ParentAnimationGraph" name="parent animation graph">
+              <tag>jmad</tag>
+            </TagReference>
+            <Block CStyleName="skeleton_nodesabcdcc" pascalStyleName="SkeletonNodesabcdcc" name="skeleton nodes|ABCDCC" readOnly="true" maxElementCount="255" maxElementCountSource="k_max_nodes_per_animation">
+              <Layout regolithID="block:animation_graph_node" internalName="animation_graph_node_block" name="animation_graph_node_block">
+                <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(struct animation_graph_node_v0)">
+                  <OldStringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+                  <ShortBlockIndex CStyleName="next_sibling_node_index" pascalStyleName="NextSiblingNodeIndex" name="next sibling node index" readOnly="true" />
+                  <ShortBlockIndex CStyleName="first_child_node_index" pascalStyleName="FirstChildNodeIndex" name="first child node index" readOnly="true" />
+                  <ShortBlockIndex CStyleName="parent_node_index" pascalStyleName="ParentNodeIndex" name="parent node index" readOnly="true" />
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <LongFlags CStyleName="node_joint_flags" pascalStyleName="NodeJointFlags" name="Node joint flags">
+                    <Options regolithID="enum:animation_graph_node_joint_type" CStyleName="animation_graph_node_joint_type" pascalStyleName="AnimationGraphNodeJointType">
+                      <Bit name="ball-socket" CStyleName="ball_socket_bit" pascalStyleName="BallSocketBit" />
+                      <Bit name="hinge" CStyleName="hinge_bit" pascalStyleName="HingeBit" />
+                      <Bit name="no movement" CStyleName="no_movement_bit" pascalStyleName="NoMovementBit" />
+                    </Options>
+                  </LongFlags>
+                  <RealVector3D CStyleName="base_vector" pascalStyleName="BaseVector" name="base vector" readOnly="true" />
+                  <Real CStyleName="vector_range" pascalStyleName="VectorRange" name="vector range" readOnly="true" />
+                  <Real CStyleName="z_pos" pascalStyleName="ZPos" name="z_pos" readOnly="true" />
+                </FieldSet>
+                <FieldSet version="1" sizeofValue="32" sizeofSource="sizeof(struct animation_graph_node)" isLatest="true">
+                  <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+                  <ShortBlockIndex CStyleName="next_sibling_node_index" pascalStyleName="NextSiblingNodeIndex" name="next sibling node index" readOnly="true" blockReference="block:animation_graph_node" />
+                  <ShortBlockIndex CStyleName="first_child_node_index" pascalStyleName="FirstChildNodeIndex" name="first child node index" readOnly="true" blockReference="block:animation_graph_node" />
+                  <ShortBlockIndex CStyleName="parent_node_index" pascalStyleName="ParentNodeIndex" name="parent node index" readOnly="true" blockReference="block:animation_graph_node" />
+                  <ByteFlags CStyleName="model_flags" pascalStyleName="ModelFlags" name="model flags" readOnly="true">
+                    <Options regolithID="enum:animation_graph_node_model_flags" CStyleName="animation_graph_node_model_flags" pascalStyleName="AnimationGraphNodeModelFlags">
+                      <Bit name="primary model" CStyleName="primary_model_bit" pascalStyleName="PrimaryModelBit" />
+                      <Bit name="secondary model" CStyleName="secondary_model_bit" pascalStyleName="SecondaryModelBit" />
+                      <Bit name="local root" CStyleName="local_root_bit" pascalStyleName="LocalRootBit" />
+                      <Bit name="left hand" CStyleName="left_hand_bit" pascalStyleName="LeftHandBit" />
+                      <Bit name="right hand" CStyleName="right_hand_bit" pascalStyleName="RightHandBit" />
+                      <Bit name="left arm member" CStyleName="left_arm_member_bit" pascalStyleName="LeftArmMemberBit" />
+                    </Options>
+                  </ByteFlags>
+                  <ByteFlags CStyleName="node_joint_flags" pascalStyleName="NodeJointFlags" name="node joint flags">
+                    <OptionsXRef>enum:animation_graph_node_joint_type</OptionsXRef>
+                  </ByteFlags>
+                  <RealVector3D CStyleName="base_vector" pascalStyleName="BaseVector" name="base vector" readOnly="true" />
+                  <Real CStyleName="vector_range" pascalStyleName="VectorRange" name="vector range" readOnly="true" />
+                  <Real CStyleName="z_pos" pascalStyleName="ZPos" name="z_pos" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Pad sizeOfSource="sizeof(long)" length="4" />
+            <Block CStyleName="sound_referencesabcdcc" pascalStyleName="SoundReferencesabcdcc" name="sound references|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_sound_references_per_graph">
+              <Layout regolithID="block:animation_graph_sound_reference" internalName="animation_graph_sound_reference_block" name="animation_graph_sound_reference_block">
+                <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(struct animation_graph_sound_reference)" isLatest="true">
+                  <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+                    <tag>snd!</tag>
+                  </TagReference>
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:animation_graph_reference_flags" CStyleName="animation_graph_reference_flags" pascalStyleName="AnimationGraphReferenceFlags">
+                      <Bit name="allow on player" CStyleName="allow_on_player_bit" pascalStyleName="AllowOnPlayerBit" />
+                      <Bit name="left arm only" CStyleName="left_arm_only_bit" pascalStyleName="LeftArmOnlyBit" />
+                      <Bit name="right arm only" CStyleName="right_arm_only_bit" pascalStyleName="RightArmOnlyBit" />
+                      <Bit name="first-person only" CStyleName="first_person_only_bit" pascalStyleName="FirstPersonOnlyBit" />
+                      <Bit name="forward only" CStyleName="forward_only_bit" pascalStyleName="ForwardOnlyBit" />
+                      <Bit name="reverse only" CStyleName="reverse_only_bit" pascalStyleName="ReverseOnlyBit" />
+                    </Options>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="blend_screensabcdcc" pascalStyleName="BlendScreensabcdcc" name="blend screens|ABCDCC" maxElementCount="64" maxElementCountSource="k_max_blend_screens_per_block">
+              <Layout regolithID="block:animation_blend_screen" internalName="animation_blend_screen_block" name="animation_blend_screen_block">
+                <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(struct s_animation_blend_screen)" isLatest="true">
+                  <StringId CStyleName="label" pascalStyleName="Label" name="label" blockNameSource="true" />
+                  <Struct CStyleName="aiming_screen" pascalStyleName="AimingScreen" name="aiming screen" readOnly="true">
+                    <Layout regolithID="structure:animation_aiming_screen" tag="aaim" internalName="animation_aiming_screen_struct" backingBlockInternalName="animation_aiming_screen_struct_block" name="animation_aiming_screen_struct">
+                      <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(struct animation_aiming_screen_bounds)" isLatest="true">
+                        <Angle CStyleName="right_yaw_per_frame" pascalStyleName="RightYawPerFrame" name="right yaw per frame" />
+                        <Angle CStyleName="left_yaw_per_frame" pascalStyleName="LeftYawPerFrame" name="left yaw per frame" />
+                        <ShortInteger CStyleName="right_frame_count" pascalStyleName="RightFrameCount" name="right frame count" />
+                        <ShortInteger CStyleName="left_frame_count" pascalStyleName="LeftFrameCount" name="left frame count" />
+                        <Angle CStyleName="down_pitch_per_frame" pascalStyleName="DownPitchPerFrame" name="down pitch per frame" />
+                        <Angle CStyleName="up_pitch_per_frame" pascalStyleName="UpPitchPerFrame" name="up pitch per frame" />
+                        <ShortInteger CStyleName="down_pitch_frame_count" pascalStyleName="DownPitchFrameCount" name="down pitch frame count" />
+                        <ShortInteger CStyleName="up_pitch_frame_count" pascalStyleName="UpPitchFrameCount" name="up pitch frame count" />
+                      </FieldSet>
+                    </Layout>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="animationsabcdcc" pascalStyleName="Animationsabcdcc" name="animations|ABCDCC" readOnly="true" tag="wide" maxElementCount="2048" maxElementCountSource="k_max_animations_per_graph">
+              <Layout regolithID="block:animation_pool" internalName="animation_pool_block" name="animation_pool_block">
+                <FieldSet version="0" sizeofValue="132" sizeofSource="sizeof(struct model_animation_v0)">
+                  <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+                  <CharEnum CStyleName="type" pascalStyleName="Type" name="type" readOnly="true">
+                    <Options regolithID="enum:animation_pool_type" CStyleName="animation_pool_type" pascalStyleName="AnimationPoolType">
+                      <Enum name="base" CStyleName="base" pascalStyleName="Base" />
+                      <Enum name="overlay" CStyleName="overlay" pascalStyleName="Overlay" />
+                      <Enum name="replacement" CStyleName="replacement" pascalStyleName="Replacement" />
+                    </Options>
+                  </CharEnum>
+                  <CharEnum CStyleName="frame_info_type" pascalStyleName="FrameInfoType" name="frame info type" readOnly="true">
+                    <Options regolithID="enum:animation_frame_info_type" CStyleName="animation_frame_info_type" pascalStyleName="AnimationFrameInfoType">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="dx,dy" CStyleName="dxdy" pascalStyleName="Dxdy" />
+                      <Enum name="dx,dy,dyaw" CStyleName="dxdydyaw" pascalStyleName="Dxdydyaw" />
+                      <Enum name="dx,dy,dz,dyaw" CStyleName="dxdydzdyaw" pascalStyleName="Dxdydzdyaw" />
+                    </Options>
+                  </CharEnum>
+                  <CharInteger CStyleName="blend_screen" pascalStyleName="BlendScreen" name="blend screen" />
+                  <CharInteger CStyleName="node_count" pascalStyleName="NodeCount" name="node count" readOnly="true" />
+                  <ShortInteger CStyleName="frame_count" pascalStyleName="FrameCount" name="frame count" readOnly="true" />
+                  <ShortInteger CStyleName="frame_size" pascalStyleName="FrameSize" name="frame size" readOnly="true" />
+                  <LongInteger CStyleName="node_list_checksum" pascalStyleName="NodeListChecksum" name="node list checksum" readOnly="true" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <WordFlags CStyleName="playback_flags" pascalStyleName="PlaybackFlags" name="playback flags">
+                    <Options regolithID="enum:animation_playback_flags" CStyleName="animation_playback_flags" pascalStyleName="AnimationPlaybackFlags">
+                      <Bit name="disable interpolation_in" CStyleName="disable_interpolation_in_bit" pascalStyleName="DisableInterpolationInBit" />
+                      <Bit name="disable interpolation_out" CStyleName="disable_interpolation_out_bit" pascalStyleName="DisableInterpolationOutBit" />
+                      <Bit name="disable mode ik" CStyleName="disable_mode_ik_bit" pascalStyleName="DisableModeIkBit" />
+                      <Bit name="disable weapon ik" CStyleName="disable_weapon_ik_bit" pascalStyleName="DisableWeaponIkBit" />
+                      <Bit name="disable weapon aim/1st person" CStyleName="disable_weapon_aim1st_person_bit" pascalStyleName="DisableWeaponAim1stPersonBit" />
+                      <Bit name="disable look screen" CStyleName="disable_look_screen_bit" pascalStyleName="DisableLookScreenBit" />
+                      <Bit name="disable transition adjustment" CStyleName="disable_transition_adjustment_bit" pascalStyleName="DisableTransitionAdjustmentBit" />
+                    </Options>
+                  </WordFlags>
+                  <ByteFlags CStyleName="internal_flags" pascalStyleName="InternalFlags" name="internal flags" readOnly="true">
+                    <Options regolithID="enum:animation_pool_flags" CStyleName="animation_pool_flags" pascalStyleName="AnimationPoolFlags">
+                      <Bit name="&lt;unused0&gt;" expertOnly="true" CStyleName="unused0_bit" pascalStyleName="Unused0Bit" />
+                      <Bit name="world relative" CStyleName="world_relative_bit" pascalStyleName="WorldRelativeBit" />
+                      <Bit name="&lt;unused1&gt;" expertOnly="true" CStyleName="unused1_bit" pascalStyleName="Unused1Bit" />
+                      <Bit name="&lt;unused2&gt;" expertOnly="true" CStyleName="unused2_bit" pascalStyleName="Unused2Bit" />
+                      <Bit name="&lt;unused3&gt;" expertOnly="true" CStyleName="unused3_bit" pascalStyleName="Unused3Bit" />
+                      <Bit name="compression disabled" CStyleName="compression_disabled_bit" pascalStyleName="CompressionDisabledBit" />
+                      <Bit name="old production checksum" CStyleName="old_production_checksum_bit" pascalStyleName="OldProductionChecksumBit" />
+                      <Bit name="valid production checksum" CStyleName="valid_production_checksum_bit" pascalStyleName="ValidProductionChecksumBit" />
+                    </Options>
+                  </ByteFlags>
+                  <ByteFlags CStyleName="production_flags" pascalStyleName="ProductionFlags" name="production flags">
+                    <Options regolithID="enum:animation_pool_production_flags" CStyleName="animation_pool_production_flags" pascalStyleName="AnimationPoolProductionFlags">
+                      <Bit name="do not monitor changes" CStyleName="do_not_monitor_changes_bit" pascalStyleName="DoNotMonitorChangesBit" />
+                      <Bit name="verify sound events" CStyleName="verify_sound_events_bit" pascalStyleName="VerifySoundEventsBit" />
+                      <Bit name="do not inherit for player graphs" CStyleName="do_not_inherit_for_player_graphs_bit" pascalStyleName="DoNotInheritForPlayerGraphsBit" />
+                    </Options>
+                  </ByteFlags>
+                  <CharInteger CStyleName="static_node_flag_data_size" pascalStyleName="StaticNodeFlagDataSize" name="static node flag data size" />
+                  <CharInteger CStyleName="animated_node_flag_data_size" pascalStyleName="AnimatedNodeFlagDataSize" name="animated node flag data size" />
+                  <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+                  <ShortInteger CStyleName="loop_frame_index" pascalStyleName="LoopFrameIndex" name="loop frame index" />
+                  <ShortInteger CStyleName="max_random_start_frame_index" pascalStyleName="MaxRandomStartFrameIndex" name="max random start frame index" />
+                  <ShortInteger CStyleName="next_animation" pascalStyleName="NextAnimation" name="next animation" readOnly="true" />
+                  <CharEnum CStyleName="desired_compression" pascalStyleName="DesiredCompression" name="desired compression">
+                    <Options regolithID="enum:animation_pool_desired_compression_level" CStyleName="animation_pool_desired_compression_level" pascalStyleName="AnimationPoolDesiredCompressionLevel">
+                      <Enum name="best score" CStyleName="best_score" pascalStyleName="BestScore" />
+                      <Enum name="best compression" CStyleName="best_compression" pascalStyleName="BestCompression" />
+                      <Enum name="best accuracy" CStyleName="best_accuracy" pascalStyleName="BestAccuracy" />
+                      <Enum name="best fullframe" CStyleName="best_fullframe" pascalStyleName="BestFullframe" />
+                      <Enum name="best small keyframe" CStyleName="best_small_keyframe" pascalStyleName="BestSmallKeyframe" />
+                      <Enum name="best large keyframe" CStyleName="best_large_keyframe" pascalStyleName="BestLargeKeyframe" />
+                    </Options>
+                  </CharEnum>
+                  <CharEnum CStyleName="current_compression" pascalStyleName="CurrentCompression" name="current compression" readOnly="true">
+                    <OptionsXRef>enum:animation_pool_desired_compression_level</OptionsXRef>
+                  </CharEnum>
+                  <Array CStyleName="node_trans_flag_data" pascalStyleName="NodeTransFlagData" name="node trans. flag data" readOnly="true" count="3">
+                    <LongInteger />
+                  </Array>
+                  <Array CStyleName="node_rotation_flag_data" pascalStyleName="NodeRotationFlagData" name="node rotation flag data" readOnly="true" count="3">
+                    <LongInteger />
+                  </Array>
+                  <Array CStyleName="node_scale_flag_data" pascalStyleName="NodeScaleFlagData" name="node scale flag data" readOnly="true" count="3">
+                    <LongInteger />
+                  </Array>
+                  <ShortInteger CStyleName="movement_data_size" pascalStyleName="MovementDataSize" name="movement_data size" readOnly="true" />
+                  <ShortInteger CStyleName="default_data_size" pascalStyleName="DefaultDataSize" name="default_data size" readOnly="true" />
+                  <LongInteger CStyleName="uncompressed_data_size" pascalStyleName="UncompressedDataSize" name="uncompressed_data size" readOnly="true" />
+                  <LongInteger CStyleName="compressed_data_size" pascalStyleName="CompressedDataSize" name="compressed_data size" readOnly="true" />
+                  <Data CStyleName="animation_data" pascalStyleName="AnimationData" name="animation data" readOnly="true" />
+                  <Block CStyleName="frame_eventsabcdcc" pascalStyleName="FrameEventsabcdcc" name="frame events|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_frame_events">
+                    <Layout regolithID="block:animation_frame_event" internalName="animation_frame_event_block" name="animation_frame_event_block">
+                      <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(struct s_frame_event)" isLatest="true">
+                        <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+                          <Options regolithID="enum:animation_frame_event_type" CStyleName="animation_frame_event_type" pascalStyleName="AnimationFrameEventType">
+                            <Enum name="primary_keyframe" CStyleName="primary_keyframe" pascalStyleName="PrimaryKeyframe" />
+                            <Enum name="secondary_keyframe" CStyleName="secondary_keyframe" pascalStyleName="SecondaryKeyframe" />
+                            <Enum name="left_foot" CStyleName="left_foot" pascalStyleName="LeftFoot" />
+                            <Enum name="right_foot" CStyleName="right_foot" pascalStyleName="RightFoot" />
+                            <Enum name="allow_interruption" CStyleName="allow_interruption" pascalStyleName="AllowInterruption" />
+                            <Enum name="transition A" CStyleName="transition_a" pascalStyleName="TransitionA" />
+                            <Enum name="transition B" CStyleName="transition_b" pascalStyleName="TransitionB" />
+                            <Enum name="transition C" CStyleName="transition_c" pascalStyleName="TransitionC" />
+                            <Enum name="transition D" CStyleName="transition_d" pascalStyleName="TransitionD" />
+                            <Enum name="both-feet shuffle" CStyleName="both_feet_shuffle" pascalStyleName="BothFeetShuffle" />
+                            <Enum name="body impact" CStyleName="body_impact" pascalStyleName="BodyImpact" />
+                          </Options>
+                        </ShortEnum>
+                        <ShortInteger CStyleName="frame" pascalStyleName="Frame" name="frame" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="sound_eventsabcdcc" pascalStyleName="SoundEventsabcdcc" name="sound events|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_frame_events">
+                    <Layout regolithID="block:animation_sound_event" internalName="animation_sound_event_block" name="animation_sound_event_block">
+                      <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct s_sound_event)" isLatest="true">
+                        <ShortBlockIndex CStyleName="sound" pascalStyleName="Sound" name="sound" blockReference="block:animation_graph_sound_reference" />
+                        <ShortInteger CStyleName="frame" pascalStyleName="Frame" name="frame" />
+                        <StringId CStyleName="marker_name" pascalStyleName="MarkerName" name="marker name" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <LongInteger CStyleName="production_checksum" pascalStyleName="ProductionChecksum" name="production checksum" readOnly="true" />
+                </FieldSet>
+                <FieldSet version="1" sizeofValue="100" sizeofSource="sizeof(struct model_animation_v1)">
+                  <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+                  <LongInteger CStyleName="node_list_checksum" pascalStyleName="NodeListChecksum" name="node list checksum" readOnly="true" />
+                  <LongInteger CStyleName="production_checksum" pascalStyleName="ProductionChecksum" name="production checksum" readOnly="true" />
+                  <CharEnum CStyleName="type" pascalStyleName="Type" name="type" readOnly="true">
+                    <OptionsXRef>enum:animation_pool_type</OptionsXRef>
+                  </CharEnum>
+                  <CharEnum CStyleName="frame_info_type" pascalStyleName="FrameInfoType" name="frame info type" readOnly="true">
+                    <OptionsXRef>enum:animation_frame_info_type</OptionsXRef>
+                  </CharEnum>
+                  <CharBlockIndex CStyleName="blend_screen" pascalStyleName="BlendScreen" name="blend screen" />
+                  <CharInteger CStyleName="node_count" pascalStyleName="NodeCount" name="node count" readOnly="true" />
+                  <ShortInteger CStyleName="frame_count" pascalStyleName="FrameCount" name="frame count" readOnly="true" />
+                  <ByteFlags CStyleName="internal_flags" pascalStyleName="InternalFlags" name="internal flags" readOnly="true">
+                    <OptionsXRef>enum:animation_pool_flags</OptionsXRef>
+                  </ByteFlags>
+                  <ByteFlags CStyleName="production_flags" pascalStyleName="ProductionFlags" name="production flags">
+                    <OptionsXRef>enum:animation_pool_production_flags</OptionsXRef>
+                  </ByteFlags>
+                  <WordFlags CStyleName="playback_flags" pascalStyleName="PlaybackFlags" name="playback flags">
+                    <OptionsXRef>enum:animation_playback_flags</OptionsXRef>
+                  </WordFlags>
+                  <CharEnum CStyleName="desired_compression" pascalStyleName="DesiredCompression" name="desired compression">
+                    <OptionsXRef>enum:animation_pool_desired_compression_level</OptionsXRef>
+                  </CharEnum>
+                  <CharEnum CStyleName="current_compression" pascalStyleName="CurrentCompression" name="current compression" readOnly="true">
+                    <OptionsXRef>enum:animation_pool_desired_compression_level</OptionsXRef>
+                  </CharEnum>
+                  <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+                  <ShortInteger CStyleName="loop_frame_index" pascalStyleName="LoopFrameIndex" name="loop frame index" />
+                  <ShortInteger CStyleName="max_random_start_frame_index" pascalStyleName="MaxRandomStartFrameIndex" name="max random start frame index" />
+                  <ShortBlockIndex CStyleName="parent_animation" pascalStyleName="ParentAnimation" name="parent animation" readOnly="true" />
+                  <ShortBlockIndex CStyleName="next_animation" pascalStyleName="NextAnimation" name="next animation" readOnly="true" />
+                  <Data CStyleName="animation_data" pascalStyleName="AnimationData" name="animation data" readOnly="true" />
+                  <Block CStyleName="frame_eventsabcdcc" pascalStyleName="FrameEventsabcdcc" name="frame events|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_frame_events">
+                    <LayoutXRef>block:animation_frame_event</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="sound_eventsabcdcc" pascalStyleName="SoundEventsabcdcc" name="sound events|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_frame_events">
+                    <LayoutXRef>block:animation_sound_event</LayoutXRef>
+                  </Block>
+                  <Struct CStyleName="data_sizes" pascalStyleName="DataSizes" name="data sizes" readOnly="true">
+                    <Layout regolithID="structure:packed_data_sizes" tag="apds" internalName="packed_data_sizes_struct" backingBlockInternalName="packed_data_sizes_struct_block" name="packed_data_sizes_struct">
+                      <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(c_animation_data_sizes)" isLatest="true">
+                        <CharInteger />
+                        <CharInteger />
+                        <ShortInteger />
+                        <ShortInteger />
+                        <ShortInteger />
+                        <LongInteger />
+                        <LongInteger />
+                      </FieldSet>
+                    </Layout>
+                  </Struct>
+                  <LongInteger CStyleName="import_checksum" pascalStyleName="ImportChecksum" name="import_checksum" readOnly="true" />
+                </FieldSet>
+                <FieldSet version="2" sizeofValue="124" sizeofSource="sizeof(struct model_animation_v2)">
+                  <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+                  <LongInteger CStyleName="node_list_checksum" pascalStyleName="NodeListChecksum" name="node list checksum" readOnly="true" />
+                  <LongInteger CStyleName="production_checksum" pascalStyleName="ProductionChecksum" name="production checksum" readOnly="true" />
+                  <LongInteger CStyleName="import_checksum" pascalStyleName="ImportChecksum" name="import_checksum" readOnly="true" />
+                  <CharEnum CStyleName="type" pascalStyleName="Type" name="type" readOnly="true">
+                    <OptionsXRef>enum:animation_pool_type</OptionsXRef>
+                  </CharEnum>
+                  <CharEnum CStyleName="frame_info_type" pascalStyleName="FrameInfoType" name="frame info type" readOnly="true">
+                    <OptionsXRef>enum:animation_frame_info_type</OptionsXRef>
+                  </CharEnum>
+                  <CharBlockIndex CStyleName="blend_screen" pascalStyleName="BlendScreen" name="blend screen" />
+                  <CharInteger CStyleName="node_count" pascalStyleName="NodeCount" name="node count" readOnly="true" />
+                  <ShortInteger CStyleName="frame_count" pascalStyleName="FrameCount" name="frame count" readOnly="true" />
+                  <ByteFlags CStyleName="internal_flags" pascalStyleName="InternalFlags" name="internal flags" readOnly="true">
+                    <OptionsXRef>enum:animation_pool_flags</OptionsXRef>
+                  </ByteFlags>
+                  <ByteFlags CStyleName="production_flags" pascalStyleName="ProductionFlags" name="production flags">
+                    <OptionsXRef>enum:animation_pool_production_flags</OptionsXRef>
+                  </ByteFlags>
+                  <WordFlags CStyleName="playback_flags" pascalStyleName="PlaybackFlags" name="playback flags">
+                    <OptionsXRef>enum:animation_playback_flags</OptionsXRef>
+                  </WordFlags>
+                  <CharEnum CStyleName="desired_compression" pascalStyleName="DesiredCompression" name="desired compression">
+                    <OptionsXRef>enum:animation_pool_desired_compression_level</OptionsXRef>
+                  </CharEnum>
+                  <CharEnum CStyleName="current_compression" pascalStyleName="CurrentCompression" name="current compression" readOnly="true">
+                    <OptionsXRef>enum:animation_pool_desired_compression_level</OptionsXRef>
+                  </CharEnum>
+                  <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+                  <ShortInteger CStyleName="loop_frame_index" pascalStyleName="LoopFrameIndex" name="loop frame index" />
+                  <ShortInteger CStyleName="max_random_start_frame_index" pascalStyleName="MaxRandomStartFrameIndex" name="max random start frame index" />
+                  <ShortBlockIndex CStyleName="parent_animation" pascalStyleName="ParentAnimation" name="parent animation" readOnly="true" />
+                  <ShortBlockIndex CStyleName="next_animation" pascalStyleName="NextAnimation" name="next animation" readOnly="true" />
+                  <Data CStyleName="animation_data" pascalStyleName="AnimationData" name="animation data" readOnly="true" />
+                  <Struct CStyleName="data_sizes" pascalStyleName="DataSizes" name="data sizes" readOnly="true">
+                    <LayoutXRef>structure:packed_data_sizes</LayoutXRef>
+                  </Struct>
+                  <Block CStyleName="frame_eventsabcdcc" pascalStyleName="FrameEventsabcdcc" name="frame events|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_frame_events">
+                    <LayoutXRef>block:animation_frame_event</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="sound_eventsabcdcc" pascalStyleName="SoundEventsabcdcc" name="sound events|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_frame_events">
+                    <LayoutXRef>block:animation_sound_event</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="effect_eventsabcdcc" pascalStyleName="EffectEventsabcdcc" name="effect events|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_frame_events">
+                    <Layout regolithID="block:animation_effect_event" internalName="animation_effect_event_block" name="animation_effect_event_block">
+                      <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct s_effect_event_v0)">
+                        <ShortBlockIndex CStyleName="effect" pascalStyleName="Effect" name="effect" />
+                        <ShortInteger CStyleName="frame" pascalStyleName="Frame" name="frame" />
+                        <StringId CStyleName="marker_name" pascalStyleName="MarkerName" name="marker name" />
+                      </FieldSet>
+                      <FieldSet version="1" sizeofValue="4" sizeofSource="sizeof(struct s_effect_event)" isLatest="true">
+                        <ShortBlockIndex CStyleName="effect" pascalStyleName="Effect" name="effect" blockReference="block:animation_graph_effect_reference" />
+                        <ShortInteger CStyleName="frame" pascalStyleName="Frame" name="frame" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="object_space_parent_nodesabcdcc" pascalStyleName="ObjectSpaceParentNodesabcdcc" name="object-space parent nodes|ABCDCC" maxElementCount="255" maxElementCountSource="k_max_nodes_per_animation">
+                    <Layout regolithID="block:object_space_node_data_block_v0" internalName="object_space_node_data_block_v0" name="object_space_node_data_block_v0">
+                      <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(struct s_object_space_node_data_v0)" isLatest="true">
+                        <ShortInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node_index" readOnly="true" />
+                        <WordFlags CStyleName="component_flags" pascalStyleName="ComponentFlags" name="component flags">
+                          <Options regolithID="enum:object_space_component_flags" CStyleName="object_space_component_flags" pascalStyleName="ObjectSpaceComponentFlags">
+                            <Bit name="rotation" CStyleName="rotation_bit" pascalStyleName="RotationBit" />
+                            <Bit name="translation" CStyleName="translation_bit" pascalStyleName="TranslationBit" />
+                            <Bit name="scale" CStyleName="scale_bit" pascalStyleName="ScaleBit" />
+                          </Options>
+                        </WordFlags>
+                        <RealQuaternion CStyleName="default_rotation" pascalStyleName="DefaultRotation" name="default rotation" readOnly="true" />
+                        <RealPoint3D CStyleName="default_translation" pascalStyleName="DefaultTranslation" name="default translation" readOnly="true" />
+                        <Real CStyleName="default_scale" pascalStyleName="DefaultScale" name="default scale" readOnly="true" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+                <FieldSet version="3" sizeofValue="132" sizeofSource="sizeof(struct model_animation_v3)">
+                  <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+                  <LongInteger CStyleName="node_list_checksum" pascalStyleName="NodeListChecksum" name="node list checksum" readOnly="true" />
+                  <LongInteger CStyleName="production_checksum" pascalStyleName="ProductionChecksum" name="production checksum" readOnly="true" />
+                  <LongInteger CStyleName="import_checksum" pascalStyleName="ImportChecksum" name="import_checksum" readOnly="true" />
+                  <CharEnum CStyleName="type" pascalStyleName="Type" name="type" readOnly="true">
+                    <OptionsXRef>enum:animation_pool_type</OptionsXRef>
+                  </CharEnum>
+                  <CharEnum CStyleName="frame_info_type" pascalStyleName="FrameInfoType" name="frame info type" readOnly="true">
+                    <OptionsXRef>enum:animation_frame_info_type</OptionsXRef>
+                  </CharEnum>
+                  <CharBlockIndex CStyleName="blend_screen" pascalStyleName="BlendScreen" name="blend screen" />
+                  <CharInteger CStyleName="node_count" pascalStyleName="NodeCount" name="node count" readOnly="true" />
+                  <ShortInteger CStyleName="frame_count" pascalStyleName="FrameCount" name="frame count" readOnly="true" />
+                  <ByteFlags CStyleName="internal_flags" pascalStyleName="InternalFlags" name="internal flags" readOnly="true">
+                    <OptionsXRef>enum:animation_pool_flags</OptionsXRef>
+                  </ByteFlags>
+                  <ByteFlags CStyleName="production_flags" pascalStyleName="ProductionFlags" name="production flags">
+                    <OptionsXRef>enum:animation_pool_production_flags</OptionsXRef>
+                  </ByteFlags>
+                  <WordFlags CStyleName="playback_flags" pascalStyleName="PlaybackFlags" name="playback flags">
+                    <OptionsXRef>enum:animation_playback_flags</OptionsXRef>
+                  </WordFlags>
+                  <CharEnum CStyleName="desired_compression" pascalStyleName="DesiredCompression" name="desired compression">
+                    <OptionsXRef>enum:animation_pool_desired_compression_level</OptionsXRef>
+                  </CharEnum>
+                  <CharEnum CStyleName="current_compression" pascalStyleName="CurrentCompression" name="current compression" readOnly="true">
+                    <OptionsXRef>enum:animation_pool_desired_compression_level</OptionsXRef>
+                  </CharEnum>
+                  <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+                  <LongInteger />
+                  <ShortInteger />
+                  <ShortInteger />
+                  <ShortInteger />
+                  <ShortInteger CStyleName="loop_frame_index" pascalStyleName="LoopFrameIndex" name="loop frame index" />
+                  <ShortBlockIndex CStyleName="parent_animation" pascalStyleName="ParentAnimation" name="parent animation" readOnly="true" />
+                  <ShortBlockIndex CStyleName="next_animation" pascalStyleName="NextAnimation" name="next animation" readOnly="true" />
+                  <Data CStyleName="animation_data" pascalStyleName="AnimationData" name="animation data" readOnly="true" />
+                  <Struct CStyleName="data_sizes" pascalStyleName="DataSizes" name="data sizes" readOnly="true">
+                    <LayoutXRef>structure:packed_data_sizes</LayoutXRef>
+                  </Struct>
+                  <Block CStyleName="frame_eventsabcdcc" pascalStyleName="FrameEventsabcdcc" name="frame events|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_frame_events">
+                    <LayoutXRef>block:animation_frame_event</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="sound_eventsabcdcc" pascalStyleName="SoundEventsabcdcc" name="sound events|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_frame_events">
+                    <LayoutXRef>block:animation_sound_event</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="effect_eventsabcdcc" pascalStyleName="EffectEventsabcdcc" name="effect events|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_frame_events">
+                    <LayoutXRef>block:animation_effect_event</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="object_space_parent_nodesabcdcc" pascalStyleName="ObjectSpaceParentNodesabcdcc" name="object-space parent nodes|ABCDCC" maxElementCount="255" maxElementCountSource="k_max_nodes_per_animation">
+                    <Layout regolithID="block:object_space_node_data" internalName="object_space_node_data_block" name="object_space_node_data_block">
+                      <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(struct s_object_space_node_data)" isLatest="true">
+                        <ShortInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node_index" readOnly="true" />
+                        <WordFlags CStyleName="component_flags" pascalStyleName="ComponentFlags" name="component flags">
+                          <OptionsXRef>enum:object_space_component_flags</OptionsXRef>
+                        </WordFlags>
+                        <Struct CStyleName="orientation" pascalStyleName="Orientation" name="orientation" readOnly="true">
+                          <Layout regolithID="structure:quantized_orientation" tag="qoSS" internalName="quantized_orientation_struct" backingBlockInternalName="quantized_orientation_struct_block" name="quantized_orientation_struct">
+                            <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(c_quantized_orientation)" isLatest="true">
+                              <ShortInteger CStyleName="rotation_x" pascalStyleName="RotationX" name="rotation x" readOnly="true" />
+                              <ShortInteger CStyleName="rotation_y" pascalStyleName="RotationY" name="rotation y" readOnly="true" />
+                              <ShortInteger CStyleName="rotation_z" pascalStyleName="RotationZ" name="rotation z" readOnly="true" />
+                              <ShortInteger CStyleName="rotation_w" pascalStyleName="RotationW" name="rotation w" readOnly="true" />
+                              <RealPoint3D CStyleName="default_translation" pascalStyleName="DefaultTranslation" name="default translation" readOnly="true" />
+                              <Real CStyleName="default_scale" pascalStyleName="DefaultScale" name="default scale" readOnly="true" />
+                            </FieldSet>
+                          </Layout>
+                        </Struct>
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+                <FieldSet version="4" sizeofValue="136" sizeofSource="sizeof(struct model_animation_v4)">
+                  <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+                  <LongInteger CStyleName="node_list_checksum" pascalStyleName="NodeListChecksum" name="node list checksum" readOnly="true" />
+                  <LongInteger CStyleName="production_checksum" pascalStyleName="ProductionChecksum" name="production checksum" readOnly="true" />
+                  <LongInteger CStyleName="import_checksum" pascalStyleName="ImportChecksum" name="import_checksum" readOnly="true" />
+                  <CharEnum CStyleName="type" pascalStyleName="Type" name="type" readOnly="true">
+                    <OptionsXRef>enum:animation_pool_type</OptionsXRef>
+                  </CharEnum>
+                  <CharEnum CStyleName="frame_info_type" pascalStyleName="FrameInfoType" name="frame info type" readOnly="true">
+                    <OptionsXRef>enum:animation_frame_info_type</OptionsXRef>
+                  </CharEnum>
+                  <CharBlockIndex CStyleName="blend_screen" pascalStyleName="BlendScreen" name="blend screen" />
+                  <CharInteger CStyleName="node_count" pascalStyleName="NodeCount" name="node count" readOnly="true" />
+                  <ShortInteger CStyleName="frame_count" pascalStyleName="FrameCount" name="frame count" readOnly="true" />
+                  <ByteFlags CStyleName="internal_flags" pascalStyleName="InternalFlags" name="internal flags" readOnly="true">
+                    <OptionsXRef>enum:animation_pool_flags</OptionsXRef>
+                  </ByteFlags>
+                  <ByteFlags CStyleName="production_flags" pascalStyleName="ProductionFlags" name="production flags">
+                    <OptionsXRef>enum:animation_pool_production_flags</OptionsXRef>
+                  </ByteFlags>
+                  <WordFlags CStyleName="playback_flags" pascalStyleName="PlaybackFlags" name="playback flags">
+                    <OptionsXRef>enum:animation_playback_flags</OptionsXRef>
+                  </WordFlags>
+                  <CharEnum CStyleName="desired_compression" pascalStyleName="DesiredCompression" name="desired compression">
+                    <OptionsXRef>enum:animation_pool_desired_compression_level</OptionsXRef>
+                  </CharEnum>
+                  <CharEnum CStyleName="current_compression" pascalStyleName="CurrentCompression" name="current compression" readOnly="true">
+                    <OptionsXRef>enum:animation_pool_desired_compression_level</OptionsXRef>
+                  </CharEnum>
+                  <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+                  <LongInteger CStyleName="parent_graph_index" pascalStyleName="ParentGraphIndex" name="parent graph index" expertOnly="true" />
+                  <LongInteger CStyleName="parent_graph_block_index" pascalStyleName="ParentGraphBlockIndex" name="parent graph block index" expertOnly="true" />
+                  <LongInteger CStyleName="parent_graph_block_offset" pascalStyleName="ParentGraphBlockOffset" name="parent graph block offset" expertOnly="true" />
+                  <ShortInteger CStyleName="parent_graph_starting_point_index" pascalStyleName="ParentGraphStartingPointIndex" name="parent graph starting point index" expertOnly="true" />
+                  <ShortInteger CStyleName="loop_frame_index" pascalStyleName="LoopFrameIndex" name="loop frame index" />
+                  <ShortBlockIndex CStyleName="parent_animation" pascalStyleName="ParentAnimation" name="parent animation" readOnly="true" expertOnly="true" />
+                  <ShortBlockIndex CStyleName="next_animation" pascalStyleName="NextAnimation" name="next animation" readOnly="true" expertOnly="true" />
+                  <Data CStyleName="animation_data" pascalStyleName="AnimationData" name="animation data" readOnly="true" expertOnly="true" />
+                  <Struct CStyleName="data_sizes" pascalStyleName="DataSizes" name="data sizes" readOnly="true" expertOnly="true">
+                    <LayoutXRef>structure:packed_data_sizes</LayoutXRef>
+                  </Struct>
+                  <Block CStyleName="frame_eventsabcdcc" pascalStyleName="FrameEventsabcdcc" name="frame events|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_frame_events">
+                    <LayoutXRef>block:animation_frame_event</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="sound_eventsabcdcc" pascalStyleName="SoundEventsabcdcc" name="sound events|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_frame_events">
+                    <LayoutXRef>block:animation_sound_event</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="effect_eventsabcdcc" pascalStyleName="EffectEventsabcdcc" name="effect events|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_frame_events">
+                    <LayoutXRef>block:animation_effect_event</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="object_space_parent_nodesabcdcc" pascalStyleName="ObjectSpaceParentNodesabcdcc" name="object-space parent nodes|ABCDCC" maxElementCount="255" maxElementCountSource="k_max_nodes_per_animation">
+                    <LayoutXRef>block:object_space_node_data</LayoutXRef>
+                  </Block>
+                </FieldSet>
+                <FieldSet version="5" sizeofValue="124" sizeofSource="sizeof(c_model_animation)" isLatest="true">
+                  <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+                  <Custom name="Play on player" tag="edit" />
+                  <LongInteger CStyleName="node_list_checksum" pascalStyleName="NodeListChecksum" name="node list checksum" readOnly="true" />
+                  <LongInteger CStyleName="production_checksum" pascalStyleName="ProductionChecksum" name="production checksum" readOnly="true" />
+                  <LongInteger CStyleName="import_checksum" pascalStyleName="ImportChecksum" name="import_checksum" readOnly="true" />
+                  <CharEnum CStyleName="type" pascalStyleName="Type" name="type" readOnly="true">
+                    <OptionsXRef>enum:animation_pool_type</OptionsXRef>
+                  </CharEnum>
+                  <CharEnum CStyleName="frame_info_type" pascalStyleName="FrameInfoType" name="frame info type" readOnly="true">
+                    <OptionsXRef>enum:animation_frame_info_type</OptionsXRef>
+                  </CharEnum>
+                  <CharBlockIndex CStyleName="blend_screen" pascalStyleName="BlendScreen" name="blend screen" blockReference="block:animation_blend_screen" />
+                  <CharInteger CStyleName="node_count" pascalStyleName="NodeCount" name="node count" readOnly="true" />
+                  <ShortInteger CStyleName="frame_count" pascalStyleName="FrameCount" name="frame count" readOnly="true" />
+                  <ByteFlags CStyleName="internal_flags" pascalStyleName="InternalFlags" name="internal flags" readOnly="true">
+                    <OptionsXRef>enum:animation_pool_flags</OptionsXRef>
+                  </ByteFlags>
+                  <ByteFlags CStyleName="production_flags" pascalStyleName="ProductionFlags" name="production flags">
+                    <OptionsXRef>enum:animation_pool_production_flags</OptionsXRef>
+                  </ByteFlags>
+                  <WordFlags CStyleName="playback_flags" pascalStyleName="PlaybackFlags" name="playback flags">
+                    <OptionsXRef>enum:animation_playback_flags</OptionsXRef>
+                  </WordFlags>
+                  <CharEnum CStyleName="desired_compression" pascalStyleName="DesiredCompression" name="desired compression">
+                    <OptionsXRef>enum:animation_pool_desired_compression_level</OptionsXRef>
+                  </CharEnum>
+                  <CharEnum CStyleName="current_compression" pascalStyleName="CurrentCompression" name="current compression" readOnly="true">
+                    <OptionsXRef>enum:animation_pool_desired_compression_level</OptionsXRef>
+                  </CharEnum>
+                  <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+                  <ShortInteger CStyleName="loop_frame_index" pascalStyleName="LoopFrameIndex" name="loop frame index" />
+                  <ShortBlockIndex blockReference="block:animation_pool" />
+                  <ShortBlockIndex blockReference="block:animation_pool" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <Data />
+                  <Struct>
+                    <LayoutXRef>structure:packed_data_sizes</LayoutXRef>
+                  </Struct>
+                  <Block CStyleName="frame_eventsabcdcc" pascalStyleName="FrameEventsabcdcc" name="frame events|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_frame_events">
+                    <LayoutXRef>block:animation_frame_event</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="sound_eventsabcdcc" pascalStyleName="SoundEventsabcdcc" name="sound events|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_frame_events">
+                    <LayoutXRef>block:animation_sound_event</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="effect_eventsabcdcc" pascalStyleName="EffectEventsabcdcc" name="effect events|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_frame_events">
+                    <LayoutXRef>block:animation_effect_event</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="object_space_parent_nodesabcdcc" pascalStyleName="ObjectSpaceParentNodesabcdcc" name="object-space parent nodes|ABCDCC" maxElementCount="255" maxElementCountSource="k_max_nodes_per_animation">
+                    <LayoutXRef>block:object_space_node_data</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <WordFlags CStyleName="animation_graph_flags" pascalStyleName="AnimationGraphFlags" name="animation graph flags" readOnly="true">
+              <Options regolithID="enum:animation_graph_flags" CStyleName="animation_graph_flags" pascalStyleName="AnimationGraphFlags">
+                <Bit name="prepared for cache" CStyleName="prepared_for_cache_bit" pascalStyleName="PreparedForCacheBit" />
+                <Bit name="unused" CStyleName="unused1_bit" pascalStyleName="Unused1Bit" />
+                <Bit name="imported with codec compressors" CStyleName="imported_with_codec_compressors_bit" pascalStyleName="ImportedWithCodecCompressorsBit" />
+                <Bit name="unused smelly flag" CStyleName="unused_smelly_flag_bit" pascalStyleName="UnusedSmellyFlagBit" />
+                <Bit name="written to cache" CStyleName="written_to_cache_bit" pascalStyleName="WrittenToCacheBit" />
+                <Bit name="animation data reordered" CStyleName="animation_data_reordered_bit" pascalStyleName="AnimationDataReorderedBit" />
+              </Options>
+            </WordFlags>
+            <ShortInteger CStyleName="animation_codec_pack" pascalStyleName="AnimationCodecPack" name="animation codec pack" readOnly="true" />
+            <Pad sizeOfSource="sizeof(long)*BIT_VECTOR_SIZE_IN_LONGS(k_max_nodes_per_animation)" length="32" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="68" sizeofSource="sizeof(c_animation_graph_resources_v1)">
+            <Explanation name="GRAPH DATA" />
+            <TagReference CStyleName="parent_animation_graph" pascalStyleName="ParentAnimationGraph" name="parent animation graph">
+              <tag>jmad</tag>
+            </TagReference>
+            <ByteFlags CStyleName="inheritance_flags" pascalStyleName="InheritanceFlags" name="inheritance flags">
+              <Options regolithID="enum:animation_graph_resources_inheritance_flags" CStyleName="animation_graph_resources_inheritance_flags" pascalStyleName="AnimationGraphResourcesInheritanceFlags">
+                <Bit name="inherit root trans scale only" CStyleName="inherit_root_trans_scale_only_bit" pascalStyleName="InheritRootTransScaleOnlyBit" />
+                <Bit name="inherit for use on player" CStyleName="inherit_for_use_on_player_bit" pascalStyleName="InheritForUseOnPlayerBit" />
+              </Options>
+            </ByteFlags>
+            <ByteFlags CStyleName="private_flags" pascalStyleName="PrivateFlags" name="private flags" readOnly="true">
+              <OptionsXRef>enum:animation_graph_flags</OptionsXRef>
+            </ByteFlags>
+            <ShortInteger CStyleName="animation_codec_pack" pascalStyleName="AnimationCodecPack" name="animation codec pack" readOnly="true" />
+            <Block CStyleName="skeleton_nodesabcdcc" pascalStyleName="SkeletonNodesabcdcc" name="skeleton nodes|ABCDCC" readOnly="true" maxElementCount="255" maxElementCountSource="k_max_nodes_per_animation">
+              <LayoutXRef>block:animation_graph_node</LayoutXRef>
+            </Block>
+            <Block CStyleName="sound_referencesabcdcc" pascalStyleName="SoundReferencesabcdcc" name="sound references|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_sound_references_per_graph">
+              <LayoutXRef>block:animation_graph_sound_reference</LayoutXRef>
+            </Block>
+            <Block CStyleName="blend_screensabcdcc" pascalStyleName="BlendScreensabcdcc" name="blend screens|ABCDCC" maxElementCount="64" maxElementCountSource="k_max_blend_screens_per_block">
+              <LayoutXRef>block:animation_blend_screen</LayoutXRef>
+            </Block>
+            <Block CStyleName="animationsabcdcc" pascalStyleName="Animationsabcdcc" name="animations|ABCDCC" readOnly="true" tag="wide" maxElementCount="2048" maxElementCountSource="k_max_animations_per_graph">
+              <LayoutXRef>block:animation_pool</LayoutXRef>
+            </Block>
+          </FieldSet>
+          <FieldSet version="2" sizeofValue="80" sizeofSource="sizeof(c_animation_graph_resources)" isLatest="true">
+            <Explanation name="GRAPH DATA" />
+            <TagReference CStyleName="parent_animation_graph" pascalStyleName="ParentAnimationGraph" name="parent animation graph">
+              <tag>jmad</tag>
+            </TagReference>
+            <ByteFlags CStyleName="inheritance_flags" pascalStyleName="InheritanceFlags" name="inheritance flags">
+              <OptionsXRef>enum:animation_graph_resources_inheritance_flags</OptionsXRef>
+            </ByteFlags>
+            <ByteFlags CStyleName="private_flags" pascalStyleName="PrivateFlags" name="private flags" readOnly="true">
+              <OptionsXRef>enum:animation_graph_flags</OptionsXRef>
+            </ByteFlags>
+            <ShortInteger CStyleName="animation_codec_pack" pascalStyleName="AnimationCodecPack" name="animation codec pack" readOnly="true" />
+            <Block CStyleName="skeleton_nodesabcdcc" pascalStyleName="SkeletonNodesabcdcc" name="skeleton nodes|ABCDCC" readOnly="true" maxElementCount="255" maxElementCountSource="k_max_nodes_per_animation">
+              <LayoutXRef>block:animation_graph_node</LayoutXRef>
+            </Block>
+            <Block CStyleName="sound_referencesabcdcc" pascalStyleName="SoundReferencesabcdcc" name="sound references|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_sound_references_per_graph">
+              <LayoutXRef>block:animation_graph_sound_reference</LayoutXRef>
+            </Block>
+            <Block CStyleName="effect_referencesabcdcc" pascalStyleName="EffectReferencesabcdcc" name="effect references|ABCDCC" maxElementCount="512" maxElementCountSource="k_max_effect_references_per_graph">
+              <Layout regolithID="block:animation_graph_effect_reference" internalName="animation_graph_effect_reference_block" name="animation_graph_effect_reference_block">
+                <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(struct animation_graph_effect_reference)" isLatest="true">
+                  <TagReference CStyleName="effect" pascalStyleName="Effect" name="effect" blockNameSource="true">
+                    <tag>effe</tag>
+                  </TagReference>
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <OptionsXRef>enum:animation_graph_reference_flags</OptionsXRef>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="blend_screensabcdcc" pascalStyleName="BlendScreensabcdcc" name="blend screens|ABCDCC" maxElementCount="64" maxElementCountSource="k_max_blend_screens_per_block">
+              <LayoutXRef>block:animation_blend_screen</LayoutXRef>
+            </Block>
+            <Block CStyleName="animationsabcdcc" pascalStyleName="Animationsabcdcc" name="animations|ABCDCC" readOnly="true" tag="wide" maxElementCount="2048" maxElementCountSource="k_max_animations_per_graph">
+              <LayoutXRef>block:animation_pool</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Struct CStyleName="content" pascalStyleName="Content" name="content">
+        <Layout regolithID="structure:animation_graph_contents" tag="MAgc" internalName="animation_graph_contents_struct" backingBlockInternalName="animation_graph_contents_struct_block" name="animation_graph_contents_struct">
+          <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(c_model_animation_graph_contents)" isLatest="true">
+            <Explanation name="MODE-n-STATE GRAPH" />
+            <Block CStyleName="modesaabbcc" pascalStyleName="Modesaabbcc" name="modes|AABBCC" maxElementCount="512" maxElementCountSource="k_max_modes_per_graph">
+              <Layout regolithID="block:animation_mode" internalName="animation_mode_block" name="animation_mode_block">
+                <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(c_animation_mode)" isLatest="true">
+                  <StringId CStyleName="label" pascalStyleName="Label" name="label" blockNameSource="true" />
+                  <Block CStyleName="weapon_classaabbcc" pascalStyleName="WeaponClassaabbcc" name="weapon class|AABBCC" maxElementCount="64" maxElementCountSource="k_max_weapon_classes">
+                    <Layout regolithID="block:weapon_class" internalName="weapon_class_block" name="weapon_class_block">
+                      <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(c_weapon_class)" isLatest="true">
+                        <StringId CStyleName="label" pascalStyleName="Label" name="label" blockNameSource="true" />
+                        <Block CStyleName="weapon_typeaabbcc" pascalStyleName="WeaponTypeaabbcc" name="weapon type|AABBCC" maxElementCount="64" maxElementCountSource="k_max_weapon_types">
+                          <Layout regolithID="block:weapon_type" internalName="weapon_type_block" name="weapon_type_block">
+                            <FieldSet version="0" sizeofValue="76" sizeofSource="sizeof(c_weapon_type)" isLatest="true">
+                              <StringId CStyleName="label" pascalStyleName="Label" name="label" blockNameSource="true" />
+                              <Block CStyleName="actionsaabbcc" pascalStyleName="Actionsaabbcc" name="actions|AABBCC" maxElementCount="256" maxElementCountSource="k_max_animations_per_block">
+                                <Layout regolithID="block:animation_entry" internalName="animation_entry_block" name="animation_entry_block">
+                                  <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct s_animation_entry)" isLatest="true">
+                                    <StringId CStyleName="label" pascalStyleName="Label" name="label" blockNameSource="true" />
+                                    <Struct CStyleName="animation" pascalStyleName="Animation" name="animation" readOnly="true">
+                                      <Layout regolithID="structure:animation_index" tag="ANII" internalName="animation_index_struct" backingBlockInternalName="animation_index_struct_block" name="animation_index_struct">
+                                        <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(c_animation_id)" isLatest="true">
+                                          <ShortInteger CStyleName="graph_index" pascalStyleName="GraphIndex" name="graph index" readOnly="true" />
+                                          <ShortBlockIndex CStyleName="animation" pascalStyleName="Animation" name="animation" readOnly="true" blockReference="block:animation_pool" />
+                                        </FieldSet>
+                                      </Layout>
+                                    </Struct>
+                                  </FieldSet>
+                                </Layout>
+                              </Block>
+                              <Block CStyleName="overlaysaabbcc" pascalStyleName="Overlaysaabbcc" name="overlays|AABBCC" maxElementCount="256" maxElementCountSource="k_max_animations_per_block">
+                                <LayoutXRef>block:animation_entry</LayoutXRef>
+                              </Block>
+                              <Block CStyleName="death_and_damageaabbcc" pascalStyleName="DeathAndDamageaabbcc" name="death and damage|AABBCC" maxElementCount="8" maxElementCountSource="k_max_death_and_damage_actions">
+                                <Layout regolithID="block:damage_animation" internalName="damage_animation_block" name="damage_animation_block">
+                                  <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct s_animation_damage_actions)" isLatest="true">
+                                    <StringId CStyleName="label" pascalStyleName="Label" name="label" blockNameSource="true" />
+                                    <Block CStyleName="directionsaabbcc" pascalStyleName="Directionsaabbcc" name="directions|AABBCC" readOnly="true" maxElementCount="4" maxElementCountSource="k_total_damage_directions">
+                                      <Layout regolithID="block:damage_direction" internalName="damage_direction_block" name="damage_direction_block">
+                                        <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct s_animation_damage_direction)" isLatest="true">
+                                          <Block CStyleName="regionsaabbcc" pascalStyleName="Regionsaabbcc" name="regions|AABBCC" readOnly="true" maxElementCount="11" maxElementCountSource="k_total_damage_regions">
+                                            <Layout regolithID="block:damage_region" internalName="damage_region_block" name="damage_region_block">
+                                              <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(c_animation_id)" isLatest="true">
+                                                <Struct CStyleName="animation" pascalStyleName="Animation" name="animation" readOnly="true">
+                                                  <LayoutXRef>structure:animation_index</LayoutXRef>
+                                                </Struct>
+                                              </FieldSet>
+                                            </Layout>
+                                          </Block>
+                                        </FieldSet>
+                                      </Layout>
+                                    </Block>
+                                  </FieldSet>
+                                </Layout>
+                              </Block>
+                              <Block CStyleName="transitionsaabbcc" pascalStyleName="Transitionsaabbcc" name="transitions|AABBCC" maxElementCount="256" maxElementCountSource="k_max_animations_per_block">
+                                <Layout regolithID="block:animation_transition" internalName="animation_transition_block" name="animation_transition_block">
+                                  <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(struct s_animation_transition_source)" isLatest="true">
+                                    <StringId CStyleName="full_name" pascalStyleName="FullName" name="full name" description="name of the mode &amp; state of the source" blockNameSource="true" />
+                                    <Struct CStyleName="state_info" pascalStyleName="StateInfo" name="state info">
+                                      <Layout regolithID="structure:animation_transition_state" tag="ATSS" internalName="animation_transition_state_struct" backingBlockInternalName="animation_transition_state_struct_block" name="animation_transition_state_struct">
+                                        <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(s_animation_transition_state)" isLatest="true">
+                                          <StringId CStyleName="state_name" pascalStyleName="StateName" name="state name" description="name of the state" readOnly="true" />
+                                          <Pad sizeOfSource="2" length="2" />
+                                          <CharInteger CStyleName="index_a" pascalStyleName="IndexA" name="index a" description="first level sub-index into state" readOnly="true" />
+                                          <CharInteger CStyleName="index_b" pascalStyleName="IndexB" name="index b" description="second level sub-index into state" readOnly="true" />
+                                        </FieldSet>
+                                      </Layout>
+                                    </Struct>
+                                    <Block CStyleName="destinationsaabbcc" pascalStyleName="Destinationsaabbcc" name="destinations|AABBCC" maxElementCount="32" maxElementCountSource="k_max_transition_animations">
+                                      <Layout regolithID="block:animation_transition_destination" internalName="animation_transition_destination_block" name="animation_transition_destination_block">
+                                        <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(struct s_animation_transition_destination)" isLatest="true">
+                                          <StringId CStyleName="full_name" pascalStyleName="FullName" name="full name" description="name of the mode &amp; state this transitions to" blockNameSource="true" />
+                                          <StringId CStyleName="mode" pascalStyleName="Mode" name="mode" description="name of the mode" readOnly="true" />
+                                          <Struct CStyleName="state_info" pascalStyleName="StateInfo" name="state info">
+                                            <Layout regolithID="structure:animation_destination_state" tag="ATSS" internalName="animation_destination_state_struct" backingBlockInternalName="animation_destination_state_struct_block" name="animation_destination_state_struct">
+                                              <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(s_animation_transition_state)" isLatest="true">
+                                                <StringId CStyleName="state_name" pascalStyleName="StateName" name="state name" description="name of the state" readOnly="true" />
+                                                <CharEnum CStyleName="frame_event_link" pascalStyleName="FrameEventLink" name="frame event link" description="which frame event to link to" readOnly="true">
+                                                  <Options regolithID="enum:animation_destination_state_type" CStyleName="animation_destination_state_type" pascalStyleName="AnimationDestinationStateType">
+                                                    <Enum name="NO KEYFRAME" CStyleName="no_keyframe" pascalStyleName="NoKeyframe" />
+                                                    <Enum name="KEYFRAME TYPE A" CStyleName="keyframe_type_a" pascalStyleName="KeyframeTypeA" />
+                                                    <Enum name="KEYFRAME TYPE B" CStyleName="keyframe_type_b" pascalStyleName="KeyframeTypeB" />
+                                                    <Enum name="KEYFRAME TYPE C" CStyleName="keyframe_type_c" pascalStyleName="KeyframeTypeC" />
+                                                    <Enum name="KEYFRAME TYPE D" CStyleName="keyframe_type_d" pascalStyleName="KeyframeTypeD" />
+                                                  </Options>
+                                                </CharEnum>
+                                                <Pad sizeOfSource="1" length="1" />
+                                                <CharInteger CStyleName="index_a" pascalStyleName="IndexA" name="index a" description="first level sub-index into state" readOnly="true" />
+                                                <CharInteger CStyleName="index_b" pascalStyleName="IndexB" name="index b" description="second level sub-index into state" readOnly="true" />
+                                              </FieldSet>
+                                            </Layout>
+                                          </Struct>
+                                          <Struct CStyleName="animation" pascalStyleName="Animation" name="animation" readOnly="true">
+                                            <LayoutXRef>structure:animation_index</LayoutXRef>
+                                          </Struct>
+                                        </FieldSet>
+                                      </Layout>
+                                    </Block>
+                                  </FieldSet>
+                                </Layout>
+                              </Block>
+                              <Block CStyleName="high_precacheccccc" pascalStyleName="HighPrecacheccccc" name="high precache|CCCCC" maxElementCount="1024">
+                                <Layout regolithID="block:precache_list" internalName="precache_list_block" name="precache_list_block">
+                                  <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(long)" isLatest="true">
+                                    <LongInteger CStyleName="cache_block_index" pascalStyleName="CacheBlockIndex" name="cache block index" />
+                                  </FieldSet>
+                                </Layout>
+                              </Block>
+                              <Block CStyleName="low_precacheccccc" pascalStyleName="LowPrecacheccccc" name="low precache|CCCCC" maxElementCount="1024">
+                                <LayoutXRef>block:precache_list</LayoutXRef>
+                              </Block>
+                            </FieldSet>
+                          </Layout>
+                        </Block>
+                        <Block CStyleName="weapon_ikaabbcc" pascalStyleName="WeaponIkaabbcc" name="weapon ik|AABBCC" maxElementCount="8" maxElementCountSource="k_max_ik_points">
+                          <Layout regolithID="block:animation_ik" internalName="animation_ik_block" name="animation_ik_block">
+                            <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct s_animation_ik_point)" isLatest="true">
+                              <StringId CStyleName="marker" pascalStyleName="Marker" name="marker" description="the marker name on the object being attached" />
+                              <StringId CStyleName="attach_to_marker" pascalStyleName="AttachToMarker" name="attach to marker" description="the marker name object (weapon, vehicle, etc.) the above marker is being attached to" />
+                            </FieldSet>
+                          </Layout>
+                        </Block>
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="mode_ikaabbcc" pascalStyleName="ModeIkaabbcc" name="mode ik|AABBCC" maxElementCount="8" maxElementCountSource="k_max_ik_points">
+                    <LayoutXRef>block:animation_ik</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Explanation name="SPECIAL CASE ANIMS" />
+            <Block CStyleName="vehicle_suspensionccaabb" pascalStyleName="VehicleSuspensionccaabb" name="vehicle suspension|CCAABB" maxElementCount="32" maxElementCountSource="k_max_vehicle_suspensions">
+              <Layout regolithID="block:vehicle_suspension" internalName="vehicle_suspension_block" name="vehicle_suspension_block">
+                <FieldSet version="0" sizeofValue="40" sizeofSource="sizeof(c_vehicle_suspension)" isLatest="true">
+                  <StringId CStyleName="label" pascalStyleName="Label" name="label" blockNameSource="true" />
+                  <Struct CStyleName="animation" pascalStyleName="Animation" name="animation" readOnly="true">
+                    <LayoutXRef>structure:animation_index</LayoutXRef>
+                  </Struct>
+                  <StringId CStyleName="marker_name" pascalStyleName="MarkerName" name="marker name" />
+                  <Real CStyleName="mass_point_offset" pascalStyleName="MassPointOffset" name="mass point offset" />
+                  <Real CStyleName="full_extension_ground_depth" pascalStyleName="FullExtensionGroundDepth" name="full extension ground_depth" />
+                  <Real CStyleName="full_compression_ground_depth" pascalStyleName="FullCompressionGroundDepth" name="full compression ground_depth" />
+                  <Explanation name="Destroyed Suspension" description="Only Necessary for suspensions with a destroyed state" />
+                  <StringId CStyleName="region_name" pascalStyleName="RegionName" name="region name" />
+                  <Real CStyleName="destroyed_mass_point_offset" pascalStyleName="DestroyedMassPointOffset" name="destroyed mass point offset" />
+                  <Real CStyleName="destroyed_full_extension_ground_depth" pascalStyleName="DestroyedFullExtensionGroundDepth" name="destroyed full extension ground_depth" />
+                  <Real CStyleName="destroyed_full_compression_ground_depth" pascalStyleName="DestroyedFullCompressionGroundDepth" name="destroyed full compression ground_depth" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="object_overlaysccaabb" pascalStyleName="ObjectOverlaysccaabb" name="object overlays|CCAABB" maxElementCount="32" maxElementCountSource="k_max_object_overlays_per_graph">
+              <Layout regolithID="block:object_animation" internalName="object_animation_block" name="object_animation_block">
+                <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_object_overlay)" isLatest="true">
+                  <StringId CStyleName="label" pascalStyleName="Label" name="label" blockNameSource="true" />
+                  <Struct CStyleName="animation" pascalStyleName="Animation" name="animation" readOnly="true">
+                    <LayoutXRef>structure:animation_index</LayoutXRef>
+                  </Struct>
+                  <Pad sizeOfSource="2" length="2" />
+                  <ShortEnum CStyleName="function_controls" pascalStyleName="FunctionControls" name="function controls">
+                    <Options regolithID="enum:object_animation_controls" CStyleName="object_animation_controls" pascalStyleName="ObjectAnimationControls">
+                      <Enum name="frame" CStyleName="frame" pascalStyleName="Frame" />
+                      <Enum name="scale" CStyleName="scale" pascalStyleName="Scale" />
+                    </Options>
+                  </ShortEnum>
+                  <StringId CStyleName="function" pascalStyleName="Function" name="function" />
+                  <Pad sizeOfSource="sizeof(long)*1" length="4" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Struct CStyleName="run_time_data" pascalStyleName="RunTimeData" name="run time data">
+        <Layout regolithID="structure:model_animation_runtime_data" tag="MArt" internalName="model_animation_runtime_data_struct" backingBlockInternalName="model_animation_runtime_data_struct_block" name="model_animation_runtime_data_struct">
+          <FieldSet version="0" sizeofValue="88" sizeofSource="sizeof(c_model_animation_runtime_data)" isLatest="true">
+            <Explanation name="RUN-TIME DATA" />
+            <Block CStyleName="inheritence_listbbaaaa" pascalStyleName="InheritenceListbbaaaa" name="inheritence list|BBAAAA" readOnly="true" maxElementCount="8" maxElementCountSource="k_max_animation_inheritence_levels">
+              <Layout regolithID="block:inherited_animation" internalName="inherited_animation_block" name="inherited_animation_block">
+                <FieldSet version="0" sizeofValue="48" sizeofSource="sizeof(struct s_animation_inheritence)" isLatest="true">
+                  <TagReference CStyleName="inherited_graph" pascalStyleName="InheritedGraph" name="inherited graph" readOnly="true">
+                    <tag>jmad</tag>
+                  </TagReference>
+                  <Block CStyleName="node_map" pascalStyleName="NodeMap" name="node map" readOnly="true" maxElementCount="255" maxElementCountSource="k_max_nodes_per_animation">
+                    <Layout regolithID="block:inherited_animation_node_map" internalName="inherited_animation_node_map_block" name="inherited_animation_node_map_block">
+                      <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(short)" isLatest="true">
+                        <ShortInteger CStyleName="local_node" pascalStyleName="LocalNode" name="local node" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="node_map_flags" pascalStyleName="NodeMapFlags" name="node map flags" readOnly="true" maxElementCount="255" maxElementCountSource="k_max_nodes_per_animation">
+                    <Layout regolithID="block:inherited_animation_node_map_flag" internalName="inherited_animation_node_map_flag_block" name="inherited_animation_node_map_flag_block">
+                      <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(unsigned long)" isLatest="true">
+                        <LongInteger CStyleName="local_node_flags" pascalStyleName="LocalNodeFlags" name="local node flags" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Real CStyleName="root_z_offset" pascalStyleName="RootZOffset" name="root z offset" readOnly="true" />
+                  <LongInteger CStyleName="inheritance_flags" pascalStyleName="InheritanceFlags" name="inheritance_flags" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="weapon_listbbaaaa" pascalStyleName="WeaponListbbaaaa" name="weapon list|BBAAAA" readOnly="true" maxElementCount="64" maxElementCountSource="k_max_weapon_types">
+              <Layout regolithID="block:weapon_class_lookup" internalName="weapon_class_lookup_block" name="weapon_class_lookup_block">
+                <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct s_weapon_class_listing)" isLatest="true">
+                  <StringId CStyleName="weapon_name" pascalStyleName="WeaponName" name="weapon name" blockNameSource="true" />
+                  <StringId CStyleName="weapon_class" pascalStyleName="WeaponClass" name="weapon class" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Pad sizeOfSource="sizeof(long)*BIT_VECTOR_SIZE_IN_LONGS(k_max_nodes_per_animation)" length="32" />
+            <Pad sizeOfSource="sizeof(long)*BIT_VECTOR_SIZE_IN_LONGS(k_max_nodes_per_animation)" length="32" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="RESULTS OF THE LAST IMPORT" />
+      <Data CStyleName="last_import_results" pascalStyleName="LastImportResults" name="last import results" readOnly="true" />
+      <Block CStyleName="additional_node_data" pascalStyleName="AdditionalNodeData" name="additional node data" maxElementCount="255" maxElementCountSource="k_max_nodes_per_animation">
+        <Layout regolithID="block:additional_node_data" internalName="additional_node_data_block" name="additional_node_data_block">
+          <FieldSet version="0" sizeofValue="60" sizeofSource="sizeof(struct s_additional_node_data)" isLatest="true">
+            <StringId CStyleName="node_name" pascalStyleName="NodeName" name="node name" blockNameSource="true" />
+            <RealQuaternion CStyleName="default_rotation" pascalStyleName="DefaultRotation" name="default rotation" readOnly="true" />
+            <RealPoint3D CStyleName="default_translation" pascalStyleName="DefaultTranslation" name="default translation" readOnly="true" />
+            <Real CStyleName="default_scale" pascalStyleName="DefaultScale" name="default scale" readOnly="true" />
+            <RealPoint3D CStyleName="min_bounds" pascalStyleName="MinBounds" name="min bounds" />
+            <RealPoint3D CStyleName="max_bounds" pascalStyleName="MaxBounds" name="max bounds" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

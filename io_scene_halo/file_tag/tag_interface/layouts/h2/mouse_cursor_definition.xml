@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="mcsr" name="mouse_cursor_definition" version="1">
+  <Layout regolithID="block:mouse_cursor_definition" internalName="mouse_cursor_definition_block" name="mouse_cursor_definition">
+    <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_mouse_cursor_definition)" isLatest="true">
+      <Explanation name="Mouse Cursor Bitmaps" description="0 - Normal mouse cursor&#xA;1 - Busy mouse cursor&#xA;2 - Hover mouse cursor&#xA;3 - Text select mouse cursor&#xA;" />
+      <Block CStyleName="mouse_cursor_bitmaps" pascalStyleName="MouseCursorBitmaps" name="mouse cursor bitmaps" maxElementCount="4" maxElementCountSource="k_maximum_cursor_bitmaps">
+        <Layout regolithID="block:mouse_cursor_bitmap_reference" internalName="mouse_cursor_bitmap_reference_block" name="mouse_cursor_bitmap_reference_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_local_bitmap_reference)" isLatest="true">
+            <TagReference CStyleName="bitmap" pascalStyleName="Bitmap" name="bitmap">
+              <tag>bitm</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Real CStyleName="animation_speed_fps" pascalStyleName="AnimationSpeedFps" name="animation speed (fps)" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

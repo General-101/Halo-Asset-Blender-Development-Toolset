@@ -1,0 +1,200 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="ltmp" name="scenario_structure_lightmap" version="1">
+  <Layout regolithID="block:scenario_structure_lightmap" internalName="scenario_structure_lightmap_block" name="scenario_structure_lightmap">
+    <FieldSet version="0" sizeofValue="268" sizeofSource="sizeof(struct structure_lightmap)" isLatest="true">
+      <Explanation name="lightmap options" description="The following fields control the behavior of the lightmapper&#xA;&#xA;RADIANCE ESTIMATE SEARCH DISTANCE UPPER BOUND: the largest distance the code will look for photons. bigger levels need a bigger search radius.  Measured, in world units, 0.0 defaults to 1.0&#xA;&#xA;RADIANCE ESTIMATE SEARCH DISTANCE LOWER BOUND: the smallest distance the code will look for photons. bigger levels need a bigger search radius.  Measured, in world units, 0.0 defaults to 1.0&#xA;&#xA;LUMINELS PER WORLD UNIT: how many lightmap pixels there should be per world unit.  0.0 defaults to 3.0&#xA;&#xA;OUTPUT WHITE REFERENCE: for experimentation - what wattage the lightmapper considers &quot;white&quot; to be for output.  0.0 defaults to 1.0&#xA;&#xA;OUTPUT BLACK REFERENCE: for experimentation - what wattage the lightmapper considers &quot;black&quot; to be for output.  0.0 defaults to 0.0&#xA;&#xA;OUTPUT SCHLICK PARAMETER: controls the way midtones are mapped.  0.0 defaults to 4.5&#xA;&#xA;DIFFUSE MAP SCALE: controls how diffuse maps are scaled.  0.0 defaults to 1.5&#xA;&#xA;PRT SUN SCALE: 0.0 defaults to 100.0&#xA;&#xA;PRT SKY SCALE: 0.0 defaults to 1.0&#xA;&#xA;PRT INDIRECT SCALE: 0.0 defaults to 1.0&#xA;&#xA;PRT SCALE: you must set this value.&#xA;&#xA;PRT SURFACE LIGHT SCALE: 0.0 defaults to 1.0&#xA;&#xA;PRT SCENARIO LIGHT SCALE: 0.0 defaults to 1.0&#xA;&#xA;LIGHTPROBE INTERPOLATION OVERIDE(speed): overide the default sampling behavior" />
+      <Real CStyleName="search_distance_lower_bound" pascalStyleName="SearchDistanceLowerBound" name="search distance lower bound" />
+      <Real CStyleName="search_distance_upper_bound" pascalStyleName="SearchDistanceUpperBound" name="search distance upper bound" />
+      <Real CStyleName="luminels_per_world_unit" pascalStyleName="LuminelsPerWorldUnit" name="luminels per world unit" />
+      <Real CStyleName="output_white_reference" pascalStyleName="OutputWhiteReference" name="output white reference" />
+      <Real CStyleName="output_black_reference" pascalStyleName="OutputBlackReference" name="output black reference" />
+      <Real CStyleName="output_schlick_parameter" pascalStyleName="OutputSchlickParameter" name="output schlick parameter" />
+      <Real CStyleName="diffuse_map_scale" pascalStyleName="DiffuseMapScale" name="diffuse map scale" />
+      <Real CStyleName="sun_scale" pascalStyleName="SunScale" name="sun scale" />
+      <Real CStyleName="sky_scale" pascalStyleName="SkyScale" name="sky scale" />
+      <Real CStyleName="indirect_scale" pascalStyleName="IndirectScale" name="indirect scale" />
+      <Real CStyleName="prt_scale" pascalStyleName="PrtScale" name="prt scale" />
+      <Real CStyleName="surface_light_scale" pascalStyleName="SurfaceLightScale" name="surface light scale" />
+      <Real CStyleName="scenario_light_scale" pascalStyleName="ScenarioLightScale" name="scenario light scale" />
+      <Real CStyleName="lightprobe_interpolation_override" pascalStyleName="LightprobeInterpolationOverride" name="lightprobe interpolation override" />
+      <Pad sizeOfSource="18*sizeof(long)" length="72" />
+      <Block CStyleName="lightmap_groups" pascalStyleName="LightmapGroups" name="lightmap groups" maxElementCount="256" maxElementCountSource="k_maximum_lightmap_groups_per_scenario">
+        <Layout regolithID="block:structure_lightmap_group" internalName="structure_lightmap_group_block" name="structure_lightmap_group_block">
+          <FieldSet version="0" sizeofValue="156" sizeofSource="sizeof(struct structure_lightmap_group)" isLatest="true">
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <Options regolithID="enum:structure_lightmap_group_type" CStyleName="structure_lightmap_group_type" pascalStyleName="StructureLightmapGroupType">
+                <Enum name="normal" CStyleName="normal" pascalStyleName="Normal" />
+              </Options>
+            </ShortEnum>
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:structure_lightmap_group_flags" CStyleName="structure_lightmap_group_flags" pascalStyleName="StructureLightmapGroupFlags">
+                <Bit name="unused" CStyleName="unused0_bit" pascalStyleName="Unused0Bit" />
+              </Options>
+            </WordFlags>
+            <LongInteger CStyleName="structure_checksum" pascalStyleName="StructureChecksum" name="structure checksum" />
+            <Block CStyleName="section_palette" pascalStyleName="SectionPalette" name="section palette" maxElementCount="128" maxElementCountSource="k_maximum_palettes_per_lightmap_group">
+              <Layout regolithID="block:structure_lightmap_palette_color" internalName="structure_lightmap_palette_color_block" name="structure_lightmap_palette_color_block">
+                <FieldSet version="0" alignment="6" sizeofValue="1024" sizeofSource="256*sizeof(pixel32)" isLatest="true">
+                  <LongInteger CStyleName="first_palette_color" pascalStyleName="FirstPaletteColor" name="FIRST palette color" readOnly="true" />
+                  <Skip sizeOfSource="sizeof(long)*255" length="1020" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="writable_palettes" pascalStyleName="WritablePalettes" name="writable palettes" maxElementCount="128" maxElementCountSource="k_maximum_palettes_per_lightmap_group">
+              <LayoutXRef>block:structure_lightmap_palette_color</LayoutXRef>
+            </Block>
+            <TagReference CStyleName="bitmap_group" pascalStyleName="BitmapGroup" name="bitmap group">
+              <tag>bitm</tag>
+            </TagReference>
+            <Block CStyleName="clusters" pascalStyleName="Clusters" name="clusters" maxElementCount="512" maxElementCountSource="k_maximum_lightmap_geometry_sections_per_lightmap_group">
+              <Layout regolithID="block:lightmap_geometry_section" internalName="lightmap_geometry_section_block" name="lightmap_geometry_section_block">
+                <FieldSet version="0" sizeofValue="96" sizeofSource="sizeof(struct lightmap_geometry_section)" isLatest="true">
+                  <Struct CStyleName="geometry_info" pascalStyleName="GeometryInfo" name="geometry info">
+                    <LayoutXRef>structure:global_geometry_section_info</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="geometry_block_info" pascalStyleName="GeometryBlockInfo" name="geometry block info">
+                    <LayoutXRef>structure:global_geometry_block_info</LayoutXRef>
+                  </Struct>
+                  <Block CStyleName="cache_data" pascalStyleName="CacheData" name="cache data" maxElementCount="1">
+                    <Layout regolithID="block:lightmap_geometry_section_cache_data" internalName="lightmap_geometry_section_cache_data_block" name="lightmap_geometry_section_cache_data_block">
+                      <FieldSet version="0" sizeofValue="108" sizeofSource="sizeof(lightmap_geometry_section_cache_data)" isLatest="true">
+                        <Struct CStyleName="geometry" pascalStyleName="Geometry" name="geometry">
+                          <LayoutXRef>structure:global_geometry_section</LayoutXRef>
+                        </Struct>
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="cluster_render_info" pascalStyleName="ClusterRenderInfo" name="cluster render info" maxElementCount="1024" maxElementCountSource="k_maximum_lightmap_geometry_render_infos_per_lightmap_group">
+              <Layout regolithID="block:lightmap_geometry_render_info" internalName="lightmap_geometry_render_info_block" name="lightmap_geometry_render_info_block">
+                <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(struct lightmap_geometry_render_info)" isLatest="true">
+                  <ShortInteger CStyleName="bitmap_index" pascalStyleName="BitmapIndex" name="bitmap index" />
+                  <CharInteger CStyleName="palette_index" pascalStyleName="PaletteIndex" name="palette index" />
+                  <Pad sizeOfSource="sizeof(byte)" length="1" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="poop_definitions" pascalStyleName="PoopDefinitions" name="poop definitions" maxElementCount="512" maxElementCountSource="k_maximum_lightmap_geometry_sections_per_lightmap_group">
+              <LayoutXRef>block:lightmap_geometry_section</LayoutXRef>
+            </Block>
+            <Block CStyleName="lighting_environments" pascalStyleName="LightingEnvironments" name="lighting environments" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_lighting_environments_per_lightmap_group">
+              <Layout regolithID="block:structure_lightmap_lighting_environment" internalName="structure_lightmap_lighting_environment_block" name="structure_lightmap_lighting_environment_block">
+                <FieldSet version="0" sizeofValue="220" sizeofSource="sizeof(struct structure_lightmap_lighting_environment)" isLatest="true">
+                  <RealPoint3D CStyleName="sample_point" pascalStyleName="SamplePoint" name="sample_point" readOnly="true" />
+                  <Array CStyleName="red_coefficients" pascalStyleName="RedCoefficients" name="red coefficients" readOnly="true" count="9">
+                    <Real CStyleName="red_coefficient" pascalStyleName="RedCoefficient" name="red coefficient" readOnly="true" />
+                  </Array>
+                  <Array CStyleName="green_coefficients" pascalStyleName="GreenCoefficients" name="green coefficients" readOnly="true" count="9">
+                    <Real CStyleName="green_coefficient" pascalStyleName="GreenCoefficient" name="green coefficient" readOnly="true" />
+                  </Array>
+                  <Array CStyleName="blue_coefficients" pascalStyleName="BlueCoefficients" name="blue coefficients" readOnly="true" count="9">
+                    <Real CStyleName="blue_coefficient" pascalStyleName="BlueCoefficient" name="blue coefficient" readOnly="true" />
+                  </Array>
+                  <RealVector3D CStyleName="mean_incoming_light_direction" pascalStyleName="MeanIncomingLightDirection" name="mean incoming light direction" />
+                  <RealPoint3D CStyleName="incoming_light_intensity" pascalStyleName="IncomingLightIntensity" name="incoming light intensity" />
+                  <LongInteger CStyleName="specular_bitmap_index" pascalStyleName="SpecularBitmapIndex" name="specular bitmap index" />
+                  <RealVector3D CStyleName="rotation_axis" pascalStyleName="RotationAxis" name="rotation axis" />
+                  <Real CStyleName="rotation_speed" pascalStyleName="RotationSpeed" name="rotation speed" />
+                  <RealVector3D CStyleName="bump_direction" pascalStyleName="BumpDirection" name="bump direction" />
+                  <RealRgbColor CStyleName="color_tint" pascalStyleName="ColorTint" name="color tint" />
+                  <ShortEnum CStyleName="procedural_override" pascalStyleName="ProceduralOverride" name="procedural override">
+                    <Options regolithID="enum:structure_lighting_environment_procedural_override" CStyleName="structure_lighting_environment_procedural_override" pascalStyleName="StructureLightingEnvironmentProceduralOverride">
+                      <Enum name="no override" CStyleName="no_override" pascalStyleName="NoOverride" />
+                      <Enum name="CIE clear sky" CStyleName="cie_clear_sky" pascalStyleName="CieClearSky" />
+                      <Enum name="CIE partly cloudy" CStyleName="cie_partly_cloudy" pascalStyleName="CiePartlyCloudy" />
+                      <Enum name="CIE cloudy" CStyleName="cie_cloudy" pascalStyleName="CieCloudy" />
+                      <Enum name="directional light" CStyleName="directional_light" pascalStyleName="DirectionalLight" />
+                      <Enum name="cone light" CStyleName="cone_light" pascalStyleName="ConeLight" />
+                      <Enum name="sphere light" CStyleName="sphere_light" pascalStyleName="SphereLight" />
+                      <Enum name="hemisphere light" CStyleName="hemisphere_light" pascalStyleName="HemisphereLight" />
+                    </Options>
+                  </ShortEnum>
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:lighting_enviroment_flags" CStyleName="lighting_enviroment_flags" pascalStyleName="LightingEnviromentFlags">
+                      <Bit name="lock values" CStyleName="lock_values_bit" pascalStyleName="LockValuesBit" />
+                    </Options>
+                  </WordFlags>
+                  <RealVector3D CStyleName="procedural_param0" pascalStyleName="ProceduralParam0" name="procedural param0" />
+                  <RealVector3D CStyleName="procedural_param1xyz" pascalStyleName="ProceduralParam1xyz" name="procedural param1.xyz" />
+                  <Real CStyleName="procedural_param1w" pascalStyleName="ProceduralParam1w" name="procedural param1.w" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="geometry_buckets" pascalStyleName="GeometryBuckets" name="geometry buckets" maxElementCount="1024" maxElementCountSource="k_maximum_vertex_buffer_buckets_per_lightmap_group">
+              <Layout regolithID="block:lightmap_vertex_buffer_bucket" internalName="lightmap_vertex_buffer_bucket_block" name="lightmap_vertex_buffer_bucket_block">
+                <FieldSet version="0" sizeofValue="68" sizeofSource="sizeof(struct lightmap_vertex_buffer_bucket)" isLatest="true">
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:lightmap_geometry_bucket_flags" CStyleName="lightmap_geometry_bucket_flags" pascalStyleName="LightmapGeometryBucketFlags">
+                      <Bit name="incident direction" CStyleName="incident_direction_bit" pascalStyleName="IncidentDirectionBit" />
+                      <Bit name="color" CStyleName="color_bit" pascalStyleName="ColorBit" />
+                    </Options>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <Block CStyleName="raw_vertices" pascalStyleName="RawVertices" name="raw vertices" maxElementCount="32767" maxElementCountSource="MAXIMUM_VERTICES_PER_GEOMETRY_SECTION">
+                    <Layout regolithID="block:lightmap_bucket_raw_vertex" internalName="lightmap_bucket_raw_vertex_block" name="vertex">
+                      <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(struct lightmap_bucket_vertex)" isLatest="true">
+                        <RealRgbColor CStyleName="primary_lightmap_color" pascalStyleName="PrimaryLightmapColor" name="primary lightmap color" />
+                        <RealVector3D CStyleName="primary_lightmap_incident_direction" pascalStyleName="PrimaryLightmapIncidentDirection" name="primary lightmap incident direction" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Struct CStyleName="geometry_block_info" pascalStyleName="GeometryBlockInfo" name="geometry block info">
+                    <LayoutXRef>structure:global_geometry_block_info</LayoutXRef>
+                  </Struct>
+                  <Block CStyleName="cache_data" pascalStyleName="CacheData" name="cache data" maxElementCount="1">
+                    <Layout regolithID="block:lightmap_vertex_buffer_bucket_cache_data" internalName="lightmap_vertex_buffer_bucket_cache_data_block" name="lightmap_vertex_buffer_bucket_cache_data_block">
+                      <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct lightmap_vertex_buffer_bucket_cache_data)" isLatest="true">
+                        <Block CStyleName="vertex_buffers" pascalStyleName="VertexBuffers" name="vertex buffers" readOnly="true" maxElementCount="512" maxElementCountSource="MAXIMUM_VERTEX_BUFFERS_PER_GEOMETRY_SECTION">
+                          <LayoutXRef>block:global_geometry_section_vertex_buffer</LayoutXRef>
+                        </Block>
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="instance_render_info" pascalStyleName="InstanceRenderInfo" name="instance render info" maxElementCount="1024" maxElementCountSource="k_maximum_lightmap_geometry_render_infos_per_lightmap_group">
+              <LayoutXRef>block:lightmap_geometry_render_info</LayoutXRef>
+            </Block>
+            <Block CStyleName="instance_bucket_refs" pascalStyleName="InstanceBucketRefs" name="instance bucket refs" maxElementCount="2000" maxElementCountSource="k_maximum_vertex_buffer_bucket_references_per_lightmap_group">
+              <Layout regolithID="block:lightmap_instance_bucket_reference" internalName="lightmap_instance_bucket_reference_block" name="lightmap_instance_bucket_reference_block">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct lightmap_bucket_reference)" isLatest="true">
+                  <ShortInteger CStyleName="flags" pascalStyleName="Flags" name="flags" />
+                  <ShortInteger CStyleName="bucket_index" pascalStyleName="BucketIndex" name="bucket index" />
+                  <Block CStyleName="section_offsets" pascalStyleName="SectionOffsets" name="section offsets" maxElementCount="255" maxElementCountSource="k_maximum_section_offsets_per_bucket_reference">
+                    <Layout regolithID="block:lightmap_instance_bucket_section_offset" internalName="lightmap_instance_bucket_section_offset_block" name="lightmap_instance_bucket_section_offset_block">
+                      <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(word)" isLatest="true">
+                        <ShortInteger CStyleName="section_offset" pascalStyleName="SectionOffset" name="section offset" readOnly="true" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="scenery_object_info" pascalStyleName="SceneryObjectInfo" name="scenery object info" maxElementCount="2000" maxElementCountSource="k_maximum_lightmap_objects_per_lightmap_group">
+              <Layout regolithID="block:lightmap_scenery_object_info" internalName="lightmap_scenery_object_info_block" name="lightmap_scenery_object_info_block">
+                <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct lightmap_scenery_object_info)" isLatest="true">
+                  <LongInteger CStyleName="unique_id" pascalStyleName="UniqueId" name="unique ID" />
+                  <ShortInteger CStyleName="origin_bsp_index" pascalStyleName="OriginBspIndex" name="origin BSP index" />
+                  <CharInteger CStyleName="type" pascalStyleName="Type" name="type" />
+                  <CharInteger CStyleName="source" pascalStyleName="Source" name="source" />
+                  <LongInteger CStyleName="render_model_checksum" pascalStyleName="RenderModelChecksum" name="render model checksum" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="scenery_object_bucket_refs" pascalStyleName="SceneryObjectBucketRefs" name="scenery object bucket refs" maxElementCount="2000" maxElementCountSource="k_maximum_vertex_buffer_bucket_references_per_lightmap_group">
+              <LayoutXRef>block:lightmap_instance_bucket_reference</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <Block CStyleName="errors" pascalStyleName="Errors" name="errors" readOnly="true" maxElementCount="64" maxElementCountSource="MAXIMUM_ERROR_REPORT_CATEGORIES">
+        <LayoutXRef>block:global_error_report_categories</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="26*sizeof(long)" length="104" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

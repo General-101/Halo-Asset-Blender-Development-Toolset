@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="hsc*" name="scenario_hs_source_file" version="1">
+  <Layout regolithID="block:hs_source_files" internalName="hs_source_files_block" name="hs_source_files_block">
+    <FieldSet version="0" sizeofValue="52" sizeofSource="sizeof(struct hs_source_file)" isLatest="true">
+      <String CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+      <Data CStyleName="source" pascalStyleName="Source" name="source" readOnly="true" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

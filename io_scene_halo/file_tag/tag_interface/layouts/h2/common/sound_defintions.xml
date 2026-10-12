@@ -1,0 +1,449 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedLayouts>
+  <Options regolithID="enum:sound_flags" CStyleName="sound_flags" pascalStyleName="SoundFlags">
+    <Bit name="fit to adpcm blocksize" CStyleName="fit_to_adpcm_blocksize_bit" pascalStyleName="FitToAdpcmBlocksizeBit" />
+    <Bit name="split long sound into permutations" CStyleName="split_long_sound_into_permutations_bit" pascalStyleName="SplitLongSoundIntoPermutationsBit" />
+    <Bit name="always spatialize" description="always play as 3d sound, even in first person" CStyleName="always_spatialize_bit" pascalStyleName="AlwaysSpatializeBit" />
+    <Bit name="never obstruct" description="disable occlusion/obstruction for this sound" CStyleName="never_obstruct_bit" pascalStyleName="NeverObstructBit" />
+    <Bit name="internal don't touch" CStyleName="internal_dont_touch_bit" pascalStyleName="InternalDontTouchBit" />
+    <Bit name="use huge sound transmission" CStyleName="use_huge_sound_transmission_bit" pascalStyleName="UseHugeSoundTransmissionBit" />
+    <Bit name="link count to owner unit" CStyleName="link_count_to_owner_unit_bit" pascalStyleName="LinkCountToOwnerUnitBit" />
+    <Bit name="pitch range is language" CStyleName="pitch_range_is_language_bit" pascalStyleName="PitchRangeIsLanguageBit" />
+    <Bit name="don't use sound class speaker flag" CStyleName="dont_use_sound_class_speaker_flag_bit" pascalStyleName="DontUseSoundClassSpeakerFlagBit" />
+    <Bit name="don't use lipsync data" CStyleName="dont_use_lipsync_data_bit" pascalStyleName="DontUseLipsyncDataBit" />
+    <Bit name="play only in legacy mode" CStyleName="play_only_in_legacy_mode_bit" pascalStyleName="PlayOnlyInLegacyModeBit" />
+    <Bit name="play only in remastered mode" CStyleName="play_only_in_remastered_mode_bit" pascalStyleName="PlayOnlyInRemasteredModeBit" />
+  </Options>
+  <Options regolithID="enum:sound_class" CStyleName="sound_class" pascalStyleName="SoundClass">
+    <Enum name="projectile_impact" CStyleName="projectile_impact" pascalStyleName="ProjectileImpact" />
+    <Enum name="projectile_detonation" CStyleName="projectile_detonation" pascalStyleName="ProjectileDetonation" />
+    <Enum name="projectile_flyby" CStyleName="projectile_flyby" pascalStyleName="ProjectileFlyby" />
+    <Enum CStyleName="unnamed_3" pascalStyleName="Unnamed3" />
+    <Enum name="weapon_fire" CStyleName="weapon_fire" pascalStyleName="WeaponFire" />
+    <Enum name="weapon_ready" CStyleName="weapon_ready" pascalStyleName="WeaponReady" />
+    <Enum name="weapon_reload" CStyleName="weapon_reload" pascalStyleName="WeaponReload" />
+    <Enum name="weapon_empty" CStyleName="weapon_empty" pascalStyleName="WeaponEmpty" />
+    <Enum name="weapon_charge" CStyleName="weapon_charge" pascalStyleName="WeaponCharge" />
+    <Enum name="weapon_overheat" CStyleName="weapon_overheat" pascalStyleName="WeaponOverheat" />
+    <Enum name="weapon_idle" CStyleName="weapon_idle" pascalStyleName="WeaponIdle" />
+    <Enum name="weapon_melee" CStyleName="weapon_melee" pascalStyleName="WeaponMelee" />
+    <Enum name="weapon_animation" CStyleName="weapon_animation" pascalStyleName="WeaponAnimation" />
+    <Enum name="object_impacts" CStyleName="object_impacts" pascalStyleName="ObjectImpacts" />
+    <Enum name="particle_impacts" CStyleName="particle_impacts" pascalStyleName="ParticleImpacts" />
+    <Enum name="weapon_fire_lod" CStyleName="weapon_fire_lod" pascalStyleName="WeaponFireLod" />
+    <Enum name="weapon_fire_lod_far" CStyleName="weapon_fire_lod_far" pascalStyleName="WeaponFireLodFar" />
+    <Enum name="lfe" CStyleName="lfe" pascalStyleName="Lfe" />
+    <Enum name="unit_footsteps" CStyleName="unit_footsteps" pascalStyleName="UnitFootsteps" />
+    <Enum name="unit_dialog" CStyleName="unit_dialog" pascalStyleName="UnitDialog" />
+    <Enum name="unit_animation" CStyleName="unit_animation" pascalStyleName="UnitAnimation" />
+    <Enum CStyleName="unnamed_21" pascalStyleName="Unnamed21" />
+    <Enum name="vehicle_collision" CStyleName="vehicle_collision" pascalStyleName="VehicleCollision" />
+    <Enum name="vehicle_engine" CStyleName="vehicle_engine" pascalStyleName="VehicleEngine" />
+    <Enum name="vehicle_animation" CStyleName="vehicle_animation" pascalStyleName="VehicleAnimation" />
+    <Enum CStyleName="unnamed_25" pascalStyleName="Unnamed25" />
+    <Enum name="device_door" CStyleName="device_door" pascalStyleName="DeviceDoor" />
+    <Enum CStyleName="unnamed_27" pascalStyleName="Unnamed27" />
+    <Enum name="device_machinery" CStyleName="device_machinery" pascalStyleName="DeviceMachinery" />
+    <Enum name="device_stationary" CStyleName="device_stationary" pascalStyleName="DeviceStationary" />
+    <Enum CStyleName="unnamed_30" pascalStyleName="Unnamed30" />
+    <Enum CStyleName="unnamed_31" pascalStyleName="Unnamed31" />
+    <Enum name="music" CStyleName="music" pascalStyleName="Music" />
+    <Enum name="ambient_nature" CStyleName="ambient_nature" pascalStyleName="AmbientNature" />
+    <Enum name="ambient_machinery" CStyleName="ambient_machinery" pascalStyleName="AmbientMachinery" />
+    <Enum CStyleName="unnamed_35" pascalStyleName="Unnamed35" />
+    <Enum name="huge_ass" CStyleName="huge_ass" pascalStyleName="HugeAss" />
+    <Enum name="object_looping" CStyleName="object_looping" pascalStyleName="ObjectLooping" />
+    <Enum name="cinematic_music" CStyleName="cinematic_music" pascalStyleName="CinematicMusic" />
+    <Enum name="reflection" CStyleName="reflection" pascalStyleName="Reflection" />
+    <Enum name="reflection_lod" CStyleName="reflection_lod" pascalStyleName="ReflectionLod" />
+    <Enum name="reflection_lod_far" CStyleName="reflection_lod_far" pascalStyleName="ReflectionLodFar" />
+    <Enum CStyleName="unnamed_42" pascalStyleName="Unnamed42" />
+    <Enum CStyleName="unnamed_43" pascalStyleName="Unnamed43" />
+    <Enum CStyleName="unnamed_44" pascalStyleName="Unnamed44" />
+    <Enum name="cortana_mission" CStyleName="cortana_mission" pascalStyleName="CortanaMission" />
+    <Enum name="cortana_cinematic" CStyleName="cortana_cinematic" pascalStyleName="CortanaCinematic" />
+    <Enum name="mission_dialog" CStyleName="mission_dialog" pascalStyleName="MissionDialog" />
+    <Enum name="cinematic_dialog" CStyleName="cinematic_dialog" pascalStyleName="CinematicDialog" />
+    <Enum name="scripted_cinematic_foley" CStyleName="scripted_cinematic_foley" pascalStyleName="ScriptedCinematicFoley" />
+    <Enum name="game_event" CStyleName="game_event" pascalStyleName="GameEvent" />
+    <Enum name="ui" CStyleName="ui" pascalStyleName="Ui" />
+    <Enum name="test" CStyleName="test" pascalStyleName="Test" />
+    <Enum name="multilingual_test" CStyleName="multilingual_test" pascalStyleName="MultilingualTest" />
+  </Options>
+  <Options regolithID="enum:platform_sound_effect_input_type" CStyleName="platform_sound_effect_input_type" pascalStyleName="PlatformSoundEffectInputType">
+    <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+    <Enum name="time" CStyleName="time" pascalStyleName="Time" />
+    <Enum name="scale" CStyleName="scale" pascalStyleName="Scale" />
+    <Enum name="rolloff" CStyleName="rolloff" pascalStyleName="Rolloff" />
+  </Options>
+  <Options regolithID="enum:sound_output_effect" CStyleName="sound_output_effect" pascalStyleName="SoundOutputEffect">
+    <Enum name="none" CStyleName="none" pascalStyleName="None" />
+    <Enum name="output front speakers" CStyleName="output_front_speakers" pascalStyleName="OutputFrontSpeakers" />
+    <Enum name="output rear speakers" CStyleName="output_rear_speakers" pascalStyleName="OutputRearSpeakers" />
+    <Enum name="output center speakers" CStyleName="output_center_speakers" pascalStyleName="OutputCenterSpeakers" />
+  </Options>
+  <Options regolithID="enum:sound_effect_flags_playback" CStyleName="sound_effect_flags_playback" pascalStyleName="SoundEffectFlagsPlayback">
+    <Bit name="use 3d radio hack" CStyleName="use_3d_radio_hack_bit" pascalStyleName="Use3dRadioHackBit" />
+  </Options>
+  <Options regolithID="enum:sound_sample_rate" CStyleName="sound_sample_rate" pascalStyleName="SoundSampleRate">
+    <Enum name="22kHz" CStyleName="_22khz" pascalStyleName="22khz" />
+    <Enum name="44kHz" CStyleName="_44khz" pascalStyleName="44khz" />
+    <Enum name="32kHz" CStyleName="_32khz" pascalStyleName="32khz" />
+    <Enum name="48kHz" CStyleName="_48khz" pascalStyleName="48khz" />
+  </Options>
+  <Options regolithID="enum:sound_encoding" CStyleName="sound_encoding" pascalStyleName="SoundEncoding">
+    <Enum name="mono" CStyleName="mono" pascalStyleName="Mono" />
+    <Enum name="stereo" CStyleName="stereo" pascalStyleName="Stereo" />
+    <Enum name="codec" CStyleName="codec" pascalStyleName="Codec" />
+    <Enum name="quad" CStyleName="quad" pascalStyleName="Quad" />
+  </Options>
+  <Options regolithID="enum:sound_compression" CStyleName="sound_compression" pascalStyleName="SoundCompression">
+    <Enum name="none (big endian)" CStyleName="none_big_endian" pascalStyleName="NoneBigEndian" />
+    <Enum name="xbox adpcm" CStyleName="xbox_adpcm" pascalStyleName="XboxAdpcm" />
+    <Enum name="ima adpcm" CStyleName="ima_adpcm" pascalStyleName="ImaAdpcm" />
+    <Enum name="none (little endian)" CStyleName="none_little_endian" pascalStyleName="NoneLittleEndian" />
+    <Enum name="wma" CStyleName="wma" pascalStyleName="Wma" />
+    <Enum name="opus" CStyleName="opus" pascalStyleName="Opus" />
+  </Options>
+  <Layout regolithID="structure:sound_lowpass" tag="slpp" internalName="sound_lowpass_struct" backingBlockInternalName="sound_lowpass_struct_block" name="sound_lowpass_struct">
+    <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(struct s_sound_lowpass_parameters)" isLatest="true">
+      <Real CStyleName="low_pass_minimum_distance" pascalStyleName="LowPassMinimumDistance" name="low pass minimum distance" />
+      <Real CStyleName="low_pass_maximum_distance" pascalStyleName="LowPassMaximumDistance" name="low pass maximum distance" />
+      <Custom name="Mapping" tag="fned" />
+      <Struct CStyleName="mapping" pascalStyleName="Mapping" name="Mapping">
+        <LayoutXRef>structure:mapping_function</LayoutXRef>
+      </Struct>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="structure:sound_promotion_parameters" tag="snpr" internalName="sound_promotion_parameters_struct" backingBlockInternalName="sound_promotion_parameters_struct_block" name="sound_promotion_parameters_struct">
+    <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(s_old_sound_promotion_parameters)">
+      <TagReference CStyleName="promotion_sound" pascalStyleName="PromotionSound" name="promotion sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <ShortInteger CStyleName="promotion_count" pascalStyleName="PromotionCount" name="promotion count" description="when there are this many instances of the sound, promote to the new sound." />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Pad sizeOfSource="2*sizeof(long)" length="8" />
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="36" sizeofSource="sizeof(s_sound_promotion_parameters)" isLatest="true">
+      <Block CStyleName="promotion_rules" pascalStyleName="PromotionRules" name="promotion rules" maxElementCount="9" maxElementCountSource="k_maximum_promotion_rules_per_sound">
+        <Layout regolithID="block:sound_promotion_rule" internalName="sound_promotion_rule_block" name="sound_promotion_rule_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_sound_promotion_rule)" isLatest="true">
+            <CustomShortBlockIndex CStyleName="pitch_range" pascalStyleName="PitchRange" name="pitch range" blockNameSource="true" />
+            <ShortInteger CStyleName="maximum_playing_count" pascalStyleName="MaximumPlayingCount" name="maximum playing count" />
+            <Real CStyleName="suppression_time" pascalStyleName="SuppressionTime" name="suppression time" units="seconds" description="time from when first permutation plays to when another sound from an equal or lower promotion can play" />
+            <Pad sizeOfSource="2*sizeof(long)" length="8" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="runtime_timers" pascalStyleName="RuntimeTimers" name="runtime timers" expertOnly="true" maxElementCount="9" maxElementCountSource="k_maximum_promotion_rules_per_sound">
+        <Layout regolithID="block:sound_promotion_runtime_timer" internalName="sound_promotion_runtime_timer_block" name="sound_promotion_runtime_timer_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(long)" isLatest="true">
+            <LongInteger />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <LongInteger CStyleName="runtime_active_promotion_index" pascalStyleName="RuntimeActivePromotionIndex" name="runtime active promotion index" expertOnly="true" />
+      <LongInteger CStyleName="runtime_last_promotion_time" pascalStyleName="RuntimeLastPromotionTime" name="runtime last promotion time" expertOnly="true" />
+      <LongInteger CStyleName="runtime_suppression_timeout" pascalStyleName="RuntimeSuppressionTimeout" name="runtime suppression timeout" expertOnly="true" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:platform_sound_override_mixbins" internalName="platform_sound_override_mixbins_block" name="platform_sound_override_mixbins_block">
+    <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(s_platform_sound_mixbin)" isLatest="true">
+      <LongEnum CStyleName="mixbin" pascalStyleName="Mixbin" name="mixbin">
+        <Options regolithID="enum:sound_mixbin" CStyleName="sound_mixbin" pascalStyleName="SoundMixbin">
+          <Enum name="front left" CStyleName="front_left" pascalStyleName="FrontLeft" />
+          <Enum name="front right" CStyleName="front_right" pascalStyleName="FrontRight" />
+          <Enum name="back left" CStyleName="back_left" pascalStyleName="BackLeft" />
+          <Enum name="back right" CStyleName="back_right" pascalStyleName="BackRight" />
+          <Enum name="center" CStyleName="center" pascalStyleName="Center" />
+          <Enum name="low frequency" CStyleName="low_frequency" pascalStyleName="LowFrequency" />
+          <Enum name="reverb" CStyleName="reverb" pascalStyleName="Reverb" />
+          <Enum name="3d front left" CStyleName="_3d_front_left" pascalStyleName="3dFrontLeft" />
+          <Enum name="3d front right" CStyleName="_3d_front_right" pascalStyleName="3dFrontRight" />
+          <Enum name="3d back left" CStyleName="_3d_back_left" pascalStyleName="3dBackLeft" />
+          <Enum name="3d back right" CStyleName="_3d_back_right" pascalStyleName="3dBackRight" />
+          <Enum name="default left speakers" CStyleName="default_left_speakers" pascalStyleName="DefaultLeftSpeakers" />
+          <Enum name="default right speakers" CStyleName="default_right_speakers" pascalStyleName="DefaultRightSpeakers" />
+        </Options>
+      </LongEnum>
+      <Real CStyleName="gain" pascalStyleName="Gain" name="gain" units="dB" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:platform_sound_filter" internalName="platform_sound_filter_block" name="platform_sound_filter_block">
+    <FieldSet version="0" sizeofValue="72" sizeofSource="sizeof(s_platform_sound_source_filter)" isLatest="true">
+      <Explanation name="parameter description" description="DLS2 filtering:&#xA;    resonance gain range: [0, 22.5] dB&#xA;&#xA;parametric EQ:&#xA;    gain range: [-64, 14] dB&#xA;&#xA;for mono sounds:&#xA;    the left filter controls the DLS 2 parameters&#xA;    the right filter controls the Parametric EQ parameters&#xA;&#xA;for stereo sounds:&#xA;    both left and right channels must have the same filter&#xA;    i.e., filter type both is invalid" />
+      <LongEnum CStyleName="filter_type" pascalStyleName="FilterType" name="filter type">
+        <Options regolithID="enum:sound_filter_type" CStyleName="sound_filter_type" pascalStyleName="SoundFilterType">
+          <Enum name="parametric EQ" CStyleName="parametric_eq" pascalStyleName="ParametricEq" />
+          <Enum name="DLS2" CStyleName="dls2" pascalStyleName="Dls2" />
+          <Enum name="both (only valid for mono)" CStyleName="both_only_valid_for_mono" pascalStyleName="BothOnlyValidForMono" />
+        </Options>
+      </LongEnum>
+      <LongInteger CStyleName="filter_width" pascalStyleName="FilterWidth" name="filter width" units="[0,7]" />
+      <Explanation name="left filter frequency" description="in Hz [0,8000]" />
+      <Struct CStyleName="left_filter_frequency" pascalStyleName="LeftFilterFrequency" name="left filter frequency">
+        <Layout regolithID="structure:sound_playback_parameter_definition" tag="spl1" internalName="sound_playback_parameter_definition" backingBlockInternalName="sound_playback_parameter_definition_block" name="sound_playback_parameter_definition">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_sound_playback_parameter)" isLatest="true">
+            <RealBounds CStyleName="scale_bounds" pascalStyleName="ScaleBounds" name="scale bounds" />
+            <RealBounds CStyleName="random_base_and_variance" pascalStyleName="RandomBaseAndVariance" name="random base and variance" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="left filter gain" description="in dB" />
+      <Struct CStyleName="left_filter_gain" pascalStyleName="LeftFilterGain" name="left filter gain">
+        <LayoutXRef>structure:sound_playback_parameter_definition</LayoutXRef>
+      </Struct>
+      <Explanation name="right filter frequency" description="in Hz [0,8000]" />
+      <Struct CStyleName="right_filter_frequency" pascalStyleName="RightFilterFrequency" name="right filter frequency">
+        <LayoutXRef>structure:sound_playback_parameter_definition</LayoutXRef>
+      </Struct>
+      <Explanation name="right filter gain" description="in dB" />
+      <Struct CStyleName="right_filter_gain" pascalStyleName="RightFilterGain" name="right filter gain">
+        <LayoutXRef>structure:sound_playback_parameter_definition</LayoutXRef>
+      </Struct>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:platform_sound_pitch_lfo" internalName="platform_sound_pitch_lfo_block" name="platform_sound_pitch_lfo_block">
+    <FieldSet version="0" sizeofValue="48" sizeofSource="sizeof(s_platform_sound_source_pitch_lfo)" isLatest="true">
+      <Explanation name="delay" description="seconds" />
+      <Struct CStyleName="delay" pascalStyleName="Delay" name="delay">
+        <LayoutXRef>structure:sound_playback_parameter_definition</LayoutXRef>
+      </Struct>
+      <Explanation name="frequency" description="Hz[0,43.7]" />
+      <Struct CStyleName="frequency" pascalStyleName="Frequency" name="frequency">
+        <LayoutXRef>structure:sound_playback_parameter_definition</LayoutXRef>
+      </Struct>
+      <Explanation name="pitch modulation" description="octaves[-1,1]" />
+      <Struct CStyleName="pitch_modulation" pascalStyleName="PitchModulation" name="pitch modulation">
+        <LayoutXRef>structure:sound_playback_parameter_definition</LayoutXRef>
+      </Struct>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:platform_sound_filter_lfo" internalName="platform_sound_filter_lfo_block" name="platform_sound_filter_lfo_block">
+    <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(s_platform_sound_source_filter_lfo)" isLatest="true">
+      <Explanation name="delay" description="in seconds" />
+      <Struct CStyleName="delay" pascalStyleName="Delay" name="delay">
+        <LayoutXRef>structure:sound_playback_parameter_definition</LayoutXRef>
+      </Struct>
+      <Explanation name="frequency" description="in Hz[0,43.7]" />
+      <Struct CStyleName="frequency" pascalStyleName="Frequency" name="frequency">
+        <LayoutXRef>structure:sound_playback_parameter_definition</LayoutXRef>
+      </Struct>
+      <Explanation name="cutoff modulation" description="octaves[-8,8]" />
+      <Struct CStyleName="cutoff_modulation" pascalStyleName="CutoffModulation" name="cutoff modulation">
+        <LayoutXRef>structure:sound_playback_parameter_definition</LayoutXRef>
+      </Struct>
+      <Explanation name="gain modulation" description="dB[-16,16]" />
+      <Struct CStyleName="gain_modulation" pascalStyleName="GainModulation" name="gain modulation">
+        <LayoutXRef>structure:sound_playback_parameter_definition</LayoutXRef>
+      </Struct>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:sound_effect_playback" internalName="sound_effect_playback_block" name="sound_effect_playback_block">
+    <FieldSet version="0" sizeofValue="72" sizeofSource="sizeof(s_sound_effect_definition)" isLatest="true">
+      <Struct CStyleName="sound_effect_struct" pascalStyleName="SoundEffectStruct" name="sound effect struct">
+        <Layout regolithID="structure:sound_effect_struct_definition" tag="ssfx" internalName="sound_effect_struct_definition" backingBlockInternalName="sound_effect_struct_definition_block" name="sound_effect_struct_definition">
+          <FieldSet version="0" sizeofValue="72" sizeofSource="sizeof(s_sound_effect_definition)" isLatest="true">
+            <Custom name="sound effect" tag="tmpl" />
+            <TagReference>
+              <tag>&lt;fx&gt;</tag>
+            </TagReference>
+            <Block CStyleName="components" pascalStyleName="Components" name="components" maxElementCount="16" maxElementCountSource="k_maximum_number_of_sound_effect_components">
+              <Layout regolithID="block:sound_effect_component" internalName="sound_effect_component_block" name="sound_effect_component_block">
+                <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(s_sound_effect_component_definition)" isLatest="true">
+                  <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+                    <tag />
+                  </TagReference>
+                  <Real CStyleName="gain" pascalStyleName="Gain" name="gain" units="dB" description="additional attenuation to sound" tag="+dB+" />
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:sound_effect_component_flags" CStyleName="sound_effect_component_flags" pascalStyleName="SoundEffectComponentFlags">
+                      <Bit name="don't play at start" CStyleName="dont_play_at_start_bit" pascalStyleName="DontPlayAtStartBit" />
+                      <Bit name="play on stop" CStyleName="play_on_stop_bit" pascalStyleName="PlayOnStopBit" />
+                      <Bit CStyleName="unnamed_2_bit" pascalStyleName="Unnamed2Bit" />
+                      <Bit name="play alternate" CStyleName="play_alternate_bit" pascalStyleName="PlayAlternateBit" />
+                      <Bit CStyleName="unnamed_4_bit" pascalStyleName="Unnamed4Bit" />
+                      <Bit name="sync with origin looping sound" CStyleName="sync_with_origin_looping_sound_bit" pascalStyleName="SyncWithOriginLoopingSoundBit" />
+                    </Options>
+                  </LongFlags>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block maxElementCount="128">
+              <Layout regolithID="block:sound_effect_overrides" internalName="sound_effect_overrides_block" name="sound_effect_overrides_block">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_sound_effect_override_collection)" isLatest="true">
+                  <StringId CStyleName="name" pascalStyleName="Name" name="name" />
+                  <Block CStyleName="overrides" pascalStyleName="Overrides" name="overrides" maxElementCount="128" maxElementCountSource="k_maximum_number_of_sound_effect_parameters">
+                    <Layout regolithID="block:sound_effect_override_parameters" internalName="sound_effect_override_parameters_block" name="sound_effect_override_parameters_block">
+                      <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_sound_effect_override_parameter_v1)">
+                        <StringId CStyleName="name" pascalStyleName="Name" name="name" />
+                        <LongInteger CStyleName="integer_value" pascalStyleName="IntegerValue" name="integer value" />
+                        <Real CStyleName="real_value" pascalStyleName="RealValue" name="real value" />
+                      </FieldSet>
+                      <FieldSet version="1" sizeofValue="36" sizeofSource="sizeof(s_sound_effect_override_parameter)" isLatest="true">
+                        <StringId CStyleName="name" pascalStyleName="Name" name="name" />
+                        <StringId CStyleName="input" pascalStyleName="Input" name="input" tag="fnin" />
+                        <StringId CStyleName="range" pascalStyleName="Range" name="range" tag="fnir" />
+                        <Real CStyleName="time_period" pascalStyleName="TimePeriod" name="time period" units="seconds" tag="fn**" />
+                        <LongInteger CStyleName="integer_value" pascalStyleName="IntegerValue" name="integer value" />
+                        <Real CStyleName="real_value" pascalStyleName="RealValue" name="real value" />
+                        <Custom name="sound effect value" tag="fned" />
+                        <Struct CStyleName="function_value" pascalStyleName="FunctionValue" name="function value">
+                          <LayoutXRef>structure:mapping_function</LayoutXRef>
+                        </Struct>
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Data />
+            <Block maxElementCount="1">
+              <Layout regolithID="block:platform_sound_effect_collection" internalName="platform_sound_effect_collection_block" name="platform_sound_effect_collection_block">
+                <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(s_platform_sound_effect_collection)" isLatest="true">
+                  <Block CStyleName="sound_effects" pascalStyleName="SoundEffects" name="sound effects" readOnly="true" maxElementCount="8" maxElementCountSource="k_maximum_number_of_sound_effect_templates">
+                    <Layout regolithID="block:platform_sound_effect" internalName="platform_sound_effect_block" name="platform_sound_effect_block">
+                      <FieldSet version="0" sizeofValue="40" sizeofSource="sizeof(s_platform_sound_effect_definition)" isLatest="true">
+                        <Block CStyleName="function_inputs" pascalStyleName="FunctionInputs" name="function inputs" maxElementCount="16" maxElementCountSource="k_maximum_number_of_sound_effect_inputs">
+                          <Layout regolithID="block:platform_sound_effect_function" internalName="platform_sound_effect_function_block" name="platform_sound_effect_function_block">
+                            <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_platform_sound_effect_function)" isLatest="true">
+                              <ShortEnum CStyleName="input" pascalStyleName="Input" name="input" tag="fnin">
+                                <OptionsXRef>enum:platform_sound_effect_input_type</OptionsXRef>
+                              </ShortEnum>
+                              <ShortEnum CStyleName="range" pascalStyleName="Range" name="range" tag="fnir">
+                                <OptionsXRef>enum:platform_sound_effect_input_type</OptionsXRef>
+                              </ShortEnum>
+                              <Struct CStyleName="function" pascalStyleName="Function" name="function">
+                                <LayoutXRef>structure:mapping_function</LayoutXRef>
+                              </Struct>
+                              <Real CStyleName="time_period" pascalStyleName="TimePeriod" name="time period" units="seconds" />
+                            </FieldSet>
+                          </Layout>
+                        </Block>
+                        <Block CStyleName="constant_inputs" pascalStyleName="ConstantInputs" name="constant inputs" maxElementCount="16" maxElementCountSource="k_maximum_number_of_sound_effect_inputs">
+                          <Layout regolithID="block:platform_sound_effect_constant" internalName="platform_sound_effect_constant_block" name="platform_sound_effect_constant_block">
+                            <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(real)" isLatest="true">
+                              <Real CStyleName="constant_value" pascalStyleName="ConstantValue" name="constant value" />
+                            </FieldSet>
+                          </Layout>
+                        </Block>
+                        <Block CStyleName="template_override_descriptors" pascalStyleName="TemplateOverrideDescriptors" name="template override descriptors" maxElementCount="16" maxElementCountSource="k_maximum_number_of_sound_effect_inputs">
+                          <Layout regolithID="block:platform_sound_effect_override_descriptor" internalName="platform_sound_effect_override_descriptor_block" name="platform_sound_effect_override_descriptor_block">
+                            <FieldSet version="0" sizeofValue="1" sizeofSource="sizeof(s_platform_sound_effect_override_descriptor)" isLatest="true">
+                              <CharInteger CStyleName="override_descriptor" pascalStyleName="OverrideDescriptor" name="override descriptor" />
+                            </FieldSet>
+                          </Layout>
+                        </Block>
+                        <LongInteger CStyleName="input_overrides" pascalStyleName="InputOverrides" name="input overrides" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="low_frequency_input" pascalStyleName="LowFrequencyInput" name="low frequency input" readOnly="true" maxElementCount="16" maxElementCountSource="k_maximum_number_of_sound_effect_inputs">
+                    <LayoutXRef>block:platform_sound_effect_function</LayoutXRef>
+                  </Block>
+                  <LongInteger CStyleName="sound_effect_overrides" pascalStyleName="SoundEffectOverrides" name="sound effect overrides" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Struct>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="structure:simple_platform_sound_playback" tag="plsn" internalName="simple_platform_sound_playback_struct" backingBlockInternalName="simple_platform_sound_playback_struct_block" name="simple_platform_sound_playback_struct">
+    <FieldSet version="0" sizeofValue="72" sizeofSource="sizeof(s_platform_sound_playback_definition)" isLatest="true">
+      <Block maxElementCount="8" maxElementCountSource="k_maximum_number_of_override_mixbins">
+        <LayoutXRef>block:platform_sound_override_mixbins</LayoutXRef>
+      </Block>
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:sound_effect_flags_playback</OptionsXRef>
+      </LongFlags>
+      <Pad sizeOfSource="2*sizeof(dword)" length="8" />
+      <Block CStyleName="filter" pascalStyleName="Filter" name="filter" maxElementCount="1">
+        <LayoutXRef>block:platform_sound_filter</LayoutXRef>
+      </Block>
+      <Block CStyleName="pitch_lfo" pascalStyleName="PitchLfo" name="pitch lfo" maxElementCount="1">
+        <LayoutXRef>block:platform_sound_pitch_lfo</LayoutXRef>
+      </Block>
+      <Block CStyleName="filter_lfo" pascalStyleName="FilterLfo" name="filter lfo" maxElementCount="1">
+        <LayoutXRef>block:platform_sound_filter_lfo</LayoutXRef>
+      </Block>
+      <Block CStyleName="sound_effect" pascalStyleName="SoundEffect" name="sound effect" maxElementCount="1">
+        <LayoutXRef>block:sound_effect_playback</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="structure:sound_playback_parameters" tag="snpl" internalName="sound_playback_parameters_struct" backingBlockInternalName="sound_playback_parameters_struct_block" name="sound_playback_parameters_struct">
+    <FieldSet version="0" sizeofValue="56" sizeofSource="sizeof(s_sound_definition_playback_parameters)" isLatest="true">
+      <Custom name="Clear distances" tag="edit" />
+      <Custom name="Reset distances" tag="edit" />
+      <Real CStyleName="minimum_distance" pascalStyleName="MinimumDistance" name="minimum distance" units="world units" description="the distance below which this sound no longer gets louder" />
+      <Real CStyleName="maximum_distance" pascalStyleName="MaximumDistance" name="maximum distance" units="world units" description="the distance beyond which this sound is no longer audible" />
+      <RealFraction CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" description="fraction of requests to play this sound that will be ignored (0 means always play.)" />
+      <Real CStyleName="maximum_bend_per_second" pascalStyleName="MaximumBendPerSecond" name="maximum bend per second" units="cents" tag="cent" />
+      <Explanation name="randomization" description="these settings control random variation of volume and pitch.&#xA; the second parameter gets clipped to the first." />
+      <Custom name="Update gain bounds" tag="edit" />
+      <Real CStyleName="gain_base" pascalStyleName="GainBase" name="gain base" units="dB" description="sound's random gain will start here" tag="+dB+" />
+      <Real CStyleName="gain_variance" pascalStyleName="GainVariance" name="gain variance" units="dB" description="sound's gain will be randomly modulated within this range" tag="+dB+" />
+      <ShortBounds CStyleName="random_pitch_bounds" pascalStyleName="RandomPitchBounds" name="random pitch bounds" units="cents" description="the sound's pitch will be modulated randomly within this range." />
+      <Explanation name="directional sounds" description="these settings allow sounds to be directional, fading as they turn away from the listener" />
+      <Angle CStyleName="inner_cone_angle" pascalStyleName="InnerConeAngle" name="inner cone angle" units="degrees" description="within the cone defined by this angle and the sound's direction, the sound plays with a gain of 1.0." />
+      <Angle CStyleName="outer_cone_angle" pascalStyleName="OuterConeAngle" name="outer cone angle" units="degrees" description="outside the cone defined by this angle and the sound's direction, the sound plays with a gain of OUTER CONE GAIN. (0 means the sound does not attenuate with direction.)" />
+      <Real CStyleName="outer_cone_gain" pascalStyleName="OuterConeGain" name="outer cone gain" units="dB" description="the gain to use when the sound is directed away from the listener" tag="+dB+" />
+      <Explanation name="SCRIPTED LOCATION OVERRIDE" description="NOTE: this will only apply when the sound is started via script&#xA;azimuth:&#xA;    0 =&gt; front&#xA;    90 =&gt; left&#xA;    180 =&gt; back&#xA;    270 =&gt; right&#xA;" />
+      <Custom name="Update location" tag="edit" />
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:sound_playback_flags" CStyleName="sound_playback_flags" pascalStyleName="SoundPlaybackFlags">
+          <Bit name="override azimuth" CStyleName="override_azimuth_bit" pascalStyleName="OverrideAzimuthBit" />
+          <Bit name="override 3d gain" CStyleName="override_3d_gain_bit" pascalStyleName="Override3dGainBit" />
+          <Bit name="override speaker gain" CStyleName="override_speaker_gain_bit" pascalStyleName="OverrideSpeakerGainBit" />
+        </Options>
+      </LongFlags>
+      <Angle CStyleName="azimuth" pascalStyleName="Azimuth" name="azimuth" />
+      <Real CStyleName="positional_gain" pascalStyleName="PositionalGain" name="positional gain" units="dB" />
+      <Real CStyleName="first_person_gain" pascalStyleName="FirstPersonGain" name="first person gain" units="dB" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="structure:sound_scale_modifiers" tag="snsc" internalName="sound_scale_modifiers_struct" backingBlockInternalName="sound_scale_modifiers_struct_block" name="sound_scale_modifiers_struct">
+    <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_sound_definition_scale_modifiers)" isLatest="true">
+      <Explanation name="scale modifiers" description="as the sound's input scale changes from zero to one, these modifiers move between the two values specified here. the sound will play using the current scale modifier multiplied by the values specified above. (0 values are ignored.)" />
+      <RealBounds CStyleName="gain_modifier" pascalStyleName="GainModifier" name="gain modifier" units="dB" tag="+dB+" />
+      <ShortBounds CStyleName="pitch_modifier" pascalStyleName="PitchModifier" name="pitch modifier" units="cents" />
+      <RealFractionBounds CStyleName="skip_fraction_modifier" pascalStyleName="SkipFractionModifier" name="skip fraction modifier" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:sound_permutation_chunk" internalName="sound_permutation_chunk_block" name="sound_permutation_chunk_block">
+    <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_sound_permutation_chunk_v1)">
+      <LongInteger CStyleName="file_offset" pascalStyleName="FileOffset" name="file offset" readOnly="true" />
+      <ShortInteger />
+      <ShortInteger />
+      <LongInteger />
+      <LongInteger />
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="12" sizeofSource="sizeof(s_sound_permutation_chunk_v2)">
+      <LongInteger CStyleName="file_offset" pascalStyleName="FileOffset" name="file offset" readOnly="true" />
+      <LongInteger />
+      <LongInteger />
+    </FieldSet>
+    <FieldSet version="2" sizeofValue="16" sizeofSource="sizeof(s_sound_permutation_chunk)" isLatest="true">
+      <LongInteger CStyleName="file_offset" pascalStyleName="FileOffset" name="file offset" readOnly="true" />
+      <LongInteger />
+      <LongInteger />
+      <LongInteger />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:sound_encoded_dialogue_section" internalName="sound_encoded_dialogue_section_block" name="sound_encoded_dialogue_section_block">
+    <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(s_sound_encoded_dialogue_section)" isLatest="true">
+      <Data CStyleName="encoded_data" pascalStyleName="EncodedData" name="encoded data" />
+      <Block CStyleName="sound_dialogue_info" pascalStyleName="SoundDialogueInfo" name="sound dialogue info" maxElementCount="288" maxElementCountSource="MAXIMUM_PITCH_RANGES_PER_SOUND*MAXIMUM_PERMUTATIONS_PER_PITCH_RANGE">
+        <Layout regolithID="block:sound_permutation_dialogue_info" internalName="sound_permutation_dialogue_info_block" name="sound_permutation_dialogue_info_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_sound_permutation_dialogue_info)" isLatest="true">
+            <LongInteger CStyleName="mouth_data_offset" pascalStyleName="MouthDataOffset" name="mouth data offset" />
+            <LongInteger CStyleName="mouth_data_length" pascalStyleName="MouthDataLength" name="mouth data length" />
+            <LongInteger CStyleName="lipsync_data_offset" pascalStyleName="LipsyncDataOffset" name="lipsync data offset" />
+            <LongInteger CStyleName="lipsync_data_length" pascalStyleName="LipsyncDataLength" name="lipsync data length" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</SharedLayouts>

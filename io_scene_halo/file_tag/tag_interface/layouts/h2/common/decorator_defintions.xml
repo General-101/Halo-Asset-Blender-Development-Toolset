@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedLayouts>
+  <Options regolithID="enum:decorator_type" CStyleName="decorator_type" pascalStyleName="DecoratorType">
+    <Enum name="model" CStyleName="model" pascalStyleName="Model" />
+    <Enum name="floating decal" CStyleName="floating_decal" pascalStyleName="FloatingDecal" />
+    <Enum name="projected decal" CStyleName="projected_decal" pascalStyleName="ProjectedDecal" />
+    <Enum name="screen facing quad" CStyleName="screen_facing_quad" pascalStyleName="ScreenFacingQuad" />
+    <Enum name="axis rotating quad" CStyleName="axis_rotating_quad" pascalStyleName="AxisRotatingQuad" />
+    <Enum name="cross quad" CStyleName="cross_quad" pascalStyleName="CrossQuad" />
+  </Options>
+  <Layout regolithID="block:decorator_cell_collection" internalName="decorator_cell_collection_block" name="decorator_cell_collection_block">
+    <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(c_decorator_cell_collection)" isLatest="true">
+      <Array CStyleName="child_indices" pascalStyleName="ChildIndices" name="child indices" count="8">
+        <ShortInteger CStyleName="child_index" pascalStyleName="ChildIndex" name="child index" />
+      </Array>
+      <ShortBlockIndex CStyleName="cache_block_index" pascalStyleName="CacheBlockIndex" name="cache block index" blockReference="block:decorator_cache_block" />
+      <ShortInteger CStyleName="group_count" pascalStyleName="GroupCount" name="group count" />
+      <LongInteger CStyleName="group_start_index" pascalStyleName="GroupStartIndex" name="group start index" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:decorator_projected_decal" internalName="decorator_projected_decal_block" name="decorator_projected_decal_block">
+    <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(s_decorator_projected_decal)" isLatest="true">
+      <CharBlockIndex CStyleName="decorator_set" pascalStyleName="DecoratorSet" name="decorator set" blockReference="block:scenario_decorator_set_palette_entry" />
+      <CharInteger CStyleName="decorator_class" pascalStyleName="DecoratorClass" name="decorator class" />
+      <CharInteger CStyleName="decorator_permutation" pascalStyleName="DecoratorPermutation" name="decorator permutation" />
+      <CharInteger CStyleName="sprite_index" pascalStyleName="SpriteIndex" name="sprite index" />
+      <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" />
+      <RealVector3D CStyleName="left" pascalStyleName="Left" name="left" />
+      <RealVector3D CStyleName="up" pascalStyleName="Up" name="up" />
+      <RealVector3D CStyleName="extents" pascalStyleName="Extents" name="extents" />
+      <RealPoint3D CStyleName="previous_position" pascalStyleName="PreviousPosition" name="previous position" />
+    </FieldSet>
+  </Layout>
+</SharedLayouts>

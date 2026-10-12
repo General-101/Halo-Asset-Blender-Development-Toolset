@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="item" parent="obje" name="item" version="2">
+  <Layout regolithID="block:item" internalName="item_block" name="item">
+    <FieldSet version="0" sizeofValue="156" sizeofSource="sizeof(struct _item_definition)" parentVersion="0" isLatest="true">
+      <Explanation name="$$$ ITEM $$$" />
+      <LongFlags CStyleName="item_flags" pascalStyleName="ItemFlags" name="flags">
+        <Options regolithID="enum:item_flags" CStyleName="item_flags" pascalStyleName="ItemFlags">
+          <Bit name="always maintains z up" CStyleName="always_maintains_z_up_bit" pascalStyleName="AlwaysMaintainsZUpBit" />
+          <Bit name="destroyed by explosions" CStyleName="destroyed_by_explosions_bit" pascalStyleName="DestroyedByExplosionsBit" />
+          <Bit name="unaffected by gravity" CStyleName="unaffected_by_gravity_bit" pascalStyleName="UnaffectedByGravityBit" />
+        </Options>
+      </LongFlags>
+      <ShortInteger CStyleName="old_message_index" pascalStyleName="OldMessageIndex" name="OLD message index" />
+      <ShortInteger CStyleName="sort_order" pascalStyleName="SortOrder" name="sort order" />
+      <Real CStyleName="multiplayer_on_ground_scale" pascalStyleName="MultiplayerOnGroundScale" name="multiplayer on-ground scale" />
+      <Real CStyleName="campaign_on_ground_scale" pascalStyleName="CampaignOnGroundScale" name="campaign on-ground scale" />
+      <Explanation name="NEW hud messages" description="everything you need to display stuff" />
+      <StringId CStyleName="pickup_message" pascalStyleName="PickupMessage" name="pickup message" />
+      <StringId CStyleName="swap_message" pascalStyleName="SwapMessage" name="swap message" />
+      <StringId CStyleName="pickup_or_dual_msg" pascalStyleName="PickupOrDualMsg" name="pickup or dual msg" />
+      <StringId CStyleName="swap_or_dual_msg" pascalStyleName="SwapOrDualMsg" name="swap or dual msg" />
+      <StringId CStyleName="dual_only_msg" pascalStyleName="DualOnlyMsg" name="dual-only msg" />
+      <StringId CStyleName="picked_up_msg" pascalStyleName="PickedUpMsg" name="picked up msg" />
+      <StringId CStyleName="singluar_quantity_msg" pascalStyleName="SingluarQuantityMsg" name="singluar quantity msg" />
+      <StringId CStyleName="plural_quantity_msg" pascalStyleName="PluralQuantityMsg" name="plural quantity msg" />
+      <StringId CStyleName="switch_to_msg" pascalStyleName="SwitchToMsg" name="switch-to msg" />
+      <StringId CStyleName="switch_to_from_ai_msg" pascalStyleName="SwitchToFromAiMsg" name="switch-to from ai msg" />
+      <UselessPad length="148" />
+      <TagReference CStyleName="unused" pascalStyleName="Unused" name="UNUSED" readOnly="true">
+        <tag>foot</tag>
+      </TagReference>
+      <TagReference CStyleName="collision_sound" pascalStyleName="CollisionSound" name="collision sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <Block CStyleName="predicted_bitmaps" pascalStyleName="PredictedBitmaps" name="predicted bitmaps" maxElementCount="8">
+        <Layout regolithID="block:predicted_bitmaps" internalName="predicted_bitmaps_block" name="predicted_bitmaps_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct tag_reference)" isLatest="true">
+            <TagReference CStyleName="bitmap" pascalStyleName="Bitmap" name="bitmap" blockNameSource="true">
+              <tag>bitm</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <UselessPad length="92" />
+      <TagReference CStyleName="detonation_damage_effect" pascalStyleName="DetonationDamageEffect" name="detonation damage effect">
+        <tag>jpt!</tag>
+      </TagReference>
+      <RealBounds CStyleName="detonation_delay" pascalStyleName="DetonationDelay" name="detonation delay" units="seconds" />
+      <TagReference CStyleName="detonating_effect" pascalStyleName="DetonatingEffect" name="detonating effect">
+        <tag>effe</tag>
+      </TagReference>
+      <TagReference CStyleName="detonation_effect" pascalStyleName="DetonationEffect" name="detonation effect">
+        <tag>effe</tag>
+      </TagReference>
+    </FieldSet>
+  </Layout>
+</TagGroup>

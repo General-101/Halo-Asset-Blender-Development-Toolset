@@ -1,0 +1,60 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="fog " name="fog" version="1">
+  <Layout regolithID="block:fog" internalName="fog_block" name="fog">
+    <FieldSet version="0" sizeofValue="396" sizeofSource="sizeof(struct fog_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="is water" CStyleName="is_water_bit" pascalStyleName="IsWaterBit" />
+          <Bit name="atmosphere dominant" CStyleName="atmosphere_dominant_bit" pascalStyleName="AtmosphereDominantBit" />
+          <Bit name="fog screen only" CStyleName="fog_screen_only_bit" pascalStyleName="FogScreenOnlyBit" />
+        </Options>
+      </LongFlags>
+      <Pad name="pad" length="4" />
+      <Pad name="pad" length="76" />
+      <Pad name="pad" length="4" />
+      <Real CStyleName="maximum_density" pascalStyleName="MaximumDensity" name="maximum density" />
+      <Pad name="pad" length="4" />
+      <Real CStyleName="opaque_distance" pascalStyleName="OpaqueDistance" name="opaque distance" />
+      <Pad name="pad" length="4" />
+      <Real CStyleName="opaque_depth" pascalStyleName="OpaqueDepth" name="opaque depth" />
+      <Pad name="pad" length="8" />
+      <Real CStyleName="distance_to_water_plane" pascalStyleName="DistanceToWaterPlane" name="distance to water plane" />
+      <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+      <WordFlags CStyleName="flags_1" pascalStyleName="Flags1" name="flags 1">
+        <Options regolithID="enum:flags_1" CStyleName="flags_1" pascalStyleName="Flags1">
+          <Bit name="no environment multipass" CStyleName="no_environment_multipass_bit" pascalStyleName="NoEnvironmentMultipassBit" />
+          <Bit name="no model multipass" CStyleName="no_model_multipass_bit" pascalStyleName="NoModelMultipassBit" />
+          <Bit name="no texture based falloff" CStyleName="no_texture_based_falloff_bit" pascalStyleName="NoTextureBasedFalloffBit" />
+        </Options>
+      </WordFlags>
+      <ShortInteger CStyleName="layer_count" pascalStyleName="LayerCount" name="layer count" />
+      <RealBounds CStyleName="distance_gradient" pascalStyleName="DistanceGradient" name="distance gradient" />
+      <RealBounds CStyleName="density_gradient" pascalStyleName="DensityGradient" name="density gradient" />
+      <Real CStyleName="start_distance_from_fog_plane" pascalStyleName="StartDistanceFromFogPlane" name="start distance from fog plane" />
+      <Pad name="pad" length="4" />
+      <ArgbColor CStyleName="screen_layers_color" pascalStyleName="ScreenLayersColor" name="screen layers color" />
+      <Real CStyleName="rotation_multiplier" pascalStyleName="RotationMultiplier" name="rotation multiplier" />
+      <Real CStyleName="strafing_multiplier" pascalStyleName="StrafingMultiplier" name="strafing multiplier" />
+      <Real CStyleName="zoom_multiplier" pascalStyleName="ZoomMultiplier" name="zoom multiplier" />
+      <Pad name="pad" length="8" />
+      <Real CStyleName="map_scale" pascalStyleName="MapScale" name="map scale" />
+      <TagReference CStyleName="map" pascalStyleName="Map" name="map">
+        <tag>bitmap</tag>
+      </TagReference>
+      <Real CStyleName="animation_period" pascalStyleName="AnimationPeriod" name="animation period" />
+      <Pad name="pad" length="4" />
+      <RealBounds CStyleName="wind_velocity" pascalStyleName="WindVelocity" name="wind velocity" />
+      <RealBounds CStyleName="wind_period" pascalStyleName="WindPeriod" name="wind period" />
+      <Real CStyleName="wind_acceleration_weight" pascalStyleName="WindAccelerationWeight" name="wind acceleration weight" />
+      <Real CStyleName="wind_perpendicular_weight" pascalStyleName="WindPerpendicularWeight" name="wind perpendicular weight" />
+      <Pad name="pad" length="8" />
+      <TagReference CStyleName="background_sound" pascalStyleName="BackgroundSound" name="background sound">
+        <tag>sound_looping</tag>
+      </TagReference>
+      <TagReference CStyleName="sound_environment" pascalStyleName="SoundEnvironment" name="sound environment">
+        <tag>sound_environment</tag>
+      </TagReference>
+      <Pad name="pad" length="120" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

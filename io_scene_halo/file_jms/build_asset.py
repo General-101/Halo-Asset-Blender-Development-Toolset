@@ -2134,8 +2134,8 @@ def update_decimal():
     DECIMAL_3 = '\n%0.{decimal_point}f\t%0.{decimal_point}f\t%0.{decimal_point}f'.format(decimal_point=DECIMAL_POINT)
     DECIMAL_4 = '\n%0.{decimal_point}f\t%0.{decimal_point}f\t%0.{decimal_point}f\t%0.{decimal_point}f'.format(decimal_point=DECIMAL_POINT)
 
-def build_asset(context, blend_scene, filepath, jms_version, game_title, generate_checksum, fix_rotations, use_maya_sorting, folder_structure, folder_type, model_type, is_jmi, permutation_ce, level_of_detail_ce, custom_scale, loop_normals, write_textures, report):
-    JMS = process_scene(context, jms_version, game_title, generate_checksum, fix_rotations, use_maya_sorting, model_type, blend_scene, custom_scale, loop_normals, write_textures)
+def build_asset(context, blend_scene, filepath, jms_version, game_title, generate_checksum, file_checksum, fix_rotations, use_maya_sorting, folder_structure, folder_type, model_type, is_jmi, permutation_ce, level_of_detail_ce, custom_scale, merge_instances, loop_normals, write_textures, report):
+    JMS = process_scene(context, jms_version, game_title, generate_checksum, file_checksum, fix_rotations, use_maya_sorting, model_type, blend_scene, custom_scale, merge_instances, loop_normals, write_textures)
 
     binary = False
 

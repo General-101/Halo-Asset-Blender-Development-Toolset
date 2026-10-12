@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="snmx" name="sound_mix" version="1">
+  <Layout regolithID="block:sound_mix" internalName="sound_mix_block" name="sound_mix">
+    <FieldSet version="0" sizeofValue="88" sizeofSource="sizeof(s_sound_mix_configuration_definition)" isLatest="true">
+      <Explanation name="first person left side mix" description="for first person sounds to the left of you" />
+      <Real name="left stereo gain" units="dB" />
+      <Real name="right stereo gain" units="dB" />
+      <Explanation name="first person middle mix" description="for first person sounds between your ears" />
+      <Real name="left stereo gain" units="dB" />
+      <Real name="right stereo gain" units="dB" />
+      <Explanation name="first person right side mix" description="for first person sounds to the right of you" />
+      <Real name="left stereo gain" units="dB" />
+      <Real name="right stereo gain" units="dB" />
+      <Explanation name="first person stereo mix" />
+      <Real name="front speaker gain" units="dB" />
+      <Real name="rear speaker gain" units="dB" />
+      <Explanation name="ambient stereo mix" />
+      <Real name="front speaker gain" units="dB" />
+      <Real name="rear speaker gain" units="dB" />
+      <Explanation name="global mix" />
+      <Struct CStyleName="global_mix" pascalStyleName="GlobalMix" name="global mix">
+        <Layout regolithID="structure:sound_global_mix" tag="sngl" internalName="sound_global_mix_struct" backingBlockInternalName="sound_global_mix_struct_block" name="sound_global_mix_struct">
+          <FieldSet version="0" sizeofValue="48" sizeofSource="sizeof(s_sound_global_mix_configuration)" isLatest="true">
+            <Real CStyleName="mono_unspatialized_gain" pascalStyleName="MonoUnspatializedGain" name="mono unspatialized gain" units="dB" />
+            <Real CStyleName="stereo_to_3d_gain" pascalStyleName="StereoTo3dGain" name="stereo to 3d gain" units="dB" />
+            <Real CStyleName="rear_surround_to_front_stereo_gain" pascalStyleName="RearSurroundToFrontStereoGain" name="rear surround to front stereo gain" units="dB" />
+            <Explanation name="surround center mix" description="for sounds that use the center speaker" />
+            <Real name="front speaker gain" units="dB" />
+            <Real name="center speaker gain" units="dB" />
+            <Explanation name="stereo center mix" description="for sounds that use the center speaker" />
+            <Real name="front speaker gain" units="dB" />
+            <Real name="center speaker gain" units="dB" />
+            <Explanation name="more sound lovin'" description="for sounds that use the center speaker" />
+            <Real CStyleName="stereo_unspatialized_gain" pascalStyleName="StereoUnspatializedGain" name="stereo unspatialized gain" units="dB" />
+            <Explanation name="last minute values" />
+            <Real CStyleName="solo_player_fade_out_delay" pascalStyleName="SoloPlayerFadeOutDelay" name="solo player fade out delay" units="seconds" />
+            <Real CStyleName="solo_player_fade_out_time" pascalStyleName="SoloPlayerFadeOutTime" name="solo player fade out time" units="seconds" />
+            <Real CStyleName="solo_player_fade_in_time" pascalStyleName="SoloPlayerFadeInTime" name="solo player fade in time" units="seconds" />
+            <Real CStyleName="game_music_fade_out_time" pascalStyleName="GameMusicFadeOutTime" name="game music fade out time" units="seconds" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,176 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="sgla" name="shader_transparent_glass" version="1">
+  <Layout regolithID="block:shader_transparent_glass" internalName="shader_transparent_glass_block" name="shader_transparent_glass">
+    <FieldSet version="0" sizeofValue="480" sizeofSource="sizeof(struct shader_transparent_glass_group)" isLatest="true">
+      <Explanation name="Radiosity" />
+      <Struct CStyleName="radiosity" pascalStyleName="Radiosity" name="radiosity">
+        <Layout regolithID="structure:shader_radiosity_properties" internalName="shader_radiosity_properties_struct" backingBlockInternalName="shader_radiosity_properties_struct_block" name="shader radiosity properties">
+          <FieldSet version="0" sizeofValue="32" isLatest="true">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="simple parameterization" CStyleName="simple_parameterization_bit" pascalStyleName="SimpleParameterizationBit" />
+                <Bit name="ignore normals" CStyleName="ignore_normals_bit" pascalStyleName="IgnoreNormalsBit" />
+                <Bit name="transparent lit" CStyleName="transparent_lit_bit" pascalStyleName="TransparentLitBit" />
+              </Options>
+            </WordFlags>
+            <ShortEnum CStyleName="detail_level" pascalStyleName="DetailLevel" name="detail level">
+              <Options regolithID="enum:detail_level" CStyleName="detail_level" pascalStyleName="DetailLevel">
+                <Enum name="high" CStyleName="high" pascalStyleName="High" />
+                <Enum name="medium" CStyleName="medium" pascalStyleName="Medium" />
+                <Enum name="low" CStyleName="low" pascalStyleName="Low" />
+                <Enum name="turd" CStyleName="turd" pascalStyleName="Turd" />
+              </Options>
+            </ShortEnum>
+            <Real CStyleName="power" pascalStyleName="Power" name="power" />
+            <RealRgbColor CStyleName="color_of_emitted_light" pascalStyleName="ColorOfEmittedLight" name="color of emitted light" />
+            <RealRgbColor CStyleName="tint_color" pascalStyleName="TintColor" name="tint color" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Physics" />
+      <Struct CStyleName="physics" pascalStyleName="Physics" name="physics">
+        <Layout regolithID="structure:shader_physics_properties" internalName="shader_physics_properties_struct" backingBlockInternalName="shader_physics_properties_struct_block" name="shader physics properties">
+          <FieldSet version="0" sizeofValue="8" isLatest="true">
+            <Pad name="pad" length="2" />
+            <ShortEnum CStyleName="material_type" pascalStyleName="MaterialType" name="material type">
+              <Options regolithID="enum:material_type" CStyleName="material_type" pascalStyleName="MaterialType">
+                <Enum name="dirt" CStyleName="dirt" pascalStyleName="Dirt" />
+                <Enum name="sand" CStyleName="sand" pascalStyleName="Sand" />
+                <Enum name="stone" CStyleName="stone" pascalStyleName="Stone" />
+                <Enum name="snow" CStyleName="snow" pascalStyleName="Snow" />
+                <Enum name="wood" CStyleName="wood" pascalStyleName="Wood" />
+                <Enum name="metal hollow" CStyleName="metal_hollow" pascalStyleName="MetalHollow" />
+                <Enum name="metal thin" CStyleName="metal_thin" pascalStyleName="MetalThin" />
+                <Enum name="metal thick" CStyleName="metal_thick" pascalStyleName="MetalThick" />
+                <Enum name="rubber" CStyleName="rubber" pascalStyleName="Rubber" />
+                <Enum name="glass" CStyleName="glass" pascalStyleName="Glass" />
+                <Enum name="force field" CStyleName="force_field" pascalStyleName="ForceField" />
+                <Enum name="grunt" CStyleName="grunt" pascalStyleName="Grunt" />
+                <Enum name="hunter armor" CStyleName="hunter_armor" pascalStyleName="HunterArmor" />
+                <Enum name="hunter skin" CStyleName="hunter_skin" pascalStyleName="HunterSkin" />
+                <Enum name="elite" CStyleName="elite" pascalStyleName="Elite" />
+                <Enum name="jackal" CStyleName="jackal" pascalStyleName="Jackal" />
+                <Enum name="jackal energy shield" CStyleName="jackal_energy_shield" pascalStyleName="JackalEnergyShield" />
+                <Enum name="engineer skin" CStyleName="engineer_skin" pascalStyleName="EngineerSkin" />
+                <Enum name="engineer force field" CStyleName="engineer_force_field" pascalStyleName="EngineerForceField" />
+                <Enum name="flood combat form" CStyleName="flood_combat_form" pascalStyleName="FloodCombatForm" />
+                <Enum name="flood carrier form" CStyleName="flood_carrier_form" pascalStyleName="FloodCarrierForm" />
+                <Enum name="cyborg armor" CStyleName="cyborg_armor" pascalStyleName="CyborgArmor" />
+                <Enum name="cyborg energy shield" CStyleName="cyborg_energy_shield" pascalStyleName="CyborgEnergyShield" />
+                <Enum name="human armor" CStyleName="human_armor" pascalStyleName="HumanArmor" />
+                <Enum name="human skin" CStyleName="human_skin" pascalStyleName="HumanSkin" />
+                <Enum name="sentinel" CStyleName="sentinel" pascalStyleName="Sentinel" />
+                <Enum name="monitor" CStyleName="monitor" pascalStyleName="Monitor" />
+                <Enum name="plastic" CStyleName="plastic" pascalStyleName="Plastic" />
+                <Enum name="water" CStyleName="water" pascalStyleName="Water" />
+                <Enum name="leaves" CStyleName="leaves" pascalStyleName="Leaves" />
+                <Enum name="elite energy shield" CStyleName="elite_energy_shield" pascalStyleName="EliteEnergyShield" />
+                <Enum name="ice" CStyleName="ice" pascalStyleName="Ice" />
+                <Enum name="hunter shield" CStyleName="hunter_shield" pascalStyleName="HunterShield" />
+              </Options>
+            </ShortEnum>
+            <ShortInteger CStyleName="type" pascalStyleName="Type" name="type" cacheOnly="true" unsigned="true" />
+            <Pad name="pad" length="2" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Properties" />
+      <Struct CStyleName="properties" pascalStyleName="Properties" name="properties">
+        <Layout regolithID="structure:shader_transparent_glass_base" internalName="shader_transparent_glass_base_struct" backingBlockInternalName="shader_transparent_glass_base_struct_block" name="shader transparent glass base">
+          <FieldSet version="0" sizeofValue="44" isLatest="true">
+            <WordFlags CStyleName="shader_transparent_glass_flags" pascalStyleName="ShaderTransparentGlassFlags" name="shader transparent glass flags">
+              <Options regolithID="enum:shader_transparent_glass_flags" CStyleName="shader_transparent_glass_flags" pascalStyleName="ShaderTransparentGlassFlags">
+                <Bit name="alpha tested" CStyleName="alpha_tested_bit" pascalStyleName="AlphaTestedBit" />
+                <Bit name="decal" CStyleName="decal_bit" pascalStyleName="DecalBit" />
+                <Bit name="two sided" CStyleName="two_sided_bit" pascalStyleName="TwoSidedBit" />
+                <Bit name="bump map is specular mask" CStyleName="bump_map_is_specular_mask_bit" pascalStyleName="BumpMapIsSpecularMaskBit" />
+              </Options>
+            </WordFlags>
+            <Pad name="pad" length="2" />
+            <Pad name="pad" length="40" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Background Tint" />
+      <Struct CStyleName="background_tint" pascalStyleName="BackgroundTint" name="background tint">
+        <Layout regolithID="structure:shader_transparent_glass_background_tint" internalName="shader_transparent_glass_background_tint_struct" backingBlockInternalName="shader_transparent_glass_background_tint_struct_block" name="shader transparent glass background tint">
+          <FieldSet version="0" sizeofValue="54" isLatest="true">
+            <RealRgbColor CStyleName="background_tint_color" pascalStyleName="BackgroundTintColor" name="background tint color" />
+            <Real CStyleName="background_tint_map_scale" pascalStyleName="BackgroundTintMapScale" name="background tint map scale" />
+            <TagReference CStyleName="background_tint_map" pascalStyleName="BackgroundTintMap" name="background tint map">
+              <tag>bitmap</tag>
+            </TagReference>
+            <Pad name="pad" length="20" />
+            <Pad name="pad" length="2" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Reflection" />
+      <Struct CStyleName="reflection" pascalStyleName="Reflection" name="reflection">
+        <Layout regolithID="structure:shader_transparent_glass_reflection" internalName="shader_transparent_glass_reflection_struct" backingBlockInternalName="shader_transparent_glass_reflection_struct_block" name="shader transparent glass reflection">
+          <FieldSet version="0" sizeofValue="202" isLatest="true">
+            <ShortEnum CStyleName="reflection_type" pascalStyleName="ReflectionType" name="reflection type">
+              <Options regolithID="enum:reflection_type" CStyleName="reflection_type" pascalStyleName="ReflectionType">
+                <Enum name="bumped cube map" CStyleName="bumped_cube_map" pascalStyleName="BumpedCubeMap" />
+                <Enum name="flat cube map" CStyleName="flat_cube_map" pascalStyleName="FlatCubeMap" />
+                <Enum name="dynamic mirror" CStyleName="dynamic_mirror" pascalStyleName="DynamicMirror" />
+              </Options>
+            </ShortEnum>
+            <Struct CStyleName="reflection_map_properties" pascalStyleName="ReflectionMapProperties" name="reflection map properties">
+              <Layout regolithID="structure:shader_specular_properties" internalName="shader_specular_properties_struct" backingBlockInternalName="shader_specular_properties_struct_block" name="shader specular properties">
+                <FieldSet version="0" sizeofValue="32" isLatest="true">
+                  <Real CStyleName="perpendicular_brightness" pascalStyleName="PerpendicularBrightness" name="perpendicular brightness" description="specular brightness when the surface is directly facing the camera" />
+                  <RealRgbColor CStyleName="perpendicular_tint_color" pascalStyleName="PerpendicularTintColor" name="perpendicular tint color" description="specular tint when the surface is directly facing the camera" />
+                  <Real CStyleName="parallel_brightness" pascalStyleName="ParallelBrightness" name="parallel brightness" description="specular brightness when the surface is facing 90 from the camera" />
+                  <RealRgbColor CStyleName="parallel_tint_color" pascalStyleName="ParallelTintColor" name="parallel tint color" description="specular tint when the surface is facing 90 from the camera" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <TagReference CStyleName="reflection_map" pascalStyleName="ReflectionMap" name="reflection map">
+              <tag>bitmap</tag>
+            </TagReference>
+            <Real CStyleName="bump_map_scale" pascalStyleName="BumpMapScale" name="bump map scale" />
+            <TagReference CStyleName="bump_map" pascalStyleName="BumpMap" name="bump map">
+              <tag>bitmap</tag>
+            </TagReference>
+            <Pad name="pad" length="128" />
+            <Pad name="pad" length="4" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Diffuse" />
+      <Struct CStyleName="diffuse" pascalStyleName="Diffuse" name="diffuse">
+        <Layout regolithID="structure:shader_transparent_glass_diffuse" internalName="shader_transparent_glass_diffuse_struct" backingBlockInternalName="shader_transparent_glass_diffuse_struct_block" name="shader transparent glass diffuse">
+          <FieldSet version="0" sizeofValue="72" isLatest="true">
+            <Real CStyleName="diffuse_map_scale" pascalStyleName="DiffuseMapScale" name="diffuse map scale" />
+            <TagReference CStyleName="diffuse_map" pascalStyleName="DiffuseMap" name="diffuse map">
+              <tag>bitmap</tag>
+            </TagReference>
+            <Real CStyleName="diffuse_detail_map_scale" pascalStyleName="DiffuseDetailMapScale" name="diffuse detail map scale" />
+            <TagReference CStyleName="diffuse_detail_map" pascalStyleName="DiffuseDetailMap" name="diffuse detail map">
+              <tag>bitmap</tag>
+            </TagReference>
+            <Pad name="pad" length="28" />
+            <Pad name="pad" length="4" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Specular" />
+      <Struct CStyleName="specular" pascalStyleName="Specular" name="specular">
+        <Layout regolithID="structure:shader_transparent_glass_specular" internalName="shader_transparent_glass_specular_struct" backingBlockInternalName="shader_transparent_glass_specular_struct_block" name="shader transparent glass specular">
+          <FieldSet version="0" sizeofValue="68" isLatest="true">
+            <Real CStyleName="specular_map_scale" pascalStyleName="SpecularMapScale" name="specular map scale" />
+            <TagReference CStyleName="specular_map" pascalStyleName="SpecularMap" name="specular map">
+              <tag>bitmap</tag>
+            </TagReference>
+            <Real CStyleName="specular_detail_map_scale" pascalStyleName="SpecularDetailMapScale" name="specular detail map scale" />
+            <TagReference CStyleName="specular_detail_map" pascalStyleName="SpecularDetailMap" name="specular detail map">
+              <tag>bitmap</tag>
+            </TagReference>
+            <Pad name="pad" length="28" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+    </FieldSet>
+  </Layout>
+</TagGroup>

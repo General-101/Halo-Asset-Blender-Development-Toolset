@@ -1,0 +1,22 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="itmc" name="item_collection" version="0">
+  <Layout regolithID="block:item_collection" internalName="item_collection_block" name="item_collection">
+    <FieldSet version="0" sizeofValue="92" sizeofSource="sizeof(struct item_collection_group)" isLatest="true">
+      <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations" maxElementCount="32">
+        <Layout regolithID="block:permutations" internalName="permutations_block" name="permutations_block">
+          <FieldSet version="0" sizeofValue="84" isLatest="true">
+            <Pad name="pad" length="32" />
+            <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+            <TagReference CStyleName="item" pascalStyleName="Item" name="item">
+              <tag>item</tag>
+            </TagReference>
+            <Pad name="pad" length="32" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <ShortInteger CStyleName="default_spawn_time" pascalStyleName="DefaultSpawnTime" name="default spawn time" />
+      <Pad name="pad" length="2" />
+      <Pad name="pad" length="76" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

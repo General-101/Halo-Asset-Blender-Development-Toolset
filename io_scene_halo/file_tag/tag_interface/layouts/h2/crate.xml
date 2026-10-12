@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="bloc" parent="obje" name="crate" version="1">
+  <Layout regolithID="block:crate" internalName="crate_block" name="crate">
+    <FieldSet version="0" sizeofValue="260" sizeofSource="sizeof(struct _crate_definition)" parentVersion="0" isLatest="true">
+      <WordFlags CStyleName="crate_flags" pascalStyleName="CrateFlags" name="flags">
+        <Options regolithID="enum:crate_flags" CStyleName="crate_flags" pascalStyleName="CrateFlags">
+          <Bit name="does not block AOE" CStyleName="does_not_block_aoe_bit" pascalStyleName="DoesNotBlockAoeBit" />
+        </Options>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <UselessPad length="124" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

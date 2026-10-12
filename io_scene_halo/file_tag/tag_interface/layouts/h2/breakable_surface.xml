@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="bsdt" name="breakable_surface" version="0">
+  <Layout regolithID="block:breakable_surface" internalName="breakable_surface_block" name="breakable_surface">
+    <FieldSet version="0" sizeofValue="52" sizeofSource="sizeof(s_breakable_surface_definition)" isLatest="true">
+      <Real CStyleName="maximum_vitality" pascalStyleName="MaximumVitality" name="maximum vitality" />
+      <TagReference CStyleName="effect" pascalStyleName="Effect" name="effect">
+        <tag>effe</tag>
+      </TagReference>
+      <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <Block CStyleName="particle_effects" pascalStyleName="ParticleEffects" name="particle effects" maxElementCount="32" maxElementCountSource="c_particle_system_definition::k_maximum_particle_systems_per_block">
+        <LayoutXRef>block:particle_system_definition_block_new</LayoutXRef>
+      </Block>
+      <Real CStyleName="particle_density" pascalStyleName="ParticleDensity" name="particle density" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

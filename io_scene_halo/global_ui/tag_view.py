@@ -55,6 +55,152 @@ state_items=( ('0', "NONE", "NONE"),
             ('10', "Searching", "Searching"),
             ('11', "Fleeing", "Fleeing"))
 
+def scenario_type_callback(self, context):
+    scene = context.scene
+    game_title = scene.halo.game_title
+
+    items=[('0', "Solo", "Solo"), 
+           ('1', "Multiplayer", "Multiplayer"), 
+           ('2', "Main Menu", "Main Menu")
+           ]
+
+    if game_title == "halo1":
+        items = [('0', "Solo", "Solo"), 
+                 ('1', "Multiplayer", "Multiplayer"), 
+                 ('2', "Main Menu", "Main Menu")
+                 ]
+    elif game_title == "halo2":
+        items = [('0', "Solo", "Solo"), 
+                 ('1', "Multiplayer", "Multiplayer"), 
+                 ('2', "Main Menu", "Main Menu"),
+                 ('2', "Multiplayer Shared", "Multiplayer Shared"),
+                 ('2', "Single Player Shared", "Single Player Shared")
+                 ]
+
+    return items
+
+def get_player_gametype_0(self):
+    return self.get("type_0", "")
+
+def set_player_gametype_0(self, value):
+    self["type_0"] = int(value)
+    self["type_0_ui"] = value
+
+def get_player_gametype_1(self):
+    return self.get("type_1", "")
+
+def set_player_gametype_1(self, value):
+    self["type_1"] = int(value)
+    self["type_1_ui"] = value
+
+def get_player_gametype_2(self):
+    return self.get("type_2", "")
+
+def set_player_gametype_2(self, value):
+    self["type_2"] = int(value)
+    self["type_2_ui"] = value
+
+def get_player_gametype_3(self):
+    return self.get("type_3", "")
+
+def set_player_gametype_3(self, value):
+    self["type_3"] = int(value)
+    self["type_3_ui"] = value
+
+def player_gametype_callback(self, context):
+    scene = context.scene
+    game_title = scene.halo.game_title
+
+    items = [('0', "Default", "Default")]
+    if game_title == "halo1":
+        items = [('0', "None", "None"), 
+                 ('1', "CTF", "CTF"), 
+                 ('2', "Slayer", "Slayer"), 
+                 ('3', "Oddball", "Oddball"), 
+                 ('4', "King Of The Hill", "King Of The Hill"), 
+                 ('5', "Race", "Race"), 
+                 ('6', "Terminator", "Terminator"), 
+                 ('7', "Stub", "Stub"), 
+                 ('8', "Ignored1", "Ignored1"), 
+                 ('9', "Ignored2", "Ignored2"), 
+                 ('10', "Ignored3", "Ignored3"), 
+                 ('11', "Ignored4", "Ignored4"), 
+                 ('12', "All Games", "All Games"), 
+                 ('13', "All Except CTF", "All Except CTF"), 
+                 ('14', "All Except Race And CTF", "All Except Race And CTF")
+                 ]
+
+    elif game_title == "halo2":
+        items = [('0', "None", "None"), 
+                 ('1', "CTF", "CTF"), 
+                 ('2', "Slayer", "Slayer"), 
+                 ('3', "Oddball", "Oddball"), 
+                 ('4', "King Of The Hill", "King Of The Hill"), 
+                 ('5', "Race", "Race"), 
+                 ('6', "Headhunter", "Headhunter"), 
+                 ('7', "Juggernaut", "Juggernaut"), 
+                 ('8', "Territories", "Territories"), 
+                 ('9', "Assault", "Assault"), 
+                 ('10', "Stub", "Stub"), 
+                 ('11', "Ignored1", "Ignored1"), 
+                 ('12', "All Games", "All Games"), 
+                 ('13', "All Except CTF", "All Except CTF"), 
+                 ('14', "All Except Race And CTF", "All Except Race And CTF"),
+                 ('15', "Medic", "Medic"), 
+                 ('16', "VIP", "VIP"), 
+                 ('17', "Infection", "Infection")
+                 ]
+
+    return items
+
+def get_item_gametype(self):
+    return self.get("netgame_type", "")
+
+def set_item_gametype(self, value):
+    self["netgame_type"] = int(value)
+    self["netgame_type_ui"] = value
+
+def item_gametype_callback(self, context):
+    scene = context.scene
+    game_title = scene.halo.game_title
+
+    items = [('0', "Default", "Default")]
+    if game_title == "halo1":
+        items = [('0', "CTF - Flag", "CTF - Flag"),
+                 ('1', "Unused1", "Unused1"),
+                 ('2', "Oddball - Ball Spawn", "Oddball - Ball Spawn"),
+                 ('3', "Race - Track", "Race - Track"),
+                 ('4', "Race - Vehicle", "Race - Vehicle"),
+                 ('5', "Unused5", "Unused5"),
+                 ('6', "Teleport From", "Teleport From"),
+                 ('7', "Teleport To", "Teleport To"),
+                 ('8', "Hill - Flag", "Hill - Flag"),
+                 ]
+
+    elif game_title == "halo2":
+        items = [('0', "CTF Flag Spawn", "CTF Flag Spawn"), 
+                 ('1', "CTF Flag Return", "CTF Flag Return"), 
+                 ('2', "Assault Bomb Spawn", "Assault Bomb Spawn"), 
+                 ('3', "Assault Bomb Return", "Assault Bomb Return"), 
+                 ('4', "Oddball Spawn", "Oddball Spawn"), 
+                 ('5', "Unused_5", "Unused_5"), 
+                 ('6', "Race Checkpoint", "Race Checkpoint"), 
+                 ('7', "Teleporter Src", "Teleporter Src"), 
+                 ('8', "Teleporter Dest", "Teleporter Dest"), 
+                 ('9', "Headhunter Bin", "Headhunter Bin"), 
+                 ('10', "Territories Flag", "Territories Flag"), 
+                 ('11', "King Hill 0", "King Hill 0"), 
+                 ('12', "King Hill 1", "King Hill 1"), 
+                 ('13', "King Hill 2", "King Hill 2"), 
+                 ('14', "King Hill 3", "King Hill 3"),
+                 ('15', "King Hill 4", "King Hill 4"), 
+                 ('16', "King Hill 5", "King Hill 5"), 
+                 ('17', "King Hill 6", "King Hill 6"),
+                 ('18', "King Hill 7", "King Hill 7")
+                 ]
+
+    return items
+
 def atom_modifier_callback(self, context):
     items=[('0', "Default", "Default")]
 
@@ -423,6 +569,17 @@ class Scenario_SceneProps(Panel):
         layout = self.layout
         scenario = context.scene.tag_scenario
 
+        game_title = scene.halo.game_title
+
+        hud_info_name = "Ingame Help Text"
+        tag_patches_flag = "Do Not Apply Bungie Campaign Tag Patches"
+        if game_title == "halo1":
+            hud_info_name = "Ingame Help Text"
+            tag_patches_flag = "Do Not Apply Bungie Campaign Tag Patches"
+        elif game_title == "halo2":
+            hud_info_name = "Chapter Title Text"
+            tag_patches_flag = "Do Not Apply Bungie MP Tag Patches"
+
         col = layout.column(align=True)
         row = col.row()
         row.label(text='Scenario Path:')
@@ -433,12 +590,17 @@ class Scenario_SceneProps(Panel):
         row = col.row()
         row.label(text='H2V Scenario:')
         row.prop(scenario, "is_h2v", text='')
-        row = col.row()
-        row.prop_search(scenario, 'dont_use', scene, 'tag_palatte')
-        row = col.row()
-        row.prop_search(scenario, 'wont_use', scene, 'tag_palatte')
-        row = col.row()
-        row.prop_search(scenario, 'cant_use', scene, 'tag_palatte')
+        if game_title == "halo1":
+            row = col.row()
+            row.prop_search(scenario, 'dont_use', scene, 'tag_palatte')
+            row = col.row()
+            row.prop_search(scenario, 'wont_use', scene, 'tag_palatte')
+            row = col.row()
+            row.prop_search(scenario, 'cant_use', scene, 'tag_palatte')
+        elif game_title == "halo2":
+            row = col.row()
+            row.prop_search(scenario, 'dont_use', scene, 'tag_palatte')
+
         row = col.row()
         row.label(text='Scenario Type:')
         row.prop(scenario, "scenario_type_enum", text='')
@@ -446,14 +608,34 @@ class Scenario_SceneProps(Panel):
         box_flags = layout.box()
         box_flags.label(text="Flags")
         col_flags = box_flags.column(align=True)
-        row_flags = col_flags.row()
-        row_flags.prop(scenario, "cortana_hack")
-        row_flags = col_flags.row()
-        row_flags.prop(scenario, "use_demo_ui")
-        row_flags = col_flags.row()
-        row_flags.prop(scenario, "color_correction")
-        row_flags = col_flags.row()
-        row_flags.prop(scenario, "disable_tag_patches")
+        if game_title == "halo1":
+            row_flags = col_flags.row()
+            row_flags.prop(scenario, "cortana_hack")
+            row_flags = col_flags.row()
+            row_flags.prop(scenario, "use_demo_ui")
+            row_flags = col_flags.row()
+            row_flags.prop(scenario, "color_correction")
+            row_flags = col_flags.row()
+            row_flags.prop(scenario, "disable_tag_patches", text=tag_patches_flag)
+        elif game_title == "halo2":
+            row_flags = col_flags.row()
+            row_flags.prop(scenario, "cortana_hack")
+            row_flags = col_flags.row()
+            row_flags.prop(scenario, "always_draw_sky")
+            row_flags = col_flags.row()
+            row_flags.prop(scenario, "dont_strip_pathfinding")
+            row_flags = col_flags.row()
+            row_flags.prop(scenario, "symmetric_multiplayer_map")
+            row_flags = col_flags.row()
+            row_flags.prop(scenario, "quick_loading_cinematic_only_scenario")
+            row_flags = col_flags.row()
+            row_flags.prop(scenario, "characters_use_previous_mission_weapons")
+            row_flags = col_flags.row()
+            row_flags.prop(scenario, "lightmaps_smooth_palettes_with_neighbors")
+            row_flags = col_flags.row()
+            row_flags.prop(scenario, "snap_to_white_at_start")
+            row_flags = col_flags.row()
+            row_flags.prop(scenario, "disable_tag_patches", text=tag_patches_flag)
 
         box = layout.split()
         col = box.column(align=True)
@@ -463,7 +645,7 @@ class Scenario_SceneProps(Panel):
         row = col.row()
         row.prop_search(scenario, 'custom_object_names', scene, 'tag_palatte')
         row = col.row()
-        row.prop_search(scenario, 'ingame_help_text', scene, 'tag_palatte')
+        row.prop_search(scenario, 'ingame_help_text', scene, 'tag_palatte', text=hud_info_name)
         row = col.row()
         row.prop_search(scenario, 'hud_messages', scene, 'tag_palatte')
 
@@ -507,10 +689,7 @@ class HaloScenarioPropertiesGroup(PropertyGroup):
     scenario_type_enum: EnumProperty(
         name="Scenario Type",
         description="The type of scenario",
-        items=( ('0', "Solo", "Solo"),
-                ('1', "Multiplayer", "Multiplayer"),
-                ('2', "Main Menu", "Main Menu")
-            )
+        items=scenario_type_callback
         )
 
     cortana_hack: BoolProperty(
@@ -534,6 +713,48 @@ class HaloScenarioPropertiesGroup(PropertyGroup):
     disable_tag_patches: BoolProperty(
         name="Do Not Apply Bungie Campaign Tag Patches",
         description="Inhibit the hard coded balance patch changes made specific for original campaign maps",
+        default = False,
+        )
+
+    always_draw_sky: BoolProperty(
+        name="Always Draw Sky",
+        description="Always draw sky 0, even if no +sky polygons are visible",
+        default = False,
+        )
+    
+    dont_strip_pathfinding: BoolProperty(
+        name="Dont Strip Pathfinding",
+        description="Always leave pathfinding in, even for a multiplayer scenario",
+        default = False,
+        )
+    
+    symmetric_multiplayer_map: BoolProperty(
+        name="Symmetric Multiplayer Map",
+        description="???",
+        default = False,
+        )
+
+    quick_loading_cinematic_only_scenario: BoolProperty(
+        name="Quick Loading Cinematic Only Scenario",
+        description="???",
+        default = False,
+        )
+
+    characters_use_previous_mission_weapons: BoolProperty(
+        name="Characters Use Previous Mission Weapons",
+        description="???",
+        default = False,
+        )
+
+    lightmaps_smooth_palettes_with_neighbors: BoolProperty(
+        name="Lightmaps Smooth Palettes With Neighbors",
+        description="???",
+        default = False,
+        )
+
+    snap_to_white_at_start: BoolProperty(
+        name="Snap To White At Start",
+        description="???",
         default = False,
         )
 
@@ -598,7 +819,7 @@ class HaloObjectPropertiesGroup(PropertyGroup):
         )
 
     automatically: BoolProperty(
-        name ="Automatically",
+        name = "Automatically",
         description = "Not placed automatically. Must be created via script",
         default = False,
         )
@@ -620,6 +841,36 @@ class HaloObjectPropertiesGroup(PropertyGroup):
         description = "Not placed automatically on Heroic difficulty. Must be created via script",
         default = False,
         )
+    
+    lock_type_to_env_object: BoolProperty(
+        name ="Lock Type To Env Object",
+        description = "???",
+        default = False,
+        )
+
+    lock_transform_to_env_object: BoolProperty(
+        name ="Lock Transform To Env Object",
+        description = "???",
+        default = False,
+        )
+
+    never_placed: BoolProperty(
+        name ="Never Placed",
+        description = "???",
+        default = False,
+        )
+    
+    lock_name_to_env_object: BoolProperty(
+        name ="Lock Name To Env Object",
+        description = "???",
+        default = False,
+        )
+
+    create_at_rest: BoolProperty(
+        name ="Create At Rest",
+        description = "???",
+        default = False,
+        )
 
     use_player_appearance: BoolProperty(
         name ="Use Player Appearance",
@@ -637,6 +888,218 @@ class HaloObjectPropertiesGroup(PropertyGroup):
         description = "???"
         )
 
+    mirrored: BoolProperty(
+        name ="Mirrored",
+        description = "???",
+        default = False,
+        )
+
+    manual_bsp_flags: IntProperty(
+        name = "Manual Bsp Flags",
+        description = "???"
+        )
+
+    unique_id: IntProperty(
+        name = "Unique Id",
+        description = "???"
+        )
+    
+    origin_bsp_index: IntProperty(
+        name = "Origin Bsp Index",
+        description = "???",
+        default = -1,
+        )
+
+    object_type: EnumProperty(
+        name="Type",
+        description="???",
+        items = ( ('0', "Biped", "Biped"),
+                    ('1', "Vehicle", "Vehicle"),
+                    ('2', "Weapon", "Weapon"),
+                    ('3', "Equipment", "Equipment"),
+                    ('4', "Garbage", "Garbage"),
+                    ('5', "Projectile", "Projectile"),
+                    ('6', "Scenery", "Scenery"),
+                    ('7', "Machine", "Machine"),
+                    ('8', "Control", "Control"),
+                    ('9', "Light Fixture", "Light Fixture"),
+                    ('10', "Sound Scenery", "Sound Scenery"),
+                    ('11', "Crate", "Crate"),
+                    ('12', "Creature", "Creature")
+                )
+        )
+    
+    object_source: EnumProperty(
+        name="Source",
+        description="???",
+        items = ( ('0', "Structure", "Structure"),
+                    ('1', "Editor", "Editor"),
+                    ('2', "Dynamic", "Dynamic"),
+                    ('3', "Legacy", "Legacy")
+                )
+        )
+    
+    bsp_policy: EnumProperty(
+        name="Bsp Policy",
+        description="???",
+        items = ( ('0', "Default", "Default"),
+                    ('1', "Always Placed", "Always Placed"),
+                    ('2', "Manual Bsp Placement", "Manual Bsp Placement")
+                )
+        )
+
+    editor_folder_index: IntProperty(
+        name = "Editor Folder Index",
+        description = "???"
+        )
+
+class HaloPermutationPropertiesGroup(PropertyGroup):
+    variant_name: StringProperty(
+        name = "Variant Name",
+        description = "Set the variant name for the element"
+        )
+    
+    primary: BoolProperty(
+        name ="Primary",
+        description = "???",
+        default = False,
+        )
+
+    secondary: BoolProperty(
+        name ="Secondary",
+        description = "???",
+        default = False,
+        )
+    
+    tertiary: BoolProperty(
+        name ="Tertiary",
+        description = "???",
+        default = False,
+        )
+
+    quaternary: BoolProperty(
+        name ="Quaternary",
+        description = "???",
+        default = False,
+        )
+
+    primary_color: FloatVectorProperty(
+        name = "Primary Color",
+        subtype='COLOR', 
+        size=3,
+        min=0.0, 
+        max=1.0,
+        description="???"
+        )
+
+    secondary_color: FloatVectorProperty(
+        name = "Secondary Color",
+        subtype='COLOR', 
+        size=3,
+        min=0.0, 
+        max=1.0,
+        description="???"
+        )
+
+    tertiary_color: FloatVectorProperty(
+        name = "Tertiary Color",
+        subtype='COLOR', 
+        size=3,
+        min=0.0, 
+        max=1.0,
+        description="???"
+        )
+    
+    quaternary_color: FloatVectorProperty(
+        name = "Quaternary Color",
+        subtype='COLOR', 
+        size=3,
+        min=0.0, 
+        max=1.0,
+        description="???"
+        )
+
+class HaloSceneryPropertiesGroup(PropertyGroup):
+    pathfinding_policy: EnumProperty(
+        name="Pathfinding Policy",
+        description="???",
+        items = ( ('0', "Tag Default", "Tag Default"), 
+                 ('1', "Pathfinding Dynamic", "Pathfinding Dynamic"),
+                 ('2', "Pathfinding Cut Out", "Pathfinding Cut Out"),
+                 ('3', "Pathfinding Static", "Pathfinding Static"),
+                 ('4', "Pathfinding None", "Pathfinding None")
+                )
+        )
+
+    lightmapping_policy: EnumProperty(
+        name="Lightmapping Policy",
+        description="???",
+        items = ( ('0', "Tag Default", "Tag Default"),
+                    ('1', "Dynamic", "Dynamic"),
+                    ('2', "Per Vertex", "Per Vertex")
+                )
+        )
+
+    ctf: BoolProperty(
+        name ="Ctf",
+        description = "???",
+        default = False,
+        )
+    
+    slayer: BoolProperty(
+        name ="Slayer",
+        description = "???",
+        default = False,
+        )
+    
+    oddball: BoolProperty(
+        name ="Oddball",
+        description = "???",
+        default = False,
+        )
+    
+    king: BoolProperty(
+        name ="King",
+        description = "???",
+        default = False,
+        )
+
+    juggernaut: BoolProperty(
+        name ="Juggernaut",
+        description = "???",
+        default = False,
+        )
+
+    territories: BoolProperty(
+        name ="Territories",
+        description = "???",
+        default = False,
+        )
+
+    assault: BoolProperty(
+        name ="Assault",
+        description = "???",
+        default = False,
+        )
+    
+    vip: BoolProperty(
+        name ="Vip",
+        description = "???",
+        default = False,
+        )
+
+    infection: BoolProperty(
+        name ="Infection",
+        description = "???",
+        default = False,
+        )
+
+    headhunter: BoolProperty(
+        name ="Headhunter",
+        description = "???",
+        default = False,
+        )
+
 class HaloUnitPropertiesGroup(PropertyGroup):
     unit_vitality: FloatProperty(
         name="Vitality",
@@ -648,6 +1111,18 @@ class HaloUnitPropertiesGroup(PropertyGroup):
     unit_dead: BoolProperty(
         name ="Dead",
         description = "Unit starts dead on creation",
+        default = False,
+        )
+
+    unit_closed: BoolProperty(
+        name ="Closed",
+        description = "???",
+        default = False,
+        )
+
+    unit_not_enterable_by_player: BoolProperty(
+        name ="Not Enterable By Player",
+        description = "???",
         default = False,
         )
 
@@ -850,6 +1325,18 @@ class HaloMachinePropertiesGroup(PropertyGroup):
         description = "Machine activates when meleed",
         default = False,
         )
+    
+    one_sided_for_player: BoolProperty(
+        name ="One Sided For Player",
+        description = "???",
+        default = False,
+        )
+    
+    does_not_close_automatically: BoolProperty(
+        name ="Does Not Close Automatically",
+        description = "???",
+        default = False,
+        )
 
 class HaloControlPropertiesGroup(PropertyGroup):
     usable_from_both_sides: BoolProperty(
@@ -891,6 +1378,121 @@ class HaloLightFixturePropertiesGroup(PropertyGroup):
         subtype="ANGLE"
         )
 
+class HaloSoundSceneryPropertiesGroup(PropertyGroup):
+    volume_type: EnumProperty(
+        name="Volume Type",
+        description="???",
+        items = ( ('0', "Sphere", "Sphere"), 
+                 ('1', "Vertical Cylinder", "Vertical Cylinder")
+                )
+        )
+
+    height: FloatProperty(
+        name="Height",
+        description="???"
+        )
+    
+    override_distance_bounds_min: FloatProperty(
+        name="Override Distance Bounds Min",
+        description="???"
+        )
+    
+    override_distance_bounds_max: FloatProperty(
+        name="Override Distance Bounds Max",
+        description="???"
+        )
+
+    override_cone_angle_bounds_min: FloatProperty(
+        name="Override Cone Angle Bounds Min",
+        description="???",
+        subtype="ANGLE"
+        )
+    
+    override_cone_angle_bounds_max: FloatProperty(
+        name="Override Cone Angle Bounds Max",
+        description="???",
+        subtype="ANGLE"
+        )
+
+    override_outer_cone_gain: FloatProperty(
+        name="Override Outer Cone Gain",
+        description="???"
+        )
+
+class HaloLightVolumePropertiesGroup(PropertyGroup):
+    light_type: EnumProperty(
+        name="Type",
+        description="???",
+        items = ( ('0', "Sphere", "Sphere"), 
+                 ('1', "Orthogonal", "Orthogonal"),
+                 ('2', "Projective", "Projective"),
+                 ('3', "Pyramid", "Pyramid")
+                )
+        )
+
+    custom_geometry: BoolProperty(
+        name ="Custom Geometry",
+        description = "???",
+        default = False,
+        )
+
+    unused: BoolProperty(
+        name ="Unused",
+        description = "???",
+        default = False,
+        )
+
+    cinematic_only: BoolProperty(
+        name ="Cinematic Only",
+        description = "???",
+        default = False,
+        )
+
+    lightmap_type: EnumProperty(
+        name="Lightmap Type",
+        description="???",
+        items = ( ('0', "Use Light Tag Setting", "Use Light Tag Setting"), 
+                 ('1', "Dynamic Only", "Dynamic Only"),
+                 ('2', "Dynamic With Lightmaps", "Dynamic With Lightmaps"),
+                 ('3', "Lightmaps Only", "Lightmaps Only")
+                )
+        )
+
+    unused_1: BoolProperty(
+        name ="Unused",
+        description = "???",
+        default = False,
+        )
+
+    lightmap_half_life: FloatProperty(
+        name="Lightmap Half Life",
+        description="???"
+        )
+
+    lightmap_light_scale: FloatProperty(
+        name="Lightmap Light Scale",
+        description="???"
+        )
+    
+    target_point: FloatVectorProperty(
+        name = "Target Point",
+        description = "???",
+        default = (1.0, 1.0, 1.0)
+        )
+
+
+    falloff_angle: FloatProperty(
+        name="Falloff Angle",
+        description="???",
+        subtype="ANGLE"
+        )
+
+    cutoff_angle: FloatProperty(
+        name="Cutoff Angle",
+        description="???",
+        subtype="ANGLE"
+        )
+
 class HaloPlayerStartingLocationPropertiesGroup(PropertyGroup):
     team_index: IntProperty(
         name = "Team Index",
@@ -898,6 +1500,21 @@ class HaloPlayerStartingLocationPropertiesGroup(PropertyGroup):
         min = 0
         )
     
+    team_designator: EnumProperty(
+        name="Team Designator",
+        description="???",
+        items=( ('0', "Alpha", "Alpha"),
+                ('1', "Bravo", "Bravo"),
+                ('2', "Charlie", "Charlie"),
+                ('3', "Delta", "Delta"),
+                ('4', "Echo", "Echo"),
+                ('5', "Foxtrot", "Foxtrot"),
+                ('6', "Golf", "Golf"),
+                ('7', "Hotel", "Hotel"),
+                ('8', "Neutral", "Neutral")
+            )
+        )
+
     bsp_index: IntProperty(
         name = "BSP Index",
         description = "BSP index",
@@ -905,61 +1522,141 @@ class HaloPlayerStartingLocationPropertiesGroup(PropertyGroup):
         min = -1
         )
 
-    type_options = ( ('0', "None", "None"),
-                ('1', "CTF", "CTF"),
-                ('2', "Slayer", "Slayer"),
-                ('3', "Oddball", "Oddball"),
-                ('4', "King Of The Hill", "King Of The Hill"),
-                ('5', "Race", "Race"),
-                ('6', "Terminator", "Terminator"),
-                ('7', "Stub", "Stub"),
-                ('8', "Ignored1", "Ignored1"),
-                ('9', "Ignored2", "Ignored2"),
-                ('10', "Ignored3", "Ignored3"),
-                ('11', "Ignored4", "Ignored4"),
-                ('12', "All Games", "All Games"),
-                ('13', "All Except CTF", "All Except CTF"),
-                ('14', "All Except Race And CTF", "All Except Race And CTF")
-            )
-
-    type_0: EnumProperty(
-        name="Type 0",
-        description="Type 0",
-        items=type_options
+    type_0: IntProperty(
+        name = "Type 0",
+        description = "???"
         )
 
-    type_1: EnumProperty(
+    type_1: IntProperty(
+        name = "Type 1",
+        description = "???"
+        )
+    
+    type_2: IntProperty(
+        name = "Type 2",
+        description = "???"
+        )
+    
+    type_3: IntProperty(
+        name = "Type 3",
+        description = "???"
+        )
+
+    type_0_ui: EnumProperty(
+        name="Type 0",
+        description="???",
+        items=player_gametype_callback,
+        get=get_player_gametype_0,
+        set=set_player_gametype_0
+        )
+
+    type_1_ui: EnumProperty(
         name="Type 1",
         description="Type 1",
-        items=type_options
+        items=player_gametype_callback,
+        get=get_player_gametype_1,
+        set=set_player_gametype_1
         )
 
-    type_2: EnumProperty(
+    type_2_ui: EnumProperty(
         name="Type 2",
         description="Type 2",
-        items=type_options
+        items=player_gametype_callback,
+        get=get_player_gametype_2,
+        set=set_player_gametype_2
         )
 
-    type_3: EnumProperty(
+    type_3_ui: EnumProperty(
         name="Type 3",
         description="Type 3",
-        items=type_options
+        items=player_gametype_callback,
+        get=get_player_gametype_3,
+        set=set_player_gametype_3
+        )
+
+    spawn_type_0: EnumProperty(
+        name="Spawn Type 0",
+        description="???",
+        items=( ('0', "Both", "Both"),
+                ('1', "Initial Spawn Only", "Initial Spawn Only"),
+                ('2', "Respawn Only", "Respawn Only")
+            )
+        )
+
+    spawn_type_1: EnumProperty(
+        name="Spawn Type 1",
+        description="???",
+        items=( ('0', "Both", "Both"),
+                ('1', "Initial Spawn Only", "Initial Spawn Only"),
+                ('2', "Respawn Only", "Respawn Only")
+            )
+        )
+    
+    spawn_type_2: EnumProperty(
+        name="Spawn Type 2",
+        description="???",
+        items=( ('0', "Both", "Both"),
+                ('1', "Initial Spawn Only", "Initial Spawn Only"),
+                ('2', "Respawn Only", "Respawn Only")
+            )
+        )
+
+    spawn_type_3: EnumProperty(
+        name="Spawn Type 3",
+        description="???",
+        items=( ('0', "Both", "Both"),
+                ('1', "Initial Spawn Only", "Initial Spawn Only"),
+                ('2', "Respawn Only", "Respawn Only")
+            )
+        )
+
+    unused_name_0: StringProperty(
+        name = "Unused Name 0",
+        description = "???"
+        )
+
+    unused_name_1: StringProperty(
+        name = "Unused Name 1",
+        description = "???"
+        )
+    
+    campaign_player_type: EnumProperty(
+        name="Campaign Player Type",
+        description="???",
+        items=( ('0', "Masterchief", "Masterchief"),
+                ('1', "Dervish", "Dervish"),
+                ('2', "Chief Multiplayer", "Chief Multiplayer"),
+                ('3', "Elite Multiplayer", "Elite Multiplayer")
+            )
         )
 
 class HaloNetgameFlagsPropertiesGroup(PropertyGroup):
-    netgame_type: EnumProperty(
+    netgame_type: IntProperty(
+        name = "Type",
+        description = "???"
+        )
+
+    netgame_type_ui: EnumProperty(
         name="Type",
         description="Type",
-        items = ( ('0', "CTF - Flag", "CTF - Flag"),
-                    ('1', "Unused1", "Unused1"),
-                    ('2', "Oddball - Ball Spawn", "Oddball - Ball Spawn"),
-                    ('3', "Race - Track", "Race - Track"),
-                    ('4', "Race - Vehicle", "Race - Vehicle"),
-                    ('5', "Unused5", "Unused5"),
-                    ('6', "Teleport From", "Teleport From"),
-                    ('7', "Teleport To", "Teleport To"),
-                    ('8', "Hill - Flag", "Hill - Flag"),
-                )
+        items=item_gametype_callback,
+        get=get_item_gametype,
+        set=set_item_gametype
+        )
+
+    team_designator: EnumProperty(
+        name="Team Designator",
+        description="???",
+        items=( ('0', "Alpha", "Alpha"),
+                ('1', "Bravo", "Bravo"),
+                ('2', "Charlie", "Charlie"),
+                ('3', "Delta", "Delta"),
+                ('4', "Echo", "Echo"),
+                ('5', "Foxtrot", "Foxtrot"),
+                ('6', "Golf", "Golf"),
+                ('7', "Hotel", "Hotel"),
+                ('8', "Neutral", "Neutral")
+            )
         )
 
     usage_id: IntProperty(
@@ -968,6 +1665,34 @@ class HaloNetgameFlagsPropertiesGroup(PropertyGroup):
         min = 0
         )
     
+    multi_flagbomb: BoolProperty(
+        name ="Multi Flagbomb",
+        description = "???",
+        default = False,
+        )
+
+    single_flagbomb: BoolProperty(
+        name ="Single Flagbomb",
+        description = "???",
+        default = False,
+        )
+
+    neutral_flagbomb: BoolProperty(
+        name ="Neutral Flagbomb",
+        description = "???",
+        default = False,
+        )
+
+    spawn_object_name: StringProperty(
+        name = "Spawn Object Name",
+        description = "???"
+        )
+
+    spawn_marker_name: StringProperty(
+        name = "Spawn Marker Name",
+        description = "???"
+        )
+
     weapon_group: StringProperty(
         name = "Weapon Group",
         description = "Set the tag reference for the object"
@@ -980,45 +1705,62 @@ class HaloNetgameEquipmentPropertiesGroup(PropertyGroup):
         default = False,
         )
 
-    type_options = ( ('0', "None", "None"),
-                ('1', "CTF", "CTF"),
-                ('2', "Slayer", "Slayer"),
-                ('3', "Oddball", "Oddball"),
-                ('4', "King Of The Hill", "King Of The Hill"),
-                ('5', "Race", "Race"),
-                ('6', "Terminator", "Terminator"),
-                ('7', "Stub", "Stub"),
-                ('8', "Ignored1", "Ignored1"),
-                ('9', "Ignored2", "Ignored2"),
-                ('10', "Ignored3", "Ignored3"),
-                ('11', "Ignored4", "Ignored4"),
-                ('12', "All Games", "All Games"),
-                ('13', "All Except CTF", "All Except CTF"),
-                ('14', "All Except Race And CTF", "All Except Race And CTF")
-            )
-
-    type_0: EnumProperty(
-        name="Type 0",
-        description="Type 0",
-        items=type_options
+    destroy_existing_on_new_spawn: BoolProperty(
+        name ="Destroy Existing On New Spawn",
+        description = "???",
+        default = False,
         )
 
-    type_1: EnumProperty(
+    type_0: IntProperty(
+        name = "Type 0",
+        description = "???"
+        )
+
+    type_1: IntProperty(
+        name = "Type 1",
+        description = "???"
+        )
+    
+    type_2: IntProperty(
+        name = "Type 2",
+        description = "???"
+        )
+    
+    type_3: IntProperty(
+        name = "Type 3",
+        description = "???"
+        )
+
+    type_0_ui: EnumProperty(
+        name="Type 0",
+        description="???",
+        items=player_gametype_callback,
+        get=get_player_gametype_0,
+        set=set_player_gametype_0
+        )
+
+    type_1_ui: EnumProperty(
         name="Type 1",
         description="Type 1",
-        items=type_options
+        items=player_gametype_callback,
+        get=get_player_gametype_1,
+        set=set_player_gametype_1
         )
 
-    type_2: EnumProperty(
+    type_2_ui: EnumProperty(
         name="Type 2",
         description="Type 2",
-        items=type_options
+        items=player_gametype_callback,
+        get=get_player_gametype_2,
+        set=set_player_gametype_2
         )
 
-    type_3: EnumProperty(
+    type_3_ui: EnumProperty(
         name="Type 3",
         description="Type 3",
-        items=type_options
+        items=player_gametype_callback,
+        get=get_player_gametype_3,
+        set=set_player_gametype_3
         )
 
     team_index: IntProperty(
@@ -1030,6 +1772,35 @@ class HaloNetgameEquipmentPropertiesGroup(PropertyGroup):
     spawn_time: IntProperty(
         name="Spawn Time",
         description="Spawn Time"
+        )
+
+    respawn_on_empty_time: IntProperty(
+        name="Respawn On Empty Time",
+        description="???"
+        )
+
+    respawn_timer_starts: EnumProperty(
+        name="Respawn Timer Starts",
+        description="???",
+        items=( ('0', "On Pick Up", "On Pick Up"),
+                ('1', "On Body Depletion", "On Body Depletion")
+            )
+        )
+
+    classification: EnumProperty(
+        name="Classification",
+        description="???",
+        items=( ('0', "Weapon", "Weapon"),
+                ('1', "Primary Light Land", "Primary Light Land"),
+                ('2', "Secondary Light Land", "Secondary Light Land"),
+                ('3', "Primary Heavy Land", "Primary Heavy Land"),
+                ('4', "Primary Flying", "Primary Flying"),
+                ('5', "Secondary Heavy Land", "Secondary Heavy Land"),
+                ('6', "Primary Turret", "Primary Turret"),
+                ('7', "Secondary Turret", "Secondary Turret"),
+                ('8', "Grenade", "Grenade"),
+                ('9', "Powerup", "Powerup")
+            )
         )
 
     item_collection: StringProperty(
@@ -1718,6 +2489,8 @@ class HaloCutsceneTitleGroup(PropertyGroup):
         name = "Text Color",
         subtype='COLOR', 
         size=4,
+        min=0.0, 
+        max=1.0,
         description="???"
         )
 
@@ -1725,6 +2498,8 @@ class HaloCutsceneTitleGroup(PropertyGroup):
         name = "Shadow Color",
         subtype='COLOR', 
         size=4,
+        min=0.0, 
+        max=1.0,
         description="???"
         )
 
@@ -1767,6 +2542,25 @@ def render_sky(context, layout, active_item):
 
 def render_object(context, layout, active_item):
     scene = context.scene
+    game_title = scene.halo.game_title
+
+    flag_name = "Not Placed"
+    automatically_name = "Automatically"
+    easy_name = "On Easy"
+    normal_name = "On Normal"
+    hard_name = "On Hard"
+    if game_title == "halo1":
+        flag_name = "Not Placed"
+        automatically_name = "Automatically"
+        easy_name = "On Easy"
+        normal_name = "On Normal"
+        hard_name = "On Hard"
+    elif game_title == "halo2":
+        flag_name = "Placement Flags"
+        automatically_name = "Not Automatically"
+        easy_name = "Unused"
+        normal_name = "Unused"
+        hard_name = "Unused"
 
     box = layout.split()
     col = box.column(align=True)
@@ -1777,95 +2571,221 @@ def render_object(context, layout, active_item):
     row.prop_search(active_item.tag_object, 'object_name', scene, 'object_names')
 
     box_flags = layout.box()
-    box_flags.label(text="Not Placed")
+    box_flags.label(text=flag_name)
     col_flags = box_flags.column(align=True)
     row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_object, "automatically")
+    row_flags.prop(active_item.tag_object, "automatically", text=automatically_name)
     row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_object, "on_easy")
+    row_flags.prop(active_item.tag_object, "on_easy", text=easy_name)
     row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_object, "on_normal")
+    row_flags.prop(active_item.tag_object, "on_normal", text=normal_name)
     row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_object, "on_hard")
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_object, "use_player_appearance")
+    row_flags.prop(active_item.tag_object, "on_hard", text=hard_name)
+    if game_title == "halo1":
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_object, "use_player_appearance")
 
-    box = layout.split()
-    col = box.column(align=True)
-    row = col.row()
-    row.label(text='Desired Permutation')
-    row.prop(active_item.tag_object, "desired_permutation", text='')
+        box = layout.split()
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='Desired Permutation')
+        row.prop(active_item.tag_object, "desired_permutation", text='')
+
+    elif game_title == "halo2":
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_object, "lock_type_to_env_object")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_object, "lock_transform_to_env_object")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_object, "never_placed")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_object, "lock_name_to_env_object")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_object, "create_at_rest")
+
+        box = layout.split()
+        col = box.column(align=True)
+        row_flags = col.row()
+        row_flags.prop(active_item.tag_object, "mirrored")
+        row_flags = col.row()
+        row_flags.prop(active_item.tag_object, "manual_bsp_flags")
+        row_flags = col.row()
+        row_flags.prop(active_item.tag_object, "unique_id")
+        row_flags = col.row()
+        row_flags.prop(active_item.tag_object, "origin_bsp_index")
+        row_flags = col.row()
+        row_flags.prop(active_item.tag_object, "object_type")
+        row_flags = col.row()
+        row_flags.prop(active_item.tag_object, "object_source")
+        row_flags = col.row()
+        row_flags.prop(active_item.tag_object, "bsp_policy")
+        row_flags = col.row()
+        row_flags.prop(active_item.tag_object, "editor_folder_index")
+    
+def render_permutation(context, layout, active_item):
+    scene = context.scene
+
+    game_title = scene.halo.game_title
+
+    if game_title == "halo2":
+        box = layout.split()
+        col = box.column(align=True)
+        row_flags = col.row()
+        row_flags.prop(active_item.tag_permutation, "variant_name")
+
+        box_flags = layout.box()
+        box_flags.label(text="Active Change Colors")
+        col_flags = box_flags.column(align=True)
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_permutation, "primary")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_permutation, "secondary")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_permutation, "tertiary")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_permutation, "quaternary")
+
+        box = layout.split()
+        col = box.column(align=True)
+        row_flags = col.row()
+        row_flags.prop(active_item.tag_permutation, "primary_color")
+        row_flags = col.row()
+        row_flags.prop(active_item.tag_permutation, "secondary_color")
+        row_flags = col.row()
+        row_flags.prop(active_item.tag_permutation, "tertiary_color")
+        row_flags = col.row()
+        row_flags.prop(active_item.tag_permutation, "quaternary_color")
 
 def render_scenery(context, layout, active_item):
+    scene = context.scene
+    game_title = scene.halo.game_title
+
     box = layout.split()
     col = box.column(align=True)
-    row = col.row()
-    row.label(text='Appearance Player Index')
-    row.prop(active_item.tag_object, "appearance_player_index", text='')
+    if game_title == "halo1":
+        row = col.row()
+        row.label(text='Appearance Player Index')
+        row.prop(active_item.tag_object, "appearance_player_index", text='')
+
+    elif game_title == "halo2":
+        row_flags = col.row()
+        row_flags.prop(active_item.tag_scenery, "pathfinding_policy")
+        row_flags = col.row()
+        row_flags.prop(active_item.tag_scenery, "lightmapping_policy")
+
+        box_flags = layout.box()
+        box_flags.label(text="Valid Multiplayer Games")
+        col_flags = box_flags.column(align=True)
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_scenery, "ctf")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_scenery, "slayer")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_scenery, "oddball")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_scenery, "king")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_scenery, "juggernaut")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_scenery, "territories")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_scenery, "assault")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_scenery, "vip")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_scenery, "infection")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_scenery, "headhunter")
 
 def render_unit(context, layout, active_item):
+    scene = context.scene
+    game_title = scene.halo.game_title
+
     box = layout.split()
     col = box.column(align=True)
-    row = col.row()
-    row.label(text='Appearance Player Index')
-    row.prop(active_item.tag_object, "appearance_player_index", text='')
-    row = col.row()
-    row.label(text='Vitality')
-    row.prop(active_item.tag_unit, "unit_vitality", text='')
+    if game_title == "halo1":
+        row = col.row()
+        row.label(text='Appearance Player Index')
+        row.prop(active_item.tag_object, "appearance_player_index", text='')
+        row = col.row()
+        row.label(text='Vitality')
+        row.prop(active_item.tag_unit, "unit_vitality", text='')
 
-    box_flags = layout.box()
-    box_flags.label(text="Flags")
-    col_flags = box_flags.column(align=True)
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_unit, "unit_dead")
+        box_flags = layout.box()
+        box_flags.label(text="Flags")
+        col_flags = box_flags.column(align=True)
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "unit_dead")
+
+
+    elif game_title == "halo2":
+        row = col.row()
+        row.label(text='Vitality')
+        row.prop(active_item.tag_unit, "unit_vitality", text='')
+
+        box_flags = layout.box()
+        box_flags.label(text="Flags")
+        col_flags = box_flags.column(align=True)
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "unit_dead")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "unit_closed")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "unit_not_enterable_by_player")
 
 def render_vehicle(context, layout, active_item):
-    box = layout.split()
-    col = box.column(align=True)
-    row = col.row()
-    row.label(text='Multiplayer Team Index')
-    row.prop(active_item.tag_unit, "multiplayer_team_index", text='')
+    scene = context.scene
+    game_title = scene.halo.game_title
 
-    box_flags = layout.box()
-    box_flags.label(text="Multiplayer Spawn Flags")
-    col_flags = box_flags.column(align=True)
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_unit, "slayer_default")
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_unit, "ctf_default")
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_unit, "king_default")
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_unit, "oddball_default")
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_unit, "unused_0")
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_unit, "unused_1")
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_unit, "unused_2")
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_unit, "unused_3")
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_unit, "slayer_allowed")
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_unit, "ctf_allowed")
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_unit, "king_allowed")
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_unit, "oddball_allowed")
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_unit, "unused_4")
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_unit, "unused_5")
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_unit, "unused_6")
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_unit, "unused_7")
+    if game_title == "halo1":
+        box = layout.split()
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='Multiplayer Team Index')
+        row.prop(active_item.tag_unit, "multiplayer_team_index", text='')
+
+        box_flags = layout.box()
+        box_flags.label(text="Multiplayer Spawn Flags")
+        col_flags = box_flags.column(align=True)
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "slayer_default")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "ctf_default")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "king_default")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "oddball_default")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "unused_0")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "unused_1")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "unused_2")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "unused_3")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "slayer_allowed")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "ctf_allowed")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "king_allowed")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "oddball_allowed")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "unused_4")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "unused_5")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "unused_6")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_unit, "unused_7")
 
 def render_equipment(context, layout, active_item):
+    scene = context.scene
+    game_title = scene.halo.game_title
+
     box = layout.split()
     col = box.column(align=True)
-
     box_flags = layout.box()
     box_flags.label(text="Misc Flags")
     col_flags = box_flags.column(align=True)
@@ -1875,18 +2795,23 @@ def render_equipment(context, layout, active_item):
     row_flags.prop(active_item.tag_item, "obsolete")
     row_flags = col_flags.row()
     row_flags.prop(active_item.tag_item, "does_accelerate")
-
-    row = col.row()
-    row.label(text='Appearance Player Index')
-    row.prop(active_item.tag_object, "appearance_player_index", text='')
+    if game_title == "halo1":
+        row = col.row()
+        row.label(text='Appearance Player Index')
+        row.prop(active_item.tag_object, "appearance_player_index", text='')
 
 def render_weapon(context, layout, active_item):
+    scene = context.scene
+    game_title = scene.halo.game_title
+
     box = layout.split()
     col = box.column(align=True)
 
-    row = col.row()
-    row.label(text='Appearance Player Index')
-    row.prop(active_item.tag_object, "appearance_player_index", text='')
+    if game_title == "halo1":
+        row = col.row()
+        row.label(text='Appearance Player Index')
+        row.prop(active_item.tag_object, "appearance_player_index", text='')
+
     row = col.row()
     row.label(text='Rounds Left')
     row.prop(active_item.tag_weapon, "rounds_left", text='')
@@ -1905,12 +2830,17 @@ def render_weapon(context, layout, active_item):
     row_flags.prop(active_item.tag_item, "does_accelerate")
 
 def render_device(context, layout, active_item):
+    scene = context.scene
+    game_title = scene.halo.game_title
+
     box = layout.split()
     col = box.column(align=True)
 
-    row = col.row()
-    row.label(text='Appearance Player Index')
-    row.prop(active_item.tag_object, "appearance_player_index", text='')
+    if game_title == "halo1":
+        row = col.row()
+        row.label(text='Appearance Player Index')
+        row.prop(active_item.tag_object, "appearance_player_index", text='')
+
     row = col.row()
     row.label(text='Power Group')
     row.prop(active_item.tag_device, "power_group", text='')
@@ -1933,6 +2863,9 @@ def render_device(context, layout, active_item):
     row_flags.prop(active_item.tag_device, "not_usable_from_any_side")
 
 def render_machine(context, layout, active_item):
+    scene = context.scene
+    game_title = scene.halo.game_title
+
     box = layout.split()
     col = box.column(align=True)
 
@@ -1947,6 +2880,11 @@ def render_machine(context, layout, active_item):
     row_flags.prop(active_item.tag_machine, "never_appears_locked")
     row_flags = col_flags.row()
     row_flags.prop(active_item.tag_machine, "opened_by_melee_attack")
+    if game_title == "halo2":
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_machine, "one_sided_for_player")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_machine, "does_not_close_automatically")
 
 def render_control(context, layout, active_item):
     box = layout.split()
@@ -1980,78 +2918,274 @@ def render_light_fixture(context, layout, active_item):
     row.label(text='Cutoff Angle')
     row.prop(active_item.tag_light_fixture, "cutoff_angle", text='')
 
+def render_sound_scenery(context, layout, active_item):
+    scene = context.scene
+    game_title = scene.halo.game_title
+    if game_title == "halo2":
+        box = layout.split()
+        col = box.column(align=True)
+
+        row = col.row()
+        row.label(text='Volume Type')
+        row.prop(active_item.tag_sound_scenery, "volume_type", text='')
+        row = col.row()
+        row.label(text='Height')
+        row.prop(active_item.tag_sound_scenery, "height", text='')
+        row = col.row()
+        row.label(text='Override Distance Bounds Min')
+        row.prop(active_item.tag_sound_scenery, "override_distance_bounds_min", text='')
+        row = col.row()
+        row.label(text='Override Distance Bounds Max')
+        row.prop(active_item.tag_sound_scenery, "override_distance_bounds_max", text='')
+        row = col.row()
+        row.label(text='Override Cone Angle Bounds Min')
+        row.prop(active_item.tag_sound_scenery, "override_cone_angle_bounds_min", text='')
+        row = col.row()
+        row.label(text='Override Cone Angle Bounds Max')
+        row.prop(active_item.tag_sound_scenery, "override_cone_angle_bounds_max", text='')
+        row = col.row()
+        row.label(text='Override Outer Cone Gain')
+        row.prop(active_item.tag_sound_scenery, "override_outer_cone_gain", text='')
+
+def render_light_volume(context, layout, active_item):
+    scene = context.scene
+    game_title = scene.halo.game_title
+    if game_title == "halo2":
+        box = layout.split()
+        col = box.column(align=True)
+
+        row = col.row()
+        row.label(text='Type')
+        row.prop(active_item.tag_light_volume, "light_type", text='')
+
+        box_flags = layout.box()
+        box_flags.label(text="Flags")
+        col_flags = box_flags.column(align=True)
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_light_volume, "custom_geometry")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_light_volume, "unused")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_light_volume, "cinematic_only")
+
+        box = layout.split()
+        col = box.column(align=True)
+
+        row = col.row()
+        row.label(text='Lightmap Type')
+        row.prop(active_item.tag_light_volume, "lightmap_type", text='')
+
+        box_flags = layout.box()
+        box_flags.label(text="Lightmap Flags")
+        col_flags = box_flags.column(align=True)
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_light_volume, "unused_1")
+
+        box = layout.split()
+        col = box.column(align=True)
+
+        row = col.row()
+        row.label(text='Lightmap Half Life')
+        row.prop(active_item.tag_light_volume, "lightmap_half_life", text='')
+        row = col.row()
+        row.label(text='Lightmap Light Scale')
+        row.prop(active_item.tag_light_volume, "lightmap_light_scale", text='')
+        row = col.row()
+        row.label(text='Target Point')
+        row.prop(active_item.tag_light_volume, "target_point", text='')
+        row = col.row()
+        row.label(text='Falloff Angle')
+        row.prop(active_item.tag_light_volume, "falloff_angle", text='')
+        row = col.row()
+        row.label(text='Cutoff Angle')
+        row.prop(active_item.tag_light_volume, "cutoff_angle", text='')
+
 def render_player_starting_location(context, layout, active_item):
+    scene = context.scene
+    game_title = scene.halo.game_title
+
     box = layout.split()
     col = box.column(align=True)
+    if game_title == "halo1":
+        row = col.row()
+        row.label(text='Team Index')
+        row.prop(active_item.tag_player_starting_location, "team_index", text='')
+        row = col.row()
+        row.label(text='BSP Index')
+        row.prop(active_item.tag_player_starting_location, "bsp_index", text='')
+        row = col.row()
+        row.label(text='Type 0')
+        row.prop(active_item.tag_player_starting_location, "type_0_ui", text='')
+        row = col.row()
+        row.label(text='Type 1')
+        row.prop(active_item.tag_player_starting_location, "type_1_ui", text='')
+        row = col.row()
+        row.label(text='Type 2')
+        row.prop(active_item.tag_player_starting_location, "type_2_ui", text='')
+        row = col.row()
+        row.label(text='Type 3')
+        row.prop(active_item.tag_player_starting_location, "type_3_ui", text='')
 
-    row = col.row()
-    row.label(text='Team Index')
-    row.prop(active_item.tag_player_starting_location, "team_index", text='')
-    row = col.row()
-    row.label(text='BSP Index')
-    row.prop(active_item.tag_player_starting_location, "bsp_index", text='')
-    row = col.row()
-    row.label(text='Type 0')
-    row.prop(active_item.tag_player_starting_location, "type_0", text='')
-    row = col.row()
-    row.label(text='Type 1')
-    row.prop(active_item.tag_player_starting_location, "type_1", text='')
-    row = col.row()
-    row.label(text='Type 2')
-    row.prop(active_item.tag_player_starting_location, "type_2", text='')
-    row = col.row()
-    row.label(text='Type 3')
-    row.prop(active_item.tag_player_starting_location, "type_3", text='')
+    elif game_title == "halo2":
+        row = col.row()
+        row.label(text='Team Designator')
+        row.prop(active_item.tag_player_starting_location, "team_designator", text='')
+        row = col.row()
+        row.label(text='BSP Index')
+        row.prop(active_item.tag_player_starting_location, "bsp_index", text='')
+        row = col.row()
+        row.label(text='Type 0')
+        row.prop(active_item.tag_player_starting_location, "type_0_ui", text='')
+        row = col.row()
+        row.label(text='Type 1')
+        row.prop(active_item.tag_player_starting_location, "type_1_ui", text='')
+        row = col.row()
+        row.label(text='Type 2')
+        row.prop(active_item.tag_player_starting_location, "type_2_ui", text='')
+        row = col.row()
+        row.label(text='Type 3')
+        row.prop(active_item.tag_player_starting_location, "type_3_ui", text='')
+        row = col.row()
+        row.label(text='Spawn Type 0')
+        row.prop(active_item.tag_player_starting_location, "spawn_type_0", text='')
+        row = col.row()
+        row.label(text='Spawn Type 1')
+        row.prop(active_item.tag_player_starting_location, "spawn_type_1", text='')
+        row = col.row()
+        row.label(text='Spawn Type 2')
+        row.prop(active_item.tag_player_starting_location, "spawn_type_2", text='')
+        row = col.row()
+        row.label(text='Spawn Type 3')
+        row.prop(active_item.tag_player_starting_location, "spawn_type_3", text='')
+        row = col.row()
+        row.label(text='Unused Name 0')
+        row.prop(active_item.tag_player_starting_location, "unused_name_0", text='')
+        row = col.row()
+        row.label(text='Unused Name 1')
+        row.prop(active_item.tag_player_starting_location, "unused_name_1", text='')
+        row = col.row()
+        row.label(text='Campaign Player Type')
+        row.prop(active_item.tag_player_starting_location, "campaign_player_type", text='')
 
 def render_netgame_flags(context, layout, active_item):
     scene = context.scene
+    game_title = scene.halo.game_title
 
     box = layout.split()
     col = box.column(align=True)
+    if game_title == "halo1":
+        row = col.row()
+        row.label(text='Type')
+        row.prop(active_item.tag_netgame_flag, "netgame_type_ui", text='')
+        row = col.row()
+        row.label(text='Usage ID')
+        row.prop(active_item.tag_netgame_flag, "usage_id", text='')
+        row = col.row()
+        row.prop_search(active_item.tag_netgame_flag, 'weapon_group', scene, 'tag_palatte')
+    elif game_title == "halo2":
+        row = col.row()
+        row.label(text='Type')
+        row.prop(active_item.tag_netgame_flag, "netgame_type_ui", text='')
+        row = col.row()
+        row.label(text='Team Designator')
+        row.prop(active_item.tag_netgame_flag, "team_designator", text='')
+        row = col.row()
+        row.label(text='Identifier')
+        row.prop(active_item.tag_netgame_flag, "usage_id", text='')
 
-    row = col.row()
-    row.label(text='Type')
-    row.prop(active_item.tag_netgame_flag, "netgame_type", text='')
-    row = col.row()
-    row.label(text='Usage ID')
-    row.prop(active_item.tag_netgame_flag, "usage_id", text='')
-    row = col.row()
-    row.prop_search(active_item.tag_netgame_flag, 'weapon_group', scene, 'tag_palatte')
+        box_flags = layout.box()
+        box_flags.label(text="Flags")
+        col_flags = box_flags.column(align=True)
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_netgame_flag, "multi_flagbomb")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_netgame_flag, "single_flagbomb")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_netgame_flag, "neutral_flagbomb")
+
+        box = layout.split()
+        col = box.column(align=True)
+
+        row = col.row()
+        row.label(text='Spawn Object Name')
+        row.prop(active_item.tag_netgame_flag, "spawn_object_name", text='')
+        row = col.row()
+        row.label(text='Spawn Marker Name')
+        row.prop(active_item.tag_netgame_flag, "spawn_marker_name", text='')
 
 def render_netgame_equipment(context, layout, active_item):
     scene = context.scene
+    game_title = scene.halo.game_title
 
     box = layout.split()
     col = box.column(align=True)
+    if game_title == "halo1":
+        box_flags = layout.box()
+        box_flags.label(text="Flags")
+        col_flags = box_flags.column(align=True)
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_netgame_equipment, "levitate")
 
-    box_flags = layout.box()
-    box_flags.label(text="Flags")
-    col_flags = box_flags.column(align=True)
-    row_flags = col_flags.row()
-    row_flags.prop(active_item.tag_netgame_equipment, "levitate")
+        box = layout.split()
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='Type 0')
+        row.prop(active_item.tag_netgame_equipment, "type_0", text='')
+        row = col.row()
+        row.label(text='Type 1')
+        row.prop(active_item.tag_netgame_equipment, "type_1", text='')
+        row = col.row()
+        row.label(text='Type 2')
+        row.prop(active_item.tag_netgame_equipment, "type_2", text='')
+        row = col.row()
+        row.label(text='Type 3')
+        row.prop(active_item.tag_netgame_equipment, "type_3", text='')
+        row = col.row()
+        row.label(text='Team Index')
+        row.prop(active_item.tag_netgame_equipment, "team_index", text='')
+        row = col.row()
+        row.label(text='Spawn Time')
+        row.prop(active_item.tag_netgame_equipment, "spawn_time", text='')
+        row = col.row()
+        row.prop_search(active_item.tag_netgame_equipment, 'item_collection', scene, 'tag_palatte')
+    elif game_title == "halo2":
+        box_flags = layout.box()
+        box_flags.label(text="Flags")
+        col_flags = box_flags.column(align=True)
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_netgame_equipment, "levitate")
+        row_flags = col_flags.row()
+        row_flags.prop(active_item.tag_netgame_equipment, "destroy_existing_on_new_spawn")
 
-    box = layout.split()
-    col = box.column(align=True)
-    row = col.row()
-    row.label(text='Type 0')
-    row.prop(active_item.tag_netgame_equipment, "type_0", text='')
-    row = col.row()
-    row.label(text='Type 1')
-    row.prop(active_item.tag_netgame_equipment, "type_1", text='')
-    row = col.row()
-    row.label(text='Type 2')
-    row.prop(active_item.tag_netgame_equipment, "type_2", text='')
-    row = col.row()
-    row.label(text='Type 3')
-    row.prop(active_item.tag_netgame_equipment, "type_3", text='')
-    row = col.row()
-    row.label(text='Team Index')
-    row.prop(active_item.tag_netgame_equipment, "team_index", text='')
-    row = col.row()
-    row.label(text='Spawn Time')
-    row.prop(active_item.tag_netgame_equipment, "spawn_time", text='')
-    row = col.row()
-    row.prop_search(active_item.tag_netgame_equipment, 'item_collection', scene, 'tag_palatte')
+        box = layout.split()
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text='Type 0')
+        row.prop(active_item.tag_netgame_equipment, "type_0_ui", text='')
+        row = col.row()
+        row.label(text='Type 1')
+        row.prop(active_item.tag_netgame_equipment, "type_1_ui", text='')
+        row = col.row()
+        row.label(text='Type 2')
+        row.prop(active_item.tag_netgame_equipment, "type_2_ui", text='')
+        row = col.row()
+        row.label(text='Type 3')
+        row.prop(active_item.tag_netgame_equipment, "type_3_ui", text='')
+        row = col.row()
+        row.label(text='Spawn Time')
+        row.prop(active_item.tag_netgame_equipment, "spawn_time", text='')
+        row = col.row()
+        row.label(text='Respawn On Empty Time')
+        row.prop(active_item.tag_netgame_equipment, "respawn_on_empty_time", text='')
+        row = col.row()
+        row.label(text='Respawn Timer Starts')
+        row.prop(active_item.tag_netgame_equipment, "respawn_timer_starts", text='')
+        row = col.row()
+        row.label(text='Classification')
+        row.prop(active_item.tag_netgame_equipment, "classification", text='')
+        row = col.row()
+        row.prop_search(active_item.tag_netgame_equipment, 'item_collection', scene, 'tag_palatte')
+
 
 def render_collection(context, layout, active_item):
     box = layout.split()
@@ -2548,14 +3682,17 @@ def get_data_type(ui, context, is_collection=False):
 
     if "skies" in item_collection_names:
         render_sky(context, layout, active_item)
-    elif "scenery" in item_collection_names or "sound_scenery" in item_collection_names:
+    elif "scenery" in item_collection_names:
         render_object(context, layout, active_item)
+        render_permutation(context, layout, active_item)
         render_scenery(context, layout, active_item)
     elif "bipeds" in item_collection_names:
         render_object(context, layout, active_item)
+        render_permutation(context, layout, active_item)
         render_unit(context, layout, active_item)
     elif "vehicles" in item_collection_names:
         render_object(context, layout, active_item)
+        render_permutation(context, layout, active_item)
         render_unit(context, layout, active_item)
         render_vehicle(context, layout, active_item)
     elif "equipment" in item_collection_names:
@@ -2563,6 +3700,7 @@ def get_data_type(ui, context, is_collection=False):
         render_equipment(context, layout, active_item)
     elif "weapons" in item_collection_names:
         render_object(context, layout, active_item)
+        render_permutation(context, layout, active_item)
         render_weapon(context, layout, active_item)
     elif "machines" in item_collection_names:
         render_object(context, layout, active_item)
@@ -2576,6 +3714,12 @@ def get_data_type(ui, context, is_collection=False):
         render_object(context, layout, active_item)
         render_device(context, layout, active_item)
         render_light_fixture(context, layout, active_item)
+    elif "sound_scenery" in item_collection_names:
+        render_object(context, layout, active_item)
+        render_sound_scenery(context, layout, active_item)
+    elif "lights" in item_collection_names:
+        render_object(context, layout, active_item)
+        render_light_volume(context, layout, active_item)
     elif "player_starting_locations" in item_collection_names:
         render_player_starting_location(context, layout, active_item)
     elif "netgame_flags" in item_collection_names:
@@ -2588,8 +3732,12 @@ def get_data_type(ui, context, is_collection=False):
         render_encounter(context, layout, active_item)
     elif "cutscene_flags" in item_collection_names:
         render_cutscene_flag(context, layout, active_item)
-    elif "cutscene_cameras" in item_collection_names:
-        render_cutscene_camera(context, layout, active_item)
+    elif "crates" in item_collection_names:
+        render_object(context, layout, active_item)
+        render_permutation(context, layout, active_item)
+    elif "creatures" in item_collection_names:
+        render_object(context, layout, active_item)
+
     else:
         for collection_name in item_collection_names:
             if collection_name.endswith("clusters"):

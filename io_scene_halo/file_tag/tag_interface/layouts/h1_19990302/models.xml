@@ -1,0 +1,249 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="mode" name="models" version="1">
+  <Layout regolithID="block:models" internalName="models_block" name="models">
+    <FieldSet version="0" sizeofValue="204" sizeofSource="sizeof(struct models_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags" />
+      <LongInteger CStyleName="root_node_index" pascalStyleName="RootNodeIndex" name="root node index" />
+      <Real CStyleName="high_detail_cutoff" pascalStyleName="HighDetailCutoff" name="high detail cutoff" />
+      <Real CStyleName="medium_detail_cutoff" pascalStyleName="MediumDetailCutoff" name="medium detail cutoff" />
+      <Real CStyleName="low_detail_cutoff" pascalStyleName="LowDetailCutoff" name="low detail cutoff" />
+      <Block CStyleName="split_points" pascalStyleName="SplitPoints" name="split points">
+        <Layout regolithID="block:split points" internalName="split points_block" name="split points_block">
+          <FieldSet version="0" sizeofValue="88" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="ignore parent" CStyleName="ignore_parent" pascalStyleName="IgnoreParent" />
+              </Options>
+            </LongFlags>
+            <ShortInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" />
+            <Pad name="pad" length="2" />
+            <Real CStyleName="local_damage_threshold" pascalStyleName="LocalDamageThreshold" name="local damage threshold" />
+            <Real CStyleName="global_damage_threshold" pascalStyleName="GlobalDamageThreshold" name="global damage threshold" />
+            <Real CStyleName="minimum_damage" pascalStyleName="MinimumDamage" name="minimum damage" />
+            <Real CStyleName="split_chance" pascalStyleName="SplitChance" name="split chance" />
+            <Pad name="pad" length="64" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="136" />
+      <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes">
+        <Layout regolithID="block:nodes" internalName="nodes_block" name="nodes_block">
+          <FieldSet version="0" sizeofValue="88" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <ShortInteger CStyleName="next_sibling_node_index" pascalStyleName="NextSiblingNodeIndex" name="next sibling node index" />
+            <ShortInteger CStyleName="first_child_node_index" pascalStyleName="FirstChildNodeIndex" name="first child node index" />
+            <ShortInteger CStyleName="parent_node_index" pascalStyleName="ParentNodeIndex" name="parent node index" />
+            <Pad name="pad" length="2" />
+            <RealPoint3D CStyleName="default_translation" pascalStyleName="DefaultTranslation" name="default translation" />
+            <Pad name="pad" length="24" />
+            <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations">
+              <Layout regolithID="block:permutations" internalName="permutations_block" name="permutations_block">
+                <FieldSet version="0" sizeofValue="104" isLatest="true">
+                  <String CStyleName="name" pascalStyleName="Name" name="name" />
+                  <Pad name="pad" length="32" />
+                  <ShortInteger CStyleName="super_low_0" pascalStyleName="SuperLow0" name="super low 0" />
+                  <ShortInteger CStyleName="low_0" pascalStyleName="Low0" name="low 0" />
+                  <ShortInteger CStyleName="medium_0" pascalStyleName="Medium0" name="medium 0" />
+                  <ShortInteger CStyleName="high_0" pascalStyleName="High0" name="high 0" />
+                  <ShortInteger CStyleName="super_high_0" pascalStyleName="SuperHigh0" name="super_high 0" />
+                  <ShortInteger CStyleName="super_low_1" pascalStyleName="SuperLow1" name="super low 1" />
+                  <ShortInteger CStyleName="low_1" pascalStyleName="Low1" name="low 1" />
+                  <ShortInteger CStyleName="medium_1" pascalStyleName="Medium1" name="medium 1" />
+                  <ShortInteger CStyleName="high_1" pascalStyleName="High1" name="high 1" />
+                  <ShortInteger CStyleName="super_high_1" pascalStyleName="SuperHigh1" name="super high 1" />
+                  <ShortInteger CStyleName="super_low_2" pascalStyleName="SuperLow2" name="super low 2" />
+                  <ShortInteger CStyleName="low_2" pascalStyleName="Low2" name="low 2" />
+                  <ShortInteger CStyleName="medium_2" pascalStyleName="Medium2" name="medium 2" />
+                  <ShortInteger CStyleName="high_2" pascalStyleName="High2" name="high 2" />
+                  <ShortInteger CStyleName="super_high_2" pascalStyleName="SuperHigh2" name="super high 2" />
+                  <ShortInteger CStyleName="super_low_3" pascalStyleName="SuperLow3" name="super low 3" />
+                  <ShortInteger CStyleName="low_3" pascalStyleName="Low3" name="low 3" />
+                  <ShortInteger CStyleName="medium_3" pascalStyleName="Medium3" name="medium 3" />
+                  <ShortInteger CStyleName="high_3" pascalStyleName="High3" name="high 3" />
+                  <ShortInteger CStyleName="super_high_3" pascalStyleName="SuperHigh3" name="super high 3" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="materials" pascalStyleName="Materials" name="materials">
+        <Layout regolithID="block:materials" internalName="materials_block" name="materials_block">
+          <FieldSet version="0" sizeofValue="248" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="double sided" CStyleName="double_sided" pascalStyleName="DoubleSided" />
+                <Bit name="primary change color" CStyleName="primary_change_color" pascalStyleName="PrimaryChangeColor" />
+                <Bit name="secondary change color" CStyleName="secondary_change_color" pascalStyleName="SecondaryChangeColor" />
+                <Bit name="support surface" CStyleName="support_surface" pascalStyleName="SupportSurface" />
+                <Bit name="doesnt generate lightmaps" CStyleName="doesnt_generate_lightmaps" pascalStyleName="DoesntGenerateLightmaps" />
+                <Bit name="edge density" CStyleName="edge_density" pascalStyleName="EdgeDensity" />
+              </Options>
+            </LongFlags>
+            <Real CStyleName="alpha" pascalStyleName="Alpha" name="alpha" />
+            <Real CStyleName="reflection_alpha" pascalStyleName="ReflectionAlpha" name="reflection alpha" />
+            <Pad name="pad" length="4" />
+            <Real CStyleName="shininess" pascalStyleName="Shininess" name="shininess" />
+            <Real CStyleName="shininess_strength" pascalStyleName="ShininessStrength" name="shininess strength" />
+            <Real CStyleName="detail_map_scale" pascalStyleName="DetailMapScale" name="detail map scale" />
+            <RealArgbColor CStyleName="self_illumination" pascalStyleName="SelfIllumination" name="self illumination" />
+            <TagReference CStyleName="self_illumination_map" pascalStyleName="SelfIlluminationMap" name="self illumination map" />
+            <Pad name="pad" length="120" />
+            <Block CStyleName="maps" pascalStyleName="Maps" name="maps">
+              <Layout regolithID="block:maps" internalName="maps_block" name="maps_block">
+                <FieldSet version="0" sizeofValue="80" isLatest="true">
+                  <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+                    <Options regolithID="enum:type" CStyleName="type" pascalStyleName="Type">
+                      <Enum name="diffuse" CStyleName="diffuse" pascalStyleName="Diffuse" />
+                      <Enum name="detail" CStyleName="detail" pascalStyleName="Detail" />
+                      <Enum name="reflection spherical" CStyleName="reflection_spherical" pascalStyleName="ReflectionSpherical" />
+                      <Enum name="reflection planar" CStyleName="reflection_planar" pascalStyleName="ReflectionPlanar" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="mode" pascalStyleName="Mode" name="mode">
+                    <Options regolithID="enum:mode" CStyleName="mode" pascalStyleName="Mode">
+                      <Enum name="opaque" CStyleName="opaque" pascalStyleName="Opaque" />
+                      <Enum name="opaque scaled by fog" CStyleName="opaque_scaled_by_fog" pascalStyleName="OpaqueScaledByFog" />
+                      <Enum name="multiply" CStyleName="multiply" pascalStyleName="Multiply" />
+                      <Enum name="invert" CStyleName="invert" pascalStyleName="Invert" />
+                      <Enum name="invert unknown alpha04" CStyleName="invert_unknown_alpha04" pascalStyleName="InvertUnknownAlpha04" />
+                      <Enum name="invert unknown alpha05" CStyleName="invert_unknown_alpha05" pascalStyleName="InvertUnknownAlpha05" />
+                      <Enum name="invert transparent" CStyleName="invert_transparent" pascalStyleName="InvertTransparent" />
+                      <Enum name="add" CStyleName="add" pascalStyleName="Add" />
+                      <Enum name="add unknown12" CStyleName="add_unknown12" pascalStyleName="AddUnknown12" />
+                      <Enum name="add unknown13" CStyleName="add_unknown13" pascalStyleName="AddUnknown13" />
+                      <Enum name="add unknown alpha14" CStyleName="add_unknown_alpha14" pascalStyleName="AddUnknownAlpha14" />
+                      <Enum name="add unknown alpha15" CStyleName="add_unknown_alpha15" pascalStyleName="AddUnknownAlpha15" />
+                      <Enum name="add multiply" CStyleName="add_multiply" pascalStyleName="AddMultiply" />
+                      <Enum name="add unknown21" CStyleName="add_unknown21" pascalStyleName="AddUnknown21" />
+                      <Enum name="double multiply" CStyleName="double_multiply" pascalStyleName="DoubleMultiply" />
+                      <Enum name="double multiply unknown23" CStyleName="double_multiply_unknown23" pascalStyleName="DoubleMultiplyUnknown23" />
+                      <Enum name="double multiply unknown alpha24" CStyleName="double_multiply_unknown_alpha24" pascalStyleName="DoubleMultiplyUnknownAlpha24" />
+                      <Enum name="double multiply unknown alpha25" CStyleName="double_multiply_unknown_alpha25" pascalStyleName="DoubleMultiplyUnknownAlpha25" />
+                      <Enum name="double multiply unknown30" CStyleName="double_multiply_unknown30" pascalStyleName="DoubleMultiplyUnknown30" />
+                      <Enum name="double multiply unknown31" CStyleName="double_multiply_unknown31" pascalStyleName="DoubleMultiplyUnknown31" />
+                      <Enum name="crystal" CStyleName="crystal" pascalStyleName="Crystal" />
+                      <Enum name="crystal unknown33" CStyleName="crystal_unknown33" pascalStyleName="CrystalUnknown33" />
+                      <Enum name="crystal unknown alpha34" CStyleName="crystal_unknown_alpha34" pascalStyleName="CrystalUnknownAlpha34" />
+                      <Enum name="crystal unknown alpha35" CStyleName="crystal_unknown_alpha35" pascalStyleName="CrystalUnknownAlpha35" />
+                      <Enum name="crystal darken by alpha 0" CStyleName="crystal_darken_by_alpha_0" pascalStyleName="CrystalDarkenByAlpha0" />
+                      <Enum name="crystal unknown alpha41" CStyleName="crystal_unknown_alpha41" pascalStyleName="CrystalUnknownAlpha41" />
+                      <Enum name="crystal unknown alpha42" CStyleName="crystal_unknown_alpha42" pascalStyleName="CrystalUnknownAlpha42" />
+                      <Enum name="crystal unknown alpha43" CStyleName="crystal_unknown_alpha43" pascalStyleName="CrystalUnknownAlpha43" />
+                      <Enum name="crystal unknown alpha44" CStyleName="crystal_unknown_alpha44" pascalStyleName="CrystalUnknownAlpha44" />
+                      <Enum name="crystal reverse alpha blend" CStyleName="crystal_reverse_alpha_blend" pascalStyleName="CrystalReverseAlphaBlend" />
+                      <Enum name="crystal darken by alpha 1" CStyleName="crystal_darken_by_alpha_1" pascalStyleName="CrystalDarkenByAlpha1" />
+                      <Enum name="additive alpha blend" CStyleName="additive_alpha_blend" pascalStyleName="AdditiveAlphaBlend" />
+                      <Enum name="additive alpha blend unknown alpha52" CStyleName="additive_alpha_blend_unknown_alpha52" pascalStyleName="AdditiveAlphaBlendUnknownAlpha52" />
+                      <Enum name="additive alpha blend unknown alpha53" CStyleName="additive_alpha_blend_unknown_alpha53" pascalStyleName="AdditiveAlphaBlendUnknownAlpha53" />
+                      <Enum name="alpha blend" CStyleName="alpha_blend" pascalStyleName="AlphaBlend" />
+                      <Enum name="alpha blend unknown alpha55" CStyleName="alpha_blend_unknown_alpha55" pascalStyleName="AlphaBlendUnknownAlpha55" />
+                    </Options>
+                  </ShortEnum>
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                      <Bit name="unfogged" CStyleName="unfogged" pascalStyleName="Unfogged" />
+                      <Bit name="unfiltered" CStyleName="unfiltered" pascalStyleName="Unfiltered" />
+                      <Bit name="undithered" CStyleName="undithered" pascalStyleName="Undithered" />
+                    </Options>
+                  </LongFlags>
+                  <Pad name="pad" length="32" />
+                  <TagReference CStyleName="texture" pascalStyleName="Texture" name="texture" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="geometries" pascalStyleName="Geometries" name="geometries">
+        <Layout regolithID="block:geometries" internalName="geometries_block" name="geometries_block">
+          <FieldSet version="0" sizeofValue="52" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags" />
+            <Pad name="pad" length="24" />
+            <Block CStyleName="markers" pascalStyleName="Markers" name="markers">
+              <Layout regolithID="block:markers" internalName="markers_block" name="markers_block">
+                <FieldSet version="0" sizeofValue="188" isLatest="true">
+                  <String CStyleName="name" pascalStyleName="Name" name="name" />
+                  <Pad name="pad" length="128" />
+                  <RealQuaternion CStyleName="rotation" pascalStyleName="Rotation" name="rotation" />
+                  <RealPoint3D CStyleName="translation" pascalStyleName="Translation" name="translation" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="surface_lists" pascalStyleName="SurfaceLists" name="surface lists">
+              <Layout regolithID="block:surface lists" internalName="surface lists_block" name="surface lists_block">
+                <FieldSet version="0" sizeofValue="92" isLatest="true">
+                  <ShortInteger CStyleName="material_index" pascalStyleName="MaterialIndex" name="material index" />
+                  <ShortInteger CStyleName="lightmap_bitmap_index" pascalStyleName="LightmapBitmapIndex" name="lightmap bitmap index" />
+                  <Pad name="pad" length="16" />
+                  <Block CStyleName="shared_vertices" pascalStyleName="SharedVertices" name="shared vertices">
+                    <Layout regolithID="block:shared vertices" internalName="shared vertices_block" name="shared vertices_block">
+                      <FieldSet version="0" sizeofValue="20" isLatest="true">
+                        <CharInteger CStyleName="new_vert_flag" pascalStyleName="NewVertFlag" name="new vert flag" />
+                        <CharInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" />
+                        <ShortInteger CStyleName="normal_index" pascalStyleName="NormalIndex" name="normal index" />
+                        <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+                        <RealPoint3D CStyleName="point" pascalStyleName="Point" name="point" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices">
+                    <Layout regolithID="block:vertices" internalName="vertices_block" name="vertices_block">
+                      <FieldSet version="0" sizeofValue="12" isLatest="true">
+                        <RealPoint3D CStyleName="point" pascalStyleName="Point" name="point" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="normals" pascalStyleName="Normals" name="normals">
+                    <Layout regolithID="block:normals" internalName="normals_block" name="normals_block">
+                      <FieldSet version="0" sizeofValue="12" isLatest="true">
+                        <RealVector3D CStyleName="normal" pascalStyleName="Normal" name="normal" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="corners" pascalStyleName="Corners" name="corners">
+                    <Layout regolithID="block:corners" internalName="corners_block" name="corners_block">
+                      <FieldSet version="0" sizeofValue="12" isLatest="true">
+                        <Real CStyleName="u" pascalStyleName="U" name="u" />
+                        <Real CStyleName="v" pascalStyleName="V" name="v" />
+                        <ShortInteger CStyleName="vertex_index" pascalStyleName="VertexIndex" name="vertex index" />
+                        <ShortInteger CStyleName="normal_index" pascalStyleName="NormalIndex" name="normal index" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="surfaces" pascalStyleName="Surfaces" name="surfaces">
+                    <Layout regolithID="block:surfaces" internalName="surfaces_block" name="surfaces_block">
+                      <FieldSet version="0" sizeofValue="12" isLatest="true">
+                        <ShortInteger CStyleName="normal_index" pascalStyleName="NormalIndex" name="normal index" />
+                        <ShortInteger CStyleName="vertex_count" pascalStyleName="VertexCount" name="vertex count" />
+                        <ShortInteger CStyleName="corner_index_0" pascalStyleName="CornerIndex0" name="corner index 0" />
+                        <ShortInteger CStyleName="corner_index_1" pascalStyleName="CornerIndex1" name="corner index 1" />
+                        <ShortInteger CStyleName="corner_index_2" pascalStyleName="CornerIndex2" name="corner index 2" />
+                        <ShortInteger CStyleName="corner_index_3" pascalStyleName="CornerIndex3" name="corner index 3" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="lightmap_surfaces" pascalStyleName="LightmapSurfaces" name="lightmap surfaces">
+                    <Layout regolithID="block:lightmap surfaces" internalName="lightmap surfaces_block" name="lightmap surfaces_block">
+                      <FieldSet version="0" sizeofValue="32" isLatest="true">
+                        <Real CStyleName="u_0" pascalStyleName="U0" name="u 0" />
+                        <Real CStyleName="v_0" pascalStyleName="V0" name="v 0" />
+                        <Real CStyleName="u_1" pascalStyleName="U1" name="u 1" />
+                        <Real CStyleName="v_1" pascalStyleName="V1" name="v 1" />
+                        <Real CStyleName="u_2" pascalStyleName="U2" name="u 2" />
+                        <Real CStyleName="v_2" pascalStyleName="V2" name="v 2" />
+                        <Real CStyleName="u_3" pascalStyleName="U3" name="u 3" />
+                        <Real CStyleName="v_3" pascalStyleName="V3" name="v 3" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

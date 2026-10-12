@@ -70,32 +70,21 @@ def build_asset(context, filepath, version, game_version, folder_structure, hidd
     )
 
     for idx, material in enumerate(ASS.materials):
-        material_definition = ''
-        if not material.permutation == '':
-            material_definition += '%s' % (material.permutation)
-
-        if len(material_definition) > 0:
-            material_definition += ' '
-
-        if not material.region == '':
-            material_definition += '%s' % (material.region)
-
-
         file.write(
             '\n;MATERIAL %s' % (idx) +
             '\n"%s"' % (material.name)
         )
 
         file.write(
-            '\n"%s"\n' % material_definition
+            '\n"%s"\n' % material.variant
         )
 
         if version >= 4:
             file.write(
-                '%s\n' % (len(material.material_strings))
+                '%s\n' % (len(material.lighting_info))
             )
 
-            for string in material.material_strings:
+            for string in material.lighting_info:
                 file.write(
                     '"%s"\n' % (string)
                 )

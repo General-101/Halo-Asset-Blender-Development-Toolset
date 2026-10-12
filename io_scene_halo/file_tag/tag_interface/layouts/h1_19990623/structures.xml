@@ -1,0 +1,111 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="stru" name="structures" version="2">
+  <Layout regolithID="block:structures" internalName="structures_block" name="structures">
+    <FieldSet version="0" sizeofValue="256" sizeofSource="sizeof(struct structures_group)" isLatest="true">
+      <Pad name="pad" length="208" />
+      <Block CStyleName="environments" pascalStyleName="Environments" name="environments">
+        <Layout regolithID="block:environments" internalName="environments_block" name="environments_block">
+          <FieldSet version="0" sizeofValue="160" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <RealArgbColor CStyleName="ambient_light_color" pascalStyleName="AmbientLightColor" name="ambient light color" />
+            <RealArgbColor CStyleName="fog_color" pascalStyleName="FogColor" name="fog color" />
+            <Real CStyleName="fog_color" pascalStyleName="FogColor" name="fog color" />
+            <Pad name="pad" length="4" />
+            <RealVector3D CStyleName="wind" pascalStyleName="Wind" name="wind" />
+            <Pad name="pad" length="52" />
+            <Block CStyleName="objects" pascalStyleName="Objects" name="objects">
+              <Layout regolithID="block:objects" internalName="objects_block" name="objects_block">
+                <FieldSet version="0" sizeofValue="120" isLatest="true">
+                  <Pad name="pad" length="48" />
+                  <String CStyleName="name" pascalStyleName="Name" name="name" />
+                  <TagReference CStyleName="object" pascalStyleName="Object" name="object" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="lights" pascalStyleName="Lights" name="lights">
+              <Layout regolithID="block:lights" internalName="lights_block" name="lights_block">
+                <FieldSet version="0" sizeofValue="120" isLatest="true">
+                  <Pad name="pad" length="48" />
+                  <String CStyleName="name" pascalStyleName="Name" name="name" />
+                  <TagReference CStyleName="light" pascalStyleName="Light" name="light" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="partition_tree" pascalStyleName="PartitionTree" name="partition tree">
+        <Layout regolithID="block:partition tree" internalName="partition tree_block" name="partition tree_block">
+          <FieldSet version="0" sizeofValue="52" isLatest="true">
+            <Real CStyleName="a" pascalStyleName="A" name="a" />
+            <Real CStyleName="b" pascalStyleName="B" name="b" />
+            <Real CStyleName="c" pascalStyleName="C" name="c" />
+            <Real CStyleName="d" pascalStyleName="D" name="d" />
+            <ShortInteger CStyleName="positive_partition_index" pascalStyleName="PositivePartitionIndex" name="positive partition index" />
+            <ShortInteger CStyleName="negative_partition_index" pascalStyleName="NegativePartitionIndex" name="negative partition index" />
+            <ShortInteger CStyleName="positive_node_index" pascalStyleName="PositiveNodeIndex" name="positive node index" />
+            <ShortInteger CStyleName="negative_node_index" pascalStyleName="NegativeNodeIndex" name="negative node index" />
+            <Pad name="pad" length="28" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes">
+        <Layout regolithID="block:nodes" internalName="nodes_block" name="nodes_block">
+          <FieldSet version="0" sizeofValue="164" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <RealVector3D CStyleName="x-axis" pascalStyleName="X-axis" name="x-axis" />
+            <RealVector3D CStyleName="y-axis" pascalStyleName="Y-axis" name="y-axis" />
+            <RealVector3D CStyleName="z-axis" pascalStyleName="Z-axis" name="z-axis" />
+            <RealVector3D CStyleName="origin" pascalStyleName="Origin" name="origin" />
+            <Real CStyleName="x0" pascalStyleName="X0" name="x0" />
+            <Real CStyleName="y0" pascalStyleName="Y0" name="y0" />
+            <Real CStyleName="z0" pascalStyleName="Z0" name="z0" />
+            <ShortInteger CStyleName="environment" pascalStyleName="Environment" name="environment" />
+            <Pad name="pad" length="2" />
+            <Real CStyleName="mirror_coefficient_of_refraction" pascalStyleName="MirrorCoefficientOfRefraction" name="mirror coefficient of refraction" />
+            <Real CStyleName="mirror_depth" pascalStyleName="MirrorDepth" name="mirror depth" />
+            <Pad name="pad" length="36" />
+            <Block CStyleName="mirrors" pascalStyleName="Mirrors" name="mirrors">
+              <Layout regolithID="block:mirrors" internalName="mirrors_block" name="mirrors_block">
+                <FieldSet version="0" sizeofValue="80" isLatest="true">
+                  <Pad name="pad" length="16" />
+                  <RealPlane3D CStyleName="plane" pascalStyleName="Plane" name="plane" />
+                  <RealVector3D CStyleName="a" pascalStyleName="A" name="a" />
+                  <RealVector3D CStyleName="b" pascalStyleName="B" name="b" />
+                  <RealVector3D CStyleName="c" pascalStyleName="C" name="c" />
+                  <RealVector3D CStyleName="d" pascalStyleName="D" name="d" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="portal_references" pascalStyleName="PortalReferences" name="portal references">
+              <Layout regolithID="block:portal references" internalName="portal references_block" name="portal references_block">
+                <FieldSet version="0" sizeofValue="12" isLatest="true">
+                  <ShortInteger CStyleName="portal_index" pascalStyleName="PortalIndex" name="portal index" />
+                  <Pad name="pad" length="10" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="portals" pascalStyleName="Portals" name="portals">
+        <Layout regolithID="block:portals" internalName="portals_block" name="portals_block">
+          <FieldSet version="0" sizeofValue="92" isLatest="true">
+            <Real CStyleName="a" pascalStyleName="A" name="a" />
+            <Real CStyleName="b" pascalStyleName="B" name="b" />
+            <Real CStyleName="c" pascalStyleName="C" name="c" />
+            <Real CStyleName="d" pascalStyleName="D" name="d" />
+            <RealVector3D CStyleName="u0v0" pascalStyleName="U0v0" name="u0v0" />
+            <RealVector3D CStyleName="u0v1" pascalStyleName="U0v1" name="u0v1" />
+            <RealVector3D CStyleName="u1v1" pascalStyleName="U1v1" name="u1v1" />
+            <RealVector3D CStyleName="u1v0" pascalStyleName="U1v0" name="u1v0" />
+            <ShortInteger CStyleName="positive_node_index" pascalStyleName="PositiveNodeIndex" name="positive node index" />
+            <ShortInteger CStyleName="negative_node_index" pascalStyleName="NegativeNodeIndex" name="negative node index" />
+            <Real CStyleName="interpolation_depth" pascalStyleName="InterpolationDepth" name="interpolation depth" />
+            <Pad name="pad" length="20" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

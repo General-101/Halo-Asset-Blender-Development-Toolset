@@ -503,6 +503,16 @@ class ImportASS(Operator, ImportHelper):
     bl_label = "Import ASS"
     filename_ext = '.ASS'
 
+    shader_gen_override: EnumProperty(
+        name="Shader Gen Override:",
+        description="Setting for the shader generator",
+        items=[ ('0', "Use Addon Preferences", "Don't use an override and instead use what the toolset has set"),
+                ('1', "Disabled", "No shaders will be generated during import"),
+                ('2', "Simple", "Only the base map or the first bitmap found will be used"),
+                ('3', "Full", "Shaders will try to match ingame appearnce if supported"),
+               ]
+        )
+
     filter_glob: StringProperty(
         default="*.ass",
         options={'HIDDEN'},
@@ -516,7 +526,13 @@ class ImportASS(Operator, ImportHelper):
     def execute(self, context):
         from ..file_ass import import_ass
 
-        return global_functions.run_code("import_ass.load_file(context, self.filepath, self.report)")
+        shader_gen_setting = int(self.shader_gen_override)
+        if shader_gen_setting == 0:
+            shader_gen_setting = int(bpy.context.preferences.addons["io_scene_halo"].preferences.shader_gen)
+        else:
+            shader_gen_setting += -1
+
+        return global_functions.run_code("import_ass.load_file(context, self.filepath, shader_gen_setting, self.report)")
 
     if (4, 1, 0) <= bpy.app.version:
         def invoke(self, context, event):

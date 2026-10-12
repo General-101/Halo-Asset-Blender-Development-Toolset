@@ -1,0 +1,27 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="pphy" name="point_physics" version="1">
+  <Layout regolithID="block:point_physics" internalName="point_physics_block" name="point_physics">
+    <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(struct point_physics_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="flamethrower particle collision" CStyleName="flamethrower_particle_collision_bit" pascalStyleName="FlamethrowerParticleCollisionBit" />
+          <Bit name="collides with structures" CStyleName="collides_with_structures_bit" pascalStyleName="CollidesWithStructuresBit" />
+          <Bit name="collides with water surface" CStyleName="collides_with_water_surface_bit" pascalStyleName="CollidesWithWaterSurfaceBit" />
+          <Bit name="uses simple wind" CStyleName="uses_simple_wind_bit" pascalStyleName="UsesSimpleWindBit" />
+          <Bit name="uses damped wind" CStyleName="uses_damped_wind_bit" pascalStyleName="UsesDampedWindBit" />
+          <Bit name="no gravity" CStyleName="no_gravity_bit" pascalStyleName="NoGravityBit" />
+        </Options>
+      </LongFlags>
+      <Real CStyleName="mass_scale" pascalStyleName="MassScale" name="mass scale" cacheOnly="true" />
+      <Real CStyleName="water_gravity_scale" pascalStyleName="WaterGravityScale" name="water gravity scale" cacheOnly="true" />
+      <Real CStyleName="air_gravity_scale" pascalStyleName="AirGravityScale" name="air gravity scale" cacheOnly="true" />
+      <Pad name="pad" length="16" />
+      <Real CStyleName="density" pascalStyleName="Density" name="density" />
+      <Real CStyleName="air_friction" pascalStyleName="AirFriction" name="air friction" />
+      <Real CStyleName="water_friction" pascalStyleName="WaterFriction" name="water friction" />
+      <Real CStyleName="surface_friction" pascalStyleName="SurfaceFriction" name="surface friction" />
+      <Real CStyleName="elasticity" pascalStyleName="Elasticity" name="elasticity" />
+      <Pad name="pad" length="12" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

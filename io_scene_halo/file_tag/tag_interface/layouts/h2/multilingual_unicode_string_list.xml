@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="unic" name="multilingual_unicode_string_list" version="2">
+  <Layout regolithID="block:multilingual_unicode_string_list" internalName="multilingual_unicode_string_list_block" name="multilingual_unicode_string_list">
+    <FieldSet version="0" sizeofValue="68" sizeofSource="sizeof(s_multilingual_unicode_string_list_group_header)" isLatest="true">
+      <Block CStyleName="string_references" pascalStyleName="StringReferences" name="string references" maxElementCount="9216" maxElementCountSource="k_maximum_multilingual_unicode_strings_per_string_list">
+        <Layout regolithID="block:multilingual_unicode_string_reference" internalName="multilingual_unicode_string_reference_block" name="multilingual_unicode_string_reference_block">
+          <FieldSet version="0" sizeofValue="40" sizeofSource="sizeof(s_multilingual_unicode_string_reference)" isLatest="true">
+            <StringId CStyleName="string_id" pascalStyleName="StringId" name="string id" blockNameSource="true" />
+            <LongInteger CStyleName="english_offset" pascalStyleName="EnglishOffset" name="english offset" />
+            <LongInteger CStyleName="japanese_offset" pascalStyleName="JapaneseOffset" name="japanese offset" />
+            <LongInteger CStyleName="german_offset" pascalStyleName="GermanOffset" name="german offset" />
+            <LongInteger CStyleName="french_offset" pascalStyleName="FrenchOffset" name="french offset" />
+            <LongInteger CStyleName="spanish_offset" pascalStyleName="SpanishOffset" name="spanish offset" />
+            <LongInteger CStyleName="italian_offset" pascalStyleName="ItalianOffset" name="italian offset" />
+            <LongInteger CStyleName="korean_offset" pascalStyleName="KoreanOffset" name="korean offset" />
+            <LongInteger CStyleName="chinese_offset" pascalStyleName="ChineseOffset" name="chinese offset" />
+            <LongInteger CStyleName="portuguese_offset" pascalStyleName="PortugueseOffset" name="portuguese offset" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Data CStyleName="string_data_utf8" pascalStyleName="StringDataUtf8" name="string data utf8" />
+      <Pad sizeOfSource="k_language_count * sizeof(s_language_pack_offsets)" length="36" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

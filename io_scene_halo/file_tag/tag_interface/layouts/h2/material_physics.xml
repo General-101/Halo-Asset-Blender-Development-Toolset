@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="mpdt" name="material_physics" version="0">
+  <Layout regolithID="block:material_physics" internalName="material_physics_block" name="material_physics">
+    <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_material_physics_definition)" isLatest="true">
+      <Explanation name="vehicle terrain parameters" description="the following fields modify the way a vehicle drives over terrain of this material type." />
+      <Real CStyleName="ground_friction_scale" pascalStyleName="GroundFrictionScale" name="ground friction scale" description="fraction of original velocity parallel to the ground after one tick" />
+      <Real CStyleName="ground_friction_normal_k1_scale" pascalStyleName="GroundFrictionNormalK1Scale" name="ground friction normal k1 scale" description="cosine of angle at which friction falls off" />
+      <Real CStyleName="ground_friction_normal_k0_scale" pascalStyleName="GroundFrictionNormalK0Scale" name="ground friction normal k0 scale" description="cosine of angle at which friction is zero" />
+      <Real CStyleName="ground_depth_scale" pascalStyleName="GroundDepthScale" name="ground depth scale" description="depth a point mass rests in the ground" />
+      <Real CStyleName="ground_damp_fraction_scale" pascalStyleName="GroundDampFractionScale" name="ground damp fraction scale" description="fraction of original velocity perpendicular to the ground after one tick" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,908 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="spas" name="shader_pass" version="1">
+  <Layout regolithID="block:shader_pass" internalName="shader_pass_block" name="shader_pass">
+    <FieldSet version="0" sizeofValue="60" sizeofSource="sizeof(s_shader_pass_definition)" isLatest="true">
+      <Data CStyleName="documentation" pascalStyleName="Documentation" name="documentation" />
+      <Block CStyleName="parameters" pascalStyleName="Parameters" name="parameters" maxElementCount="64" maxElementCountSource="k_maximum_parameters_per_shader">
+        <Layout regolithID="block:shader_pass_parameter" internalName="shader_pass_parameter_block" name="parameter">
+          <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(s_shader_pass_parameter)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+            <Data CStyleName="explanation" pascalStyleName="Explanation" name="explanation" />
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <OptionsXRef>enum:global_shader_parameter_type</OptionsXRef>
+            </ShortEnum>
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:shader_pass_parameter_flags" CStyleName="shader_pass_parameter_flags" pascalStyleName="ShaderPassParameterFlags">
+                <Bit name="no bitmap LOD" CStyleName="no_bitmap_lod_bit" pascalStyleName="NoBitmapLodBit" />
+                <Bit name="required parameter" CStyleName="required_parameter_bit" pascalStyleName="RequiredParameterBit" />
+              </Options>
+            </WordFlags>
+            <TagReference CStyleName="default_bitmap" pascalStyleName="DefaultBitmap" name="default bitmap">
+              <tag>bitm</tag>
+            </TagReference>
+            <Real CStyleName="default_const_value" pascalStyleName="DefaultConstValue" name="default const value" />
+            <RealRgbColor CStyleName="default_const_color" pascalStyleName="DefaultConstColor" name="default const color" />
+            <ShortEnum CStyleName="source_extern" pascalStyleName="SourceExtern" name="source extern">
+              <Options regolithID="enum:shader_pass_parameter_source_extern" CStyleName="shader_pass_parameter_source_extern" pascalStyleName="ShaderPassParameterSourceExtern">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="GLOBAL eye forward vector (Z)" CStyleName="global_eye_forward_vector_z" pascalStyleName="GlobalEyeForwardVectorZ" />
+                <Enum name="GLOBAL eye right vector (X)" CStyleName="global_eye_right_vector_x" pascalStyleName="GlobalEyeRightVectorX" />
+                <Enum name="GLOBAL eye up vector (Y)" CStyleName="global_eye_up_vector_y" pascalStyleName="GlobalEyeUpVectorY" />
+                <Enum name="OBJECT change color primary" CStyleName="object_change_color_primary" pascalStyleName="ObjectChangeColorPrimary" />
+                <Enum name="OBJECT change color secondary" CStyleName="object_change_color_secondary" pascalStyleName="ObjectChangeColorSecondary" />
+                <Enum name="OBJECT function value" CStyleName="object_function_value" pascalStyleName="ObjectFunctionValue" />
+                <Enum name="LIGHT diffuse color" CStyleName="light_diffuse_color" pascalStyleName="LightDiffuseColor" />
+                <Enum name="LIGHT specular color" CStyleName="light_specular_color" pascalStyleName="LightSpecularColor" />
+                <Enum name="LIGHT forward vector (Z)" CStyleName="light_forward_vector_z" pascalStyleName="LightForwardVectorZ" />
+                <Enum name="LIGHT right vector (X)" CStyleName="light_right_vector_x" pascalStyleName="LightRightVectorX" />
+                <Enum name="LIGHT up vector (Y)" CStyleName="light_up_vector_y" pascalStyleName="LightUpVectorY" />
+                <Enum name="LIGHT object-relative forward vector (Z)" CStyleName="light_object_relative_forward_vector_z" pascalStyleName="LightObjectRelativeForwardVectorZ" />
+                <Enum name="LIGHT object-relative right vector (X)" CStyleName="light_object_relative_right_vector_x" pascalStyleName="LightObjectRelativeRightVectorX" />
+                <Enum name="LIGHT object-relative up vector (Y)" CStyleName="light_object_relative_up_vector_y" pascalStyleName="LightObjectRelativeUpVectorY" />
+                <Enum name="LIGHT object falloff value" CStyleName="light_object_falloff_value" pascalStyleName="LightObjectFalloffValue" />
+                <Enum name="LIGHT object gel color" CStyleName="light_object_gel_color" pascalStyleName="LightObjectGelColor" />
+                <Enum name="LIGHTMAP object ambient factor" CStyleName="lightmap_object_ambient_factor" pascalStyleName="LightmapObjectAmbientFactor" />
+                <Enum name="LIGHTMAP object direct vector" CStyleName="lightmap_object_direct_vector" pascalStyleName="LightmapObjectDirectVector" />
+                <Enum name="LIGHTMAP object direct color" CStyleName="lightmap_object_direct_color" pascalStyleName="LightmapObjectDirectColor" />
+                <Enum name="LIGHTMAP object indirect vector" CStyleName="lightmap_object_indirect_vector" pascalStyleName="LightmapObjectIndirectVector" />
+                <Enum name="LIGHTMAP object indirect color" CStyleName="lightmap_object_indirect_color" pascalStyleName="LightmapObjectIndirectColor" />
+                <Enum name="OLD_FOG atmospheric color" CStyleName="old_fog_atmospheric_color" pascalStyleName="OldFogAtmosphericColor" />
+                <Enum name="OLD_FOG atmospheric max density" CStyleName="old_fog_atmospheric_max_density" pascalStyleName="OldFogAtmosphericMaxDensity" />
+                <Enum name="OLD_FOG planar color" CStyleName="old_fog_planar_color" pascalStyleName="OldFogPlanarColor" />
+                <Enum name="OLD_FOG planar max density" CStyleName="old_fog_planar_max_density" pascalStyleName="OldFogPlanarMaxDensity" />
+                <Enum name="OLD_FOG atmospheric-planar blend value" CStyleName="old_fog_atmospheric_planar_blend_value" pascalStyleName="OldFogAtmosphericPlanarBlendValue" />
+                <Enum name="OLD_FOG object atmospheric density" CStyleName="old_fog_object_atmospheric_density" pascalStyleName="OldFogObjectAtmosphericDensity" />
+                <Enum name="OLD_FOG object planar density" CStyleName="old_fog_object_planar_density" pascalStyleName="OldFogObjectPlanarDensity" />
+                <Enum name="OLD_FOG object color" CStyleName="old_fog_object_color" pascalStyleName="OldFogObjectColor" />
+                <Enum name="OLD_FOG object density" CStyleName="old_fog_object_density" pascalStyleName="OldFogObjectDensity" />
+                <Enum name="OBJECT model alpha" CStyleName="object_model_alpha" pascalStyleName="ObjectModelAlpha" />
+                <Enum name="OBJECT shadow alpha" CStyleName="object_shadow_alpha" pascalStyleName="ObjectShadowAlpha" />
+                <Enum name="LIGHT overbrighten diffuse shift" CStyleName="light_overbrighten_diffuse_shift" pascalStyleName="LightOverbrightenDiffuseShift" />
+                <Enum name="LIGHT overbrighten specular shift" CStyleName="light_overbrighten_specular_shift" pascalStyleName="LightOverbrightenSpecularShift" />
+                <Enum name="LIGHT diffuse contrast" CStyleName="light_diffuse_contrast" pascalStyleName="LightDiffuseContrast" />
+                <Enum name="LIGHT specular gel" CStyleName="light_specular_gel" pascalStyleName="LightSpecularGel" />
+                <Enum name="SHADER specular type" CStyleName="shader_specular_type" pascalStyleName="ShaderSpecularType" />
+                <Enum name="pad3" CStyleName="pad3" pascalStyleName="Pad3" />
+                <Enum name="pad3-scale" CStyleName="pad3_scale" pascalStyleName="Pad3Scale" />
+                <Enum name="pad thai" CStyleName="pad_thai" pascalStyleName="PadThai" />
+                <Enum name="taco salad" CStyleName="taco_salad" pascalStyleName="TacoSalad" />
+                <Enum name="anisotropic binormal" CStyleName="anisotropic_binormal" pascalStyleName="AnisotropicBinormal" />
+                <Enum name="OBJECT LIGHT shadow fade" CStyleName="object_light_shadow_fade" pascalStyleName="ObjectLightShadowFade" />
+                <Enum name="LIGHT shadow fade" CStyleName="light_shadow_fade" pascalStyleName="LightShadowFade" />
+                <Enum name="OLD_FOG atmospheric density" CStyleName="old_fog_atmospheric_density" pascalStyleName="OldFogAtmosphericDensity" />
+                <Enum name="OLD_FOG planar density" CStyleName="old_fog_planar_density" pascalStyleName="OldFogPlanarDensity" />
+                <Enum name="OLD_FOG planar density invert" CStyleName="old_fog_planar_density_invert" pascalStyleName="OldFogPlanarDensityInvert" />
+                <Enum name="OBJECT change color tertiary" CStyleName="object_change_color_tertiary" pascalStyleName="ObjectChangeColorTertiary" />
+                <Enum name="OBJECT change color quaternary" CStyleName="object_change_color_quaternary" pascalStyleName="ObjectChangeColorQuaternary" />
+                <Enum name="LIGHTMAP object specular color" CStyleName="lightmap_object_specular_color" pascalStyleName="LightmapObjectSpecularColor" />
+                <Enum name="SHADER lightmap type" CStyleName="shader_lightmap_type" pascalStyleName="ShaderLightmapType" />
+                <Enum name="LIGHTMAP object ambient color" CStyleName="lightmap_object_ambient_color" pascalStyleName="LightmapObjectAmbientColor" />
+                <Enum name="SHADER lightmap specular brightness" CStyleName="shader_lightmap_specular_brightness" pascalStyleName="ShaderLightmapSpecularBrightness" />
+                <Enum name="GLOBAL lightmap shadow darkening" CStyleName="global_lightmap_shadow_darkening" pascalStyleName="GlobalLightmapShadowDarkening" />
+                <Enum name="LIGHTMAP object env brightness" CStyleName="lightmap_object_env_brightness" pascalStyleName="LightmapObjectEnvBrightness" />
+                <Enum name="FOG atmospheric max density" CStyleName="fog_atmospheric_max_density" pascalStyleName="FogAtmosphericMaxDensity" />
+                <Enum name="FOG atmospheric color" CStyleName="fog_atmospheric_color" pascalStyleName="FogAtmosphericColor" />
+                <Enum name="FOG atmospheric color adj" CStyleName="fog_atmospheric_color_adj" pascalStyleName="FogAtmosphericColorAdj" />
+                <Enum name="FOG atmospheric-planar blend" CStyleName="fog_atmospheric_planar_blend" pascalStyleName="FogAtmosphericPlanarBlend" />
+                <Enum name="FOG atmospheric-planar blend adj inv" CStyleName="fog_atmospheric_planar_blend_adj_inv" pascalStyleName="FogAtmosphericPlanarBlendAdjInv" />
+                <Enum name="FOG atmospheric-planar blend adj" CStyleName="fog_atmospheric_planar_blend_adj" pascalStyleName="FogAtmosphericPlanarBlendAdj" />
+                <Enum name="FOG secondary max density" CStyleName="fog_secondary_max_density" pascalStyleName="FogSecondaryMaxDensity" />
+                <Enum name="FOG secondary color" CStyleName="fog_secondary_color" pascalStyleName="FogSecondaryColor" />
+                <Enum name="FOG secondary color adj" CStyleName="fog_secondary_color_adj" pascalStyleName="FogSecondaryColorAdj" />
+                <Enum name="FOG atmospheric-secondary blend" CStyleName="fog_atmospheric_secondary_blend" pascalStyleName="FogAtmosphericSecondaryBlend" />
+                <Enum name="FOG atmospheric-secondary blend adj inv" CStyleName="fog_atmospheric_secondary_blend_adj_inv" pascalStyleName="FogAtmosphericSecondaryBlendAdjInv" />
+                <Enum name="FOG atmospheric-secondary blend adj" CStyleName="fog_atmospheric_secondary_blend_adj" pascalStyleName="FogAtmosphericSecondaryBlendAdj" />
+                <Enum name="FOG sky density" CStyleName="fog_sky_density" pascalStyleName="FogSkyDensity" />
+                <Enum name="FOG sky color" CStyleName="fog_sky_color" pascalStyleName="FogSkyColor" />
+                <Enum name="FOG sky color adj" CStyleName="fog_sky_color_adj" pascalStyleName="FogSkyColorAdj" />
+                <Enum name="FOG planar max density" CStyleName="fog_planar_max_density" pascalStyleName="FogPlanarMaxDensity" />
+                <Enum name="FOG planar color" CStyleName="fog_planar_color" pascalStyleName="FogPlanarColor" />
+                <Enum name="FOG planar color adj" CStyleName="fog_planar_color_adj" pascalStyleName="FogPlanarColorAdj" />
+                <Enum name="FOG planar eye density" CStyleName="fog_planar_eye_density" pascalStyleName="FogPlanarEyeDensity" />
+                <Enum name="FOG planar eye density adj inv" CStyleName="fog_planar_eye_density_adj_inv" pascalStyleName="FogPlanarEyeDensityAdjInv" />
+                <Enum name="FOG planar eye density adj" CStyleName="fog_planar_eye_density_adj" pascalStyleName="FogPlanarEyeDensityAdj" />
+                <Enum name="HUD waypoint primary color" CStyleName="hud_waypoint_primary_color" pascalStyleName="HudWaypointPrimaryColor" />
+                <Enum name="HUD waypoint secondary color" CStyleName="hud_waypoint_secondary_color" pascalStyleName="HudWaypointSecondaryColor" />
+                <Enum name="LIGHTMAP object specular color times one half" CStyleName="lightmap_object_specular_color_times_one_half" pascalStyleName="LightmapObjectSpecularColorTimesOneHalf" />
+                <Enum name="LIGHT specular enabled" CStyleName="light_specular_enabled" pascalStyleName="LightSpecularEnabled" />
+                <Enum name="LIGHT definition specular enabled" CStyleName="light_definition_specular_enabled" pascalStyleName="LightDefinitionSpecularEnabled" />
+                <Enum name="OBJECT active camo amount" CStyleName="object_active_camo_amount" pascalStyleName="ObjectActiveCamoAmount" />
+                <Enum name="OBJECT super camo amount" CStyleName="object_super_camo_amount" pascalStyleName="ObjectSuperCamoAmount" />
+                <Enum name="HUD custom color 1" CStyleName="hud_custom_color_1" pascalStyleName="HudCustomColor1" />
+                <Enum name="HUD custom color 2" CStyleName="hud_custom_color_2" pascalStyleName="HudCustomColor2" />
+                <Enum name="HUD custom color 3" CStyleName="hud_custom_color_3" pascalStyleName="HudCustomColor3" />
+                <Enum name="HUD custom color 4" CStyleName="hud_custom_color_4" pascalStyleName="HudCustomColor4" />
+                <Enum name="OBJECT active camo RGB" CStyleName="object_active_camo_rgb" pascalStyleName="ObjectActiveCamoRgb" />
+                <Enum name="FOG patchy plane n(xyz)" CStyleName="fog_patchy_plane_nxyz" pascalStyleName="FogPatchyPlaneNxyz" />
+                <Enum name="FOG patchy plane d(w)" CStyleName="fog_patchy_plane_dw" pascalStyleName="FogPatchyPlaneDw" />
+                <Enum name="HUD global fade" CStyleName="hud_global_fade" pascalStyleName="HudGlobalFade" />
+                <Enum name="SCREEN EFFECT primary" CStyleName="screen_effect_primary" pascalStyleName="ScreenEffectPrimary" />
+                <Enum name="SCREEN EFFECT secondary" CStyleName="screen_effect_secondary" pascalStyleName="ScreenEffectSecondary" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Block CStyleName="implementations" pascalStyleName="Implementations" name="implementations" maxElementCount="32" maxElementCountSource="k_maximum_implementations_per_shader_pass">
+        <Layout regolithID="block:shader_pass_implementation" internalName="shader_pass_implementation_block" name="implementation">
+          <FieldSet version="0" sizeofValue="184" sizeofSource="sizeof(s_shader_pass_implementation)" isLatest="true">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:shader_pass_implementation_flags" CStyleName="shader_pass_implementation_flags" pascalStyleName="ShaderPassImplementationFlags">
+                <Bit name="delete from cache file" description="unused!" CStyleName="delete_from_cache_file_bit" pascalStyleName="DeleteFromCacheFileBit" />
+                <Bit name="critical" description="unused!" CStyleName="critical_bit" pascalStyleName="CriticalBit" />
+              </Options>
+            </WordFlags>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <Block CStyleName="textures" pascalStyleName="Textures" name="textures" maxElementCount="8" maxElementCountSource="k_maximum_textures_per_shader_pass_implementation">
+              <Layout regolithID="block:shader_pass_texture" internalName="shader_pass_texture_block" name="texture stage">
+                <FieldSet version="0" sizeofValue="80" sizeofSource="sizeof(s_shader_pass_texture)" isLatest="true">
+                  <StringId CStyleName="source_parameter" pascalStyleName="SourceParameter" name="source parameter" />
+                  <ShortEnum CStyleName="source_extern" pascalStyleName="SourceExtern" name="source extern">
+                    <Options regolithID="enum:shader_pass_source_extern" CStyleName="shader_pass_source_extern" pascalStyleName="ShaderPassSourceExtern">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="GLOBAL vector-normalization" CStyleName="global_vector_normalization" pascalStyleName="GlobalVectorNormalization" />
+                      <Enum name="UNUSED" CStyleName="unused2" pascalStyleName="Unused2" />
+                      <Enum name="GLOBAL target texaccum" CStyleName="global_target_texaccum" pascalStyleName="GlobalTargetTexaccum" />
+                      <Enum name="UNUSED" CStyleName="unused4" pascalStyleName="Unused4" />
+                      <Enum name="GLOBAL target framebuffer" CStyleName="global_target_framebuffer" pascalStyleName="GlobalTargetFramebuffer" />
+                      <Enum name="GLOBAL target z" CStyleName="global_target_z" pascalStyleName="GlobalTargetZ" />
+                      <Enum name="UNUSED" CStyleName="unused7" pascalStyleName="Unused7" />
+                      <Enum name="GLOBAL target shadow" CStyleName="global_target_shadow" pascalStyleName="GlobalTargetShadow" />
+                      <Enum name="LIGHT falloff" CStyleName="light_falloff" pascalStyleName="LightFalloff" />
+                      <Enum name="LIGHT gel" CStyleName="light_gel" pascalStyleName="LightGel" />
+                      <Enum name="LIGHTMAP" CStyleName="lightmap" pascalStyleName="Lightmap" />
+                      <Enum name="UNUSED" CStyleName="unused12" pascalStyleName="Unused12" />
+                      <Enum name="GLOBAL shadow buffer" CStyleName="global_shadow_buffer" pascalStyleName="GlobalShadowBuffer" />
+                      <Enum name="GLOBAL gradient separate" CStyleName="global_gradient_separate" pascalStyleName="GlobalGradientSeparate" />
+                      <Enum name="GLOBAL gradient product" CStyleName="global_gradient_product" pascalStyleName="GlobalGradientProduct" />
+                      <Enum name="HUD bitmap" CStyleName="hud_bitmap" pascalStyleName="HudBitmap" />
+                      <Enum name="GLOBAL active camo" CStyleName="global_active_camo" pascalStyleName="GlobalActiveCamo" />
+                      <Enum name="GLOBAL texture camera" CStyleName="global_texture_camera" pascalStyleName="GlobalTextureCamera" />
+                      <Enum name="GLOBAL water reflection" CStyleName="global_water_reflection" pascalStyleName="GlobalWaterReflection" />
+                      <Enum name="GLOBAL water refraction" CStyleName="global_water_refraction" pascalStyleName="GlobalWaterRefraction" />
+                      <Enum name="GLOBAL aux1" CStyleName="global_aux1" pascalStyleName="GlobalAux1" />
+                      <Enum name="GLOBAL aux2" CStyleName="global_aux2" pascalStyleName="GlobalAux2" />
+                      <Enum name="GLOBAL particle distortion" CStyleName="global_particle_distortion" pascalStyleName="GlobalParticleDistortion" />
+                      <Enum name="GLOBAL convolution1" CStyleName="global_convolution1" pascalStyleName="GlobalConvolution1" />
+                      <Enum name="GLOBAL convolution2" CStyleName="global_convolution2" pascalStyleName="GlobalConvolution2" />
+                      <Enum name="SHADER active camo bump" CStyleName="shader_active_camo_bump" pascalStyleName="ShaderActiveCamoBump" />
+                      <Enum name="FIRST-PERSON scope" CStyleName="first_person_scope" pascalStyleName="FirstPersonScope" />
+                    </Options>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <Skip sizeOfSource="sizeof(word)" length="2" />
+                  <ShortEnum CStyleName="mode" pascalStyleName="Mode" name="mode">
+                    <Options regolithID="enum:shader_pass_texture_mode" CStyleName="shader_pass_texture_mode" pascalStyleName="ShaderPassTextureMode">
+                      <Enum name="2D" CStyleName="_2d" pascalStyleName="2d" />
+                      <Enum name="3D" CStyleName="_3d" pascalStyleName="3d" />
+                      <Enum name="cube map" CStyleName="cube_map" pascalStyleName="CubeMap" />
+                      <Enum name="passthrough" CStyleName="passthrough" pascalStyleName="Passthrough" />
+                      <Enum name="texkill" CStyleName="texkill" pascalStyleName="Texkill" />
+                      <Enum name="2D dependent AR" CStyleName="_2d_dependent_ar" pascalStyleName="2dDependentAr" />
+                      <Enum name="2D dependent GB" CStyleName="_2d_dependent_gb" pascalStyleName="2dDependentGb" />
+                      <Enum name="2D bumpenv" CStyleName="_2d_bumpenv" pascalStyleName="2dBumpenv" />
+                      <Enum name="2D bumpenv luminance" CStyleName="_2d_bumpenv_luminance" pascalStyleName="2dBumpenvLuminance" />
+                      <Enum name="3D BRDF" CStyleName="_3d_brdf" pascalStyleName="3dBrdf" />
+                      <Enum name="dot product" CStyleName="dot_product" pascalStyleName="DotProduct" />
+                      <Enum name="dot product 2D" CStyleName="dot_product_2d" pascalStyleName="DotProduct2d" />
+                      <Enum name="dot product 3D" CStyleName="dot_product_3d" pascalStyleName="DotProduct3d" />
+                      <Enum name="dot product cube map" CStyleName="dot_product_cube_map" pascalStyleName="DotProductCubeMap" />
+                      <Enum name="dot product ZW" CStyleName="dot_product_zw" pascalStyleName="DotProductZw" />
+                      <Enum name="dot reflect diffuse" CStyleName="dot_reflect_diffuse" pascalStyleName="DotReflectDiffuse" />
+                      <Enum name="dot reflect specular" CStyleName="dot_reflect_specular" pascalStyleName="DotReflectSpecular" />
+                      <Enum name="dot reflect specular const" CStyleName="dot_reflect_specular_const" pascalStyleName="DotReflectSpecularConst" />
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                    </Options>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <ShortEnum CStyleName="dot_mapping" pascalStyleName="DotMapping" name="dot mapping">
+                    <Options regolithID="enum:shader_pass_dot_mapping" CStyleName="shader_pass_dot_mapping" pascalStyleName="ShaderPassDotMapping">
+                      <Enum name="zero to one" CStyleName="zero_to_one" pascalStyleName="ZeroToOne" />
+                      <Enum name="signed D3D" CStyleName="signed_d3d" pascalStyleName="SignedD3d" />
+                      <Enum name="signed GL" CStyleName="signed_gl" pascalStyleName="SignedGl" />
+                      <Enum name="signed NV" CStyleName="signed_nv" pascalStyleName="SignedNv" />
+                      <Enum name="HILO zero to one" CStyleName="hilo_zero_to_one" pascalStyleName="HiloZeroToOne" />
+                      <Enum name="HILO signed hemisphere D3D" CStyleName="hilo_signed_hemisphere_d3d" pascalStyleName="HiloSignedHemisphereD3d" />
+                      <Enum name="HILO signed hemisphere GL" CStyleName="hilo_signed_hemisphere_gl" pascalStyleName="HiloSignedHemisphereGl" />
+                      <Enum name="HILO signed hemisphere NV" CStyleName="hilo_signed_hemisphere_nv" pascalStyleName="HiloSignedHemisphereNv" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortInteger CStyleName="input_stage" pascalStyleName="InputStage" name="input stage" units="[0,3]" />
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <Block CStyleName="address_state" pascalStyleName="AddressState" name="address state" maxElementCount="1">
+                    <Layout regolithID="block:shader_texture_state_address_state" internalName="shader_texture_state_address_state_block" name="address state">
+                      <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(s_shader_texture_state_address_state)" isLatest="true">
+                        <ShortEnum CStyleName="u_address_mode" pascalStyleName="UAddressMode" name="U address mode">
+                          <Options regolithID="enum:texture_address_mode" CStyleName="texture_address_mode" pascalStyleName="TextureAddressMode">
+                            <Enum name="wrap" CStyleName="wrap" pascalStyleName="Wrap" />
+                            <Enum name="mirror" CStyleName="mirror" pascalStyleName="Mirror" />
+                            <Enum name="clamp" CStyleName="clamp" pascalStyleName="Clamp" />
+                            <Enum name="border" CStyleName="border" pascalStyleName="Border" />
+                            <Enum name="clamp to edge" CStyleName="clamp_to_edge" pascalStyleName="ClampToEdge" />
+                          </Options>
+                        </ShortEnum>
+                        <ShortEnum CStyleName="v_address_mode" pascalStyleName="VAddressMode" name="V address mode">
+                          <OptionsXRef>enum:texture_address_mode</OptionsXRef>
+                        </ShortEnum>
+                        <ShortEnum CStyleName="w_address_mode" pascalStyleName="WAddressMode" name="W address mode">
+                          <OptionsXRef>enum:texture_address_mode</OptionsXRef>
+                        </ShortEnum>
+                        <Pad sizeOfSource="sizeof(word)" length="2" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="filter_state" pascalStyleName="FilterState" name="filter state" maxElementCount="1">
+                    <Layout regolithID="block:shader_texture_state_filter_state" internalName="shader_texture_state_filter_state_block" name="filter state">
+                      <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_shader_texture_state_filter_state)" isLatest="true">
+                        <ShortEnum CStyleName="mag_filter" pascalStyleName="MagFilter" name="mag filter">
+                          <Options regolithID="enum:texture_filter_state" CStyleName="texture_filter_state" pascalStyleName="TextureFilterState">
+                            <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                            <Enum name="point sampled" CStyleName="point_sampled" pascalStyleName="PointSampled" />
+                            <Enum name="linear" CStyleName="linear" pascalStyleName="Linear" />
+                            <Enum name="anisotropic" CStyleName="anisotropic" pascalStyleName="Anisotropic" />
+                            <Enum name="quincunx" CStyleName="quincunx" pascalStyleName="Quincunx" />
+                            <Enum name="gaussian cubic" CStyleName="gaussian_cubic" pascalStyleName="GaussianCubic" />
+                          </Options>
+                        </ShortEnum>
+                        <ShortEnum CStyleName="min_filter" pascalStyleName="MinFilter" name="min filter">
+                          <OptionsXRef>enum:texture_filter_state</OptionsXRef>
+                        </ShortEnum>
+                        <ShortEnum CStyleName="mip_filter" pascalStyleName="MipFilter" name="mip filter">
+                          <OptionsXRef>enum:texture_filter_state</OptionsXRef>
+                        </ShortEnum>
+                        <Pad sizeOfSource="sizeof(word)" length="2" />
+                        <Real CStyleName="mipmap_bias" pascalStyleName="MipmapBias" name="mipmap bias" />
+                        <ShortInteger CStyleName="max_mipmap_index" pascalStyleName="MaxMipmapIndex" name="max mipmap index" description="0 means all mipmap levels are used" />
+                        <ShortEnum CStyleName="anisotropy" pascalStyleName="Anisotropy" name="anisotropy">
+                          <Options regolithID="enum:texture_filter_anisotropy_level" CStyleName="texture_filter_anisotropy_level" pascalStyleName="TextureFilterAnisotropyLevel">
+                            <Enum name="non anisotropic" CStyleName="non_anisotropic" pascalStyleName="NonAnisotropic" />
+                            <Enum name="2-tap" CStyleName="_2_tap" pascalStyleName="2Tap" />
+                            <Enum name="3-tap" CStyleName="_3_tap" pascalStyleName="3Tap" />
+                            <Enum name="4-tap" CStyleName="_4_tap" pascalStyleName="4Tap" />
+                          </Options>
+                        </ShortEnum>
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="kill_state" pascalStyleName="KillState" name="kill state" maxElementCount="1">
+                    <Layout regolithID="block:shader_texture_state_kill_state" internalName="shader_texture_state_kill_state_block" name="kill state">
+                      <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_shader_texture_state_kill_state)" isLatest="true">
+                        <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                          <Options regolithID="enum:shader_texture_state_kill_flags" CStyleName="shader_texture_state_kill_flags" pascalStyleName="ShaderTextureStateKillFlags">
+                            <Bit name="alpha kill" CStyleName="alpha_kill_bit" pascalStyleName="AlphaKillBit" />
+                          </Options>
+                        </WordFlags>
+                        <Pad sizeOfSource="sizeof(word)" length="2" />
+                        <ShortEnum CStyleName="colorkey_mode" pascalStyleName="ColorkeyMode" name="colorkey mode">
+                          <Options regolithID="enum:kill_colorkey_mode" CStyleName="kill_colorkey_mode" pascalStyleName="KillColorkeyMode">
+                            <Enum name="disabled" CStyleName="disabled" pascalStyleName="Disabled" />
+                            <Enum name="zero alpha" CStyleName="zero_alpha" pascalStyleName="ZeroAlpha" />
+                            <Enum name="zero ARGB" CStyleName="zero_argb" pascalStyleName="ZeroArgb" />
+                            <Enum name="kill" CStyleName="kill" pascalStyleName="Kill" />
+                          </Options>
+                        </ShortEnum>
+                        <Pad sizeOfSource="sizeof(word)" length="2" />
+                        <RgbColor CStyleName="colorkey_color" pascalStyleName="ColorkeyColor" name="colorkey color" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="misc_state" pascalStyleName="MiscState" name="misc state" maxElementCount="1">
+                    <Layout regolithID="block:shader_texture_state_misc_state" internalName="shader_texture_state_misc_state_block" name="misc state">
+                      <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(s_shader_texture_state_misc_state)" isLatest="true">
+                        <WordFlags CStyleName="component_sign_flags" pascalStyleName="ComponentSignFlags" name="component sign flags">
+                          <Options regolithID="enum:shader_texture_component_sign_flags" CStyleName="shader_texture_component_sign_flags" pascalStyleName="ShaderTextureComponentSignFlags">
+                            <Bit name="R signed" CStyleName="r_signed_bit" pascalStyleName="RSignedBit" />
+                            <Bit name="G signed" CStyleName="g_signed_bit" pascalStyleName="GSignedBit" />
+                            <Bit name="B signed" CStyleName="b_signed_bit" pascalStyleName="BSignedBit" />
+                            <Bit name="A signed" CStyleName="a_signed_bit" pascalStyleName="ASignedBit" />
+                          </Options>
+                        </WordFlags>
+                        <Pad sizeOfSource="sizeof(word)" length="2" />
+                        <ArgbColor CStyleName="border_color" pascalStyleName="BorderColor" name="border color" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="constants" pascalStyleName="Constants" name="constants" maxElementCount="10" maxElementCountSource="k_number_of_shader_texture_state_constants">
+                    <Layout regolithID="block:shader_texture_state_constant" internalName="shader_texture_state_constant_block" name="texture constant">
+                      <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(s_shader_state_constant)" isLatest="true">
+                        <StringId CStyleName="source_parameter" pascalStyleName="SourceParameter" name="source parameter" />
+                        <Pad sizeOfSource="sizeof(word)" length="2" />
+                        <ShortEnum CStyleName="constant" pascalStyleName="Constant" name="constant" blockNameSource="true">
+                          <Options regolithID="enum:shader_texture_constant" CStyleName="shader_texture_constant" pascalStyleName="ShaderTextureConstant">
+                            <Enum name="mipmap bias (value)" CStyleName="mipmap_bias_value" pascalStyleName="MipmapBiasValue" />
+                            <Enum name="colorkey color" CStyleName="colorkey_color" pascalStyleName="ColorkeyColor" />
+                            <Enum name="border color" CStyleName="border_color" pascalStyleName="BorderColor" />
+                            <Enum name="border alpha (value)" CStyleName="border_alpha_value" pascalStyleName="BorderAlphaValue" />
+                            <Enum name="bumpenv mat[0][0]" CStyleName="bumpenv_mat00" pascalStyleName="BumpenvMat00" />
+                            <Enum name="bumpenv mat[0][1]" CStyleName="bumpenv_mat01" pascalStyleName="BumpenvMat01" />
+                            <Enum name="bumpenv mat[1][0]" CStyleName="bumpenv_mat10" pascalStyleName="BumpenvMat10" />
+                            <Enum name="bumpenv mat[1][1]" CStyleName="bumpenv_mat11" pascalStyleName="BumpenvMat11" />
+                            <Enum name="bumpenv lum scale (value)" CStyleName="bumpenv_lum_scale_value" pascalStyleName="BumpenvLumScaleValue" />
+                            <Enum name="bumpenv lum offset (value)" CStyleName="bumpenv_lum_offset_value" pascalStyleName="BumpenvLumOffsetValue" />
+                          </Options>
+                        </ShortEnum>
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Explanation name="VERTEX SHADER" />
+            <TagReference CStyleName="vertex_shader" pascalStyleName="VertexShader" name="vertex shader">
+              <tag>vrtx</tag>
+            </TagReference>
+            <Block CStyleName="vs_constants" pascalStyleName="VsConstants" name="vs constants" maxElementCount="32" maxElementCountSource="k_maximum_vertex_shader_constants_per_shader_pass_implementation">
+              <Layout regolithID="block:shader_pass_vertex_shader_constant" internalName="shader_pass_vertex_shader_constant_block" name="vs constant">
+                <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_shader_pass_constant)" isLatest="true">
+                  <StringId CStyleName="source_parameter" pascalStyleName="SourceParameter" name="source parameter" />
+                  <ShortEnum CStyleName="scale_by_texture_stage" pascalStyleName="ScaleByTextureStage" name="scale by texture stage">
+                    <Options regolithID="enum:shader_pass_vertex_shader_constant_texture_stage" CStyleName="shader_pass_vertex_shader_constant_texture_stage" pascalStyleName="ShaderPassVertexShaderConstantTextureStage">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="stage 0" CStyleName="stage_0" pascalStyleName="Stage0" />
+                      <Enum name="stage 1" CStyleName="stage_1" pascalStyleName="Stage1" />
+                      <Enum name="stage 2" CStyleName="stage_2" pascalStyleName="Stage2" />
+                      <Enum name="stage 3" CStyleName="stage_3" pascalStyleName="Stage3" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="register_bank" pascalStyleName="RegisterBank" name="register bank">
+                    <Options regolithID="enum:shader_pass_register_bank" CStyleName="shader_pass_register_bank" pascalStyleName="ShaderPassRegisterBank">
+                      <Enum name="Vn [0,15]" CStyleName="vn_015" pascalStyleName="Vn015" />
+                      <Enum name="Cn [0,12]" CStyleName="cn_012" pascalStyleName="Cn012" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortInteger CStyleName="register_index" pascalStyleName="RegisterIndex" name="register index" />
+                  <ShortEnum CStyleName="component_mask" pascalStyleName="ComponentMask" name="component mask">
+                    <Options regolithID="enum:shader_pass_vertex_shader_constant_component_mask" CStyleName="shader_pass_vertex_shader_constant_component_mask" pascalStyleName="ShaderPassVertexShaderConstantComponentMask">
+                      <Enum name="x (value)" CStyleName="x_value" pascalStyleName="XValue" />
+                      <Enum name="y (value)" CStyleName="y_value" pascalStyleName="YValue" />
+                      <Enum name="z (value)" CStyleName="z_value" pascalStyleName="ZValue" />
+                      <Enum name="w (value)" CStyleName="w_value" pascalStyleName="WValue" />
+                      <Enum name="xyz/rgb (color)" CStyleName="xyzrgb_color" pascalStyleName="XyzrgbColor" />
+                      <Enum name="x (uniform scale)" CStyleName="x_uniform_scale" pascalStyleName="XUniformScale" />
+                      <Enum name="y (uniform scale)" CStyleName="y_uniform_scale" pascalStyleName="YUniformScale" />
+                      <Enum name="z (uniform scale)" CStyleName="z_uniform_scale" pascalStyleName="ZUniformScale" />
+                      <Enum name="w (uniform scale)" CStyleName="w_uniform_scale" pascalStyleName="WUniformScale" />
+                      <Enum name="xy (2D scale)" CStyleName="xy_2d_scale" pascalStyleName="Xy2dScale" />
+                      <Enum name="zw (2D scale)" CStyleName="zw_2d_scale" pascalStyleName="Zw2dScale" />
+                      <Enum name="xy (2D translation)" CStyleName="xy_2d_translation" pascalStyleName="Xy2dTranslation" />
+                      <Enum name="zw (2D translation)" CStyleName="zw_2d_translation" pascalStyleName="Zw2dTranslation" />
+                      <Enum name="xyzw (2D simple xform)" CStyleName="xyzw_2d_simple_xform" pascalStyleName="Xyzw2dSimpleXform" />
+                      <Enum name="xyw row1 (2D affine xform)" CStyleName="xyw_row1_2d_affine_xform" pascalStyleName="XywRow12dAffineXform" />
+                      <Enum name="xyw row2 (2D affine xform)" CStyleName="xyw_row2_2d_affine_xform" pascalStyleName="XywRow22dAffineXform" />
+                      <Enum name="xyz (3D scale)" CStyleName="xyz_3d_scale" pascalStyleName="Xyz3dScale" />
+                      <Enum name="xyz (3D translation)" CStyleName="xyz_3d_translation" pascalStyleName="Xyz3dTranslation" />
+                      <Enum name="xyzw row1 (3D affine xform)" CStyleName="xyzw_row1_3d_affine_xform" pascalStyleName="XyzwRow13dAffineXform" />
+                      <Enum name="xyzw row2 (3D affine xform)" CStyleName="xyzw_row2_3d_affine_xform" pascalStyleName="XyzwRow23dAffineXform" />
+                      <Enum name="xyzw row3 (3D affine xform)" CStyleName="xyzw_row3_3d_affine_xform" pascalStyleName="XyzwRow33dAffineXform" />
+                    </Options>
+                  </ShortEnum>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <UselessPad length="4" />
+            <Data CStyleName="pixel_shader_codeunused" pascalStyleName="PixelShaderCodeunused" name="pixel shader code[UNUSED]" />
+            <UselessPad length="12" />
+            <Explanation name="STATE" />
+            <ShortEnum CStyleName="channels" pascalStyleName="Channels" name="channels">
+              <Options regolithID="enum:shader_pass_channels" CStyleName="shader_pass_channels" pascalStyleName="ShaderPassChannels">
+                <Enum name="all" CStyleName="all" pascalStyleName="All" />
+                <Enum name="color only" CStyleName="color_only" pascalStyleName="ColorOnly" />
+                <Enum name="alpha only" CStyleName="alpha_only" pascalStyleName="AlphaOnly" />
+                <Enum name="custom" CStyleName="custom" pascalStyleName="Custom" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="alpha_blend" pascalStyleName="AlphaBlend" name="alpha-blend">
+              <Options regolithID="enum:shader_alpha_blend" CStyleName="shader_alpha_blend" pascalStyleName="ShaderAlphaBlend">
+                <Enum name="disabled" CStyleName="disabled" pascalStyleName="Disabled" />
+                <Enum name="add" CStyleName="add" pascalStyleName="Add" />
+                <Enum name="multiply" CStyleName="multiply" pascalStyleName="Multiply" />
+                <Enum name="add src times dstalpha" CStyleName="add_src_times_dstalpha" pascalStyleName="AddSrcTimesDstalpha" />
+                <Enum name="add src times srcalpha" CStyleName="add_src_times_srcalpha" pascalStyleName="AddSrcTimesSrcalpha" />
+                <Enum name="add dst times srcalpha inverse" CStyleName="add_dst_times_srcalpha_inverse" pascalStyleName="AddDstTimesSrcalphaInverse" />
+                <Enum name="alpha blend" CStyleName="alpha_blend" pascalStyleName="AlphaBlend" />
+                <Enum name="custom" CStyleName="custom" pascalStyleName="Custom" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="depth" pascalStyleName="Depth" name="depth">
+              <Options regolithID="enum:shader_depth_level" CStyleName="shader_depth_level" pascalStyleName="ShaderDepthLevel">
+                <Enum name="disabled" CStyleName="disabled" pascalStyleName="Disabled" />
+                <Enum name="default opaque" CStyleName="default_opaque" pascalStyleName="DefaultOpaque" />
+                <Enum name="default opaque write" CStyleName="default_opaque_write" pascalStyleName="DefaultOpaqueWrite" />
+                <Enum name="default transparent" CStyleName="default_transparent" pascalStyleName="DefaultTransparent" />
+                <Enum name="custom" CStyleName="custom" pascalStyleName="Custom" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <Block CStyleName="channel_state" pascalStyleName="ChannelState" name="channel state" maxElementCount="1">
+              <Layout regolithID="block:shader_state_channels_state" internalName="shader_state_channels_state_block" name="channels">
+                <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(s_shader_state_channels_state)" isLatest="true">
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:shader_state_color_channels" CStyleName="shader_state_color_channels" pascalStyleName="ShaderStateColorChannels">
+                      <Bit name="R" CStyleName="r_bit" pascalStyleName="RBit" />
+                      <Bit name="G" CStyleName="g_bit" pascalStyleName="GBit" />
+                      <Bit name="B" CStyleName="b_bit" pascalStyleName="BBit" />
+                      <Bit name="A" CStyleName="a_bit" pascalStyleName="ABit" />
+                    </Options>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="alpha_blend_state" pascalStyleName="AlphaBlendState" name="alpha-blend state" maxElementCount="1">
+              <Layout regolithID="block:shader_state_alpha_blend_state" internalName="shader_state_alpha_blend_state_block" name="alpha-blend state">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_shader_state_alpha_blend_state)" isLatest="true">
+                  <ShortEnum CStyleName="blend_function" pascalStyleName="BlendFunction" name="blend function">
+                    <Options regolithID="enum:alpha_blend_state" CStyleName="alpha_blend_state" pascalStyleName="AlphaBlendState">
+                      <Enum name="add" CStyleName="add" pascalStyleName="Add" />
+                      <Enum name="subtract" CStyleName="subtract" pascalStyleName="Subtract" />
+                      <Enum name="reverse subtract" CStyleName="reverse_subtract" pascalStyleName="ReverseSubtract" />
+                      <Enum name="min" CStyleName="min" pascalStyleName="Min" />
+                      <Enum name="max" CStyleName="max" pascalStyleName="Max" />
+                      <Enum name="add signed" CStyleName="add_signed" pascalStyleName="AddSigned" />
+                      <Enum name="reverse subtract signed" CStyleName="reverse_subtract_signed" pascalStyleName="ReverseSubtractSigned" />
+                      <Enum name="logic-op" CStyleName="logic_op" pascalStyleName="LogicOp" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="blend_src_factor" pascalStyleName="BlendSrcFactor" name="blend src factor">
+                    <Options regolithID="enum:alpha_blend_factor" CStyleName="alpha_blend_factor" pascalStyleName="AlphaBlendFactor">
+                      <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                      <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                      <Enum name="srccolor" CStyleName="srccolor" pascalStyleName="Srccolor" />
+                      <Enum name="srccolor inverse" CStyleName="srccolor_inverse" pascalStyleName="SrccolorInverse" />
+                      <Enum name="srcalpha" CStyleName="srcalpha" pascalStyleName="Srcalpha" />
+                      <Enum name="srcalpha inverse" CStyleName="srcalpha_inverse" pascalStyleName="SrcalphaInverse" />
+                      <Enum name="dstcolor" CStyleName="dstcolor" pascalStyleName="Dstcolor" />
+                      <Enum name="dstcolor inverse" CStyleName="dstcolor_inverse" pascalStyleName="DstcolorInverse" />
+                      <Enum name="dstalpha" CStyleName="dstalpha" pascalStyleName="Dstalpha" />
+                      <Enum name="dstalpha inverse" CStyleName="dstalpha_inverse" pascalStyleName="DstalphaInverse" />
+                      <Enum name="srcalpha saturate" CStyleName="srcalpha_saturate" pascalStyleName="SrcalphaSaturate" />
+                      <Enum name="constant color" CStyleName="constant_color" pascalStyleName="ConstantColor" />
+                      <Enum name="constant color inverse" CStyleName="constant_color_inverse" pascalStyleName="ConstantColorInverse" />
+                      <Enum name="constant alpha" CStyleName="constant_alpha" pascalStyleName="ConstantAlpha" />
+                      <Enum name="constant alpha inverse" CStyleName="constant_alpha_inverse" pascalStyleName="ConstantAlphaInverse" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="blend_dst_factor" pascalStyleName="BlendDstFactor" name="blend dst factor">
+                    <OptionsXRef>enum:alpha_blend_factor</OptionsXRef>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <ArgbColor CStyleName="blend_color" pascalStyleName="BlendColor" name="blend color" />
+                  <WordFlags CStyleName="logic_op_flags" pascalStyleName="LogicOpFlags" name="logic-op flags">
+                    <Options regolithID="enum:alpha_blend_logic_op_flags" CStyleName="alpha_blend_logic_op_flags" pascalStyleName="AlphaBlendLogicOpFlags">
+                      <Bit name="src=0 dst=0" CStyleName="src0_dst0_bit" pascalStyleName="Src0Dst0Bit" />
+                      <Bit name="src=0 dst=1" CStyleName="src0_dst1_bit" pascalStyleName="Src0Dst1Bit" />
+                      <Bit name="src=1 dst=0" CStyleName="src1_dst0_bit" pascalStyleName="Src1Dst0Bit" />
+                      <Bit name="src=1 dst=1" CStyleName="src1_dst1_bit" pascalStyleName="Src1Dst1Bit" />
+                    </Options>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="alpha_test_state" pascalStyleName="AlphaTestState" name="alpha-test state" maxElementCount="1">
+              <Layout regolithID="block:shader_state_alpha_test_state" internalName="shader_state_alpha_test_state_block" name="alpha-test state">
+                <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(s_shader_state_alpha_test_state)" isLatest="true">
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:shader_alpha_test_state_flags" CStyleName="shader_alpha_test_state_flags" pascalStyleName="ShaderAlphaTestStateFlags">
+                      <Bit name="alpha-test enabled" CStyleName="alpha_test_enabled_bit" pascalStyleName="AlphaTestEnabledBit" />
+                      <Bit name="sample-alpha to coverage" CStyleName="sample_alpha_to_coverage_bit" pascalStyleName="SampleAlphaToCoverageBit" />
+                      <Bit name="sample-alpha to one" CStyleName="sample_alpha_to_one_bit" pascalStyleName="SampleAlphaToOneBit" />
+                    </Options>
+                  </WordFlags>
+                  <ShortEnum CStyleName="alpha_compare_function" pascalStyleName="AlphaCompareFunction" name="alpha compare function">
+                    <Options regolithID="enum:shader_state_comparison_function" CStyleName="shader_state_comparison_function" pascalStyleName="ShaderStateComparisonFunction">
+                      <Enum name="never" CStyleName="never" pascalStyleName="Never" />
+                      <Enum name="less" CStyleName="less" pascalStyleName="Less" />
+                      <Enum name="equal" CStyleName="equal" pascalStyleName="Equal" />
+                      <Enum name="less or equal" CStyleName="less_or_equal" pascalStyleName="LessOrEqual" />
+                      <Enum name="greater" CStyleName="greater" pascalStyleName="Greater" />
+                      <Enum name="not equal" CStyleName="not_equal" pascalStyleName="NotEqual" />
+                      <Enum name="greater or equal" CStyleName="greater_or_equal" pascalStyleName="GreaterOrEqual" />
+                      <Enum name="always" CStyleName="always" pascalStyleName="Always" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortInteger CStyleName="alpha_test_ref" pascalStyleName="AlphaTestRef" name="alpha-test ref" units="[0,255]" />
+                  <Pad sizeOfSource="2*sizeof(byte)" length="2" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="depth_state" pascalStyleName="DepthState" name="depth state" maxElementCount="1">
+              <Layout regolithID="block:shader_state_depth_state" internalName="shader_state_depth_state_block" name="depth state">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_shader_state_depth_state)" isLatest="true">
+                  <ShortEnum CStyleName="mode" pascalStyleName="Mode" name="mode">
+                    <Options regolithID="enum:depth_state_mode" CStyleName="depth_state_mode" pascalStyleName="DepthStateMode">
+                      <Enum name="use Z" CStyleName="use_z" pascalStyleName="UseZ" />
+                      <Enum name="use W" CStyleName="use_w" pascalStyleName="UseW" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="depth_compare_function" pascalStyleName="DepthCompareFunction" name="depth compare function">
+                    <OptionsXRef>enum:shader_state_comparison_function</OptionsXRef>
+                  </ShortEnum>
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:depth_state_flags" CStyleName="depth_state_flags" pascalStyleName="DepthStateFlags">
+                      <Bit name="depth write" CStyleName="depth_write_bit" pascalStyleName="DepthWriteBit" />
+                      <Bit name="offset points" CStyleName="offset_points_bit" pascalStyleName="OffsetPointsBit" />
+                      <Bit name="offset lines" CStyleName="offset_lines_bit" pascalStyleName="OffsetLinesBit" />
+                      <Bit name="offset triangles" CStyleName="offset_triangles_bit" pascalStyleName="OffsetTrianglesBit" />
+                      <Bit name="clip control don't cull primitive" CStyleName="clip_control_dont_cull_primitive_bit" pascalStyleName="ClipControlDontCullPrimitiveBit" />
+                      <Bit name="clip control clamp" CStyleName="clip_control_clamp_bit" pascalStyleName="ClipControlClampBit" />
+                      <Bit name="clip control ignore W sign" CStyleName="clip_control_ignore_w_sign_bit" pascalStyleName="ClipControlIgnoreWSignBit" />
+                    </Options>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <Real CStyleName="depth_bias_slope_scale" pascalStyleName="DepthBiasSlopeScale" name="depth bias slope scale" />
+                  <Real CStyleName="depth_bias" pascalStyleName="DepthBias" name="depth bias" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="cull_state" pascalStyleName="CullState" name="cull state" maxElementCount="1">
+              <Layout regolithID="block:shader_state_cull_state" internalName="shader_state_cull_state_block" name="cull state">
+                <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(s_shader_state_cull_state)" isLatest="true">
+                  <ShortEnum CStyleName="mode" pascalStyleName="Mode" name="mode">
+                    <Options regolithID="enum:cull_state_mode" CStyleName="cull_state_mode" pascalStyleName="CullStateMode">
+                      <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                      <Enum name="CW" CStyleName="cw" pascalStyleName="Cw" />
+                      <Enum name="CCW" CStyleName="ccw" pascalStyleName="Ccw" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="front_face" pascalStyleName="FrontFace" name="front face">
+                    <Options regolithID="enum:cull_front_face" CStyleName="cull_front_face" pascalStyleName="CullFrontFace">
+                      <Enum name="CW" CStyleName="cw" pascalStyleName="Cw" />
+                      <Enum name="CCW" CStyleName="ccw" pascalStyleName="Ccw" />
+                    </Options>
+                  </ShortEnum>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="fill_state" pascalStyleName="FillState" name="fill state" maxElementCount="1">
+              <Layout regolithID="block:shader_state_fill_state" internalName="shader_state_fill_state_block" name="fill state">
+                <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_shader_state_fill_state)" isLatest="true">
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:shader_fill_flags" CStyleName="shader_fill_flags" pascalStyleName="ShaderFillFlags">
+                      <Bit name="flat shading" CStyleName="flat_shading_bit" pascalStyleName="FlatShadingBit" />
+                      <Bit name="edge antialiasing" CStyleName="edge_antialiasing_bit" pascalStyleName="EdgeAntialiasingBit" />
+                    </Options>
+                  </WordFlags>
+                  <ShortEnum CStyleName="fill_mode" pascalStyleName="FillMode" name="fill mode">
+                    <Options regolithID="enum:shader_fill_state" CStyleName="shader_fill_state" pascalStyleName="ShaderFillState">
+                      <Enum name="solid" CStyleName="solid" pascalStyleName="Solid" />
+                      <Enum name="wireframe" CStyleName="wireframe" pascalStyleName="Wireframe" />
+                      <Enum name="points" CStyleName="points" pascalStyleName="Points" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="back_fill_mode" pascalStyleName="BackFillMode" name="back fill mode">
+                    <OptionsXRef>enum:shader_fill_state</OptionsXRef>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <Real CStyleName="line_width" pascalStyleName="LineWidth" name="line width" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="misc_state" pascalStyleName="MiscState" name="misc state" maxElementCount="1">
+              <Layout regolithID="block:shader_state_misc_state" internalName="shader_state_misc_state_block" name="misc state">
+                <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(s_shader_state_misc_state)" isLatest="true">
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:shader_state_misc_flags" CStyleName="shader_state_misc_flags" pascalStyleName="ShaderStateMiscFlags">
+                      <Bit name="YUV to RGB" CStyleName="yuv_to_rgb_bit" pascalStyleName="YuvToRgbBit" />
+                      <Bit name="16-bit dither" CStyleName="_16_bit_dither_bit" pascalStyleName="16BitDitherBit" />
+                      <Bit name="32-bit DXT1 noise" CStyleName="_32_bit_dxt1_noise_bit" pascalStyleName="32BitDxt1NoiseBit" />
+                    </Options>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <RgbColor CStyleName="fog_color" pascalStyleName="FogColor" name="fog color" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="constants" pascalStyleName="Constants" name="constants" maxElementCount="7" maxElementCountSource="k_number_of_shader_state_constants">
+              <Layout regolithID="block:shader_state_constant" internalName="shader_state_constant_block" name="render state constant">
+                <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(s_shader_state_constant)" isLatest="true">
+                  <StringId CStyleName="source_parameter" pascalStyleName="SourceParameter" name="source parameter" />
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <ShortEnum CStyleName="constant" pascalStyleName="Constant" name="constant" blockNameSource="true">
+                    <Options regolithID="enum:shader_state_constant" CStyleName="shader_state_constant" pascalStyleName="ShaderStateConstant">
+                      <Enum name="constant blend color" CStyleName="constant_blend_color" pascalStyleName="ConstantBlendColor" />
+                      <Enum name="constant blend alpha (value)" CStyleName="constant_blend_alpha_value" pascalStyleName="ConstantBlendAlphaValue" />
+                      <Enum name="alpha-test ref (value)" CStyleName="alpha_test_ref_value" pascalStyleName="AlphaTestRefValue" />
+                      <Enum name="depth bias slope scale (value)" CStyleName="depth_bias_slope_scale_value" pascalStyleName="DepthBiasSlopeScaleValue" />
+                      <Enum name="depth bias (value)" CStyleName="depth_bias_value" pascalStyleName="DepthBiasValue" />
+                      <Enum name="line width (value)" CStyleName="line_width_value" pascalStyleName="LineWidthValue" />
+                      <Enum name="fog color" CStyleName="fog_color" pascalStyleName="FogColor" />
+                    </Options>
+                  </ShortEnum>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <TagReference CStyleName="pixel_shader" pascalStyleName="PixelShader" name="pixel shader">
+              <tag>pixl</tag>
+            </TagReference>
+            <UselessPad length="224" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="postprocess_definition" pascalStyleName="PostprocessDefinition" name="postprocess definition" readOnly="true" maxElementCount="3" maxElementCountSource="k_render_shader_platform_count">
+        <Layout regolithID="block:shader_pass_postprocess_definition_new" internalName="shader_pass_postprocess_definition_new_block" name="shader_pass_postprocess_definition_new_block">
+          <FieldSet version="0" sizeofValue="132" sizeofSource="sizeof(s_shader_pass_postprocess_definition_new)" isLatest="true">
+            <Block CStyleName="implementations" pascalStyleName="Implementations" name="implementations" maxElementCount="1024" maxElementCountSource="k_kilo">
+              <Layout regolithID="block:shader_pass_postprocess_implementation_new" internalName="shader_pass_postprocess_implementation_new_block" name="shader_pass_postprocess_implementation_new_block">
+                <FieldSet version="0" sizeofValue="350" sizeofSource="sizeof(s_shader_pass_postprocess_implementation_new)" isLatest="true">
+                  <Struct CStyleName="textures" pascalStyleName="Textures" name="textures">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="render_states" pascalStyleName="RenderStates" name="render states">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="texture_states" pascalStyleName="TextureStates" name="texture states">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Skip sizeOfSource="sizeof(XBOX_D3DPixelShaderDef)" length="240" />
+                  <Struct CStyleName="ps_fragments" pascalStyleName="PsFragments" name="ps fragments">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="ps_permutations" pascalStyleName="PsPermutations" name="ps permutations">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="ps_combiners" pascalStyleName="PsCombiners" name="ps combiners">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <TagReference CStyleName="vertex_shader" pascalStyleName="VertexShader" name="vertex shader">
+                    <tag>vrtx</tag>
+                  </TagReference>
+                  <Skip sizeOfSource="sizeof(t_color_extern_bitset)" length="8" />
+                  <Skip sizeOfSource="sizeof(t_value_extern_bitset)" length="8" />
+                  <Skip sizeOfSource="sizeof(t_switch_extern_bitset)" length="4" />
+                  <Skip sizeOfSource="sizeof(t_texture_extern_bitset)" length="4" />
+                  <Struct CStyleName="default_render_states" pascalStyleName="DefaultRenderStates" name="default render states">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="render_state_externs" pascalStyleName="RenderStateExterns" name="render state externs">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="texture_state_externs" pascalStyleName="TextureStateExterns" name="texture state externs">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="pixel_constant_externs" pascalStyleName="PixelConstantExterns" name="pixel constant externs">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="vertex_constant_externs" pascalStyleName="VertexConstantExterns" name="vertex constant externs">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="ps_constants" pascalStyleName="PsConstants" name="ps constants">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="vs_constants" pascalStyleName="VsConstants" name="vs constants">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="pixel_constant_info" pascalStyleName="PixelConstantInfo" name="pixel constant info">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="vertex_constant_info" pascalStyleName="VertexConstantInfo" name="vertex constant info">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="render_state_info" pascalStyleName="RenderStateInfo" name="render state info">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="texture_state_info" pascalStyleName="TextureStateInfo" name="texture state info">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Block CStyleName="pixel_shader" pascalStyleName="PixelShader" name="pixel shader" maxElementCount="100">
+                    <Layout regolithID="block:shader_postprocess_pixel_shader" internalName="shader_postprocess_pixel_shader" name="shader_postprocess_pixel_shader">
+                      <FieldSet version="0" sizeofValue="84" sizeofSource="sizeof(s_pixel_shader)" isLatest="true">
+                        <Ptr length="4" />
+                        <Ptr length="4" />
+                        <Ptr length="4" />
+                        <Block CStyleName="constant_register_defaults" pascalStyleName="ConstantRegisterDefaults" name="constant register defaults" maxElementCount="32">
+                          <Layout regolithID="block:shader_postprocess_pixel_shader_constant_defaults" internalName="shader_postprocess_pixel_shader_constant_defaults" name="shader_postprocess_pixel_shader_constant_defaults">
+                            <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(s_pixel_shader_constant_defaults)" isLatest="true">
+                              <LongInteger CStyleName="defaults" pascalStyleName="Defaults" name="defaults" />
+                            </FieldSet>
+                          </Layout>
+                        </Block>
+                        <Data name="compiled shader" />
+                        <Data name="compiled shader" />
+                        <Data name="compiled shader" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="pixel_shader_switch_extern_map" pascalStyleName="PixelShaderSwitchExternMap" name="pixel shader switch extern map" maxElementCount="6">
+                    <Layout regolithID="block:pixel_shader_extern_map" internalName="pixel_shader_extern_map_block" name="pixel_shader_extern_map_block">
+                      <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(s_pixel_shader_extern_map)" isLatest="true">
+                        <CharInteger CStyleName="switch_parameter" pascalStyleName="SwitchParameter" name="switch parameter" />
+                        <CharInteger CStyleName="case_scalar" pascalStyleName="CaseScalar" name="case scalar" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="pixel_shader_index_block" pascalStyleName="PixelShaderIndexBlock" name="pixel shader index block" maxElementCount="100">
+                    <Layout regolithID="block:pixel_shader_index" internalName="pixel_shader_index_block" name="pixel_shader_index_block">
+                      <FieldSet version="0" sizeofValue="1" sizeofSource="sizeof(s_pixel_shader_index)" isLatest="true">
+                        <CharInteger CStyleName="pixel_shader_index" pascalStyleName="PixelShaderIndex" name="pixel shader index" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="textures" pascalStyleName="Textures" name="textures" maxElementCount="1024" maxElementCountSource="k_kilo">
+              <Layout regolithID="block:shader_pass_postprocess_texture_new" internalName="shader_pass_postprocess_texture_new_block" name="shader_pass_postprocess_texture_new_block">
+                <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(s_shader_pass_postprocess_texture_new)" isLatest="true">
+                  <CharInteger CStyleName="bitmap_parameter_index" pascalStyleName="BitmapParameterIndex" name="bitmap parameter index" />
+                  <CharInteger CStyleName="bitmap_extern_index" pascalStyleName="BitmapExternIndex" name="bitmap extern index" />
+                  <CharInteger CStyleName="texture_stage_index" pascalStyleName="TextureStageIndex" name="texture stage index" />
+                  <CharInteger CStyleName="flags" pascalStyleName="Flags" name="flags" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="render_states" pascalStyleName="RenderStates" name="render states" maxElementCount="1024" maxElementCountSource="k_number_of_render_states">
+              <LayoutXRef>block:render_state</LayoutXRef>
+            </Block>
+            <Block CStyleName="texture_states" pascalStyleName="TextureStates" name="texture states" maxElementCount="1024" maxElementCountSource="k_kilo">
+              <Layout regolithID="block:shader_pass_postprocess_texture_state" internalName="shader_pass_postprocess_texture_state_block" name="shader_pass_postprocess_texture_state_block">
+                <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(s_shader_pass_postprocess_texture_state)" isLatest="true">
+                  <Skip sizeOfSource="sizeof(s_shader_pass_postprocess_texture_state)" length="24" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="ps_fragments" pascalStyleName="PsFragments" name="ps fragments" maxElementCount="1024" maxElementCountSource="k_number_of_pixel_shader_fragments">
+              <Layout regolithID="block:pixel_shader_fragment" internalName="pixel_shader_fragment_block" name="pixel_shader_fragment_block">
+                <FieldSet version="0" sizeofValue="3" sizeofSource="sizeof(s_pixel_shader_fragment)" isLatest="true">
+                  <CharInteger CStyleName="switch_parameter_index" pascalStyleName="SwitchParameterIndex" name="switch parameter index" />
+                  <Struct CStyleName="permutations_index" pascalStyleName="PermutationsIndex" name="permutations index">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="ps_permutations" pascalStyleName="PsPermutations" name="ps permutations" maxElementCount="1024" maxElementCountSource="k_kilo">
+              <Layout regolithID="block:pixel_shader_permutation_new" internalName="pixel_shader_permutation_new_block" name="pixel_shader_permutation_new_block">
+                <FieldSet version="0" sizeofValue="6" sizeofSource="sizeof(s_pixel_shader_permutation_new)" isLatest="true">
+                  <ShortInteger CStyleName="enum_index" pascalStyleName="EnumIndex" name="enum index" />
+                  <ShortInteger CStyleName="flags" pascalStyleName="Flags" name="flags" />
+                  <Struct CStyleName="combiners" pascalStyleName="Combiners" name="combiners">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="ps_combiners" pascalStyleName="PsCombiners" name="ps combiners" maxElementCount="1024" maxElementCountSource="k_number_of_pixel_shader_combiners">
+              <Layout regolithID="block:pixel_shader_combiner" internalName="pixel_shader_combiner_block" name="pixel_shader_combiner_block">
+                <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(s_pixel_shader_combiner)" isLatest="true">
+                  <Pad sizeOfSource="sizeof(dword)*4" length="16" />
+                  <ArgbColor CStyleName="constant_color0" pascalStyleName="ConstantColor0" name="constant color0" />
+                  <ArgbColor CStyleName="constant_color1" pascalStyleName="ConstantColor1" name="constant color1" />
+                  <CharInteger CStyleName="color_a_register_ptr_index" pascalStyleName="ColorARegisterPtrIndex" name="color A register ptr index" />
+                  <CharInteger CStyleName="color_b_register_ptr_index" pascalStyleName="ColorBRegisterPtrIndex" name="color B register ptr index" />
+                  <CharInteger CStyleName="color_c_register_ptr_index" pascalStyleName="ColorCRegisterPtrIndex" name="color C register ptr index" />
+                  <CharInteger CStyleName="color_d_register_ptr_index" pascalStyleName="ColorDRegisterPtrIndex" name="color D register ptr index" />
+                  <CharInteger CStyleName="alpha_a_register_ptr_index" pascalStyleName="AlphaARegisterPtrIndex" name="alpha A register ptr index" />
+                  <CharInteger CStyleName="alpha_b_register_ptr_index" pascalStyleName="AlphaBRegisterPtrIndex" name="alpha B register ptr index" />
+                  <CharInteger CStyleName="alpha_c_register_ptr_index" pascalStyleName="AlphaCRegisterPtrIndex" name="alpha C register ptr index" />
+                  <CharInteger CStyleName="alpha_d_register_ptr_index" pascalStyleName="AlphaDRegisterPtrIndex" name="alpha D register ptr index" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="externs" pascalStyleName="Externs" name="externs" maxElementCount="1024" maxElementCountSource="k_kilo">
+              <Layout regolithID="block:shader_pass_postprocess_extern_new" internalName="shader_pass_postprocess_extern_new_block" name="shader_pass_postprocess_extern_new_block">
+                <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(s_shader_pass_postprocess_extern_new)" isLatest="true">
+                  <Skip sizeOfSource="sizeof(byte)*3" length="3" />
+                  <CharInteger CStyleName="extern_index" pascalStyleName="ExternIndex" name="extern index" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="constants" pascalStyleName="Constants" name="constants" maxElementCount="1024" maxElementCountSource="k_kilo">
+              <Layout regolithID="block:shader_pass_postprocess_constant_new" internalName="shader_pass_postprocess_constant_new_block" name="shader_pass_postprocess_constant_new_block">
+                <FieldSet version="0" sizeofValue="7" sizeofSource="sizeof(s_shader_pass_postprocess_constant_new)" isLatest="true">
+                  <StringId CStyleName="parameter_name" pascalStyleName="ParameterName" name="parameter name" blockNameSource="true" />
+                  <CharInteger CStyleName="component_mask" pascalStyleName="ComponentMask" name="component mask" />
+                  <CharInteger CStyleName="scale_by_texture_stage" pascalStyleName="ScaleByTextureStage" name="scale by texture stage" />
+                  <CharInteger CStyleName="function_index" pascalStyleName="FunctionIndex" name="function index" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="constant_info" pascalStyleName="ConstantInfo" name="constant info" maxElementCount="1024" maxElementCountSource="k_kilo">
+              <Layout regolithID="block:shader_pass_postprocess_constant_info_new" internalName="shader_pass_postprocess_constant_info_new_block" name="shader_pass_postprocess_constant_info_new_block">
+                <FieldSet version="0" sizeofValue="7" sizeofSource="sizeof(s_shader_pass_postprocess_constant_info_new)" isLatest="true">
+                  <StringId CStyleName="parameter_name" pascalStyleName="ParameterName" name="parameter name" blockNameSource="true" />
+                  <Pad sizeOfSource="3" length="3" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="old_implementations" pascalStyleName="OldImplementations" name="old implementations" maxElementCount="1024" maxElementCountSource="k_number_of_shader_pass_implementations">
+              <Layout regolithID="block:shader_pass_postprocess_implementation" internalName="shader_pass_postprocess_implementation_block" name="shader_pass_postprocess_implementation_block">
+                <FieldSet version="0" sizeofValue="502" sizeofSource="sizeof(s_shader_pass_postprocess_implementation)" isLatest="true">
+                  <Struct CStyleName="gpu_state" pascalStyleName="GpuState" name="GPU state">
+                    <LayoutXRef>structure:shader_gpu_state</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="gpu_constant_state" pascalStyleName="GpuConstantState" name="GPU constant state">
+                    <LayoutXRef>structure:shader_gpu_state_reference</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="gpu_volatile_state" pascalStyleName="GpuVolatileState" name="GPU volatile state">
+                    <LayoutXRef>structure:shader_gpu_state_reference</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="gpu_default_state" pascalStyleName="GpuDefaultState" name="GPU default state">
+                    <LayoutXRef>structure:shader_gpu_state_reference</LayoutXRef>
+                  </Struct>
+                  <TagReference CStyleName="vertex_shader" pascalStyleName="VertexShader" name="vertex shader">
+                    <tag>vrtx</tag>
+                  </TagReference>
+                  <Skip sizeOfSource="sizeof(t_value_extern_bitset)" length="8" />
+                  <Skip sizeOfSource="sizeof(t_color_extern_bitset)" length="8" />
+                  <Skip sizeOfSource="sizeof(t_switch_extern_bitset)" length="4" />
+                  <Skip sizeOfSource="sizeof(t_texture_extern_bitset)" length="4" />
+                  <Block CStyleName="value_externs" pascalStyleName="ValueExterns" name="value externs" maxElementCount="1024" maxElementCountSource="k_number_of_extern_references">
+                    <Layout regolithID="block:extern_reference" internalName="extern_reference_block" name="extern_reference_block">
+                      <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(s_extern_reference)" isLatest="true">
+                        <CharInteger CStyleName="parameter_index" pascalStyleName="ParameterIndex" name="parameter index" />
+                        <CharInteger CStyleName="extern_index" pascalStyleName="ExternIndex" name="extern index" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="color_externs" pascalStyleName="ColorExterns" name="color externs" maxElementCount="1024" maxElementCountSource="k_number_of_extern_references">
+                    <LayoutXRef>block:extern_reference</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="switch_externs" pascalStyleName="SwitchExterns" name="switch externs" maxElementCount="1024" maxElementCountSource="k_number_of_extern_references">
+                    <LayoutXRef>block:extern_reference</LayoutXRef>
+                  </Block>
+                  <ShortInteger CStyleName="bitmap_parameter_count" pascalStyleName="BitmapParameterCount" name="bitmap parameter count" />
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <Skip sizeOfSource="sizeof(XBOX_D3DPixelShaderDef)" length="240" />
+                  <Block CStyleName="pixel_shader_fragments" pascalStyleName="PixelShaderFragments" name="pixel shader fragments" maxElementCount="1024" maxElementCountSource="k_number_of_pixel_shader_fragments">
+                    <LayoutXRef>block:pixel_shader_fragment</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="pixel_shader_permutations" pascalStyleName="PixelShaderPermutations" name="pixel shader permutations" maxElementCount="1024" maxElementCountSource="k_number_of_pixel_shader_permutations">
+                    <Layout regolithID="block:pixel_shader_permutation" internalName="pixel_shader_permutation_block" name="pixel_shader_permutation_block">
+                      <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_pixel_shader_permutation)" isLatest="true">
+                        <ShortInteger CStyleName="enum_index" pascalStyleName="EnumIndex" name="enum index" />
+                        <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                          <Options regolithID="enum:pixel_shader_permutation_flags" CStyleName="pixel_shader_permutation_flags" pascalStyleName="PixelShaderPermutationFlags">
+                            <Bit name="has final combiner" CStyleName="has_final_combiner_bit" pascalStyleName="HasFinalCombinerBit" />
+                          </Options>
+                        </WordFlags>
+                        <Struct CStyleName="constants" pascalStyleName="Constants" name="constants">
+                          <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                        </Struct>
+                        <Struct CStyleName="combiners" pascalStyleName="Combiners" name="combiners">
+                          <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                        </Struct>
+                        <Skip sizeOfSource="sizeof(dword)" length="4" />
+                        <Skip sizeOfSource="sizeof(dword)" length="4" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="pixel_shader_combiners" pascalStyleName="PixelShaderCombiners" name="pixel shader combiners" maxElementCount="1024" maxElementCountSource="k_number_of_pixel_shader_combiners">
+                    <LayoutXRef>block:pixel_shader_combiner</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="pixel_shader_constants" pascalStyleName="PixelShaderConstants" name="pixel shader constants" maxElementCount="1024" maxElementCountSource="k_number_of_pixel_shader_constants">
+                    <Layout regolithID="block:pixel_shader_constant" internalName="pixel_shader_constant_block" name="pixel_shader_constant_block">
+                      <FieldSet version="0" sizeofValue="6" sizeofSource="sizeof(s_pixel_shader_constant)" isLatest="true">
+                        <CharEnum CStyleName="parameter_type" pascalStyleName="ParameterType" name="parameter type">
+                          <OptionsXRef>enum:global_shader_parameter_type</OptionsXRef>
+                        </CharEnum>
+                        <CharInteger CStyleName="combiner_index" pascalStyleName="CombinerIndex" name="combiner index" />
+                        <CharInteger CStyleName="register_index" pascalStyleName="RegisterIndex" name="register index" />
+                        <CharEnum CStyleName="component_mask" pascalStyleName="ComponentMask" name="component mask">
+                          <Options regolithID="enum:pixel_shader_constant_component_mask" CStyleName="pixel_shader_constant_component_mask" pascalStyleName="PixelShaderConstantComponentMask">
+                            <Enum name="x (value)" CStyleName="x_value" pascalStyleName="XValue" />
+                            <Enum name="y (value)" CStyleName="y_value" pascalStyleName="YValue" />
+                            <Enum name="z (value)" CStyleName="z_value" pascalStyleName="ZValue" />
+                            <Enum name="w (value)" CStyleName="w_value" pascalStyleName="WValue" />
+                            <Enum name="xyz/rgb (color)" CStyleName="xyzrgb_color" pascalStyleName="XyzrgbColor" />
+                          </Options>
+                        </CharEnum>
+                        <Pad sizeOfSource="sizeof(byte)" length="1" />
+                        <Pad sizeOfSource="sizeof(byte)" length="1" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Skip sizeOfSource="sizeof(dword)" length="4" />
+                  <Skip sizeOfSource="sizeof(dword)" length="4" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

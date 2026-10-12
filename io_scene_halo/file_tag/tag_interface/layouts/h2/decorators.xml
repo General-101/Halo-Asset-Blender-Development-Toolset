@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="DECP" name="decorators" version="1">
+  <Layout regolithID="block:decorators" internalName="decorators_block" name="decorators">
+    <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(c_decorator_placement_definition)" isLatest="true">
+      <RealPoint3D CStyleName="grid_origin" pascalStyleName="GridOrigin" name="grid origin" />
+      <LongInteger CStyleName="cell_count_per_dimension" pascalStyleName="CellCountPerDimension" name="cell count per dimension" />
+      <Block CStyleName="cache_blocks" pascalStyleName="CacheBlocks" name="cache blocks" maxElementCount="4096" maxElementCountSource="c_decorator_placement_definition::k_maximum_cache_block_count">
+        <LayoutXRef>block:decorator_cache_block</LayoutXRef>
+      </Block>
+      <Block CStyleName="groups" pascalStyleName="Groups" name="groups" maxElementCount="131072" maxElementCountSource="c_decorator_placement_definition::k_maximum_group_count">
+        <LayoutXRef>block:decorator_group</LayoutXRef>
+      </Block>
+      <Block CStyleName="cells" pascalStyleName="Cells" name="cells" maxElementCount="65535" maxElementCountSource="c_decorator_placement_definition::k_maximum_cell_collection_count">
+        <LayoutXRef>block:decorator_cell_collection</LayoutXRef>
+      </Block>
+      <Block CStyleName="decals" pascalStyleName="Decals" name="decals" maxElementCount="32768" maxElementCountSource="c_decorator_placement_definition::k_maximum_projected_decal_count">
+        <LayoutXRef>block:decorator_projected_decal</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

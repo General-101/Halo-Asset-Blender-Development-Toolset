@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="sslt" name="scenario_structure_lighting_resource" version="1">
+  <Layout regolithID="block:scenario_structure_lighting_resource" internalName="scenario_structure_lighting_resource_block" name="scenario_structure_lighting_resource">
+    <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_scenario_structure_lighting_resource)" isLatest="true">
+      <Block CStyleName="structure_lighting" pascalStyleName="StructureLighting" name="structure lighting" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_structure_bsp_spherical_harmonic_lighting</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,29 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="hmt " name="hud_message_text" version="1">
+  <Layout regolithID="block:hud_message_text" internalName="hud_message_text_block" name="hud_message_text">
+    <FieldSet version="0" sizeofValue="128" sizeofSource="sizeof(struct hud_message_text_group)" isLatest="true">
+      <Data CStyleName="text_data" pascalStyleName="TextData" name="text data" />
+      <Block CStyleName="message_elements" pascalStyleName="MessageElements" name="message elements" maxElementCount="8192">
+        <Layout regolithID="block:message elements" internalName="message elements_block" name="message elements_block">
+          <FieldSet version="0" sizeofValue="2" isLatest="true">
+            <CharInteger CStyleName="type" pascalStyleName="Type" name="type" />
+            <CharInteger CStyleName="data" pascalStyleName="Data" name="data" unsigned="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="messages" pascalStyleName="Messages" name="messages" maxElementCount="1024">
+        <Layout regolithID="block:messages" internalName="messages_block" name="messages_block">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <ShortInteger CStyleName="start_index_into_text_blob" pascalStyleName="StartIndexIntoTextBlob" name="start index into text blob" />
+            <ShortInteger CStyleName="start_index_of_message_block" pascalStyleName="StartIndexOfMessageBlock" name="start index of message block" />
+            <CharInteger CStyleName="panel_count" pascalStyleName="PanelCount" name="panel count" unsigned="true" />
+            <Pad name="pad" length="3" />
+            <Pad name="pad" length="24" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="84" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

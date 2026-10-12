@@ -1,0 +1,344 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="actr" name="actor" version="2">
+  <Layout regolithID="block:actor" internalName="actor_block" name="actor">
+    <FieldSet version="0" sizeofValue="1272" sizeofSource="sizeof(struct actor_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="can see in darkness" CStyleName="can_see_in_darkness_bit" pascalStyleName="CanSeeInDarknessBit" />
+          <Bit name="sneak uncovering target" CStyleName="sneak_uncovering_target_bit" pascalStyleName="SneakUncoveringTargetBit" />
+          <Bit name="sneak uncovering pursuit position" CStyleName="sneak_uncovering_pursuit_position_bit" pascalStyleName="SneakUncoveringPursuitPositionBit" />
+          <Bit name="unused" CStyleName="unused_bit" pascalStyleName="UnusedBit" />
+          <Bit name="shoot at targets last location" CStyleName="shoot_at_targets_last_location_bit" pascalStyleName="ShootAtTargetsLastLocationBit" />
+          <Bit name="try to stay still when crouched" CStyleName="try_to_stay_still_when_crouched_bit" pascalStyleName="TryToStayStillWhenCrouchedBit" />
+          <Bit name="crouch when not in combat" CStyleName="crouch_when_not_in_combat_bit" pascalStyleName="CrouchWhenNotInCombatBit" />
+          <Bit name="crouch when guarding" CStyleName="crouch_when_guarding_bit" pascalStyleName="CrouchWhenGuardingBit" />
+          <Bit name="unused1" CStyleName="unused1_bit" pascalStyleName="Unused1Bit" />
+          <Bit name="must crouch to shoot" CStyleName="must_crouch_to_shoot_bit" pascalStyleName="MustCrouchToShootBit" />
+          <Bit name="panic when surprised" CStyleName="panic_when_surprised_bit" pascalStyleName="PanicWhenSurprisedBit" />
+          <Bit name="always charge at enemies" CStyleName="always_charge_at_enemies_bit" pascalStyleName="AlwaysChargeAtEnemiesBit" />
+          <Bit name="gets in vehicles with player" CStyleName="gets_in_vehicles_with_player_bit" pascalStyleName="GetsInVehiclesWithPlayerBit" />
+          <Bit name="start firing before aligned" CStyleName="start_firing_before_aligned_bit" pascalStyleName="StartFiringBeforeAlignedBit" />
+          <Bit name="standing must move forward" CStyleName="standing_must_move_forward_bit" pascalStyleName="StandingMustMoveForwardBit" />
+          <Bit name="crouching must move forward" CStyleName="crouching_must_move_forward_bit" pascalStyleName="CrouchingMustMoveForwardBit" />
+          <Bit name="defensive crouch while charging" CStyleName="defensive_crouch_while_charging_bit" pascalStyleName="DefensiveCrouchWhileChargingBit" />
+          <Bit name="use stalking behavior" CStyleName="use_stalking_behavior_bit" pascalStyleName="UseStalkingBehaviorBit" />
+          <Bit name="stalking freeze if exposed" CStyleName="stalking_freeze_if_exposed_bit" pascalStyleName="StalkingFreezeIfExposedBit" />
+          <Bit name="always berserk in attacking mode" CStyleName="always_berserk_in_attacking_mode_bit" pascalStyleName="AlwaysBerserkInAttackingModeBit" />
+          <Bit name="berserking uses panicked movement" CStyleName="berserking_uses_panicked_movement_bit" pascalStyleName="BerserkingUsesPanickedMovementBit" />
+          <Bit name="flying" CStyleName="flying_bit" pascalStyleName="FlyingBit" />
+          <Bit name="panicked by unopposable enemy" CStyleName="panicked_by_unopposable_enemy_bit" pascalStyleName="PanickedByUnopposableEnemyBit" />
+          <Bit name="crouch when hiding from unopposable" CStyleName="crouch_when_hiding_from_unopposable_bit" pascalStyleName="CrouchWhenHidingFromUnopposableBit" />
+          <Bit name="always charge in attacking mode" CStyleName="always_charge_in_attacking_mode_bit" pascalStyleName="AlwaysChargeInAttackingModeBit" />
+          <Bit name="dive off ledges" CStyleName="dive_off_ledges_bit" pascalStyleName="DiveOffLedgesBit" />
+          <Bit name="swarm" CStyleName="swarm_bit" pascalStyleName="SwarmBit" />
+          <Bit name="suicidal melee attack" CStyleName="suicidal_melee_attack_bit" pascalStyleName="SuicidalMeleeAttackBit" />
+          <Bit name="cannot move while crouching" CStyleName="cannot_move_while_crouching_bit" pascalStyleName="CannotMoveWhileCrouchingBit" />
+          <Bit name="fixed crouch facing" CStyleName="fixed_crouch_facing_bit" pascalStyleName="FixedCrouchFacingBit" />
+          <Bit name="crouch when in line of fire" CStyleName="crouch_when_in_line_of_fire_bit" pascalStyleName="CrouchWhenInLineOfFireBit" />
+          <Bit name="avoid friends line of fire" CStyleName="avoid_friends_line_of_fire_bit" pascalStyleName="AvoidFriendsLineOfFireBit" />
+        </Options>
+      </LongFlags>
+      <LongFlags CStyleName="more_flags" pascalStyleName="MoreFlags" name="more flags">
+        <Options regolithID="enum:more_flags" CStyleName="more_flags" pascalStyleName="MoreFlags">
+          <Bit name="avoid all enemy attack vectors" CStyleName="avoid_all_enemy_attack_vectors_bit" pascalStyleName="AvoidAllEnemyAttackVectorsBit" />
+          <Bit name="must stand to fire" CStyleName="must_stand_to_fire_bit" pascalStyleName="MustStandToFireBit" />
+          <Bit name="must stop to fire" CStyleName="must_stop_to_fire_bit" pascalStyleName="MustStopToFireBit" />
+          <Bit name="disallow vehicle combat" CStyleName="disallow_vehicle_combat_bit" pascalStyleName="DisallowVehicleCombatBit" />
+          <Bit name="pathfinding ignores danger" CStyleName="pathfinding_ignores_danger_bit" pascalStyleName="PathfindingIgnoresDangerBit" />
+          <Bit name="panic in groups" CStyleName="panic_in_groups_bit" pascalStyleName="PanicInGroupsBit" />
+          <Bit name="no corpse shooting" CStyleName="no_corpse_shooting_bit" pascalStyleName="NoCorpseShootingBit" />
+        </Options>
+      </LongFlags>
+      <Pad name="pad" length="12" />
+      <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+        <Options regolithID="enum:type" CStyleName="type" pascalStyleName="Type">
+          <Enum name="elite" CStyleName="elite" pascalStyleName="Elite" />
+          <Enum name="jackal" CStyleName="jackal" pascalStyleName="Jackal" />
+          <Enum name="grunt" CStyleName="grunt" pascalStyleName="Grunt" />
+          <Enum name="hunter" CStyleName="hunter" pascalStyleName="Hunter" />
+          <Enum name="engineer" CStyleName="engineer" pascalStyleName="Engineer" />
+          <Enum name="assassin" CStyleName="assassin" pascalStyleName="Assassin" />
+          <Enum name="player" CStyleName="player" pascalStyleName="Player" />
+          <Enum name="marine" CStyleName="marine" pascalStyleName="Marine" />
+          <Enum name="crew" CStyleName="crew" pascalStyleName="Crew" />
+          <Enum name="combat form" CStyleName="combat_form" pascalStyleName="CombatForm" />
+          <Enum name="infection form" CStyleName="infection_form" pascalStyleName="InfectionForm" />
+          <Enum name="carrier form" CStyleName="carrier_form" pascalStyleName="CarrierForm" />
+          <Enum name="monitor" CStyleName="monitor" pascalStyleName="Monitor" />
+          <Enum name="sentinel" CStyleName="sentinel" pascalStyleName="Sentinel" />
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="mounted weapon" CStyleName="mounted_weapon" pascalStyleName="MountedWeapon" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="2" />
+      <Explanation name="Perception" />
+      <Struct CStyleName="perception" pascalStyleName="Perception" name="perception">
+        <Layout regolithID="structure:actor_perception" internalName="actor_perception_struct" backingBlockInternalName="actor_perception_struct_block" name="actor perception">
+          <FieldSet version="0" sizeofValue="104" isLatest="true">
+            <Real CStyleName="max_vision_distance" pascalStyleName="MaxVisionDistance" name="max vision distance" />
+            <Angle CStyleName="central_vision_angle" pascalStyleName="CentralVisionAngle" name="central vision angle" />
+            <Angle CStyleName="max_vision_angle" pascalStyleName="MaxVisionAngle" name="max vision angle" />
+            <Pad name="pad" length="4" />
+            <Angle CStyleName="peripheral_vision_angle" pascalStyleName="PeripheralVisionAngle" name="peripheral vision angle" />
+            <Real CStyleName="peripheral_distance" pascalStyleName="PeripheralDistance" name="peripheral distance" />
+            <Pad name="pad" length="4" />
+            <RealVector3D CStyleName="standing_gun_offset" pascalStyleName="StandingGunOffset" name="standing gun offset" />
+            <RealVector3D CStyleName="crouching_gun_offset" pascalStyleName="CrouchingGunOffset" name="crouching gun offset" />
+            <Real CStyleName="hearing_distance" pascalStyleName="HearingDistance" name="hearing distance" />
+            <Real CStyleName="notice_projectile_chance" pascalStyleName="NoticeProjectileChance" name="notice projectile chance" />
+            <Real CStyleName="notice_vehicle_chance" pascalStyleName="NoticeVehicleChance" name="notice vehicle chance" />
+            <Pad name="pad" length="8" />
+            <Real CStyleName="combat_perception_time" pascalStyleName="CombatPerceptionTime" name="combat perception time" />
+            <Real CStyleName="guard_perception_time" pascalStyleName="GuardPerceptionTime" name="guard perception time" />
+            <Real CStyleName="non_combat_perception_time" pascalStyleName="NonCombatPerceptionTime" name="non combat perception time" />
+            <Real CStyleName="inverse_combat_perception_time" pascalStyleName="InverseCombatPerceptionTime" name="inverse combat perception time" cacheOnly="true" />
+            <Real CStyleName="inverse_guard_perception_time" pascalStyleName="InverseGuardPerceptionTime" name="inverse guard perception time" cacheOnly="true" />
+            <Real CStyleName="inverse_non_combat_perception_time" pascalStyleName="InverseNonCombatPerceptionTime" name="inverse non combat perception time" cacheOnly="true" />
+            <Pad name="pad" length="8" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Movement" />
+      <Struct CStyleName="movement" pascalStyleName="Movement" name="movement">
+        <Layout regolithID="structure:actor_movement" internalName="actor_movement_struct" backingBlockInternalName="actor_movement_struct_block" name="actor movement">
+          <FieldSet version="0" sizeofValue="36" isLatest="true">
+            <Real CStyleName="dive_into_cover_chance" pascalStyleName="DiveIntoCoverChance" name="dive into cover chance" />
+            <Real CStyleName="emerge_from_cover_chance" pascalStyleName="EmergeFromCoverChance" name="emerge from cover chance" />
+            <Real CStyleName="dive_from_grenade_chance" pascalStyleName="DiveFromGrenadeChance" name="dive from grenade chance" />
+            <Real CStyleName="pathfinding_radius" pascalStyleName="PathfindingRadius" name="pathfinding radius" />
+            <Real CStyleName="glass_ignorance_chance" pascalStyleName="GlassIgnoranceChance" name="glass ignorance chance" />
+            <Real CStyleName="stationary_movement_dist" pascalStyleName="StationaryMovementDist" name="stationary movement dist" />
+            <Real CStyleName="free_flying_sidestep" pascalStyleName="FreeFlyingSidestep" name="free flying sidestep" />
+            <Angle CStyleName="begin_moving_angle" pascalStyleName="BeginMovingAngle" name="begin moving angle" />
+            <Real CStyleName="cosine_begin_moving_angle" pascalStyleName="CosineBeginMovingAngle" name="cosine begin moving angle" cacheOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Looking" />
+      <Struct CStyleName="looking" pascalStyleName="Looking" name="looking">
+        <Layout regolithID="structure:actor_looking" internalName="actor_looking_struct" backingBlockInternalName="actor_looking_struct_block" name="actor looking">
+          <FieldSet version="0" sizeofValue="452" isLatest="true">
+            <RealEulerAngles2D CStyleName="maximum_aiming_deviation" pascalStyleName="MaximumAimingDeviation" name="maximum aiming deviation" />
+            <RealEulerAngles2D CStyleName="maximum_looking_deviation" pascalStyleName="MaximumLookingDeviation" name="maximum looking deviation" />
+            <Angle CStyleName="noncombat_look_delta_l" pascalStyleName="NoncombatLookDeltaL" name="noncombat look delta l" />
+            <Angle CStyleName="noncombat_look_delta_r" pascalStyleName="NoncombatLookDeltaR" name="noncombat look delta r" />
+            <Angle CStyleName="combat_look_delta_l" pascalStyleName="CombatLookDeltaL" name="combat look delta l" />
+            <Angle CStyleName="combat_look_delta_r" pascalStyleName="CombatLookDeltaR" name="combat look delta r" />
+            <RealEulerAngles2D CStyleName="idle_aiming_range" pascalStyleName="IdleAimingRange" name="idle aiming range" />
+            <RealEulerAngles2D CStyleName="idle_looking_range" pascalStyleName="IdleLookingRange" name="idle looking range" />
+            <RealBounds CStyleName="event_look_time_modifier" pascalStyleName="EventLookTimeModifier" name="event look time modifier" />
+            <RealBounds CStyleName="noncombat_idle_facing" pascalStyleName="NoncombatIdleFacing" name="noncombat idle facing" />
+            <RealBounds CStyleName="noncombat_idle_aiming" pascalStyleName="NoncombatIdleAiming" name="noncombat idle aiming" />
+            <RealBounds CStyleName="noncombat_idle_looking" pascalStyleName="NoncombatIdleLooking" name="noncombat idle looking" />
+            <RealBounds CStyleName="guard_idle_facing" pascalStyleName="GuardIdleFacing" name="guard idle facing" />
+            <RealBounds CStyleName="guard_idle_aiming" pascalStyleName="GuardIdleAiming" name="guard idle aiming" />
+            <RealBounds CStyleName="guard_idle_looking" pascalStyleName="GuardIdleLooking" name="guard idle looking" />
+            <RealBounds CStyleName="combat_idle_facing" pascalStyleName="CombatIdleFacing" name="combat idle facing" />
+            <RealBounds CStyleName="combat_idle_aiming" pascalStyleName="CombatIdleAiming" name="combat idle aiming" />
+            <RealBounds CStyleName="combat_idle_looking" pascalStyleName="CombatIdleLooking" name="combat idle looking" />
+            <Pad name="pad" length="8" />
+            <RealEulerAngles2D CStyleName="cosine_maximum_aiming_deviation" pascalStyleName="CosineMaximumAimingDeviation" name="cosine maximum aiming deviation" cacheOnly="true" />
+            <RealEulerAngles2D CStyleName="cosine_maximum_looking_deviation" pascalStyleName="CosineMaximumLookingDeviation" name="cosine maximum looking deviation" cacheOnly="true" />
+            <TagReference CStyleName="dont_use" pascalStyleName="DontUse" name="dont use">
+              <tag>weapon</tag>
+            </TagReference>
+            <Pad name="pad" length="268" />
+            <TagReference CStyleName="cant_use" pascalStyleName="CantUse" name="cant use">
+              <tag>projectile</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Unopposable" />
+      <Struct CStyleName="unopposable" pascalStyleName="Unopposable" name="unopposable">
+        <Layout regolithID="structure:actor_unopposable" internalName="actor_unopposable_struct" backingBlockInternalName="actor_unopposable_struct_block" name="actor unopposable">
+          <FieldSet version="0" sizeofValue="48" isLatest="true">
+            <ShortEnum CStyleName="unreachable_danger_trigger" pascalStyleName="UnreachableDangerTrigger" name="unreachable danger trigger">
+              <Options regolithID="enum:unreachable_danger_trigger" CStyleName="unreachable_danger_trigger" pascalStyleName="UnreachableDangerTrigger">
+                <Enum name="never" CStyleName="never" pascalStyleName="Never" />
+                <Enum name="visible" CStyleName="visible" pascalStyleName="Visible" />
+                <Enum name="shooting" CStyleName="shooting" pascalStyleName="Shooting" />
+                <Enum name="shooting near us" CStyleName="shooting_near_us" pascalStyleName="ShootingNearUs" />
+                <Enum name="damaging us" CStyleName="damaging_us" pascalStyleName="DamagingUs" />
+                <Enum name="unused" CStyleName="unused" pascalStyleName="Unused" />
+                <Enum name="unused1" CStyleName="unused1" pascalStyleName="Unused1" />
+                <Enum name="unused2" CStyleName="unused2" pascalStyleName="Unused2" />
+                <Enum name="unused3" CStyleName="unused3" pascalStyleName="Unused3" />
+                <Enum name="unused4" CStyleName="unused4" pascalStyleName="Unused4" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="vehicle_danger_trigger" pascalStyleName="VehicleDangerTrigger" name="vehicle danger trigger">
+              <Options regolithID="enum:vehicle_danger_trigger" CStyleName="vehicle_danger_trigger" pascalStyleName="VehicleDangerTrigger">
+                <Enum name="never" CStyleName="never" pascalStyleName="Never" />
+                <Enum name="visible" CStyleName="visible" pascalStyleName="Visible" />
+                <Enum name="shooting" CStyleName="shooting" pascalStyleName="Shooting" />
+                <Enum name="shooting near us" CStyleName="shooting_near_us" pascalStyleName="ShootingNearUs" />
+                <Enum name="damaging us" CStyleName="damaging_us" pascalStyleName="DamagingUs" />
+                <Enum name="unused" CStyleName="unused" pascalStyleName="Unused" />
+                <Enum name="unused1" CStyleName="unused1" pascalStyleName="Unused1" />
+                <Enum name="unused2" CStyleName="unused2" pascalStyleName="Unused2" />
+                <Enum name="unused3" CStyleName="unused3" pascalStyleName="Unused3" />
+                <Enum name="unused4" CStyleName="unused4" pascalStyleName="Unused4" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="player_danger_trigger" pascalStyleName="PlayerDangerTrigger" name="player danger trigger">
+              <Options regolithID="enum:player_danger_trigger" CStyleName="player_danger_trigger" pascalStyleName="PlayerDangerTrigger">
+                <Enum name="never" CStyleName="never" pascalStyleName="Never" />
+                <Enum name="visible" CStyleName="visible" pascalStyleName="Visible" />
+                <Enum name="shooting" CStyleName="shooting" pascalStyleName="Shooting" />
+                <Enum name="shooting near us" CStyleName="shooting_near_us" pascalStyleName="ShootingNearUs" />
+                <Enum name="damaging us" CStyleName="damaging_us" pascalStyleName="DamagingUs" />
+                <Enum name="unused" CStyleName="unused" pascalStyleName="Unused" />
+                <Enum name="unused1" CStyleName="unused1" pascalStyleName="Unused1" />
+                <Enum name="unused2" CStyleName="unused2" pascalStyleName="Unused2" />
+                <Enum name="unused3" CStyleName="unused3" pascalStyleName="Unused3" />
+                <Enum name="unused4" CStyleName="unused4" pascalStyleName="Unused4" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <RealBounds CStyleName="danger_trigger_time" pascalStyleName="DangerTriggerTime" name="danger trigger time" />
+            <ShortInteger CStyleName="friends_killed_trigger" pascalStyleName="FriendsKilledTrigger" name="friends killed trigger" />
+            <ShortInteger CStyleName="friends_retreating_trigger" pascalStyleName="FriendsRetreatingTrigger" name="friends retreating trigger" />
+            <Pad name="pad" length="12" />
+            <RealBounds CStyleName="retreat_time" pascalStyleName="RetreatTime" name="retreat time" />
+            <Pad name="pad" length="8" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Panic" />
+      <Struct CStyleName="panic" pascalStyleName="Panic" name="panic">
+        <Layout regolithID="structure:actor_panic" internalName="actor_panic_struct" backingBlockInternalName="actor_panic_struct_block" name="actor panic">
+          <FieldSet version="0" sizeofValue="56" isLatest="true">
+            <RealBounds CStyleName="cowering_time" pascalStyleName="CoweringTime" name="cowering time" />
+            <Real CStyleName="friend_killed_panic_chance" pascalStyleName="FriendKilledPanicChance" name="friend killed panic chance" />
+            <ShortEnum CStyleName="leader_type" pascalStyleName="LeaderType" name="leader type">
+              <Options regolithID="enum:leader_type" CStyleName="leader_type" pascalStyleName="LeaderType">
+                <Enum name="elite" CStyleName="elite" pascalStyleName="Elite" />
+                <Enum name="jackal" CStyleName="jackal" pascalStyleName="Jackal" />
+                <Enum name="grunt" CStyleName="grunt" pascalStyleName="Grunt" />
+                <Enum name="hunter" CStyleName="hunter" pascalStyleName="Hunter" />
+                <Enum name="engineer" CStyleName="engineer" pascalStyleName="Engineer" />
+                <Enum name="assassin" CStyleName="assassin" pascalStyleName="Assassin" />
+                <Enum name="player" CStyleName="player" pascalStyleName="Player" />
+                <Enum name="marine" CStyleName="marine" pascalStyleName="Marine" />
+                <Enum name="crew" CStyleName="crew" pascalStyleName="Crew" />
+                <Enum name="combat form" CStyleName="combat_form" pascalStyleName="CombatForm" />
+                <Enum name="infection form" CStyleName="infection_form" pascalStyleName="InfectionForm" />
+                <Enum name="carrier form" CStyleName="carrier_form" pascalStyleName="CarrierForm" />
+                <Enum name="monitor" CStyleName="monitor" pascalStyleName="Monitor" />
+                <Enum name="sentinel" CStyleName="sentinel" pascalStyleName="Sentinel" />
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="mounted weapon" CStyleName="mounted_weapon" pascalStyleName="MountedWeapon" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Real CStyleName="leader_killed_panic_chance" pascalStyleName="LeaderKilledPanicChance" name="leader killed panic chance" />
+            <Real CStyleName="panic_damage_threshold" pascalStyleName="PanicDamageThreshold" name="panic damage threshold" />
+            <Real CStyleName="surprise_distance" pascalStyleName="SurpriseDistance" name="surprise distance" />
+            <Pad name="pad" length="28" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Defensive" />
+      <Struct CStyleName="defensive" pascalStyleName="Defensive" name="defensive">
+        <Layout regolithID="structure:actor_defensive" internalName="actor_defensive_struct" backingBlockInternalName="actor_defensive_struct_block" name="actor defensive">
+          <FieldSet version="0" sizeofValue="108" isLatest="true">
+            <RealBounds CStyleName="hide_behind_cover_time" pascalStyleName="HideBehindCoverTime" name="hide behind cover time" />
+            <Real CStyleName="hide_target_not_visible_time" pascalStyleName="HideTargetNotVisibleTime" name="hide target not visible time" />
+            <Real CStyleName="hide_shield_fraction" pascalStyleName="HideShieldFraction" name="hide shield fraction" />
+            <Real CStyleName="attack_shield_fraction" pascalStyleName="AttackShieldFraction" name="attack shield fraction" />
+            <Real CStyleName="pursue_shield_fraction" pascalStyleName="PursueShieldFraction" name="pursue shield fraction" />
+            <Pad name="pad" length="16" />
+            <ShortEnum CStyleName="defensive_crouch_type" pascalStyleName="DefensiveCrouchType" name="defensive crouch type">
+              <Options regolithID="enum:defensive_crouch_type" CStyleName="defensive_crouch_type" pascalStyleName="DefensiveCrouchType">
+                <Enum name="never" CStyleName="never" pascalStyleName="Never" />
+                <Enum name="danger" CStyleName="danger" pascalStyleName="Danger" />
+                <Enum name="low shields" CStyleName="low_shields" pascalStyleName="LowShields" />
+                <Enum name="hide behind shield" CStyleName="hide_behind_shield" pascalStyleName="HideBehindShield" />
+                <Enum name="any target" CStyleName="any_target" pascalStyleName="AnyTarget" />
+                <Enum name="flood shamble" CStyleName="flood_shamble" pascalStyleName="FloodShamble" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Real CStyleName="attacking_crouch_threshold" pascalStyleName="AttackingCrouchThreshold" name="attacking crouch threshold" />
+            <Real CStyleName="defending_crouch_threshold" pascalStyleName="DefendingCrouchThreshold" name="defending crouch threshold" />
+            <Real CStyleName="min_stand_time" pascalStyleName="MinStandTime" name="min stand time" />
+            <Real CStyleName="min_crouch_time" pascalStyleName="MinCrouchTime" name="min crouch time" />
+            <Real CStyleName="defending_hide_time_modifier" pascalStyleName="DefendingHideTimeModifier" name="defending hide time modifier" />
+            <Real CStyleName="attacking_evasion_threshold" pascalStyleName="AttackingEvasionThreshold" name="attacking evasion threshold" />
+            <Real CStyleName="defending_evasion_threshold" pascalStyleName="DefendingEvasionThreshold" name="defending evasion threshold" />
+            <Real CStyleName="evasion_seek_cover_chance" pascalStyleName="EvasionSeekCoverChance" name="evasion seek cover chance" />
+            <Real CStyleName="evasion_delay_time" pascalStyleName="EvasionDelayTime" name="evasion delay time" />
+            <Real CStyleName="max_seek_cover_distance" pascalStyleName="MaxSeekCoverDistance" name="max seek cover distance" />
+            <Real CStyleName="cover_damage_threshold" pascalStyleName="CoverDamageThreshold" name="cover damage threshold" />
+            <Real CStyleName="stalking_discovery_time" pascalStyleName="StalkingDiscoveryTime" name="stalking discovery time" />
+            <Real CStyleName="stalking_max_distance" pascalStyleName="StalkingMaxDistance" name="stalking max distance" />
+            <Angle CStyleName="stationary_facing_angle" pascalStyleName="StationaryFacingAngle" name="stationary facing angle" />
+            <Real CStyleName="change_facing_stand_time" pascalStyleName="ChangeFacingStandTime" name="change facing stand time" />
+            <Pad name="pad" length="4" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Pursuit" />
+      <Struct CStyleName="pursuit" pascalStyleName="Pursuit" name="pursuit">
+        <Layout regolithID="structure:actor_pursuit" internalName="actor_pursuit_struct" backingBlockInternalName="actor_pursuit_struct_block" name="actor pursuit">
+          <FieldSet version="0" sizeofValue="60" isLatest="true">
+            <RealBounds CStyleName="uncover_delay_time" pascalStyleName="UncoverDelayTime" name="uncover delay time" />
+            <RealBounds CStyleName="target_search_time" pascalStyleName="TargetSearchTime" name="target search time" />
+            <RealBounds CStyleName="pursuit_position_time" pascalStyleName="PursuitPositionTime" name="pursuit position time" />
+            <ShortInteger CStyleName="num_positions_coord" pascalStyleName="NumPositionsCoord" name="num positions (coord)" unsigned="true" />
+            <ShortInteger CStyleName="num_positions_normal" pascalStyleName="NumPositionsNormal" name="num positions (normal)" unsigned="true" />
+            <Pad name="pad" length="32" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Berserk" />
+      <Struct CStyleName="berserk" pascalStyleName="Berserk" name="berserk">
+        <Layout regolithID="structure:actor_berserk" internalName="actor_berserk_struct" backingBlockInternalName="actor_berserk_struct_block" name="actor berserk">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <Real CStyleName="melee_attack_delay" pascalStyleName="MeleeAttackDelay" name="melee attack delay" />
+            <Real CStyleName="melee_fudge_factor" pascalStyleName="MeleeFudgeFactor" name="melee fudge factor" />
+            <Real CStyleName="melee_charge_time" pascalStyleName="MeleeChargeTime" name="melee charge time" />
+            <RealBounds CStyleName="melee_leap_range" pascalStyleName="MeleeLeapRange" name="melee leap range" />
+            <Real CStyleName="melee_leap_velocity" pascalStyleName="MeleeLeapVelocity" name="melee leap velocity" />
+            <Real CStyleName="melee_leap_chance" pascalStyleName="MeleeLeapChance" name="melee leap chance" />
+            <Real CStyleName="melee_leap_ballistic" pascalStyleName="MeleeLeapBallistic" name="melee leap ballistic" />
+            <Real CStyleName="berserk_damage_amount" pascalStyleName="BerserkDamageAmount" name="berserk damage amount" />
+            <Real CStyleName="berserk_damage_threshold" pascalStyleName="BerserkDamageThreshold" name="berserk damage threshold" />
+            <Real CStyleName="berserk_proximity" pascalStyleName="BerserkProximity" name="berserk proximity" />
+            <Real CStyleName="suicide_sensing_dist" pascalStyleName="SuicideSensingDist" name="suicide sensing dist" />
+            <Real CStyleName="berserk_grenade_chance" pascalStyleName="BerserkGrenadeChance" name="berserk grenade chance" />
+            <Pad name="pad" length="12" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Firing Positions" />
+      <Struct CStyleName="firing_positions" pascalStyleName="FiringPositions" name="firing positions">
+        <Layout regolithID="structure:actor_firing_positions" internalName="actor_firing_positions_struct" backingBlockInternalName="actor_firing_positions_struct_block" name="actor firing positions">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <RealBounds CStyleName="guard_position_time" pascalStyleName="GuardPositionTime" name="guard position time" />
+            <RealBounds CStyleName="combat_position_time" pascalStyleName="CombatPositionTime" name="combat position time" />
+            <Real CStyleName="old_position_avoid_dist" pascalStyleName="OldPositionAvoidDist" name="old position avoid dist" />
+            <Real CStyleName="friend_avoid_dist" pascalStyleName="FriendAvoidDist" name="friend avoid dist" />
+            <Pad name="pad" length="40" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Communication" />
+      <Struct CStyleName="communication" pascalStyleName="Communication" name="communication">
+        <Layout regolithID="structure:actor_communication" internalName="actor_communication_struct" backingBlockInternalName="actor_communication_struct_block" name="actor communication">
+          <FieldSet version="0" sizeofValue="256" isLatest="true">
+            <RealBounds CStyleName="noncombat_idle_speech_time" pascalStyleName="NoncombatIdleSpeechTime" name="noncombat idle speech time" />
+            <RealBounds CStyleName="combat_idle_speech_time" pascalStyleName="CombatIdleSpeechTime" name="combat idle speech time" />
+            <Pad name="pad" length="48" />
+            <Pad name="pad" length="128" />
+            <TagReference CStyleName="never_use" pascalStyleName="NeverUse" name="never use">
+              <tag>actor</tag>
+            </TagReference>
+            <Pad name="pad" length="48" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+    </FieldSet>
+  </Layout>
+</TagGroup>

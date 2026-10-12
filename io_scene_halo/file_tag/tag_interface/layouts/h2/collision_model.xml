@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="coll" name="collision_model" version="10">
+  <Layout regolithID="block:collision_model" internalName="collision_model_block" name="collision_model">
+    <FieldSet version="0" sizeofValue="664" sizeofSource="sizeof(struct collision_model_definition_v0)">
+      <Struct CStyleName="old_damage_resistance" pascalStyleName="OldDamageResistance" name="OLD damage resistance">
+        <Layout regolithID="structure:OLD_global_damage_resistance" tag="DREZ" internalName="OLD_global_damage_resistance_struct" backingBlockInternalName="OLD_global_damage_resistance_struct_block" name="OLD_global_damage_resistance_struct">
+          <FieldSet version="0" sizeofValue="600" sizeofSource="sizeof(struct OLD_damage_resistance)" isLatest="true">
+            <Pad sizeOfSource="150*sizeof(long)" length="600" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <Block CStyleName="errors" pascalStyleName="Errors" name="errors" readOnly="true" maxElementCount="64" maxElementCountSource="MAXIMUM_ERROR_REPORT_CATEGORIES">
+        <LayoutXRef>block:global_error_report_categories</LayoutXRef>
+      </Block>
+      <Block CStyleName="materials" pascalStyleName="Materials" name="materials" readOnly="true" maxElementCount="32" maxElementCountSource="MAXIMUM_MATERIALS_PER_MODEL">
+        <Layout regolithID="block:collision_model_material" internalName="collision_model_material_block" name="material">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(struct collision_model_material)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="regions" pascalStyleName="Regions" name="regions" readOnly="true" maxElementCount="16" maxElementCountSource="MAXIMUM_REGIONS_PER_MODEL">
+        <Layout regolithID="block:collision_model_region" internalName="collision_model_region_block" name="region">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct collision_model_region)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations" readOnly="true" maxElementCount="32" maxElementCountSource="MAXIMUM_PERMUTATIONS_PER_MODEL_REGION">
+              <Layout regolithID="block:collision_model_permutation" internalName="collision_model_permutation_block" name="collision_model_permutation_block">
+                <FieldSet version="0" sizeofValue="96" sizeofSource="sizeof(struct collision_model_permutation_v0)">
+                  <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+                  <Pad sizeOfSource="6*sizeof(long)" length="24" />
+                  <Block CStyleName="bsps" pascalStyleName="Bsps" name="bsps" readOnly="true" maxElementCount="64" maxElementCountSource="MAXIMUM_BSPS_PER_COLLISION_REGION">
+                    <Layout regolithID="block:collision_model_bsp" internalName="collision_model_bsp_block" name="bsp">
+                      <FieldSet version="0" sizeofValue="100" sizeofSource="sizeof(struct collision_model_bsp)" isLatest="true">
+                        <ShortInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" readOnly="true" />
+                        <Pad sizeOfSource="sizeof(word)" length="2" />
+                        <UselessPad length="16" />
+                        <Struct CStyleName="bsp" pascalStyleName="Bsp" name="bsp" readOnly="true">
+                          <LayoutXRef>structure:global_collision_bsp</LayoutXRef>
+                        </Struct>
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="bsp_physics" pascalStyleName="BspPhysics" name="bsp_physics" readOnly="true" maxElementCount="1024" maxElementCountSource="(1024)">
+                    <LayoutXRef>block:collision_bsp_physics</LayoutXRef>
+                  </Block>
+                  <Pad sizeOfSource="11*sizeof(long)" length="44" />
+                </FieldSet>
+                <FieldSet version="1" sizeofValue="28" sizeofSource="sizeof(struct collision_model_permutation)" isLatest="true">
+                  <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+                  <Block CStyleName="bsps" pascalStyleName="Bsps" name="bsps" readOnly="true" maxElementCount="64" maxElementCountSource="MAXIMUM_BSPS_PER_COLLISION_REGION">
+                    <LayoutXRef>block:collision_model_bsp</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="bsp_physics" pascalStyleName="BspPhysics" name="bsp_physics" readOnly="true" maxElementCount="1024" maxElementCountSource="(1024)">
+                    <LayoutXRef>block:collision_bsp_physics</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="pathfinding_spheres" pascalStyleName="PathfindingSpheres" name="pathfinding spheres" readOnly="true" maxElementCount="32" maxElementCountSource="MAXIMUM_PATHFINDING_SPHERES_PER_COLLISION_MODEL">
+        <Layout regolithID="block:collision_model_pathfinding_sphere" internalName="collision_model_pathfinding_sphere_block" name="sphere">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(struct collision_model_pathfinding_sphere)" isLatest="true">
+            <ShortBlockIndex CStyleName="node" pascalStyleName="Node" name="node" readOnly="true" blockReference="block:collision_model_node" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:collision_model_pathfinding_sphere_flags" CStyleName="collision_model_pathfinding_sphere_flags" pascalStyleName="CollisionModelPathfindingSphereFlags">
+                <Bit name="remains when open" CStyleName="remains_when_open_bit" pascalStyleName="RemainsWhenOpenBit" />
+                <Bit name="vehicle only" CStyleName="vehicle_only_bit" pascalStyleName="VehicleOnlyBit" />
+                <Bit name="with sectors" CStyleName="with_sectors_bit" pascalStyleName="WithSectorsBit" />
+              </Options>
+            </WordFlags>
+            <UselessPad length="12" />
+            <RealPoint3D CStyleName="center" pascalStyleName="Center" name="center" readOnly="true" />
+            <Real CStyleName="radius" pascalStyleName="Radius" name="radius" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes" readOnly="true" maxElementCount="255" maxElementCountSource="MAXIMUM_NODES_PER_MODEL">
+        <Layout regolithID="block:collision_model_node" internalName="collision_model_node_block" name="collision_model_node_block">
+          <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(struct collision_model_node_v0)">
+            <OldStringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <ShortBlockIndex CStyleName="parent_node" pascalStyleName="ParentNode" name="parent node" readOnly="true" />
+            <ShortBlockIndex CStyleName="next_sibling_node" pascalStyleName="NextSiblingNode" name="next sibling node" readOnly="true" />
+            <ShortBlockIndex CStyleName="first_child_node" pascalStyleName="FirstChildNode" name="first child node" readOnly="true" />
+            <Pad sizeOfSource="6*sizeof(long)" length="24" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="12" sizeofSource="sizeof(struct collision_model_node)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <ShortBlockIndex CStyleName="parent_node" pascalStyleName="ParentNode" name="parent node" readOnly="true" blockReference="block:collision_model_node" />
+            <ShortBlockIndex CStyleName="next_sibling_node" pascalStyleName="NextSiblingNode" name="next sibling node" readOnly="true" blockReference="block:collision_model_node" />
+            <ShortBlockIndex CStyleName="first_child_node" pascalStyleName="FirstChildNode" name="first child node" readOnly="true" blockReference="block:collision_model_node" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="76" sizeofSource="sizeof(struct collision_model_definition)" isLatest="true">
+      <Block CStyleName="import_info" pascalStyleName="ImportInfo" name="import info" readOnly="true" maxElementCount="1">
+        <LayoutXRef>block:global_tag_import_info</LayoutXRef>
+      </Block>
+      <Block CStyleName="errors" pascalStyleName="Errors" name="errors" readOnly="true" maxElementCount="64" maxElementCountSource="MAXIMUM_ERROR_REPORT_CATEGORIES">
+        <LayoutXRef>block:global_error_report_categories</LayoutXRef>
+      </Block>
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags" readOnly="true">
+        <Options regolithID="enum:collision_model_flags" CStyleName="collision_model_flags" pascalStyleName="CollisionModelFlags">
+          <Bit name="contains open edges" CStyleName="contains_open_edges_bit" pascalStyleName="ContainsOpenEdgesBit" />
+        </Options>
+      </LongFlags>
+      <UselessPad length="124" />
+      <Block CStyleName="materials" pascalStyleName="Materials" name="materials" readOnly="true" maxElementCount="32" maxElementCountSource="MAXIMUM_MATERIALS_PER_MODEL">
+        <LayoutXRef>block:collision_model_material</LayoutXRef>
+      </Block>
+      <Block CStyleName="regions" pascalStyleName="Regions" name="regions" readOnly="true" maxElementCount="16" maxElementCountSource="MAXIMUM_REGIONS_PER_MODEL">
+        <LayoutXRef>block:collision_model_region</LayoutXRef>
+      </Block>
+      <Block CStyleName="pathfinding_spheres" pascalStyleName="PathfindingSpheres" name="pathfinding spheres" readOnly="true" maxElementCount="32" maxElementCountSource="MAXIMUM_PATHFINDING_SPHERES_PER_COLLISION_MODEL">
+        <LayoutXRef>block:collision_model_pathfinding_sphere</LayoutXRef>
+      </Block>
+      <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes" readOnly="true" maxElementCount="255" maxElementCountSource="MAXIMUM_NODES_PER_MODEL">
+        <LayoutXRef>block:collision_model_node</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

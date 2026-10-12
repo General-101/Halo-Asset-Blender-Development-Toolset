@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="coln" name="colony" version="4">
+  <Layout regolithID="block:colony" internalName="colony_block" name="colony">
+    <FieldSet version="0" sizeofValue="76" sizeofSource="sizeof(struct colony_definition)" isLatest="true">
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:colony_flags" CStyleName="colony_flags" pascalStyleName="ColonyFlags">
+          <Bit name="unused" CStyleName="unused0_bit" pascalStyleName="Unused0Bit" />
+        </Options>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <RealBounds CStyleName="radius" pascalStyleName="Radius" name="radius" />
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <RealArgbColor CStyleName="debug_color" pascalStyleName="DebugColor" name="debug color" />
+      <TagReference CStyleName="base_map" pascalStyleName="BaseMap" name="base map">
+        <tag>bitm</tag>
+      </TagReference>
+      <TagReference CStyleName="detail_map" pascalStyleName="DetailMap" name="detail map">
+        <tag>bitm</tag>
+      </TagReference>
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,108 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="bitm" name="bitmaps" version="2">
+  <Layout regolithID="block:bitmaps" internalName="bitmaps_block" name="bitmaps">
+    <FieldSet version="0" sizeofValue="104" sizeofSource="sizeof(struct bitmaps_group)" isLatest="true">
+      <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+        <Options regolithID="enum:type" CStyleName="type" pascalStyleName="Type">
+          <Enum name="textures" CStyleName="textures" pascalStyleName="Textures" />
+          <Enum name="sprites" CStyleName="sprites" pascalStyleName="Sprites" />
+          <Enum name="game interface elements" CStyleName="game_interface_elements" pascalStyleName="GameInterfaceElements" />
+          <Enum name="dialog interface elements" CStyleName="dialog_interface_elements" pascalStyleName="DialogInterfaceElements" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="2" />
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="dont diffusion dither" CStyleName="dont_diffusion_dither" pascalStyleName="DontDiffusionDither" />
+          <Bit name="dont compress" CStyleName="dont_compress" pascalStyleName="DontCompress" />
+          <Bit name="dont scale" CStyleName="dont_scale" pascalStyleName="DontScale" />
+          <Bit name="allow 32 bit formats" CStyleName="allow_32_bit_formats" pascalStyleName="Allow32BitFormats" />
+          <Bit name="allow greyscale bitmaps" CStyleName="allow_greyscale_bitmaps" pascalStyleName="AllowGreyscaleBitmaps" />
+          <Bit name="allow mipmaps" CStyleName="allow_mipmaps" pascalStyleName="AllowMipmaps" />
+          <Bit name="dont create hardware formats" CStyleName="dont_create_hardware_formats" pascalStyleName="DontCreateHardwareFormats" />
+          <Bit name="is reflection map" CStyleName="is_reflection_map" pascalStyleName="IsReflectionMap" />
+        </Options>
+      </LongFlags>
+      <Real CStyleName="sharpen_amount" pascalStyleName="SharpenAmount" name="sharpen amount" />
+      <Pad name="pad" length="4" />
+      <Pad name="pad" length="76" />
+      <Block CStyleName="formats" pascalStyleName="Formats" name="formats">
+        <Layout regolithID="block:formats" internalName="formats_block" name="formats_block">
+          <FieldSet version="0" sizeofValue="60" isLatest="true">
+            <ShortEnum CStyleName="format" pascalStyleName="Format" name="format">
+              <Options regolithID="enum:format" CStyleName="format" pascalStyleName="Format">
+                <Enum name="16 bit quarter size" CStyleName="16_bit_quarter_size" pascalStyleName="16BitQuarterSize" />
+                <Enum name="16 bit half size" CStyleName="16_bit_half_size" pascalStyleName="16BitHalfSize" />
+                <Enum name="32 bit half size" CStyleName="32_bit_half_size" pascalStyleName="32BitHalfSize" />
+                <Enum name="32 bit full size" CStyleName="32_bit_full_size" pascalStyleName="32BitFullSize" />
+                <Enum name="16 bit full size" CStyleName="16_bit_full_size" pascalStyleName="16BitFullSize" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Real CStyleName="scale" pascalStyleName="Scale" name="scale" />
+            <Pad name="pad" length="8" />
+            <Block CStyleName="bitmaps" pascalStyleName="Bitmaps" name="bitmaps">
+              <Layout regolithID="block:bitmaps" internalName="bitmaps_block" name="bitmaps_block">
+                <FieldSet version="0" sizeofValue="48" isLatest="true">
+                  <Tag CStyleName="signature" pascalStyleName="Signature" name="signature" />
+                  <ShortInteger CStyleName="width" pascalStyleName="Width" name="width" />
+                  <ShortInteger CStyleName="height" pascalStyleName="Height" name="height" />
+                  <ShortInteger CStyleName="bytes_per_row" pascalStyleName="BytesPerRow" name="bytes per row" />
+                  <ShortEnum CStyleName="format" pascalStyleName="Format" name="format">
+                    <Options regolithID="enum:format" CStyleName="format" pascalStyleName="Format">
+                      <Enum name="8bit" CStyleName="8bit" pascalStyleName="8bit" />
+                      <Enum name="8bit intensity" CStyleName="8bit_intensity" pascalStyleName="8bitIntensity" />
+                      <Enum name="16bit 555" CStyleName="16bit_555" pascalStyleName="16bit555" />
+                      <Enum name="16bit 565" CStyleName="16bit_565" pascalStyleName="16bit565" />
+                      <Enum name="16bit 4444" CStyleName="16bit_4444" pascalStyleName="16bit4444" />
+                      <Enum name="16bit 8palette plus 8alpha" CStyleName="16bit_8palette_plus_8alpha" pascalStyleName="16bit8palettePlus8alpha" />
+                      <Enum name="16bit intensity" CStyleName="16bit_intensity" pascalStyleName="16bitIntensity" />
+                      <Enum name="32bit 888" CStyleName="32bit_888" pascalStyleName="32bit888" />
+                      <Enum name="32bit 8888" CStyleName="32bit_8888" pascalStyleName="32bit8888" />
+                    </Options>
+                  </ShortEnum>
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                      <Bit name="power of two dimensions" CStyleName="power_of_two_dimensions" pascalStyleName="PowerOfTwoDimensions" />
+                      <Bit name="color key transparency" CStyleName="color_key_transparency" pascalStyleName="ColorKeyTransparency" />
+                      <Bit name="hardware format" CStyleName="hardware_format" pascalStyleName="HardwareFormat" />
+                      <Bit name="hardware format volatile" CStyleName="hardware_format_volatile" pascalStyleName="HardwareFormatVolatile" />
+                      <Bit name="free on delete" CStyleName="free_on_delete" pascalStyleName="FreeOnDelete" />
+                      <Bit name="unnamed 32" CStyleName="unnamed_32" pascalStyleName="Unnamed32" />
+                      <Bit name="unnamed 64" CStyleName="unnamed_64" pascalStyleName="Unnamed64" />
+                    </Options>
+                  </LongFlags>
+                  <Point2D CStyleName="registration_point" pascalStyleName="RegistrationPoint" name="registration point" />
+                  <ShortInteger CStyleName="mipmap_count" pascalStyleName="MipmapCount" name="mipmap count" />
+                  <Pad name="pad" length="2" />
+                  <LongInteger CStyleName="pixels_offset" pascalStyleName="PixelsOffset" name="pixels offset" />
+                  <Pad name="pad" length="12" />
+                  <Pad name="pad" length="8" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="sequences" pascalStyleName="Sequences" name="sequences">
+              <Layout regolithID="block:sequences" internalName="sequences_block" name="sequences_block">
+                <FieldSet version="0" sizeofValue="16" isLatest="true">
+                  <ShortInteger CStyleName="first_bitmap_index" pascalStyleName="FirstBitmapIndex" name="first bitmap index" />
+                  <ShortInteger CStyleName="bitmap_count" pascalStyleName="BitmapCount" name="bitmap count" />
+                  <Block CStyleName="sprites" pascalStyleName="Sprites" name="sprites">
+                    <Layout regolithID="block:sprites" internalName="sprites_block" name="sprites_block">
+                      <FieldSet version="0" sizeofValue="16" isLatest="true">
+                        <ShortInteger CStyleName="bitmap_index" pascalStyleName="BitmapIndex" name="bitmap index" />
+                        <Pad name="pad" length="2" />
+                        <Rectangle2D CStyleName="bounds" pascalStyleName="Bounds" name="bounds" />
+                        <Point2D CStyleName="registration_point" pascalStyleName="RegistrationPoint" name="registration point" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Data CStyleName="pixels" pascalStyleName="Pixels" name="pixels" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

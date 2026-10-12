@@ -1,0 +1,89 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="vcky" name="virtual_keyboard" version="2">
+  <Layout regolithID="block:virtual_keyboard" internalName="virtual_keyboard_block" name="virtual_keyboard">
+    <FieldSet version="0" sizeofValue="60" sizeofSource="sizeof(struct virtual_keyboard_group)" isLatest="true">
+      <TagReference CStyleName="display_font" pascalStyleName="DisplayFont" name="display font">
+        <tag>font</tag>
+      </TagReference>
+      <TagReference CStyleName="background_bitmap" pascalStyleName="BackgroundBitmap" name="background bitmap">
+        <tag>bitmap</tag>
+      </TagReference>
+      <TagReference CStyleName="special_key_labels_string_list" pascalStyleName="SpecialKeyLabelsStringList" name="special key labels string list">
+        <tag>unicode_string_list</tag>
+      </TagReference>
+      <Block CStyleName="virtual_keys" pascalStyleName="VirtualKeys" name="virtual keys" maxElementCount="44">
+        <Layout regolithID="block:virtual keys" internalName="virtual keys_block" name="virtual keys_block">
+          <FieldSet version="0" sizeofValue="80" isLatest="true">
+            <ShortEnum CStyleName="keyboard_key" pascalStyleName="KeyboardKey" name="keyboard key">
+              <Options regolithID="enum:keyboard_key" CStyleName="keyboard_key" pascalStyleName="KeyboardKey">
+                <Enum name="1" CStyleName="_1" pascalStyleName="1" />
+                <Enum name="2" CStyleName="_2" pascalStyleName="2" />
+                <Enum name="3" CStyleName="_3" pascalStyleName="3" />
+                <Enum name="4" CStyleName="_4" pascalStyleName="4" />
+                <Enum name="5" CStyleName="_5" pascalStyleName="5" />
+                <Enum name="6" CStyleName="_6" pascalStyleName="6" />
+                <Enum name="7" CStyleName="_7" pascalStyleName="7" />
+                <Enum name="8" CStyleName="_8" pascalStyleName="8" />
+                <Enum name="9" CStyleName="_9" pascalStyleName="9" />
+                <Enum name="0" CStyleName="_0" pascalStyleName="0" />
+                <Enum name="a" CStyleName="a" pascalStyleName="A" />
+                <Enum name="b" CStyleName="b" pascalStyleName="B" />
+                <Enum name="c" CStyleName="c" pascalStyleName="C" />
+                <Enum name="d" CStyleName="d" pascalStyleName="D" />
+                <Enum name="e" CStyleName="e" pascalStyleName="E" />
+                <Enum name="f" CStyleName="f" pascalStyleName="F" />
+                <Enum name="g" CStyleName="g" pascalStyleName="G" />
+                <Enum name="h" CStyleName="h" pascalStyleName="H" />
+                <Enum name="i" CStyleName="i" pascalStyleName="I" />
+                <Enum name="j" CStyleName="j" pascalStyleName="J" />
+                <Enum name="k" CStyleName="k" pascalStyleName="K" />
+                <Enum name="l" CStyleName="l" pascalStyleName="L" />
+                <Enum name="m" CStyleName="m" pascalStyleName="M" />
+                <Enum name="n" CStyleName="n" pascalStyleName="N" />
+                <Enum name="o" CStyleName="o" pascalStyleName="O" />
+                <Enum name="p" CStyleName="p" pascalStyleName="P" />
+                <Enum name="q" CStyleName="q" pascalStyleName="Q" />
+                <Enum name="r" CStyleName="r" pascalStyleName="R" />
+                <Enum name="s" CStyleName="s" pascalStyleName="S" />
+                <Enum name="t" CStyleName="t" pascalStyleName="T" />
+                <Enum name="u" CStyleName="u" pascalStyleName="U" />
+                <Enum name="v" CStyleName="v" pascalStyleName="V" />
+                <Enum name="w" CStyleName="w" pascalStyleName="W" />
+                <Enum name="x" CStyleName="x" pascalStyleName="X" />
+                <Enum name="y" CStyleName="y" pascalStyleName="Y" />
+                <Enum name="z" CStyleName="z" pascalStyleName="Z" />
+                <Enum name="done" CStyleName="done" pascalStyleName="Done" />
+                <Enum name="shift" CStyleName="shift" pascalStyleName="Shift" />
+                <Enum name="caps lock" CStyleName="caps_lock" pascalStyleName="CapsLock" />
+                <Enum name="symbols" CStyleName="symbols" pascalStyleName="Symbols" />
+                <Enum name="backspace" CStyleName="backspace" pascalStyleName="Backspace" />
+                <Enum name="left" CStyleName="left" pascalStyleName="Left" />
+                <Enum name="right" CStyleName="right" pascalStyleName="Right" />
+                <Enum name="space" CStyleName="space" pascalStyleName="Space" />
+              </Options>
+            </ShortEnum>
+            <ShortInteger CStyleName="lowercase_character" pascalStyleName="LowercaseCharacter" name="lowercase character" />
+            <ShortInteger CStyleName="shift_character" pascalStyleName="ShiftCharacter" name="shift character" />
+            <ShortInteger CStyleName="caps_character" pascalStyleName="CapsCharacter" name="caps character" />
+            <ShortInteger CStyleName="symbols_character" pascalStyleName="SymbolsCharacter" name="symbols character" />
+            <ShortInteger CStyleName="shift_caps_character" pascalStyleName="ShiftCapsCharacter" name="shift caps character" />
+            <ShortInteger CStyleName="shift_symbols_character" pascalStyleName="ShiftSymbolsCharacter" name="shift symbols character" />
+            <ShortInteger CStyleName="caps_symbols_character" pascalStyleName="CapsSymbolsCharacter" name="caps symbols character" />
+            <TagReference CStyleName="unselected_background_bitmap" pascalStyleName="UnselectedBackgroundBitmap" name="unselected background bitmap">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="selected_background_bitmap" pascalStyleName="SelectedBackgroundBitmap" name="selected background bitmap">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="active_background_bitmap" pascalStyleName="ActiveBackgroundBitmap" name="active background bitmap">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="sticky_background_bitmap" pascalStyleName="StickyBackgroundBitmap" name="sticky background bitmap">
+              <tag>bitmap</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

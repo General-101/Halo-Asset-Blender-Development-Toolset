@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="vrtx" name="vertex_shader" version="1">
+  <Layout regolithID="block:vertex_shader" internalName="vertex_shader_block" name="vertex_shader">
+    <FieldSet version="0" sizeofValue="48" sizeofSource="sizeof(c_vertex_shader_definition)" isLatest="true">
+      <Block CStyleName="geometry_classifications_dx11" pascalStyleName="GeometryClassificationsDx11" name="geometry classifications dx11" maxElementCount="12" maxElementCountSource="c_vertex_shader_definition::k_vertex_shader_classification_count">
+        <Layout regolithID="block:vertex_shader_classification" internalName="vertex_shader_classification_block" name="classification">
+          <FieldSet version="0" sizeofValue="44" sizeofSource="sizeof(c_vertex_shader_classification)" isLatest="true">
+            <Ptr length="4" />
+            <Data CStyleName="compiled_shader" pascalStyleName="CompiledShader" name="compiled shader" />
+            <Data CStyleName="code" pascalStyleName="Code" name="code" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="geometry_classifications_dx9" pascalStyleName="GeometryClassificationsDx9" name="geometry classifications dx9" maxElementCount="12" maxElementCountSource="c_vertex_shader_definition::k_vertex_shader_classification_count">
+        <LayoutXRef>block:vertex_shader_classification</LayoutXRef>
+      </Block>
+      <Block CStyleName="geometry_classifications_xbox1" pascalStyleName="GeometryClassificationsXbox1" name="geometry classifications xbox1" maxElementCount="12" maxElementCountSource="c_vertex_shader_definition::k_vertex_shader_classification_count">
+        <LayoutXRef>block:vertex_shader_classification</LayoutXRef>
+      </Block>
+      <LongInteger CStyleName="output_swizzles_dx11" pascalStyleName="OutputSwizzlesDx11" name="output swizzles dx11" />
+      <LongInteger CStyleName="output_swizzles_dx9" pascalStyleName="OutputSwizzlesDx9" name="output swizzles dx9" />
+      <LongInteger CStyleName="output_swizzles_xbox1" pascalStyleName="OutputSwizzlesXbox1" name="output swizzles xbox1" />
+    </FieldSet>
+	<!--Added as a workaround for *older* versions of the tag that otherwise couldn't be read-->
+	<!--The toolkit can't read them, but for completeness we do-->
+	<!---->
+	<FieldSet version="-1" sizeofValue="20" sizeofSource="sizeof(c_vertex_shader_definition)">
+	  <LongInteger CStyleName="unknown" pascalStyleName="Unknown" name="unknown field" />
+      <Block CStyleName="geometry_classifications" pascalStyleName="GeometryClassifications" name="geometry classifications" maxElementCount="12" maxElementCountSource="c_vertex_shader_definition::k_vertex_shader_classification_count">
+        <LayoutXRef>block:vertex_shader_classification</LayoutXRef>
+      </Block>
+      <LongInteger CStyleName="output_swizzles" pascalStyleName="OutputSwizzles" name="output swizzles" />
+	</FieldSet>
+  </Layout>
+</TagGroup>

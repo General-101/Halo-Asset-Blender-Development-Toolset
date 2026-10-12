@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="mply" name="multiplayer_scenario_description" version="1">
+  <Layout regolithID="block:multiplayer_scenario_description" internalName="multiplayer_scenario_description_block" name="multiplayer_scenario_description">
+    <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(multiplayer_scenario_description_definition)" isLatest="true">
+      <Block CStyleName="multiplayer_scenarios" pascalStyleName="MultiplayerScenarios" name="multiplayer scenarios" maxElementCount="32" maxElementCountSource="MAXIMUM_NUMBER_OF_MULTIPLAYER_SCENARIOS">
+        <Layout regolithID="block:scenario_description" internalName="scenario_description_block" name="scenario_description_block">
+          <FieldSet version="0" sizeofValue="68" sizeofSource="sizeof(multiplayer_scenario_description_item)" isLatest="true">
+            <Explanation name="net map info" description="these provide the info required by the UI to load a net map" />
+            <TagReference CStyleName="descriptive_bitmap" pascalStyleName="DescriptiveBitmap" name="descriptive bitmap">
+              <tag>bitm</tag>
+            </TagReference>
+            <TagReference CStyleName="displayed_map_name" pascalStyleName="DisplayedMapName" name="displayed map name">
+              <tag>unic</tag>
+            </TagReference>
+            <String CStyleName="scenario_tag_directory_path" pascalStyleName="ScenarioTagDirectoryPath" name="scenario tag directory path" description="this is the path to the directory containing the scenario tag file of the same name" />
+            <Pad sizeOfSource="2*sizeof(short)" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

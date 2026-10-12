@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="*sce" name="scenario_sound_scenery_resource" version="1">
+  <Layout regolithID="block:scenario_sound_scenery_resource" internalName="scenario_sound_scenery_resource_block" name="scenario_sound_scenery_resource">
+    <FieldSet version="0" sizeofValue="76" sizeofSource="sizeof(struct scenario_objects_resource_definition)" isLatest="true">
+      <Block CStyleName="names" pascalStyleName="Names" name="names" maxElementCount="640" maxElementCountSource="MAXIMUM_OBJECT_NAMES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_object_names</LayoutXRef>
+      </Block>
+      <Block CStyleName="going_away" pascalStyleName="GoingAway" name="going away" readOnly="true" expertOnly="true" maxElementCount="4096" maxElementCountSource="MAXIMUM_ENVIRONMENT_OBJECTS_PER_SCENARIO">
+        <LayoutXRef>block:dont_use_me_scenario_environment_object</LayoutXRef>
+      </Block>
+      <Block CStyleName="structure_references" pascalStyleName="StructureReferences" name="structure references" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_structure_bsp_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="sound_scenery_palette" pascalStyleName="SoundSceneryPalette" name="sound_scenery palette" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_sound_scenery_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="sound_scenerys" pascalStyleName="SoundScenerys" name="sound_scenerys" maxElementCount="256" maxElementCountSource="MAXIMUM_SOUND_SCENERY_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_sound_scenery</LayoutXRef>
+      </Block>
+      <LongInteger CStyleName="next_object_id_salt" pascalStyleName="NextObjectIdSalt" name="next object id salt" readOnly="true" />
+      <Block CStyleName="editor_folders" pascalStyleName="EditorFolders" name="editor folders" readOnly="true" maxElementCount="32767" maxElementCountSource="k_maximum_scenario_editor_folders">
+        <LayoutXRef>block:g_scenario_editor_folder</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

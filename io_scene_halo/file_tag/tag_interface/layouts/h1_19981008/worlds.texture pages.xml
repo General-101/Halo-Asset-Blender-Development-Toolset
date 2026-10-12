@@ -1,0 +1,9 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="texp" name="worlds.texture pages" version="1">
+  <Layout regolithID="block:worlds.texture pages" internalName="worlds.texture pages_block" name="worlds.texture pages">
+    <FieldSet version="0" sizeofValue="100" sizeofSource="sizeof(struct worlds.texture pages_group)" isLatest="true">
+      <Data CStyleName="submesh_textures" pascalStyleName="SubmeshTextures" name="submesh textures" />
+      <Pad name="pad" length="80" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

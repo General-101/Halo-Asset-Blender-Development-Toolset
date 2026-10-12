@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="mach" parent="devi" name="device_machine" version="1">
+  <Layout regolithID="block:device_machine" internalName="device_machine_block" name="device_machine">
+    <FieldSet version="0" sizeofValue="432" sizeofSource="sizeof(struct _machine_definition)" parentVersion="0" isLatest="true">
+      <Explanation name="$$$ MACHINE $$$" />
+      <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+        <Options regolithID="enum:machine_type" CStyleName="machine_type" pascalStyleName="MachineType">
+          <Enum name="door" CStyleName="door" pascalStyleName="Door" />
+          <Enum name="platform" CStyleName="platform" pascalStyleName="Platform" />
+          <Enum name="gear" CStyleName="gear" pascalStyleName="Gear" />
+        </Options>
+      </ShortEnum>
+      <WordFlags CStyleName="device_machine_flags" pascalStyleName="DeviceMachineFlags" name="flags">
+        <Options regolithID="enum:device_machine_flags" CStyleName="device_machine_flags" pascalStyleName="DeviceMachineFlags">
+          <Bit name="pathfinding obstacle" CStyleName="pathfinding_obstacle_bit" pascalStyleName="PathfindingObstacleBit" />
+          <Bit name="...but not when open" CStyleName="but_not_when_open_bit" pascalStyleName="ButNotWhenOpenBit" />
+          <Bit name="elevator" description="lighting based on what's around, rather than what's below" CStyleName="elevator_bit" pascalStyleName="ElevatorBit" />
+        </Options>
+      </WordFlags>
+      <Real CStyleName="door_open_time" pascalStyleName="DoorOpenTime" name="door open time" units="seconds" />
+      <RealFractionBounds CStyleName="door_occlusion_bounds" pascalStyleName="DoorOcclusionBounds" name="door occlusion bounds" description="maps position [0,1] to occlusion" />
+      <UselessPad length="72" />
+      <ShortEnum CStyleName="collision_response" pascalStyleName="CollisionResponse" name="collision response">
+        <Options regolithID="enum:machine_collision_response" CStyleName="machine_collision_response" pascalStyleName="MachineCollisionResponse">
+          <Enum name="pause until crushed" CStyleName="pause_until_crushed" pascalStyleName="PauseUntilCrushed" />
+          <Enum name="reverse directions" CStyleName="reverse_directions" pascalStyleName="ReverseDirections" />
+        </Options>
+      </ShortEnum>
+      <ShortInteger CStyleName="elevator_node" pascalStyleName="ElevatorNode" name="elevator node" />
+      <UselessPad length="68" />
+      <ShortEnum CStyleName="pathfinding_policy" pascalStyleName="PathfindingPolicy" name="pathfinding policy">
+        <Options regolithID="enum:device_machine_pathfinding_policy" CStyleName="device_machine_pathfinding_policy" pascalStyleName="DeviceMachinePathfindingPolicy">
+          <Enum name="discs" CStyleName="discs" pascalStyleName="Discs" />
+          <Enum name="sectors" CStyleName="sectors" pascalStyleName="Sectors" />
+          <Enum name="cut_out" CStyleName="cut_out" pascalStyleName="CutOut" />
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

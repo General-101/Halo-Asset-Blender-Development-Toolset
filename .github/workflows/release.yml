@@ -1,28 +1,45 @@
-name: release
+name: Release
 
 on:
   push:
+    branches:
+      - '**'
     paths-ignore:
       - '*.md'
+
 jobs:
-  package:
+  release_package:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - name: Checkout branch
+        uses: actions/checkout@v4
         with:
-          python-version: 3.x # Version range or exact version of a Python version to use, using SemVer's version range syntax
-      - name: Do package
+          ref: ${{ github.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Build ZIP package
         run: python build/create_zip.py
+
+      - name: Generate commit notes
+        run: python build/create_release_notes.py
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: toolkit
           path: output/
-      - name: Release to Github
+
+      - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          prerelease: false
-          token: '${{ secrets.GITHUB_TOKEN }}'
-          artifacts: output/*
-          tag: '${{ github.run_number }}'
+          prerelease: ${{ contains(github.ref_name, 'beta') }}
+          artifacts: "output/*"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ contains(github.ref_name, 'beta') && format('beta-{0}', github.run_number) || format('{0}-{1}', github.ref_name, github.run_number) }}
+          name: "${{ github.ref_name }} Release ${{ github.run_number }}"
+          bodyFile: "release_notes.md"

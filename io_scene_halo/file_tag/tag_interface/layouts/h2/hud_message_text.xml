@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="hmt " name="hud_message_text" version="1">
+  <Layout regolithID="block:hud_message_text" internalName="hud_message_text_block" name="hud_message_text">
+    <FieldSet version="0" sizeofValue="128" sizeofSource="sizeof(struct hud_state_messages)" isLatest="true">
+      <Data CStyleName="text_data" pascalStyleName="TextData" name="text data" readOnly="true" />
+      <Block CStyleName="message_elements" pascalStyleName="MessageElements" name="message elements" readOnly="true" maxElementCount="8192" maxElementCountSource="MAX_STATE_MESSAGES*MAX_STATE_TEXT_PANELS">
+        <Layout regolithID="block:hud_message_elements" internalName="hud_message_elements_block" name="hud_message_elements_block">
+          <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(struct hud_state_message_element)" isLatest="true">
+            <CharInteger CStyleName="type" pascalStyleName="Type" name="type" readOnly="true" />
+            <CharInteger CStyleName="data" pascalStyleName="Data" name="data" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="messages" pascalStyleName="Messages" name="messages" readOnly="true" maxElementCount="1024" maxElementCountSource="MAX_STATE_MESSAGES">
+        <Layout regolithID="block:hud_messages" internalName="hud_messages_block" name="hud_messages_block">
+          <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(struct hud_state_message_definition)" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" readOnly="true" />
+            <ShortInteger CStyleName="start_index_into_text_blob" pascalStyleName="StartIndexIntoTextBlob" name="start index into text blob" readOnly="true" />
+            <ShortInteger CStyleName="start_index_of_message_block" pascalStyleName="StartIndexOfMessageBlock" name="start index of message block" readOnly="true" />
+            <CharInteger CStyleName="panel_count" pascalStyleName="PanelCount" name="panel count" readOnly="true" />
+            <Pad sizeOfSource="3" length="3" />
+            <Pad sizeOfSource="sizeof(long)*6" length="24" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="21*sizeof(long)" length="84" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

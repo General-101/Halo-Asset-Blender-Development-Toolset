@@ -1,0 +1,36 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="ant!" name="antenna" version="1">
+  <Layout regolithID="block:antenna" internalName="antenna_block" name="antenna">
+    <FieldSet version="0" sizeofValue="208" sizeofSource="sizeof(struct antenna_group)" isLatest="true">
+      <String CStyleName="attachment_marker_name" pascalStyleName="AttachmentMarkerName" name="attachment marker name" />
+      <TagReference CStyleName="bitmaps" pascalStyleName="Bitmaps" name="bitmaps">
+        <tag>bitmap</tag>
+      </TagReference>
+      <TagReference CStyleName="physics" pascalStyleName="Physics" name="physics">
+        <tag>point_physics</tag>
+      </TagReference>
+      <Pad name="pad" length="80" />
+      <Real CStyleName="spring_strength_coefficient" pascalStyleName="SpringStrengthCoefficient" name="spring strength coefficient" />
+      <Real CStyleName="falloff_pixels" pascalStyleName="FalloffPixels" name="falloff pixels" />
+      <Real CStyleName="cutoff_pixels" pascalStyleName="CutoffPixels" name="cutoff pixels" />
+      <Real CStyleName="length" pascalStyleName="Length" name="length" cacheOnly="true" />
+      <Pad name="pad" length="36" />
+      <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" maxElementCount="20">
+        <Layout regolithID="block:vertices" internalName="vertices_block" name="vertices_block">
+          <FieldSet version="0" sizeofValue="128" isLatest="true">
+            <Real CStyleName="spring_strength_coefficient" pascalStyleName="SpringStrengthCoefficient" name="spring strength coefficient" />
+            <Pad name="pad" length="24" />
+            <RealEulerAngles2D CStyleName="angles" pascalStyleName="Angles" name="angles" />
+            <Real CStyleName="length" pascalStyleName="Length" name="length" />
+            <ShortInteger CStyleName="sequence_index" pascalStyleName="SequenceIndex" name="sequence index" />
+            <Pad name="pad" length="2" />
+            <RealArgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+            <RealArgbColor CStyleName="lod_color" pascalStyleName="LodColor" name="lod color" />
+            <Pad name="pad" length="40" />
+            <RealVector3D CStyleName="offset" pascalStyleName="Offset" name="offset" cacheOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

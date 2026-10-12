@@ -1,0 +1,180 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="spla" name="shader_transparent_plasma" version="1">
+  <Layout regolithID="block:shader_transparent_plasma" internalName="shader_transparent_plasma_block" name="shader_transparent_plasma">
+    <FieldSet version="0" sizeofValue="332" sizeofSource="sizeof(struct shader_transparent_plasma_group)" isLatest="true">
+      <Explanation name="Radiosity" />
+      <Struct CStyleName="radiosity" pascalStyleName="Radiosity" name="radiosity">
+        <Layout regolithID="structure:shader_radiosity_properties" internalName="shader_radiosity_properties_struct" backingBlockInternalName="shader_radiosity_properties_struct_block" name="shader radiosity properties">
+          <FieldSet version="0" sizeofValue="32" isLatest="true">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="simple parameterization" CStyleName="simple_parameterization_bit" pascalStyleName="SimpleParameterizationBit" />
+                <Bit name="ignore normals" CStyleName="ignore_normals_bit" pascalStyleName="IgnoreNormalsBit" />
+                <Bit name="transparent lit" CStyleName="transparent_lit_bit" pascalStyleName="TransparentLitBit" />
+              </Options>
+            </WordFlags>
+            <ShortEnum CStyleName="detail_level" pascalStyleName="DetailLevel" name="detail level">
+              <Options regolithID="enum:detail_level" CStyleName="detail_level" pascalStyleName="DetailLevel">
+                <Enum name="high" CStyleName="high" pascalStyleName="High" />
+                <Enum name="medium" CStyleName="medium" pascalStyleName="Medium" />
+                <Enum name="low" CStyleName="low" pascalStyleName="Low" />
+                <Enum name="turd" CStyleName="turd" pascalStyleName="Turd" />
+              </Options>
+            </ShortEnum>
+            <Real CStyleName="power" pascalStyleName="Power" name="power" />
+            <RealRgbColor CStyleName="color_of_emitted_light" pascalStyleName="ColorOfEmittedLight" name="color of emitted light" />
+            <RealRgbColor CStyleName="tint_color" pascalStyleName="TintColor" name="tint color" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Physics" />
+      <Struct CStyleName="physics" pascalStyleName="Physics" name="physics">
+        <Layout regolithID="structure:shader_physics_properties" internalName="shader_physics_properties_struct" backingBlockInternalName="shader_physics_properties_struct_block" name="shader physics properties">
+          <FieldSet version="0" sizeofValue="8" isLatest="true">
+            <Pad name="pad" length="2" />
+            <ShortEnum CStyleName="material_type" pascalStyleName="MaterialType" name="material type">
+              <Options regolithID="enum:material_type" CStyleName="material_type" pascalStyleName="MaterialType">
+                <Enum name="dirt" CStyleName="dirt" pascalStyleName="Dirt" />
+                <Enum name="sand" CStyleName="sand" pascalStyleName="Sand" />
+                <Enum name="stone" CStyleName="stone" pascalStyleName="Stone" />
+                <Enum name="snow" CStyleName="snow" pascalStyleName="Snow" />
+                <Enum name="wood" CStyleName="wood" pascalStyleName="Wood" />
+                <Enum name="metal hollow" CStyleName="metal_hollow" pascalStyleName="MetalHollow" />
+                <Enum name="metal thin" CStyleName="metal_thin" pascalStyleName="MetalThin" />
+                <Enum name="metal thick" CStyleName="metal_thick" pascalStyleName="MetalThick" />
+                <Enum name="rubber" CStyleName="rubber" pascalStyleName="Rubber" />
+                <Enum name="glass" CStyleName="glass" pascalStyleName="Glass" />
+                <Enum name="force field" CStyleName="force_field" pascalStyleName="ForceField" />
+                <Enum name="grunt" CStyleName="grunt" pascalStyleName="Grunt" />
+                <Enum name="hunter armor" CStyleName="hunter_armor" pascalStyleName="HunterArmor" />
+                <Enum name="hunter skin" CStyleName="hunter_skin" pascalStyleName="HunterSkin" />
+                <Enum name="elite" CStyleName="elite" pascalStyleName="Elite" />
+                <Enum name="jackal" CStyleName="jackal" pascalStyleName="Jackal" />
+                <Enum name="jackal energy shield" CStyleName="jackal_energy_shield" pascalStyleName="JackalEnergyShield" />
+                <Enum name="engineer skin" CStyleName="engineer_skin" pascalStyleName="EngineerSkin" />
+                <Enum name="engineer force field" CStyleName="engineer_force_field" pascalStyleName="EngineerForceField" />
+                <Enum name="flood combat form" CStyleName="flood_combat_form" pascalStyleName="FloodCombatForm" />
+                <Enum name="flood carrier form" CStyleName="flood_carrier_form" pascalStyleName="FloodCarrierForm" />
+                <Enum name="cyborg armor" CStyleName="cyborg_armor" pascalStyleName="CyborgArmor" />
+                <Enum name="cyborg energy shield" CStyleName="cyborg_energy_shield" pascalStyleName="CyborgEnergyShield" />
+                <Enum name="human armor" CStyleName="human_armor" pascalStyleName="HumanArmor" />
+                <Enum name="human skin" CStyleName="human_skin" pascalStyleName="HumanSkin" />
+                <Enum name="sentinel" CStyleName="sentinel" pascalStyleName="Sentinel" />
+                <Enum name="monitor" CStyleName="monitor" pascalStyleName="Monitor" />
+                <Enum name="plastic" CStyleName="plastic" pascalStyleName="Plastic" />
+                <Enum name="water" CStyleName="water" pascalStyleName="Water" />
+                <Enum name="leaves" CStyleName="leaves" pascalStyleName="Leaves" />
+                <Enum name="elite energy shield" CStyleName="elite_energy_shield" pascalStyleName="EliteEnergyShield" />
+                <Enum name="ice" CStyleName="ice" pascalStyleName="Ice" />
+                <Enum name="hunter shield" CStyleName="hunter_shield" pascalStyleName="HunterShield" />
+              </Options>
+            </ShortEnum>
+            <ShortInteger CStyleName="type" pascalStyleName="Type" name="type" cacheOnly="true" unsigned="true" />
+            <Pad name="pad" length="2" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Pad name="pad" length="4" />
+      <Explanation name="Intensity" />
+      <Struct CStyleName="intensity" pascalStyleName="Intensity" name="intensity">
+        <Layout regolithID="structure:shader_transparent_plasma_intensity" internalName="shader_transparent_plasma_intensity_struct" backingBlockInternalName="shader_transparent_plasma_intensity_struct_block" name="shader transparent plasma intensity">
+          <FieldSet version="0" sizeofValue="8" isLatest="true">
+            <ShortEnum CStyleName="intensity_source" pascalStyleName="IntensitySource" name="intensity source">
+              <Options regolithID="enum:intensity_source" CStyleName="intensity_source" pascalStyleName="IntensitySource">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Real CStyleName="intensity_exponent" pascalStyleName="IntensityExponent" name="intensity exponent" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Offset" />
+      <Struct CStyleName="offset" pascalStyleName="Offset" name="offset">
+        <Layout regolithID="structure:shader_transparent_plasma_offset" internalName="shader_transparent_plasma_offset_struct" backingBlockInternalName="shader_transparent_plasma_offset_struct_block" name="shader transparent plasma offset">
+          <FieldSet version="0" sizeofValue="44" isLatest="true">
+            <ShortEnum CStyleName="offset_source" pascalStyleName="OffsetSource" name="offset source">
+              <Options regolithID="enum:offset_source" CStyleName="offset_source" pascalStyleName="OffsetSource">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Real CStyleName="offset_amount" pascalStyleName="OffsetAmount" name="offset amount" />
+            <Real CStyleName="offset_exponent" pascalStyleName="OffsetExponent" name="offset exponent" />
+            <Pad name="pad" length="32" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Color" />
+      <Struct CStyleName="color" pascalStyleName="Color" name="color">
+        <Layout regolithID="structure:shader_transparent_plasma_color" internalName="shader_transparent_plasma_color_struct" backingBlockInternalName="shader_transparent_plasma_color_struct_block" name="shader transparent plasma color">
+          <FieldSet version="0" sizeofValue="92" isLatest="true">
+            <Struct CStyleName="specular_properties" pascalStyleName="SpecularProperties" name="specular properties">
+              <Layout regolithID="structure:shader_specular_properties" internalName="shader_specular_properties_struct" backingBlockInternalName="shader_specular_properties_struct_block" name="shader specular properties">
+                <FieldSet version="0" sizeofValue="32" isLatest="true">
+                  <Real CStyleName="perpendicular_brightness" pascalStyleName="PerpendicularBrightness" name="perpendicular brightness" description="specular brightness when the surface is directly facing the camera" />
+                  <RealRgbColor CStyleName="perpendicular_tint_color" pascalStyleName="PerpendicularTintColor" name="perpendicular tint color" description="specular tint when the surface is directly facing the camera" />
+                  <Real CStyleName="parallel_brightness" pascalStyleName="ParallelBrightness" name="parallel brightness" description="specular brightness when the surface is facing 90 from the camera" />
+                  <RealRgbColor CStyleName="parallel_tint_color" pascalStyleName="ParallelTintColor" name="parallel tint color" description="specular tint when the surface is facing 90 from the camera" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <ShortEnum CStyleName="tint_color_source" pascalStyleName="TintColorSource" name="tint color source">
+              <Options regolithID="enum:tint_color_source" CStyleName="tint_color_source" pascalStyleName="TintColorSource">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="a" CStyleName="a" pascalStyleName="A" />
+                <Enum name="b" CStyleName="b" pascalStyleName="B" />
+                <Enum name="c" CStyleName="c" pascalStyleName="C" />
+                <Enum name="d" CStyleName="d" pascalStyleName="D" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Pad name="pad" length="32" />
+            <Pad name="pad" length="2" />
+            <Pad name="pad" length="2" />
+            <Pad name="pad" length="16" />
+            <Pad name="pad" length="4" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Primary Noise Map" />
+      <Struct CStyleName="primary_noise_map" pascalStyleName="PrimaryNoiseMap" name="primary noise map">
+        <Layout regolithID="structure:shader_transparent_plasma_noise_map" internalName="shader_transparent_plasma_noise_map_struct" backingBlockInternalName="shader_transparent_plasma_noise_map_struct_block" name="shader transparent plasma noise map">
+          <FieldSet version="0" sizeofValue="72" isLatest="true">
+            <Pad name="pad" length="4" />
+            <Real CStyleName="animation_period" pascalStyleName="AnimationPeriod" name="animation period" />
+            <RealVector3D CStyleName="animation_direction" pascalStyleName="AnimationDirection" name="animation direction" />
+            <Real CStyleName="noise_map_scale" pascalStyleName="NoiseMapScale" name="noise map scale" />
+            <TagReference CStyleName="noise_map" pascalStyleName="NoiseMap" name="noise map">
+              <tag>bitmap</tag>
+            </TagReference>
+            <Pad name="pad" length="32" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Secondary Noise Map" />
+      <Struct CStyleName="secondary_noise_map" pascalStyleName="SecondaryNoiseMap" name="secondary noise map">
+        <Layout regolithID="structure:shader_transparent_plasma_noise_map" internalName="shader_transparent_plasma_noise_map_struct" backingBlockInternalName="shader_transparent_plasma_noise_map_struct_block" name="shader transparent plasma noise map">
+          <FieldSet version="0" sizeofValue="72" isLatest="true">
+            <Pad name="pad" length="4" />
+            <Real CStyleName="animation_period" pascalStyleName="AnimationPeriod" name="animation period" />
+            <RealVector3D CStyleName="animation_direction" pascalStyleName="AnimationDirection" name="animation direction" />
+            <Real CStyleName="noise_map_scale" pascalStyleName="NoiseMapScale" name="noise map scale" />
+            <TagReference CStyleName="noise_map" pascalStyleName="NoiseMap" name="noise map">
+              <tag>bitmap</tag>
+            </TagReference>
+            <Pad name="pad" length="32" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+    </FieldSet>
+  </Layout>
+</TagGroup>

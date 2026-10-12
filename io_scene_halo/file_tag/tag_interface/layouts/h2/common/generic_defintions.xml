@@ -1,0 +1,354 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedLayouts>
+  <Layout regolithID="block:g_null" internalName="g_null_block" name="g_null_block">
+    <FieldSet version="0" sizeofValue="0" sizeofSource="0" isLatest="true">
+      <Custom name="-1" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:global_error_report_categories" internalName="global_error_report_categories_block" name="error report category">
+    <FieldSet version="0" sizeofValue="680" sizeofSource="sizeof(struct error_report_category)" isLatest="true">
+      <LongString CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+      <ShortEnum CStyleName="report_type" pascalStyleName="ReportType" name="report type" readOnly="true">
+        <Options regolithID="enum:global_error_report_type" CStyleName="global_error_report_type" pascalStyleName="GlobalErrorReportType">
+          <Enum name="silent" CStyleName="silent" pascalStyleName="Silent" />
+          <Enum name="comment" CStyleName="comment" pascalStyleName="Comment" />
+          <Enum name="warning" CStyleName="warning" pascalStyleName="Warning" />
+          <Enum name="error" CStyleName="error" pascalStyleName="Error" />
+        </Options>
+      </ShortEnum>
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags" readOnly="true">
+        <Options regolithID="enum:global_error_report_flags" CStyleName="global_error_report_flags" pascalStyleName="GlobalErrorReportFlags">
+          <Bit name="rendered" CStyleName="rendered_bit" pascalStyleName="RenderedBit" />
+          <Bit name="tangent-space" CStyleName="tangent_space_bit" pascalStyleName="TangentSpaceBit" />
+          <Bit name="non-critical" CStyleName="non_critical_bit" pascalStyleName="NonCriticalBit" />
+          <Bit name="lightmap light" CStyleName="lightmap_light_bit" pascalStyleName="LightmapLightBit" />
+          <Bit name="report key is valid" CStyleName="report_key_is_valid_bit" pascalStyleName="ReportKeyIsValidBit" />
+        </Options>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Pad sizeOfSource="101*sizeof(long)" length="404" />
+      <Block CStyleName="reports" pascalStyleName="Reports" name="reports" readOnly="true" maxElementCount="1048576" maxElementCountSource="MAXIMUM_REPORTS_PER_ERROR_REPORT_CATEGORY">
+        <Layout regolithID="block:error_reports" internalName="error_reports_block" name="error report">
+          <FieldSet version="0" sizeofValue="644" sizeofSource="sizeof(struct error_report)" isLatest="true">
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type" readOnly="true">
+              <OptionsXRef>enum:global_error_report_type</OptionsXRef>
+            </ShortEnum>
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags" readOnly="true">
+              <OptionsXRef>enum:global_error_report_flags</OptionsXRef>
+            </WordFlags>
+            <Data CStyleName="text" pascalStyleName="Text" name="text" readOnly="true" />
+            <String CStyleName="source_filename" pascalStyleName="SourceFilename" name="source filename" readOnly="true" />
+            <LongInteger CStyleName="source_line_number" pascalStyleName="SourceLineNumber" name="source line number" readOnly="true" />
+            <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" readOnly="true" maxElementCount="1048576" maxElementCountSource="MAXIMUM_VERTICES_PER_ERROR_REPORT">
+              <Layout regolithID="block:error_report_vertices" internalName="error_report_vertices_block" name="error report vertex">
+                <FieldSet version="0" sizeofValue="52" sizeofSource="sizeof(struct error_report_vertex)" isLatest="true">
+                  <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" readOnly="true" />
+                  <Array CStyleName="node_indices" pascalStyleName="NodeIndices" name="node indices" readOnly="true" count="4">
+                    <CharInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" readOnly="true" />
+                  </Array>
+                  <Array CStyleName="node_weights" pascalStyleName="NodeWeights" name="node weights" readOnly="true" count="4">
+                    <Real CStyleName="node_weight" pascalStyleName="NodeWeight" name="node weight" readOnly="true" />
+                  </Array>
+                  <RealArgbColor CStyleName="color" pascalStyleName="Color" name="color" readOnly="true" />
+                  <Real CStyleName="screen_size" pascalStyleName="ScreenSize" name="screen size" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="vectors" pascalStyleName="Vectors" name="vectors" readOnly="true" maxElementCount="1048576" maxElementCountSource="MAXIMUM_VECTORS_PER_ERROR_REPORT">
+              <Layout regolithID="block:error_report_vectors" internalName="error_report_vectors_block" name="error report vector">
+                <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(struct error_report_vector)" isLatest="true">
+                  <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" readOnly="true" />
+                  <Array CStyleName="node_indices" pascalStyleName="NodeIndices" name="node indices" readOnly="true" count="4">
+                    <CharInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" readOnly="true" />
+                  </Array>
+                  <Array CStyleName="node_weights" pascalStyleName="NodeWeights" name="node weights" readOnly="true" count="4">
+                    <Real CStyleName="node_weight" pascalStyleName="NodeWeight" name="node weight" readOnly="true" />
+                  </Array>
+                  <RealArgbColor CStyleName="color" pascalStyleName="Color" name="color" readOnly="true" />
+                  <RealVector3D CStyleName="normal" pascalStyleName="Normal" name="normal" readOnly="true" />
+                  <Real CStyleName="screen_length" pascalStyleName="ScreenLength" name="screen length" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="lines" pascalStyleName="Lines" name="lines" readOnly="true" maxElementCount="1048576" maxElementCountSource="MAXIMUM_LINES_PER_ERROR_REPORT">
+              <Layout regolithID="block:error_report_lines" internalName="error_report_lines_block" name="error report line">
+                <FieldSet version="0" sizeofValue="80" sizeofSource="sizeof(struct error_report_line)" isLatest="true">
+                  <Array CStyleName="points" pascalStyleName="Points" name="points" readOnly="true" count="2">
+                    <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" readOnly="true" />
+                    <Array CStyleName="node_indices" pascalStyleName="NodeIndices" name="node indices" readOnly="true" count="4">
+                      <CharInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" readOnly="true" />
+                    </Array>
+                    <Array CStyleName="node_weights" pascalStyleName="NodeWeights" name="node weights" readOnly="true" count="4">
+                      <Real CStyleName="node_weight" pascalStyleName="NodeWeight" name="node weight" readOnly="true" />
+                    </Array>
+                  </Array>
+                  <RealArgbColor CStyleName="color" pascalStyleName="Color" name="color" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="triangles" pascalStyleName="Triangles" name="triangles" readOnly="true" maxElementCount="1048576" maxElementCountSource="MAXIMUM_TRIANGLES_PER_ERROR_REPORT">
+              <Layout regolithID="block:error_report_triangles" internalName="error_report_triangles_block" name="error report triangle">
+                <FieldSet version="0" sizeofValue="112" sizeofSource="sizeof(struct error_report_triangle)" isLatest="true">
+                  <Array CStyleName="points" pascalStyleName="Points" name="points" readOnly="true" count="3">
+                    <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" readOnly="true" />
+                    <Array CStyleName="node_indices" pascalStyleName="NodeIndices" name="node indices" readOnly="true" count="4">
+                      <CharInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" readOnly="true" />
+                    </Array>
+                    <Array CStyleName="node_weights" pascalStyleName="NodeWeights" name="node weights" readOnly="true" count="4">
+                      <Real CStyleName="node_weight" pascalStyleName="NodeWeight" name="node weight" readOnly="true" />
+                    </Array>
+                  </Array>
+                  <RealArgbColor CStyleName="color" pascalStyleName="Color" name="color" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="quads" pascalStyleName="Quads" name="quads" readOnly="true" maxElementCount="1048576" maxElementCountSource="MAXIMUM_QUADS_PER_ERROR_REPORT">
+              <Layout regolithID="block:error_report_quads" internalName="error_report_quads_block" name="error report quad">
+                <FieldSet version="0" sizeofValue="144" sizeofSource="sizeof(struct error_report_quad)" isLatest="true">
+                  <Array CStyleName="points" pascalStyleName="Points" name="points" readOnly="true" count="4">
+                    <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" readOnly="true" />
+                    <Array CStyleName="node_indices" pascalStyleName="NodeIndices" name="node indices" readOnly="true" count="4">
+                      <CharInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" readOnly="true" />
+                    </Array>
+                    <Array CStyleName="node_weights" pascalStyleName="NodeWeights" name="node weights" readOnly="true" count="4">
+                      <Real CStyleName="node_weight" pascalStyleName="NodeWeight" name="node weight" readOnly="true" />
+                    </Array>
+                  </Array>
+                  <RealArgbColor CStyleName="color" pascalStyleName="Color" name="color" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="comments" pascalStyleName="Comments" name="comments" readOnly="true" maxElementCount="1048576" maxElementCountSource="MAXIMUM_COMMENTS_PER_ERROR_REPORT">
+              <Layout regolithID="block:error_report_comments" internalName="error_report_comments_block" name="error report comment">
+                <FieldSet version="0" sizeofValue="68" sizeofSource="sizeof(struct error_report_comment)" isLatest="true">
+                  <Data CStyleName="text" pascalStyleName="Text" name="text" readOnly="true" />
+                  <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" readOnly="true" />
+                  <Array CStyleName="node_indices" pascalStyleName="NodeIndices" name="node indices" readOnly="true" count="4">
+                    <CharInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" readOnly="true" />
+                  </Array>
+                  <Array CStyleName="node_weights" pascalStyleName="NodeWeights" name="node weights" readOnly="true" count="4">
+                    <Real CStyleName="node_weight" pascalStyleName="NodeWeight" name="node weight" readOnly="true" />
+                  </Array>
+                  <RealArgbColor CStyleName="color" pascalStyleName="Color" name="color" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Pad sizeOfSource="95*sizeof(long)" length="380" />
+            <LongInteger CStyleName="report_key" pascalStyleName="ReportKey" name="report key" readOnly="true" />
+            <LongInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" readOnly="true" />
+            <RealBounds CStyleName="bounds_x" pascalStyleName="BoundsX" name="bounds x" readOnly="true" />
+            <RealBounds CStyleName="bounds_y" pascalStyleName="BoundsY" name="bounds y" readOnly="true" />
+            <RealBounds CStyleName="bounds_z" pascalStyleName="BoundsZ" name="bounds z" readOnly="true" />
+            <RealArgbColor CStyleName="color" pascalStyleName="Color" name="color" readOnly="true" />
+            <Pad sizeOfSource="21*sizeof(long)" length="84" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:global_tag_import_info" internalName="global_tag_import_info_block" name="import info">
+    <FieldSet version="0" sizeofValue="596" sizeofSource="sizeof(struct tag_import_info)" isLatest="true">
+      <LongInteger CStyleName="build" pascalStyleName="Build" name="build" readOnly="true" />
+      <LongString CStyleName="version" pascalStyleName="Version" name="version" readOnly="true" />
+      <String CStyleName="import_date" pascalStyleName="ImportDate" name="import date" blockNameSource="true" readOnly="true" />
+      <String CStyleName="culprit" pascalStyleName="Culprit" name="culprit" readOnly="true" />
+      <Pad sizeOfSource="24*sizeof(long)" length="96" />
+      <String CStyleName="import_time" pascalStyleName="ImportTime" name="import time" readOnly="true" />
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <Block CStyleName="files" pascalStyleName="Files" name="files" readOnly="true" maxElementCount="1024" maxElementCountSource="MAXIMUM_FILES_PER_TAG_IMPORT_INFO">
+        <Layout regolithID="block:tag_import_file" internalName="tag_import_file_block" name="import file">
+          <FieldSet version="0" sizeofValue="540" sizeofSource="sizeof(struct tag_import_file)" isLatest="true">
+            <LongString CStyleName="path" pascalStyleName="Path" name="path" blockNameSource="true" readOnly="true" />
+            <String CStyleName="modification_date" pascalStyleName="ModificationDate" name="modification date" readOnly="true" />
+            <Skip sizeOfSource="sizeof(file_last_modification_date)" length="8" />
+            <Pad sizeOfSource="22*sizeof(long)" length="88" />
+            <LongInteger CStyleName="checksum" pascalStyleName="Checksum" name="checksum" units="crc32" readOnly="true" />
+            <LongInteger CStyleName="size" pascalStyleName="Size" name="size" units="bytes" readOnly="true" />
+            <Data CStyleName="zipped_data" pascalStyleName="ZippedData" name="zipped data" readOnly="true" />
+            <Pad sizeOfSource="32*sizeof(long)" length="128" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="32*sizeof(long)" length="128" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:global_hud_multitexture_overlay_definition" internalName="global_hud_multitexture_overlay_definition" name="global_hud_multitexture_overlay_definition">
+    <FieldSet version="0" sizeofValue="480" sizeofSource="sizeof(struct multitexture_overlay_hud_element_definition)" isLatest="true">
+      <Pad sizeOfSource="1*sizeof(word)" length="2" />
+      <ShortInteger CStyleName="type" pascalStyleName="Type" name="type" />
+      <ShortEnum CStyleName="framebuffer_blend_func" pascalStyleName="FramebufferBlendFunc" name="framebuffer blend func">
+        <Options regolithID="enum:framebuffer_blend_mode" CStyleName="framebuffer_blend_mode" pascalStyleName="FramebufferBlendMode">
+          <Enum name="alpha blend" CStyleName="alpha_blend" pascalStyleName="AlphaBlend" />
+          <Enum name="multiply" CStyleName="multiply" pascalStyleName="Multiply" />
+          <Enum name="double multiply" CStyleName="double_multiply" pascalStyleName="DoubleMultiply" />
+          <Enum name="add" CStyleName="add" pascalStyleName="Add" />
+          <Enum name="subtract" CStyleName="subtract" pascalStyleName="Subtract" />
+          <Enum name="component min" CStyleName="component_min" pascalStyleName="ComponentMin" />
+          <Enum name="component max" CStyleName="component_max" pascalStyleName="ComponentMax" />
+          <Enum name="alpha-multiply add" CStyleName="alpha_multiply_add" pascalStyleName="AlphaMultiplyAdd" />
+          <Enum name="constant color blend" CStyleName="constant_color_blend" pascalStyleName="ConstantColorBlend" />
+          <Enum name="inverse constant color blend" CStyleName="inverse_constant_color_blend" pascalStyleName="InverseConstantColorBlend" />
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="1*sizeof(word)" length="2" />
+      <Pad sizeOfSource="8*sizeof(long)" length="32" />
+      <Explanation name="anchors" description="where you want the origin of the texture.&#xA;*&quot;texture&quot; uses the texture coordinates supplied&#xA;*&quot;screen&quot; uses the origin of the screen as the origin of the texture" />
+      <ShortEnum CStyleName="primary_anchor" pascalStyleName="PrimaryAnchor" name="primary anchor">
+        <Options regolithID="enum:global_hud_multitexture_overlay_anchor" CStyleName="global_hud_multitexture_overlay_anchor" pascalStyleName="GlobalHudMultitextureOverlayAnchor">
+          <Enum name="texture" CStyleName="texture" pascalStyleName="Texture" />
+          <Enum name="screen" CStyleName="screen" pascalStyleName="Screen" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="secondary_anchor" pascalStyleName="SecondaryAnchor" name="secondary anchor">
+        <OptionsXRef>enum:global_hud_multitexture_overlay_anchor</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="tertiary_anchor" pascalStyleName="TertiaryAnchor" name="tertiary anchor">
+        <OptionsXRef>enum:global_hud_multitexture_overlay_anchor</OptionsXRef>
+      </ShortEnum>
+      <Explanation name="blending function" description="how to blend the textures together" />
+      <ShortEnum CStyleName="_0_to_1_blend_func" pascalStyleName="0To1BlendFunc" name="0 to 1 blend func">
+        <Options regolithID="enum:multitexture_blend_function" CStyleName="multitexture_blend_function" pascalStyleName="MultitextureBlendFunction">
+          <Enum name="add" CStyleName="add" pascalStyleName="Add" />
+          <Enum name="subtract" CStyleName="subtract" pascalStyleName="Subtract" />
+          <Enum name="multiply" CStyleName="multiply" pascalStyleName="Multiply" />
+          <Enum name="multiply2x" CStyleName="multiply2x" pascalStyleName="Multiply2x" />
+          <Enum name="dot" CStyleName="dot" pascalStyleName="Dot" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="_1_to_2_blend_func" pascalStyleName="1To2BlendFunc" name="1 to 2 blend func">
+        <OptionsXRef>enum:multitexture_blend_function</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="1*sizeof(word)" length="2" />
+      <Explanation name="map scales" description="how much to scale the textures" />
+      <RealPoint2D CStyleName="primary_scale" pascalStyleName="PrimaryScale" name="primary scale" />
+      <RealPoint2D CStyleName="secondary_scale" pascalStyleName="SecondaryScale" name="secondary scale" />
+      <RealPoint2D CStyleName="tertiary_scale" pascalStyleName="TertiaryScale" name="tertiary scale" />
+      <Explanation name="map offsets" description="how much to offset the origin of the texture" />
+      <RealPoint2D CStyleName="primary_offset" pascalStyleName="PrimaryOffset" name="primary offset" />
+      <RealPoint2D CStyleName="secondary_offset" pascalStyleName="SecondaryOffset" name="secondary offset" />
+      <RealPoint2D CStyleName="tertiary_offset" pascalStyleName="TertiaryOffset" name="tertiary offset" />
+      <Explanation name="map" description="which maps to use" />
+      <TagReference CStyleName="primary" pascalStyleName="Primary" name="primary">
+        <tag>bitm</tag>
+      </TagReference>
+      <TagReference CStyleName="secondary" pascalStyleName="Secondary" name="secondary">
+        <tag>bitm</tag>
+      </TagReference>
+      <TagReference CStyleName="tertiary" pascalStyleName="Tertiary" name="tertiary">
+        <tag>bitm</tag>
+      </TagReference>
+      <ShortEnum CStyleName="primary_wrap_mode" pascalStyleName="PrimaryWrapMode" name="primary wrap mode">
+        <Options regolithID="enum:global_hud_multitexture_overlay_wrap_mode" CStyleName="global_hud_multitexture_overlay_wrap_mode" pascalStyleName="GlobalHudMultitextureOverlayWrapMode">
+          <Enum name="clamp" CStyleName="clamp" pascalStyleName="Clamp" />
+          <Enum name="wrap" CStyleName="wrap" pascalStyleName="Wrap" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="secondary_wrap_mode" pascalStyleName="SecondaryWrapMode" name="secondary wrap mode">
+        <OptionsXRef>enum:global_hud_multitexture_overlay_wrap_mode</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="tertiary_wrap_mode" pascalStyleName="TertiaryWrapMode" name="tertiary wrap mode">
+        <OptionsXRef>enum:global_hud_multitexture_overlay_wrap_mode</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="1*sizeof(word)" length="2" />
+      <Pad sizeOfSource="46*sizeof(long)" length="184" />
+      <Block CStyleName="effectors" pascalStyleName="Effectors" name="effectors" maxElementCount="30" maxElementCountSource="MAXIMUM_NUMBER_OF_MULTITEXTURE_OVERLAY_EFFECTORS">
+        <Layout regolithID="block:global_hud_multitexture_overlay_effector_definition" internalName="global_hud_multitexture_overlay_effector_definition" name="global_hud_multitexture_overlay_effector_definition">
+          <FieldSet version="0" sizeofValue="220" sizeofSource="sizeof(struct multitexture_overlay_hud_element_effector_definition)" isLatest="true">
+            <Pad sizeOfSource="16*sizeof(long)" length="64" />
+            <Explanation name="source/destination" description="These describe the relationship that causes the effect.&#xA;* destination type is the type of variable you want to be effected&#xA;* destination tells which texture map (or geometry offset) to apply it to&#xA;* source says which value to look at when computing the effect" />
+            <ShortEnum CStyleName="destination_type" pascalStyleName="DestinationType" name="destination type">
+              <Options regolithID="enum:hud_multitexture_overlay_effect_destination_type" CStyleName="hud_multitexture_overlay_effect_destination_type" pascalStyleName="HudMultitextureOverlayEffectDestinationType">
+                <Enum name="tint [0,1]" CStyleName="tint_01" pascalStyleName="Tint01" />
+                <Enum name="horizontal offset" CStyleName="horizontal_offset" pascalStyleName="HorizontalOffset" />
+                <Enum name="vertical offset" CStyleName="vertical_offset" pascalStyleName="VerticalOffset" />
+                <Enum name="fade [0,1]" CStyleName="fade_01" pascalStyleName="Fade01" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="destination" pascalStyleName="Destination" name="destination">
+              <Options regolithID="enum:hud_multitexture_overlay_destination" CStyleName="hud_multitexture_overlay_destination" pascalStyleName="HudMultitextureOverlayDestination">
+                <Enum name="geometry offset" CStyleName="geometry_offset" pascalStyleName="GeometryOffset" />
+                <Enum name="primary map" CStyleName="primary_map" pascalStyleName="PrimaryMap" />
+                <Enum name="secondary map" CStyleName="secondary_map" pascalStyleName="SecondaryMap" />
+                <Enum name="tertiary map" CStyleName="tertiary_map" pascalStyleName="TertiaryMap" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="source" pascalStyleName="Source" name="source">
+              <Options regolithID="enum:global_hud_multitexture_overlay_effector_source" CStyleName="global_hud_multitexture_overlay_effector_source" pascalStyleName="GlobalHudMultitextureOverlayEffectorSource">
+                <Enum name="player pitch" CStyleName="player_pitch" pascalStyleName="PlayerPitch" />
+                <Enum name="player pitch tangent" CStyleName="player_pitch_tangent" pascalStyleName="PlayerPitchTangent" />
+                <Enum name="player yaw" CStyleName="player_yaw" pascalStyleName="PlayerYaw" />
+                <Enum name="weapon rounds (loaded)" CStyleName="weapon_rounds_loaded" pascalStyleName="WeaponRoundsLoaded" />
+                <Enum name="weapon rounds (inventory)" CStyleName="weapon_rounds_inventory" pascalStyleName="WeaponRoundsInventory" />
+                <Enum name="weapon heat" CStyleName="weapon_heat" pascalStyleName="WeaponHeat" />
+                <Enum name="explicit (uses low bound)" CStyleName="explicit_uses_low_bound" pascalStyleName="ExplicitUsesLowBound" />
+                <Enum name="weapon zoom level" CStyleName="weapon_zoom_level" pascalStyleName="WeaponZoomLevel" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="1*sizeof(word)" length="2" />
+            <Explanation name="in/out bounds" description="When the source is at the lower inbound, the destination ends up the lower outbound and vice-versa applies for the upper values." />
+            <RealBounds CStyleName="in_bounds" pascalStyleName="InBounds" name="in bounds" units="source units" />
+            <RealBounds CStyleName="out_bounds" pascalStyleName="OutBounds" name="out bounds" units="pixels" />
+            <Pad sizeOfSource="16*sizeof(long)" length="64" />
+            <Explanation name="tint color bounds" description="If destination is tint, these values are used instead of the out bounds." />
+            <RealRgbColor CStyleName="tint_color_lower_bound" pascalStyleName="TintColorLowerBound" name="tint color lower bound" />
+            <RealRgbColor CStyleName="tint_color_upper_bound" pascalStyleName="TintColorUpperBound" name="tint color upper bound" />
+            <Explanation name="periodic functions" description="If you use a periodic function as the source, this lets you tweak it." />
+            <ShortEnum CStyleName="periodic_function" pascalStyleName="PeriodicFunction" name="periodic function">
+              <Options regolithID="enum:scenario_function" CStyleName="scenario_function" pascalStyleName="ScenarioFunction">
+                <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                <Enum name="cosine (variable period)" CStyleName="cosine_variable_period" pascalStyleName="CosineVariablePeriod" />
+                <Enum name="diagonal wave" CStyleName="diagonal_wave" pascalStyleName="DiagonalWave" />
+                <Enum name="diagonal wave (variable period)" CStyleName="diagonal_wave_variable_period" pascalStyleName="DiagonalWaveVariablePeriod" />
+                <Enum name="slide" CStyleName="slide" pascalStyleName="Slide" />
+                <Enum name="slide (variable period)" CStyleName="slide_variable_period" pascalStyleName="SlideVariablePeriod" />
+                <Enum name="noise" CStyleName="noise" pascalStyleName="Noise" />
+                <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+                <Enum name="wander" CStyleName="wander" pascalStyleName="Wander" />
+                <Enum name="spark" CStyleName="spark" pascalStyleName="Spark" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="1*sizeof(word)" length="2" />
+            <Real CStyleName="function_period" pascalStyleName="FunctionPeriod" name="function period" units="seconds" />
+            <Real CStyleName="function_phase" pascalStyleName="FunctionPhase" name="function phase" units="seconds" />
+            <Pad sizeOfSource="8*sizeof(long)" length="32" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="32*sizeof(long)" length="128" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:predicted_resource" internalName="predicted_resource_block" name="predicted_resource_block">
+    <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct predicted_resource)" isLatest="true">
+      <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+        <Options regolithID="enum:predicted_resource_type" CStyleName="predicted_resource_type" pascalStyleName="PredictedResourceType">
+          <Enum name="bitmap" CStyleName="bitmap" pascalStyleName="Bitmap" />
+          <Enum name="sound" CStyleName="sound" pascalStyleName="Sound" />
+          <Enum name="render model geometry" CStyleName="render_model_geometry" pascalStyleName="RenderModelGeometry" />
+          <Enum name="cluster geometry" CStyleName="cluster_geometry" pascalStyleName="ClusterGeometry" />
+          <Enum name="cluster instanced geometry" CStyleName="cluster_instanced_geometry" pascalStyleName="ClusterInstancedGeometry" />
+          <Enum name="lightmap geometry object buckets" CStyleName="lightmap_geometry_object_buckets" pascalStyleName="LightmapGeometryObjectBuckets" />
+          <Enum name="lightmap geometry instance buckets" CStyleName="lightmap_geometry_instance_buckets" pascalStyleName="LightmapGeometryInstanceBuckets" />
+          <Enum name="lightmap cluster bitmaps" CStyleName="lightmap_cluster_bitmaps" pascalStyleName="LightmapClusterBitmaps" />
+          <Enum name="lightmap instance bitmaps" CStyleName="lightmap_instance_bitmaps" pascalStyleName="LightmapInstanceBitmaps" />
+        </Options>
+      </ShortEnum>
+      <ShortInteger CStyleName="resource_index" pascalStyleName="ResourceIndex" name="resource index" />
+      <LongInteger CStyleName="tag_index" pascalStyleName="TagIndex" name="tag index" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:tag_block_index" internalName="tag_block_index_block" name="tag_block_index_block">
+    <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(s_tag_block_index)" isLatest="true">
+      <Struct CStyleName="indices" pascalStyleName="Indices" name="indices">
+        <Layout regolithID="structure:tag_block_index" tag="shtb" internalName="tag_block_index_struct" backingBlockInternalName="tag_block_index_struct_block" name="tag_block_index_struct">
+          <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(s_tag_block_index)" isLatest="true">
+            <ShortInteger CStyleName="block_index_data" pascalStyleName="BlockIndexData" name="block index data" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+    </FieldSet>
+  </Layout>
+</SharedLayouts>

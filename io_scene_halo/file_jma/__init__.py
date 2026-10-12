@@ -171,8 +171,13 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
 
     generate_checksum: BoolProperty(
         name ="Generate Node Checksum",
-        description = "Generates a checksum for the current node skeleton. Defaults to 0 if unchecked",
+        description = "Generates a checksum for the current node skeleton. If unchecked then uses the checksum defined in the blend menu",
         default = True,
+        )
+
+    file_checksum: IntProperty(
+        name="File Checksum",
+        description="The checksum that will be used for the file"
         )
 
     folder_structure: BoolProperty(
@@ -192,7 +197,6 @@ class JMA_ScenePropertiesGroup(PropertyGroup):
         description = "Certain models have different checksums due to how the Maya bipeds worked. Try this if the checksum doesn't match as is.",
         default = False,
         )
-
 
     use_scene_properties: BoolProperty(
         name ="Use scene properties",
@@ -275,8 +279,8 @@ class JMA_SceneProps(Panel):
         col = box.column(align=True)
         if scene_halo.expert_mode:
             row = col.row()
-            row.label(text='JMA Version:')
-            row.prop(scene_jma, "jma_version", text='')
+            row.label(text='File Checksum:')
+            row.prop(scene_jma, "file_checksum", text='')
 
         row = col.row()
         row.label(text='Extension:')
@@ -284,6 +288,11 @@ class JMA_SceneProps(Panel):
         row = col.row()
         row.label(text='Generate Checksum:')
         row.prop(scene_jma, "generate_checksum", text='')
+        if not scene_jma.generate_checksum:
+            row = col.row()
+            row.label(text='File Checksum:')
+            row.prop(scene_jma, "file_checksum", text='')
+
         row = col.row()
         row.label(text='Generate Asset Subdirectories:')
         row.prop(scene_jma, "folder_structure", text='')
@@ -352,6 +361,11 @@ class ExportJMA(Operator, ExportHelper):
         name ="Generate Node Checksum",
         description = "Generates a checksum for the current node skeleton. Defaults to 0 if unchecked",
         default = True,
+        )
+
+    file_checksum: IntProperty(
+        name="File Checksum",
+        description="The checksum that will be used for the file"
         )
 
     folder_structure: BoolProperty(
@@ -429,7 +443,7 @@ class ExportJMA(Operator, ExportHelper):
         frame_rate_value = global_functions.set_framerate(self.frame_rate_enum, self.frame_rate_float)
         int_jma_version = int(self.jma_version)
 
-        return global_functions.run_code("export_jma.write_file(context, self.filepath, self.report, self.extension, int_jma_version, self.game_title, self.generate_checksum, self.folder_structure, self.fix_rotations, self.use_maya_sorting, frame_rate_value, scale_value)")
+        return global_functions.run_code("export_jma.write_file(context, self.filepath, self.report, self.extension, int_jma_version, self.game_title, self.generate_checksum, self.file_checksum, self.folder_structure, self.fix_rotations, self.use_maya_sorting, frame_rate_value, scale_value)")
 
     def draw(self, context):
         scene = context.scene
@@ -446,6 +460,7 @@ class ExportJMA(Operator, ExportHelper):
             self.jma_version = scene_jma.jma_version
             self.extension = scene_jma.extension
             self.generate_checksum = scene_jma.generate_checksum
+            self.file_checksum = scene_jma.file_checksum
             self.folder_structure = scene_jma.folder_structure
             self.fix_rotations = scene_jma.fix_rotations
             self.use_maya_sorting = scene_jma.use_maya_sorting
@@ -482,6 +497,12 @@ class ExportJMA(Operator, ExportHelper):
         row.enabled = is_enabled
         row.label(text='Generate Checksum:')
         row.prop(self, "generate_checksum", text='')
+        if not self.generate_checksum:
+            row = col.row()
+            row.enabled = is_enabled
+            row.label(text='File Checksum:')
+            row.prop(self, "file_checksum", text='')
+
         row = col.row()
         row.enabled = is_enabled
         row.label(text='Generate Asset Subdirectories:')

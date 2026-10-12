@@ -1,0 +1,56 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="stap" name="worlds.static pages" version="1">
+  <Layout regolithID="block:worlds.static pages" internalName="worlds.static pages_block" name="worlds.static pages">
+    <FieldSet version="0" sizeofValue="900" sizeofSource="sizeof(struct worlds.static pages_group)" isLatest="true">
+      <Data CStyleName="cells" pascalStyleName="Cells" name="cells" />
+      <Data CStyleName="submesh_cells" pascalStyleName="SubmeshCells" name="submesh cells" />
+      <Block CStyleName="structure_layers" pascalStyleName="StructureLayers" name="structure layers">
+        <Layout regolithID="block:structure layers" internalName="structure layers_block" name="structure layers_block">
+          <FieldSet version="0" sizeofValue="100" isLatest="true">
+            <ShortInteger CStyleName="next_layer_index" pascalStyleName="NextLayerIndex" name="next layer index" />
+            <Pad name="pad" length="2" />
+            <LongInteger CStyleName="z_minimum" pascalStyleName="ZMinimum" name="z minimum" />
+            <LongInteger CStyleName="unique_identifier" pascalStyleName="UniqueIdentifier" name="unique identifier" />
+            <Pad name="pad" length="64" />
+            <Block CStyleName="surfaces" pascalStyleName="Surfaces" name="surfaces">
+              <Layout regolithID="block:surfaces" internalName="surfaces_block" name="surfaces_block">
+                <FieldSet version="0" sizeofValue="28" isLatest="true">
+                  <Real CStyleName="a" pascalStyleName="A" name="a" />
+                  <Real CStyleName="b" pascalStyleName="B" name="b" />
+                  <Real CStyleName="c" pascalStyleName="C" name="c" />
+                  <RealVector3D CStyleName="normal" pascalStyleName="Normal" name="normal" />
+                  <Pad name="pad" length="4" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes">
+              <Layout regolithID="block:nodes" internalName="nodes_block" name="nodes_block">
+                <FieldSet version="0" sizeofValue="20" isLatest="true">
+                  <ShortInteger CStyleName="negative_surface_index" pascalStyleName="NegativeSurfaceIndex" name="negative surface index" />
+                  <ShortInteger CStyleName="positive_surface_index" pascalStyleName="PositiveSurfaceIndex" name="positive surface index" />
+                  <ShortInteger CStyleName="negative_node_index" pascalStyleName="NegativeNodeIndex" name="negative node index" />
+                  <ShortInteger CStyleName="positive_node_index" pascalStyleName="PositiveNodeIndex" name="positive node index" />
+                  <Real CStyleName="a" pascalStyleName="A" name="a" />
+                  <Real CStyleName="b" pascalStyleName="B" name="b" />
+                  <Real CStyleName="c" pascalStyleName="C" name="c" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="detail_objects" pascalStyleName="DetailObjects" name="detail objects">
+        <Layout regolithID="block:detail objects" internalName="detail objects_block" name="detail objects_block">
+          <FieldSet version="0" sizeofValue="4" isLatest="true">
+            <LongInteger CStyleName="unique_identifier" pascalStyleName="UniqueIdentifier" name="unique identifier" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="16" />
+      <Data CStyleName="low_detail_texture" pascalStyleName="LowDetailTexture" name="low detail texture" />
+      <Data CStyleName="overhead_map_texture" pascalStyleName="OverheadMapTexture" name="overhead map texture" />
+      <LongInteger CStyleName="next_identifier" pascalStyleName="NextIdentifier" name="next identifier" />
+      <Pad name="pad" length="776" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="mply" name="multiplayer_scenario_description" version="1">
+  <Layout regolithID="block:multiplayer_scenario_description" internalName="multiplayer_scenario_description_block" name="multiplayer_scenario_description">
+    <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct multiplayer_scenario_description_group)" isLatest="true">
+      <Block CStyleName="multiplayer_scenarios" pascalStyleName="MultiplayerScenarios" name="multiplayer scenarios" maxElementCount="32">
+        <Layout regolithID="block:multiplayer scenarios" internalName="multiplayer scenarios_block" name="multiplayer scenarios_block">
+          <FieldSet version="0" sizeofValue="68" isLatest="true">
+            <TagReference CStyleName="descriptive_bitmap" pascalStyleName="DescriptiveBitmap" name="descriptive bitmap">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="displayed_map_name" pascalStyleName="DisplayedMapName" name="displayed map name">
+              <tag>unicode_string_list</tag>
+            </TagReference>
+            <String CStyleName="scenario_tag_directory_path" pascalStyleName="ScenarioTagDirectoryPath" name="scenario tag directory path" />
+            <Pad name="pad" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

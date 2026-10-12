@@ -1,0 +1,123 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="lens" name="lens_flare" version="2">
+  <Layout regolithID="block:lens_flare" internalName="lens_flare_block" name="lens_flare">
+    <FieldSet version="0" sizeofValue="240" sizeofSource="sizeof(struct lens_flare_group)" isLatest="true">
+      <Angle CStyleName="falloff_angle" pascalStyleName="FalloffAngle" name="falloff angle" />
+      <Angle CStyleName="cutoff_angle" pascalStyleName="CutoffAngle" name="cutoff angle" />
+      <Real CStyleName="cos_falloff_angle" pascalStyleName="CosFalloffAngle" name="cos falloff angle" cacheOnly="true" />
+      <Real CStyleName="cos_cutoff_angle" pascalStyleName="CosCutoffAngle" name="cos cutoff angle" cacheOnly="true" />
+      <Real CStyleName="occlusion_radius" pascalStyleName="OcclusionRadius" name="occlusion radius" />
+      <ShortEnum CStyleName="occlusion_offset_direction" pascalStyleName="OcclusionOffsetDirection" name="occlusion offset direction">
+        <Options regolithID="enum:occlusion_offset_direction" CStyleName="occlusion_offset_direction" pascalStyleName="OcclusionOffsetDirection">
+          <Enum name="toward viewer" CStyleName="toward_viewer" pascalStyleName="TowardViewer" />
+          <Enum name="marker forward" CStyleName="marker_forward" pascalStyleName="MarkerForward" />
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="2" />
+      <Real CStyleName="near_fade_distance" pascalStyleName="NearFadeDistance" name="near fade distance" />
+      <Real CStyleName="far_fade_distance" pascalStyleName="FarFadeDistance" name="far fade distance" />
+      <TagReference CStyleName="bitmap" pascalStyleName="Bitmap" name="bitmap">
+        <tag>bitmap</tag>
+      </TagReference>
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="sun" CStyleName="sun_bit" pascalStyleName="SunBit" />
+          <Bit name="no occlusion test" CStyleName="no_occlusion_test_bit" pascalStyleName="NoOcclusionTestBit" />
+          <Bit name="only render in first person" CStyleName="only_render_in_first_person_bit" pascalStyleName="OnlyRenderInFirstPersonBit" />
+          <Bit name="only render in third person" CStyleName="only_render_in_third_person_bit" pascalStyleName="OnlyRenderInThirdPersonBit" />
+          <Bit name="fade in more quickly" CStyleName="fade_in_more_quickly_bit" pascalStyleName="FadeInMoreQuicklyBit" />
+          <Bit name="fade out more quickly" CStyleName="fade_out_more_quickly_bit" pascalStyleName="FadeOutMoreQuicklyBit" />
+          <Bit name="scale by marker" CStyleName="scale_by_marker_bit" pascalStyleName="ScaleByMarkerBit" />
+        </Options>
+      </WordFlags>
+      <Pad name="pad" length="2" />
+      <Pad name="pad" length="76" />
+      <ShortEnum CStyleName="rotation_function" pascalStyleName="RotationFunction" name="rotation function">
+        <Options regolithID="enum:rotation_function" CStyleName="rotation_function" pascalStyleName="RotationFunction">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="rotation a" CStyleName="rotation_a" pascalStyleName="RotationA" />
+          <Enum name="rotation b" CStyleName="rotation_b" pascalStyleName="RotationB" />
+          <Enum name="rotation translation" CStyleName="rotation_translation" pascalStyleName="RotationTranslation" />
+          <Enum name="translation" CStyleName="translation" pascalStyleName="Translation" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="2" />
+      <Angle CStyleName="rotation_function_scale" pascalStyleName="RotationFunctionScale" name="rotation function scale" />
+      <Pad name="pad" length="24" />
+      <Real CStyleName="horizontal_scale" pascalStyleName="HorizontalScale" name="horizontal scale" />
+      <Real CStyleName="vertical_scale" pascalStyleName="VerticalScale" name="vertical scale" />
+      <Pad name="pad" length="28" />
+      <Block CStyleName="reflections" pascalStyleName="Reflections" name="reflections" maxElementCount="32">
+        <Layout regolithID="block:reflections" internalName="reflections_block" name="reflections_block">
+          <FieldSet version="0" sizeofValue="128" isLatest="true">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="align rotation with screen center" CStyleName="align_rotation_with_screen_center_bit" pascalStyleName="AlignRotationWithScreenCenterBit" />
+                <Bit name="radius not scaled by distance" CStyleName="radius_not_scaled_by_distance_bit" pascalStyleName="RadiusNotScaledByDistanceBit" />
+                <Bit name="radius scaled by occlusion factor" CStyleName="radius_scaled_by_occlusion_factor_bit" pascalStyleName="RadiusScaledByOcclusionFactorBit" />
+                <Bit name="occluded by solid objects" CStyleName="occluded_by_solid_objects_bit" pascalStyleName="OccludedBySolidObjectsBit" />
+              </Options>
+            </WordFlags>
+            <Pad name="pad" length="2" />
+            <ShortInteger CStyleName="bitmap_index" pascalStyleName="BitmapIndex" name="bitmap index" />
+            <Pad name="pad" length="2" />
+            <Pad name="pad" length="20" />
+            <Real CStyleName="position" pascalStyleName="Position" name="position" />
+            <Real CStyleName="rotation_offset" pascalStyleName="RotationOffset" name="rotation offset" />
+            <Pad name="pad" length="4" />
+            <RealBounds CStyleName="radius" pascalStyleName="Radius" name="radius" />
+            <ShortEnum CStyleName="radius_scaled_by" pascalStyleName="RadiusScaledBy" name="radius scaled by">
+              <Options regolithID="enum:radius_scaled_by" CStyleName="radius_scaled_by" pascalStyleName="RadiusScaledBy">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="rotation" CStyleName="rotation" pascalStyleName="Rotation" />
+                <Enum name="rotation and strafing" CStyleName="rotation_and_strafing" pascalStyleName="RotationAndStrafing" />
+                <Enum name="distance from center" CStyleName="distance_from_center" pascalStyleName="DistanceFromCenter" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <RealBounds CStyleName="brightness" pascalStyleName="Brightness" name="brightness" />
+            <ShortEnum CStyleName="brightness_scaled_by" pascalStyleName="BrightnessScaledBy" name="brightness scaled by">
+              <Options regolithID="enum:brightness_scaled_by" CStyleName="brightness_scaled_by" pascalStyleName="BrightnessScaledBy">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="rotation" CStyleName="rotation" pascalStyleName="Rotation" />
+                <Enum name="rotation and strafing" CStyleName="rotation_and_strafing" pascalStyleName="RotationAndStrafing" />
+                <Enum name="distance from center" CStyleName="distance_from_center" pascalStyleName="DistanceFromCenter" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <RealArgbColor CStyleName="tint_color" pascalStyleName="TintColor" name="tint color" />
+            <RealArgbColor CStyleName="color" pascalStyleName="Color" name="color lower bound" />
+            <RealArgbColor CStyleName="color" pascalStyleName="Color" name="color upper bound" />
+            <WordFlags CStyleName="more_flags" pascalStyleName="MoreFlags" name="more flags">
+              <Options regolithID="enum:more_flags" CStyleName="more_flags" pascalStyleName="MoreFlags">
+                <Bit name="interpolate colors in hsv" CStyleName="interpolate_colors_in_hsv_bit" pascalStyleName="InterpolateColorsInHsvBit" />
+                <Bit name="more colors" CStyleName="more_colors_bit" pascalStyleName="MoreColorsBit" />
+              </Options>
+            </WordFlags>
+            <ShortEnum CStyleName="animation_function" pascalStyleName="AnimationFunction" name="animation function">
+              <Options regolithID="enum:animation_function" CStyleName="animation_function" pascalStyleName="AnimationFunction">
+                <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                <Enum name="cosine variable period" CStyleName="cosine_variable_period" pascalStyleName="CosineVariablePeriod" />
+                <Enum name="diagonal wave" CStyleName="diagonal_wave" pascalStyleName="DiagonalWave" />
+                <Enum name="diagonal wave variable period" CStyleName="diagonal_wave_variable_period" pascalStyleName="DiagonalWaveVariablePeriod" />
+                <Enum name="slide" CStyleName="slide" pascalStyleName="Slide" />
+                <Enum name="slide variable period" CStyleName="slide_variable_period" pascalStyleName="SlideVariablePeriod" />
+                <Enum name="noise" CStyleName="noise" pascalStyleName="Noise" />
+                <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+                <Enum name="wander" CStyleName="wander" pascalStyleName="Wander" />
+                <Enum name="spark" CStyleName="spark" pascalStyleName="Spark" />
+              </Options>
+            </ShortEnum>
+            <Real CStyleName="animation_period" pascalStyleName="AnimationPeriod" name="animation period" />
+            <Real CStyleName="animation_phase" pascalStyleName="AnimationPhase" name="animation phase" />
+            <Pad name="pad" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="32" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="snde" name="sound_environment" version="1">
+  <Layout regolithID="block:sound_environment" internalName="sound_environment_block" name="sound_environment">
+    <FieldSet version="0" sizeofValue="72" sizeofSource="sizeof(sound_environment)">
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <ShortInteger CStyleName="priority" pascalStyleName="Priority" name="priority" description="when multiple listeners are in different sound environments in split screen, the combined environment will be the one with the highest priority." />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Real CStyleName="room_intensity" pascalStyleName="RoomIntensity" name="room intensity" units="dB" description="intensity of the room effect" tag="+dB+" />
+      <Real CStyleName="room_intensity_hf" pascalStyleName="RoomIntensityHf" name="room intensity hf" units="dB" description="intensity of the room effect above the reference high frequency" tag="+dB+" />
+      <Real CStyleName="room_rolloff_0_to_10" pascalStyleName="RoomRolloff0To10" name="room rolloff (0 to 10)" description="how quickly the room effect rolls off, from 0.0 to 10.0" tag="auds" />
+      <Real CStyleName="decay_time_1_to_20" pascalStyleName="DecayTime1To20" name="decay time (.1 to 20)" units="seconds" tag="auds" />
+      <Real CStyleName="decay_hf_ratio_1_to_2" pascalStyleName="DecayHfRatio1To2" name="decay hf ratio (.1 to 2)" tag="auds" />
+      <Real CStyleName="reflections_intensity" pascalStyleName="ReflectionsIntensity" name="reflections intensity" units="dB[-100,10]" tag="+dB+" />
+      <Real CStyleName="reflections_delay_0_to_3" pascalStyleName="ReflectionsDelay0To3" name="reflections delay (0 to .3)" units="seconds" tag="auds" />
+      <Real CStyleName="reverb_intensity" pascalStyleName="ReverbIntensity" name="reverb intensity" units="dB[-100,20]" tag="+dB+" />
+      <Real CStyleName="reverb_delay_0_to_1" pascalStyleName="ReverbDelay0To1" name="reverb delay (0 to .1)" units="seconds" tag="auds" />
+      <Real CStyleName="diffusion" pascalStyleName="Diffusion" name="diffusion" tag="auds" />
+      <Real CStyleName="density" pascalStyleName="Density" name="density" tag="auds" />
+      <Real CStyleName="hf_reference20_to_20000" pascalStyleName="HfReference20To20000" name="hf reference(20 to 20,000)" units="Hz" description="for hf values, what frequency defines hf, from 20 to 20,000" tag="auds" />
+      <StringId CStyleName="reflection_type" pascalStyleName="ReflectionType" name="reflection type" description="for creating reflection sounds" />
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="72" sizeofSource="sizeof(sound_environment)" isLatest="true">
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <ShortInteger CStyleName="priority" pascalStyleName="Priority" name="priority" description="when multiple listeners are in different sound environments in split screen, the combined environment will be the one with the highest priority." />
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Real CStyleName="room_intensity" pascalStyleName="RoomIntensity" name="room intensity" units="dB" description="intensity of the room effect" tag="+dB+" />
+      <Real CStyleName="room_intensity_hf" pascalStyleName="RoomIntensityHf" name="room intensity hf" units="dB" description="intensity of the room effect above the reference high frequency" tag="+dB+" />
+      <Real CStyleName="room_rolloff_0_to_10" pascalStyleName="RoomRolloff0To10" name="room rolloff (0 to 10)" description="how quickly the room effect rolls off, from 0.0 to 10.0" tag="auds" />
+      <Real CStyleName="decay_time_1_to_20" pascalStyleName="DecayTime1To20" name="decay time (.1 to 20)" units="seconds" tag="auds" />
+      <Real CStyleName="decay_hf_ratio_1_to_2" pascalStyleName="DecayHfRatio1To2" name="decay hf ratio (.1 to 2)" tag="auds" />
+      <Real CStyleName="reflections_intensity" pascalStyleName="ReflectionsIntensity" name="reflections intensity" units="dB[-100,10]" tag="+dB+" />
+      <Real CStyleName="reflections_delay_0_to_3" pascalStyleName="ReflectionsDelay0To3" name="reflections delay (0 to .3)" units="seconds" tag="auds" />
+      <Real CStyleName="reverb_intensity" pascalStyleName="ReverbIntensity" name="reverb intensity" units="dB[-100,20]" tag="+dB+" />
+      <Real CStyleName="reverb_delay_0_to_1" pascalStyleName="ReverbDelay0To1" name="reverb delay (0 to .1)" units="seconds" tag="auds" />
+      <Real CStyleName="diffusion" pascalStyleName="Diffusion" name="diffusion" tag="auds" />
+      <Real CStyleName="density" pascalStyleName="Density" name="density" tag="auds" />
+      <Real CStyleName="hf_reference20_to_20000" pascalStyleName="HfReference20To20000" name="hf reference(20 to 20,000)" units="Hz" description="for hf values, what frequency defines hf, from 20 to 20,000" tag="auds" />
+      <StringId CStyleName="reflection_type" pascalStyleName="ReflectionType" name="reflection type" description="for creating reflection sounds" />
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

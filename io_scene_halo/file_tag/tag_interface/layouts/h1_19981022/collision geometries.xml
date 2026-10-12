@@ -1,0 +1,63 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="coll" name="collision geometries" version="1">
+  <Layout regolithID="block:collision geometries" internalName="collision geometries_block" name="collision geometries">
+    <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(struct collision geometries_group)" isLatest="true">
+      <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices">
+        <Layout regolithID="block:vertices" internalName="vertices_block" name="vertices_block">
+          <FieldSet version="0" sizeofValue="36" isLatest="true">
+            <RealPoint3D CStyleName="default_translation" pascalStyleName="DefaultTranslation" name="default translation" />
+            <Block CStyleName="edge_indices" pascalStyleName="EdgeIndices" name="edge indicies">
+              <Layout regolithID="block:edge indicies" internalName="edge indicies_block" name="edge indicies_block">
+                <FieldSet version="0" sizeofValue="2" isLatest="true">
+                  <ShortInteger CStyleName="index" pascalStyleName="Index" name="index" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="surface_indices" pascalStyleName="SurfaceIndices" name="surface indicies">
+              <Layout regolithID="block:surface indicies" internalName="surface indicies_block" name="surface indicies_block">
+                <FieldSet version="0" sizeofValue="2" isLatest="true">
+                  <ShortInteger CStyleName="index" pascalStyleName="Index" name="index" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="edges" pascalStyleName="Edges" name="edges">
+        <Layout regolithID="block:edges" internalName="edges_block" name="edges_block">
+          <FieldSet version="0" sizeofValue="12" isLatest="true">
+            <Real CStyleName="length" pascalStyleName="Length" name="length" />
+            <ShortInteger CStyleName="vertex_#0_index" pascalStyleName="Vertex#0Index" name="vertex #0 index" />
+            <ShortInteger CStyleName="vertex_#1_index" pascalStyleName="Vertex#1Index" name="vertex #1 index" />
+            <ShortInteger CStyleName="surface_#0_index" pascalStyleName="Surface#0Index" name="surface #0 index" />
+            <ShortInteger CStyleName="surface_#1_index" pascalStyleName="Surface#1Index" name="surface #1 index" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="surfaces" pascalStyleName="Surfaces" name="surfaces">
+        <Layout regolithID="block:surfaces" internalName="surfaces_block" name="surfaces_block">
+          <FieldSet version="0" sizeofValue="52" isLatest="true">
+            <Real CStyleName="area" pascalStyleName="Area" name="area" />
+            <Real CStyleName="d" pascalStyleName="D" name="d" />
+            <Pad name="pad" length="8" />
+            <RealVector3D CStyleName="normal" pascalStyleName="Normal" name="normal" />
+            <Block CStyleName="vertex_indices" pascalStyleName="VertexIndices" name="vertex indicies">
+              <Layout regolithID="block:vertex indicies" internalName="vertex indicies_block" name="vertex indicies_block">
+                <FieldSet version="0" sizeofValue="2" isLatest="true">
+                  <ShortInteger CStyleName="index" pascalStyleName="Index" name="index" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="edge_indices" pascalStyleName="EdgeIndices" name="edge indicies">
+              <Layout regolithID="block:edge indicies" internalName="edge indicies_block" name="edge indicies_block">
+                <FieldSet version="0" sizeofValue="2" isLatest="true">
+                  <ShortInteger CStyleName="index" pascalStyleName="Index" name="index" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

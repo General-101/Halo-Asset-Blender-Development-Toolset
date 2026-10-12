@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="cont" name="contrail" version="3">
+  <Layout regolithID="block:contrail" internalName="contrail_block" name="contrail">
+    <FieldSet version="0" sizeofValue="260" sizeofSource="sizeof(struct contrail_definition)" isLatest="true">
+      <WordFlags name="flags">
+        <Options regolithID="enum:contrail_flags" CStyleName="contrail_flags" pascalStyleName="ContrailFlags">
+          <Bit name="first point unfaded" CStyleName="first_point_unfaded_bit" pascalStyleName="FirstPointUnfadedBit" />
+          <Bit name="last point unfaded" CStyleName="last_point_unfaded_bit" pascalStyleName="LastPointUnfadedBit" />
+          <Bit name="points start pinned to media" CStyleName="points_start_pinned_to_media_bit" pascalStyleName="PointsStartPinnedToMediaBit" />
+          <Bit name="points start pinned to ground" CStyleName="points_start_pinned_to_ground_bit" pascalStyleName="PointsStartPinnedToGroundBit" />
+          <Bit name="points always pinned to media" CStyleName="points_always_pinned_to_media_bit" pascalStyleName="PointsAlwaysPinnedToMediaBit" />
+          <Bit name="points always pinned to ground" CStyleName="points_always_pinned_to_ground_bit" pascalStyleName="PointsAlwaysPinnedToGroundBit" />
+          <Bit name="edge effect fades slowly" CStyleName="edge_effect_fades_slowly_bit" pascalStyleName="EdgeEffectFadesSlowlyBit" />
+          <Bit name="dont't inherit object change color" CStyleName="dontt_inherit_object_change_color_bit" pascalStyleName="DonttInheritObjectChangeColorBit" />
+        </Options>
+      </WordFlags>
+      <WordFlags CStyleName="scale_flags" pascalStyleName="ScaleFlags" name="scale flags" description="these flags determine which fields are scaled by the contrail density">
+        <Options regolithID="enum:contrail_scale_flags" CStyleName="contrail_scale_flags" pascalStyleName="ContrailScaleFlags">
+          <Bit name="point generation rate" CStyleName="point_generation_rate_bit" pascalStyleName="PointGenerationRateBit" />
+          <Bit name="point velocity" CStyleName="point_velocity_bit" pascalStyleName="PointVelocityBit" />
+          <Bit name="point velocity delta" CStyleName="point_velocity_delta_bit" pascalStyleName="PointVelocityDeltaBit" />
+          <Bit name="point velocity cone angle" CStyleName="point_velocity_cone_angle_bit" pascalStyleName="PointVelocityConeAngleBit" />
+          <Bit name="inherited velocity fraction" CStyleName="inherited_velocity_fraction_bit" pascalStyleName="InheritedVelocityFractionBit" />
+          <Bit name="sequence animation rate" CStyleName="sequence_animation_rate_bit" pascalStyleName="SequenceAnimationRateBit" />
+          <Bit name="texture scale u" CStyleName="texture_scale_u_bit" pascalStyleName="TextureScaleUBit" />
+          <Bit name="texture scale v" CStyleName="texture_scale_v_bit" pascalStyleName="TextureScaleVBit" />
+          <Bit name="texture animation u" CStyleName="texture_animation_u_bit" pascalStyleName="TextureAnimationUBit" />
+          <Bit name="texture animation v" CStyleName="texture_animation_v_bit" pascalStyleName="TextureAnimationVBit" />
+        </Options>
+      </WordFlags>
+      <Explanation name="point creation" />
+      <Real CStyleName="point_generation_rate" pascalStyleName="PointGenerationRate" name="point generation rate" units="points per second" description="this many points are generated per second" />
+      <RealBounds CStyleName="point_velocity" pascalStyleName="PointVelocity" name="point velocity" units="world units per second" description="velocity added to each point's initial velocity" />
+      <Angle CStyleName="point_velocity_cone_angle" pascalStyleName="PointVelocityConeAngle" name="point velocity cone angle" units="degrees" description="initial velocity is inside the cone defined by the marker's forward vector and this angle" />
+      <RealFraction CStyleName="inherited_velocity_fraction" pascalStyleName="InheritedVelocityFraction" name="inherited velocity fraction" description="fraction of parent object's velocity that is inherited by contrail points." />
+      <Explanation name="rendering" />
+      <ShortEnum CStyleName="render_type" pascalStyleName="RenderType" name="render type" description="this specifies how the contrail is oriented in space">
+        <Options regolithID="enum:contrail_render_type" CStyleName="contrail_render_type" pascalStyleName="ContrailRenderType">
+          <Enum name="vertical orientation" CStyleName="vertical_orientation" pascalStyleName="VerticalOrientation" />
+          <Enum name="horizontal orientation" CStyleName="horizontal_orientation" pascalStyleName="HorizontalOrientation" />
+          <Enum name="media mapped" CStyleName="media_mapped" pascalStyleName="MediaMapped" />
+          <Enum name="ground mapped" CStyleName="ground_mapped" pascalStyleName="GroundMapped" />
+          <Enum name="viewer facing" CStyleName="viewer_facing" pascalStyleName="ViewerFacing" />
+          <Enum name="double-marker linked" CStyleName="double_marker_linked" pascalStyleName="DoubleMarkerLinked" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Real CStyleName="texture_repeats_u" pascalStyleName="TextureRepeatsU" name="texture repeats u" description="texture repeats per contrail segment" />
+      <Real CStyleName="texture_repeats_v" pascalStyleName="TextureRepeatsV" name="texture repeats v" description="texture repeats across contrail width" />
+      <Real CStyleName="texture_animation_u" pascalStyleName="TextureAnimationU" name="texture animation u" units="repeats per second" description="the texture along the contrail is animated by this value" />
+      <Real CStyleName="texture_animation_v" pascalStyleName="TextureAnimationV" name="texture animation v" units="repeats per second" description="the texture across the contrail is animated by this value" />
+      <Real CStyleName="animation_rate" pascalStyleName="AnimationRate" name="animation rate" units="frames per second" />
+      <TagReference name="bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <ShortInteger CStyleName="first_sequence_index" pascalStyleName="FirstSequenceIndex" name="first sequence index" />
+      <ShortInteger CStyleName="sequence_count" pascalStyleName="SequenceCount" name="sequence count" />
+      <UselessPad length="64" />
+      <Pad sizeOfSource="sizeof(struct _shader)" length="40" />
+      <WordFlags CStyleName="shader_flags" pascalStyleName="ShaderFlags" name="shader flags">
+        <Options regolithID="enum:contrail_shader_flags" CStyleName="contrail_shader_flags" pascalStyleName="ContrailShaderFlags">
+          <Bit name="sort bias" CStyleName="sort_bias_bit" pascalStyleName="SortBiasBit" />
+          <Bit name="nonlinear tint" CStyleName="nonlinear_tint_bit" pascalStyleName="NonlinearTintBit" />
+          <Bit name="don't overdraw fp weapon" CStyleName="dont_overdraw_fp_weapon_bit" pascalStyleName="DontOverdrawFpWeaponBit" />
+        </Options>
+      </WordFlags>
+      <ShortEnum CStyleName="framebuffer_blend_function" pascalStyleName="FramebufferBlendFunction" name="framebuffer blend function">
+        <OptionsXRef>enum:framebuffer_blend_mode</OptionsXRef>
+      </ShortEnum>
+      <ShortEnum CStyleName="framebuffer_fade_mode" pascalStyleName="FramebufferFadeMode" name="framebuffer fade mode">
+        <Options regolithID="enum:framebuffer_fade_mode" CStyleName="framebuffer_fade_mode" pascalStyleName="FramebufferFadeMode">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="fade when perpendicular" CStyleName="fade_when_perpendicular" pascalStyleName="FadeWhenPerpendicular" />
+          <Enum name="fade when parallel" CStyleName="fade_when_parallel" pascalStyleName="FadeWhenParallel" />
+        </Options>
+      </ShortEnum>
+      <WordFlags CStyleName="map_flags" pascalStyleName="MapFlags" name="map flags">
+        <Options regolithID="enum:contrail_map_flags" CStyleName="contrail_map_flags" pascalStyleName="ContrailMapFlags">
+          <Bit name="unfiltered" CStyleName="unfiltered_bit" pascalStyleName="UnfilteredBit" />
+        </Options>
+      </WordFlags>
+      <Pad sizeOfSource="7*sizeof(long)" length="28" />
+      <Explanation name="Secondary Map" description="Optional multitextured second map" />
+      <TagReference name="bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <ShortEnum CStyleName="anchor" pascalStyleName="Anchor" name="anchor">
+        <Options regolithID="enum:contrail_anchor" CStyleName="contrail_anchor" pascalStyleName="ContrailAnchor">
+          <Enum name="with primary" CStyleName="with_primary" pascalStyleName="WithPrimary" />
+          <Enum name="with screen space" CStyleName="with_screen_space" pascalStyleName="WithScreenSpace" />
+          <Enum name="zsprite" CStyleName="zsprite" pascalStyleName="Zsprite" />
+        </Options>
+      </ShortEnum>
+      <WordFlags name="flags">
+        <OptionsXRef>enum:contrail_map_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="2" length="2" />
+      <ShortEnum CStyleName="u_animation_function" pascalStyleName="UAnimationFunction" name="u-animation function">
+        <OptionsXRef>enum:scenario_function</OptionsXRef>
+      </ShortEnum>
+      <Real CStyleName="u_animation_period" pascalStyleName="UAnimationPeriod" name="u-animation period" units="seconds" description="0 defaults to 1" />
+      <Real CStyleName="u_animation_phase" pascalStyleName="UAnimationPhase" name="u-animation phase" />
+      <Real CStyleName="u_animation_scale" pascalStyleName="UAnimationScale" name="u-animation scale" units="repeats" description="0 defaults to 1" />
+      <Pad sizeOfSource="2" length="2" />
+      <ShortEnum CStyleName="v_animation_function" pascalStyleName="VAnimationFunction" name="v-animation function">
+        <OptionsXRef>enum:scenario_function</OptionsXRef>
+      </ShortEnum>
+      <Real CStyleName="v_animation_period" pascalStyleName="VAnimationPeriod" name="v-animation period" units="seconds" description="0 defaults to 1" />
+      <Real CStyleName="v_animation_phase" pascalStyleName="VAnimationPhase" name="v-animation phase" />
+      <Real CStyleName="v_animation_scale" pascalStyleName="VAnimationScale" name="v-animation scale" units="repeats" description="0 defaults to 1" />
+      <Pad sizeOfSource="2" length="2" />
+      <ShortEnum CStyleName="rotation_animation_function" pascalStyleName="RotationAnimationFunction" name="rotation-animation function">
+        <OptionsXRef>enum:scenario_function</OptionsXRef>
+      </ShortEnum>
+      <Real CStyleName="rotation_animation_period" pascalStyleName="RotationAnimationPeriod" name="rotation-animation period" units="seconds" description="0 defaults to 1" />
+      <Real CStyleName="rotation_animation_phase" pascalStyleName="RotationAnimationPhase" name="rotation-animation phase" />
+      <Real CStyleName="rotation_animation_scale" pascalStyleName="RotationAnimationScale" name="rotation-animation scale" units="degrees" description="0 defaults to 360" />
+      <RealPoint2D CStyleName="rotation_animation_center" pascalStyleName="RotationAnimationCenter" name="rotation-animation center" />
+      <Pad sizeOfSource="sizeof(real)" length="4" />
+      <Real CStyleName="zsprite_radius_scale" pascalStyleName="ZspriteRadiusScale" name="zsprite radius scale" />
+      <Pad sizeOfSource="5*sizeof(long)" length="20" />
+      <Block CStyleName="point_states" pascalStyleName="PointStates" name="point states" maxElementCount="16" maxElementCountSource="MAXIMUM_CONTRAIL_POINT_STATES_PER_CONTRAIL">
+        <Layout regolithID="block:contrail_point_states" internalName="contrail_point_states_block" name="contrail_point_states_block">
+          <FieldSet version="0" sizeofValue="72" sizeofSource="sizeof(struct contrail_point_state)" isLatest="true">
+            <Explanation name="state timing" />
+            <RealBounds CStyleName="duration" pascalStyleName="Duration" name="duration" units="seconds:seconds" description="the time a point spends in this state" />
+            <RealBounds CStyleName="transition_duration" pascalStyleName="TransitionDuration" name="transition duration" units="seconds" description="the time a point takes to transition to the next state" />
+            <Explanation name="point variables" />
+            <TagReference CStyleName="physics" pascalStyleName="Physics" name="physics">
+              <tag>pphy</tag>
+            </TagReference>
+            <UselessPad length="32" />
+            <Real CStyleName="width" pascalStyleName="Width" name="width" units="world units" description="contrail width at this point" />
+            <RealArgbColor CStyleName="color_lower_bound" pascalStyleName="ColorLowerBound" name="color lower bound" description="contrail color at this point" />
+            <RealArgbColor CStyleName="color_upper_bound" pascalStyleName="ColorUpperBound" name="color upper bound" description="contrail color at this point" />
+            <LongFlags CStyleName="scale_flags" pascalStyleName="ScaleFlags" name="scale flags" description="these flags determine which fields are scaled by the contrail density">
+              <Options regolithID="enum:contrail_point_states_scale_flags" CStyleName="contrail_point_states_scale_flags" pascalStyleName="ContrailPointStatesScaleFlags">
+                <Bit name="duration" CStyleName="duration_bit" pascalStyleName="DurationBit" />
+                <Bit name="duration delta" CStyleName="duration_delta_bit" pascalStyleName="DurationDeltaBit" />
+                <Bit name="transition duration" CStyleName="transition_duration_bit" pascalStyleName="TransitionDurationBit" />
+                <Bit name="transition duration delta" CStyleName="transition_duration_delta_bit" pascalStyleName="TransitionDurationDeltaBit" />
+                <Bit name="width" CStyleName="width_bit" pascalStyleName="WidthBit" />
+                <Bit name="color" CStyleName="color_bit" pascalStyleName="ColorBit" />
+              </Options>
+            </LongFlags>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

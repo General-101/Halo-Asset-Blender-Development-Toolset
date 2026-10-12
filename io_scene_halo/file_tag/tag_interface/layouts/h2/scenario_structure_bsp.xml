@@ -1,0 +1,1223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="sbsp" name="scenario_structure_bsp" version="5">
+  <Layout regolithID="block:scenario_structure_bsp" internalName="scenario_structure_bsp_block" name="scenario_structure_bsp">
+    <FieldSet version="0" sizeofValue="792" sizeofSource="sizeof(struct structure_bsp)" isLatest="true">
+      <Block CStyleName="import_info" pascalStyleName="ImportInfo" name="import info" readOnly="true" maxElementCount="1">
+        <LayoutXRef>block:global_tag_import_info</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <Block CStyleName="collision_materials" pascalStyleName="CollisionMaterials" name="collision materials" readOnly="true" maxElementCount="512" maxElementCountSource="MAXIMUM_COLLISION_MATERIALS_PER_STRUCTURE">
+        <Layout regolithID="block:structure_collision_materials" internalName="structure_collision_materials_block" name="structure_collision_materials_block">
+          <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(struct structure_collision_material)" isLatest="true">
+            <TagReference CStyleName="old_shader" pascalStyleName="OldShader" name="old shader" readOnly="true">
+              <tag>shad</tag>
+            </TagReference>
+            <Pad sizeOfSource="sizeof(c_global_material_type)" length="2" />
+            <ShortBlockIndex CStyleName="conveyor_surface_index" pascalStyleName="ConveyorSurfaceIndex" name="conveyor surface index" readOnly="true" blockReference="block:structure_bsp_conveyor_surface" />
+            <TagReference CStyleName="new_shader" pascalStyleName="NewShader" name="new shader" readOnly="true">
+              <tag>shad</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="collision_bsp" pascalStyleName="CollisionBsp" name="collision bsp" readOnly="true" maxElementCount="1">
+        <Layout regolithID="block:global_collision_bsp" internalName="global_collision_bsp_block" name="global_collision_bsp_block">
+          <FieldSet version="0" sizeofValue="96" sizeofSource="sizeof(struct collision_bsp)" sizeofOverride="96">
+            <Block CStyleName="bsp3d_nodes" pascalStyleName="Bsp3dNodes" name="bsp3d nodes" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_NODES_PER_BSP3D">
+              <LayoutXRef>block:large_bsp3d_nodes</LayoutXRef>
+            </Block>
+            <Block CStyleName="planes" pascalStyleName="Planes" name="planes" readOnly="true" maxElementCount="65536" maxElementCountSource="MAXIMUM_PLANES_PER_BSP3D">
+              <LayoutXRef>block:planes</LayoutXRef>
+            </Block>
+            <Block CStyleName="leaves" pascalStyleName="Leaves" name="leaves" readOnly="true" maxElementCount="65536" maxElementCountSource="MAXIMUM_LEAVES_PER_BSP3D">
+              <LayoutXRef>block:large_leaves</LayoutXRef>
+            </Block>
+            <Block CStyleName="bsp2d_references" pascalStyleName="Bsp2dReferences" name="bsp2d references" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_BSP2D_REFERENCES_PER_COLLISION_BSP">
+              <LayoutXRef>block:large_bsp2d_references</LayoutXRef>
+            </Block>
+            <Block CStyleName="bsp2d_nodes" pascalStyleName="Bsp2dNodes" name="bsp2d nodes" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_NODES_PER_BSP2D">
+              <LayoutXRef>block:large_bsp2d_nodes</LayoutXRef>
+            </Block>
+            <Block CStyleName="surfaces" pascalStyleName="Surfaces" name="surfaces" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_SURFACES_PER_COLLISION_BSP">
+              <LayoutXRef>block:large_surfaces</LayoutXRef>
+            </Block>
+            <Block CStyleName="edges" pascalStyleName="Edges" name="edges" readOnly="true" maxElementCount="262144" maxElementCountSource="MAXIMUM_EDGES_PER_COLLISION_BSP">
+              <LayoutXRef>block:large_edges</LayoutXRef>
+            </Block>
+            <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_VERTICES_PER_COLLISION_BSP">
+              <LayoutXRef>block:large_vertices</LayoutXRef>
+            </Block>
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="96" sizeofSource="sizeof(struct collision_bsp)">
+            <Block CStyleName="bsp3d_nodes" pascalStyleName="Bsp3dNodes" name="bsp3d nodes" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_NODES_PER_BSP3D">
+              <LayoutXRef>block:small_bsp3d_nodes</LayoutXRef>
+            </Block>
+            <Block CStyleName="planes" pascalStyleName="Planes" name="planes" readOnly="true" maxElementCount="65536" maxElementCountSource="MAXIMUM_PLANES_PER_BSP3D">
+              <LayoutXRef>block:planes</LayoutXRef>
+            </Block>
+            <Block CStyleName="leaves" pascalStyleName="Leaves" name="leaves" readOnly="true" maxElementCount="65536" maxElementCountSource="MAXIMUM_LEAVES_PER_BSP3D">
+              <LayoutXRef>block:leaves</LayoutXRef>
+            </Block>
+            <Block CStyleName="bsp2d_references" pascalStyleName="Bsp2dReferences" name="bsp2d references" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_BSP2D_REFERENCES_PER_COLLISION_BSP">
+              <LayoutXRef>block:bsp2d_references</LayoutXRef>
+            </Block>
+            <Block CStyleName="bsp2d_nodes" pascalStyleName="Bsp2dNodes" name="bsp2d nodes" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_NODES_PER_BSP2D">
+              <LayoutXRef>block:bsp2d_nodes</LayoutXRef>
+            </Block>
+            <Block CStyleName="surfaces" pascalStyleName="Surfaces" name="surfaces" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_SURFACES_PER_COLLISION_BSP">
+              <LayoutXRef>block:surfaces</LayoutXRef>
+            </Block>
+            <Block CStyleName="edges" pascalStyleName="Edges" name="edges" readOnly="true" maxElementCount="262144" maxElementCountSource="MAXIMUM_EDGES_PER_COLLISION_BSP">
+              <LayoutXRef>block:edges</LayoutXRef>
+            </Block>
+            <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_VERTICES_PER_COLLISION_BSP">
+              <LayoutXRef>block:vertices</LayoutXRef>
+            </Block>
+          </FieldSet>
+          <FieldSet version="2" sizeofValue="96" sizeofSource="sizeof(struct collision_bsp)" isLatest="true">
+            <Block CStyleName="bsp3d_nodes" pascalStyleName="Bsp3dNodes" name="bsp3d nodes" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_NODES_PER_BSP3D">
+              <LayoutXRef>block:bsp3d_nodes</LayoutXRef>
+            </Block>
+            <Block CStyleName="planes" pascalStyleName="Planes" name="planes" readOnly="true" maxElementCount="65536" maxElementCountSource="MAXIMUM_PLANES_PER_BSP3D">
+              <LayoutXRef>block:planes</LayoutXRef>
+            </Block>
+            <Block CStyleName="leaves" pascalStyleName="Leaves" name="leaves" readOnly="true" maxElementCount="65536" maxElementCountSource="MAXIMUM_LEAVES_PER_BSP3D">
+              <LayoutXRef>block:leaves</LayoutXRef>
+            </Block>
+            <Block CStyleName="bsp2d_references" pascalStyleName="Bsp2dReferences" name="bsp2d references" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_BSP2D_REFERENCES_PER_COLLISION_BSP">
+              <LayoutXRef>block:bsp2d_references</LayoutXRef>
+            </Block>
+            <Block CStyleName="bsp2d_nodes" pascalStyleName="Bsp2dNodes" name="bsp2d nodes" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_NODES_PER_BSP2D">
+              <LayoutXRef>block:bsp2d_nodes</LayoutXRef>
+            </Block>
+            <Block CStyleName="surfaces" pascalStyleName="Surfaces" name="surfaces" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_SURFACES_PER_COLLISION_BSP">
+              <LayoutXRef>block:surfaces</LayoutXRef>
+            </Block>
+            <Block CStyleName="edges" pascalStyleName="Edges" name="edges" readOnly="true" maxElementCount="262144" maxElementCountSource="MAXIMUM_EDGES_PER_COLLISION_BSP">
+              <LayoutXRef>block:edges</LayoutXRef>
+            </Block>
+            <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_VERTICES_PER_COLLISION_BSP">
+              <LayoutXRef>block:vertices</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Real CStyleName="vehicle_floor" pascalStyleName="VehicleFloor" name="vehicle floor" units="world units" description="height below which vehicles get pushed up by an unstoppable force" />
+      <Real CStyleName="vehicle_ceiling" pascalStyleName="VehicleCeiling" name="vehicle ceiling" units="world units" description="height above which vehicles get pushed down by an unstoppable force" />
+      <Block CStyleName="unused_nodes" pascalStyleName="UnusedNodes" name="UNUSED nodes" readOnly="true" maxElementCount="131072" maxElementCountSource="MAXIMUM_NODES_PER_BSP3D">
+        <Layout regolithID="block:UNUSED_structure_bsp_node" internalName="UNUSED_structure_bsp_node_block" name="UNUSED_structure_bsp_node_block">
+          <FieldSet version="0" sizeofValue="6" sizeofSource="sizeof(struct UNUSED_structure_node)" isLatest="true">
+            <Skip sizeOfSource="sizeof(byte_rectangle3d)" length="6" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="leaves" pascalStyleName="Leaves" name="leaves" readOnly="true" maxElementCount="65536" maxElementCountSource="MAXIMUM_LEAVES_PER_BSP3D">
+        <Layout regolithID="block:structure_bsp_leaf" internalName="structure_bsp_leaf_block" name="structure_bsp_leaf_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct structure_leaf_v1)">
+            <Skip sizeOfSource="sizeof(byte_rectangle3d)" length="6" />
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <ShortInteger CStyleName="cluster" pascalStyleName="Cluster" name="cluster" readOnly="true" />
+            <ShortInteger CStyleName="surface_reference_count" pascalStyleName="SurfaceReferenceCount" name="surface reference count" readOnly="true" />
+            <LongInteger CStyleName="first_surface_reference_index" pascalStyleName="FirstSurfaceReferenceIndex" name="first surface reference index" readOnly="true" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="8" sizeofSource="sizeof(struct structure_leaf)" isLatest="true">
+            <ShortInteger CStyleName="cluster" pascalStyleName="Cluster" name="cluster" readOnly="true" />
+            <ShortInteger CStyleName="surface_reference_count" pascalStyleName="SurfaceReferenceCount" name="surface reference count" readOnly="true" />
+            <LongInteger CStyleName="first_surface_reference_index" pascalStyleName="FirstSurfaceReferenceIndex" name="first surface reference index" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <RealBounds CStyleName="world_bounds_x" pascalStyleName="WorldBoundsX" name="world bounds x" readOnly="true" />
+      <RealBounds CStyleName="world_bounds_y" pascalStyleName="WorldBoundsY" name="world bounds y" readOnly="true" />
+      <RealBounds CStyleName="world_bounds_z" pascalStyleName="WorldBoundsZ" name="world bounds z" readOnly="true" />
+      <Block CStyleName="surface_references" pascalStyleName="SurfaceReferences" name="surface references" readOnly="true" maxElementCount="262144" maxElementCountSource="MAXIMUM_SURFACE_REFERENCES_PER_STRUCTURE">
+        <Layout regolithID="block:structure_bsp_surface_reference" internalName="structure_bsp_surface_reference_block" name="structure_bsp_surface_reference_block">
+          <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(struct structure_surface_reference_v1)">
+            <LongInteger CStyleName="strip_index" pascalStyleName="StripIndex" name="strip index" readOnly="true" />
+            <LongInteger CStyleName="bsp_node_index" pascalStyleName="BspNodeIndex" name="bsp node index" readOnly="true" />
+            <LongInteger CStyleName="lightmap_triangle_index" pascalStyleName="LightmapTriangleIndex" name="lightmap triangle index" readOnly="true" />
+            <Pad sizeOfSource="sizeof(long)*3" length="12" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="8" sizeofSource="sizeof(struct structure_surface_reference)" isLatest="true">
+            <ShortInteger CStyleName="strip_index" pascalStyleName="StripIndex" name="strip index" readOnly="true" />
+            <ShortInteger CStyleName="lightmap_triangle_index" pascalStyleName="LightmapTriangleIndex" name="lightmap triangle index" readOnly="true" />
+            <LongInteger CStyleName="bsp_node_index" pascalStyleName="BspNodeIndex" name="bsp node index" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Data CStyleName="cluster_data" pascalStyleName="ClusterData" name="cluster data" readOnly="true" />
+      <Block CStyleName="cluster_portals" pascalStyleName="ClusterPortals" name="cluster portals" readOnly="true" maxElementCount="512" maxElementCountSource="MAXIMUM_CLUSTER_PORTALS_PER_STRUCTURE">
+        <Layout regolithID="block:structure_bsp_cluster_portal" internalName="structure_bsp_cluster_portal_block" name="structure_bsp_cluster_portal_block">
+          <FieldSet version="0" sizeofValue="40" sizeofSource="sizeof(struct cluster_portal)" isLatest="true">
+            <ShortInteger CStyleName="back_cluster" pascalStyleName="BackCluster" name="back cluster" readOnly="true" />
+            <ShortInteger CStyleName="front_cluster" pascalStyleName="FrontCluster" name="front cluster" readOnly="true" />
+            <LongInteger CStyleName="plane_index" pascalStyleName="PlaneIndex" name="plane index" readOnly="true" />
+            <RealPoint3D CStyleName="centroid" pascalStyleName="Centroid" name="centroid" readOnly="true" />
+            <Real CStyleName="bounding_radius" pascalStyleName="BoundingRadius" name="bounding radius" readOnly="true" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags" readOnly="true">
+              <Options regolithID="enum:bsp_cluster_portal_flags" CStyleName="bsp_cluster_portal_flags" pascalStyleName="BspClusterPortalFlags">
+                <Bit name="ai can't hear through this shit" CStyleName="ai_cant_hear_through_this_shit_bit" pascalStyleName="AiCantHearThroughThisShitBit" />
+                <Bit name="one-way" CStyleName="one_way_bit" pascalStyleName="OneWayBit" />
+                <Bit name="door" CStyleName="door_bit" pascalStyleName="DoorBit" />
+                <Bit name="no-way" CStyleName="no_way_bit" pascalStyleName="NoWayBit" />
+                <Bit name="one-way-reversed" CStyleName="one_way_reversed_bit" pascalStyleName="OneWayReversedBit" />
+                <Bit name="no one can hear through this" CStyleName="no_one_can_hear_through_this_bit" pascalStyleName="NoOneCanHearThroughThisBit" />
+              </Options>
+            </LongFlags>
+            <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" readOnly="true" maxElementCount="128" maxElementCountSource="MAXIMUM_VERTICES_PER_CLUSTER_PORTAL">
+              <Layout regolithID="block:structure_bsp_cluster_portal_vertex" internalName="structure_bsp_cluster_portal_vertex_block" name="structure_bsp_cluster_portal_vertex_block">
+                <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(real_point3d)" isLatest="true">
+                  <RealPoint3D CStyleName="point" pascalStyleName="Point" name="point" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="fog_planes" pascalStyleName="FogPlanes" name="fog planes" readOnly="true" maxElementCount="127" maxElementCountSource="MAXIMUM_FOG_PLANES_PER_STRUCTURE">
+        <Layout regolithID="block:structure_bsp_fog_plane" internalName="structure_bsp_fog_plane_block" name="structure_bsp_fog_plane_block">
+          <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(s_structure_fog_plane)" isLatest="true">
+            <ShortInteger CStyleName="scenario_planar_fog_index" pascalStyleName="ScenarioPlanarFogIndex" name="scenario planar fog index" readOnly="true" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <RealPlane3D CStyleName="plane" pascalStyleName="Plane" name="plane" readOnly="true" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags" readOnly="true">
+              <Options regolithID="enum:structure_bsp_fog_plane_flags" CStyleName="structure_bsp_fog_plane_flags" pascalStyleName="StructureBspFogPlaneFlags">
+                <Bit name="extend infinitely while visible" CStyleName="extend_infinitely_while_visible_bit" pascalStyleName="ExtendInfinitelyWhileVisibleBit" />
+                <Bit name="don't floodfill" CStyleName="dont_floodfill_bit" pascalStyleName="DontFloodfillBit" />
+                <Bit name="aggressive floodfill" CStyleName="aggressive_floodfill_bit" pascalStyleName="AggressiveFloodfillBit" />
+              </Options>
+            </WordFlags>
+            <ShortInteger CStyleName="priority" pascalStyleName="Priority" name="priority" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="6*sizeof(long)" length="24" />
+      <Block CStyleName="weather_palette" pascalStyleName="WeatherPalette" name="weather palette" readOnly="true" maxElementCount="32" maxElementCountSource="MAXIMUM_WEATHER_PALETTE_ENTRIES_PER_STRUCTURE">
+        <LayoutXRef>block:structure_bsp_weather_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="weather_polyhedra" pascalStyleName="WeatherPolyhedra" name="weather polyhedra" readOnly="true" maxElementCount="32" maxElementCountSource="MAXIMUM_WEATHER_POLYHEDRA_PER_STRUCTURE">
+        <Layout regolithID="block:structure_bsp_weather_polyhedron" internalName="structure_bsp_weather_polyhedron_block" name="structure_bsp_weather_polyhedron_block">
+          <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(struct structure_weather_polyhedron)" isLatest="true">
+            <RealPoint3D CStyleName="bounding_sphere_center" pascalStyleName="BoundingSphereCenter" name="bounding sphere center" readOnly="true" />
+            <Real CStyleName="bounding_sphere_radius" pascalStyleName="BoundingSphereRadius" name="bounding sphere radius" readOnly="true" />
+            <Block CStyleName="planes" pascalStyleName="Planes" name="planes" readOnly="true" maxElementCount="16" maxElementCountSource="MAXIMUM_PLANES_PER_WEATHER_POLYHEDRON">
+              <Layout regolithID="block:structure_bsp_weather_polyhedron_plane" internalName="structure_bsp_weather_polyhedron_plane_block" name="structure_bsp_weather_polyhedron_plane_block">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(real_plane3d)" isLatest="true">
+                  <RealPlane3D CStyleName="plane" pascalStyleName="Plane" name="plane" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="detail_objects" pascalStyleName="DetailObjects" name="detail objects" readOnly="true" maxElementCount="1">
+        <Layout regolithID="block:structure_bsp_detail_object_data" internalName="structure_bsp_detail_object_data_block" name="structure_bsp_detail_object_data_block">
+          <FieldSet version="0" sizeofValue="52" sizeofSource="sizeof(struct structure_detail_object_data)" isLatest="true">
+            <Block CStyleName="cells" pascalStyleName="Cells" name="cells" maxElementCount="262144" maxElementCountSource="MAXIMUM_DETAIL_OBJECT_CELLS_PER_STRUCTURE">
+              <Layout regolithID="block:global_detail_object_cells" internalName="global_detail_object_cells_block" name="global_detail_object_cells_block">
+                <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(struct detail_object_cell_definition)" isLatest="true">
+                  <ShortInteger readOnly="true" />
+                  <ShortInteger readOnly="true" />
+                  <ShortInteger readOnly="true" />
+                  <ShortInteger readOnly="true" />
+                  <LongInteger readOnly="true" />
+                  <LongInteger readOnly="true" />
+                  <LongInteger readOnly="true" />
+                  <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="instances" pascalStyleName="Instances" name="instances" maxElementCount="2097152" maxElementCountSource="MAXIMUM_DETAIL_OBJECTS_PER_STRUCTURE">
+              <Layout regolithID="block:global_detail_object" internalName="global_detail_object_block" name="global_detail_object_block">
+                <FieldSet version="0" sizeofValue="6" sizeofSource="sizeof(struct detail_object)" isLatest="true">
+                  <CharInteger readOnly="true" />
+                  <CharInteger readOnly="true" />
+                  <CharInteger readOnly="true" />
+                  <CharInteger readOnly="true" />
+                  <ShortInteger readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="counts" pascalStyleName="Counts" name="counts" maxElementCount="8388608" maxElementCountSource="MAXIMUM_DETAIL_OBJECT_CELLS_PER_STRUCTURE*MAXIMUM_DETAIL_OBJECT_LAYERS_PER_STRUCTURE">
+              <Layout regolithID="block:global_detail_object_counts" internalName="global_detail_object_counts_block" name="global_detail_object_counts_block">
+                <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(struct detail_object_count)" isLatest="true">
+                  <ShortInteger readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="z_reference_vectors" pascalStyleName="ZReferenceVectors" name="z reference vectors" maxElementCount="262144" maxElementCountSource="MAXIMUM_DETAIL_OBJECT_CELLS_PER_STRUCTURE">
+              <Layout regolithID="block:global_z_reference_vector" internalName="global_z_reference_vector_block" name="global_z_reference_vector_block">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(real_vector4d)" isLatest="true">
+                  <Real readOnly="true" />
+                  <Real readOnly="true" />
+                  <Real readOnly="true" />
+                  <Real readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Pad sizeOfSource="sizeof(byte)" length="1" />
+            <Pad sizeOfSource="3*sizeof(byte)" length="3" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="clusters" pascalStyleName="Clusters" name="clusters" readOnly="true" maxElementCount="512" maxElementCountSource="MAXIMUM_CLUSTERS_PER_STRUCTURE">
+        <Layout regolithID="block:structure_bsp_cluster" internalName="structure_bsp_cluster_block" name="structure_bsp_cluster_block">
+          <FieldSet version="0" sizeofValue="456" sizeofSource="sizeof(struct structure_cluster_v1)">
+            <Struct CStyleName="section" pascalStyleName="Section" name="section" readOnly="true">
+              <LayoutXRef>structure:global_geometry_section</LayoutXRef>
+            </Struct>
+            <Struct CStyleName="section_info" pascalStyleName="SectionInfo" name="section info" readOnly="true">
+              <LayoutXRef>structure:global_geometry_section_info</LayoutXRef>
+            </Struct>
+            <Explanation name="CLUSTER INFO" />
+            <RealBounds CStyleName="bounds_x" pascalStyleName="BoundsX" name="bounds x" readOnly="true" />
+            <RealBounds CStyleName="bounds_y" pascalStyleName="BoundsY" name="bounds y" readOnly="true" />
+            <RealBounds CStyleName="bounds_z" pascalStyleName="BoundsZ" name="bounds z" readOnly="true" />
+            <ShortInteger CStyleName="sky_index" pascalStyleName="SkyIndex" name="sky index" readOnly="true" />
+            <ShortInteger CStyleName="visible_sky_index" pascalStyleName="VisibleSkyIndex" name="visible sky index" readOnly="true" />
+            <ShortInteger CStyleName="planar_fog_designator" pascalStyleName="PlanarFogDesignator" name="planar fog designator" readOnly="true" />
+            <ShortBlockIndex CStyleName="background_sound" pascalStyleName="BackgroundSound" name="background sound" readOnly="true" />
+            <ShortBlockIndex CStyleName="sound_environment" pascalStyleName="SoundEnvironment" name="sound environment" readOnly="true" />
+            <ShortBlockIndex CStyleName="weather" pascalStyleName="Weather" name="weather" readOnly="true" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="2*sizeof(word)" length="4" />
+            <Pad sizeOfSource="sizeof(long)" length="4" />
+            <Block CStyleName="strip_segments" pascalStyleName="StripSegments" name="strip segments" readOnly="true" maxElementCount="16384" maxElementCountSource="MAXIMUM_STRIP_SEGMENTS_PER_STRUCTURE_CLUSTER">
+              <Layout regolithID="block:structure_indices_segment" internalName="structure_indices_segment_block" name="structure_indices_segment_block">
+                <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(struct structure_indices_segment)" isLatest="true">
+                  <ShortInteger CStyleName="strip_start_index" pascalStyleName="StripStartIndex" name="strip start index" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="strip_segment_references" pascalStyleName="StripSegmentReferences" name="strip segment references" readOnly="true" maxElementCount="16384" maxElementCountSource="MAXIMUM_STRIP_SEGMENT_REFERENCES_PER_STRUCTURE_CLUSTER">
+              <Layout regolithID="block:structure_indices_segment_reference" internalName="structure_indices_segment_reference_block" name="structure_indices_segment_reference_block">
+                <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(struct structure_indices_segment_reference)" isLatest="true">
+                  <ShortInteger CStyleName="strip_segment_index" pascalStyleName="StripSegmentIndex" name="strip segment index" readOnly="true" />
+                  <CharInteger CStyleName="part_index" pascalStyleName="PartIndex" name="part index" readOnly="true" />
+                  <CharInteger CStyleName="lightmap_fragment_index" pascalStyleName="LightmapFragmentIndex" name="lightmap fragment index" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="subclusters" pascalStyleName="Subclusters" name="subclusters" readOnly="true" maxElementCount="32768" maxElementCountSource="MAXIMUM_SUBCLUSTERS_PER_CLUSTER">
+              <Layout regolithID="block:structure_subcluster" internalName="structure_subcluster_block" name="structure_subcluster_block">
+                <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(struct structure_subcluster)" isLatest="true">
+                  <RealBounds CStyleName="bounds_x" pascalStyleName="BoundsX" name="bounds x" readOnly="true" />
+                  <RealBounds CStyleName="bounds_y" pascalStyleName="BoundsY" name="bounds y" readOnly="true" />
+                  <RealBounds CStyleName="bounds_z" pascalStyleName="BoundsZ" name="bounds z" readOnly="true" />
+                  <ShortInteger CStyleName="first_strip_reference_index" pascalStyleName="FirstStripReferenceIndex" name="first strip reference index" readOnly="true" />
+                  <ShortInteger CStyleName="strip_reference_count" pascalStyleName="StripReferenceCount" name="strip reference count" readOnly="true" />
+                  <ShortInteger CStyleName="first_explicit_edge_index" pascalStyleName="FirstExplicitEdgeIndex" name="first explicit edge index" readOnly="true" />
+                  <ShortInteger CStyleName="explicit_edge_count" pascalStyleName="ExplicitEdgeCount" name="explicit edge count" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="predicted_resources" pascalStyleName="PredictedResources" name="predicted resources" readOnly="true" maxElementCount="2048">
+              <LayoutXRef>block:predicted_resource</LayoutXRef>
+            </Block>
+            <Block CStyleName="portals" pascalStyleName="Portals" name="portals" readOnly="true" maxElementCount="512" maxElementCountSource="MAXIMUM_CLUSTER_PORTALS_PER_CLUSTER">
+              <Layout regolithID="block:structure_bsp_cluster_portal_index" internalName="structure_bsp_cluster_portal_index_block" name="structure_bsp_cluster_portal_index_block">
+                <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(short)" isLatest="true">
+                  <ShortInteger CStyleName="portal_index" pascalStyleName="PortalIndex" name="portal index" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Explanation name="ISQ INFO" />
+            <Struct CStyleName="isq_info" pascalStyleName="IsqInfo" name="isq info" readOnly="true">
+              <LayoutXRef>structure:global_geometry_isq_info</LayoutXRef>
+            </Struct>
+            <Block CStyleName="forward_edges" pascalStyleName="ForwardEdges" name="forward edges" readOnly="true" maxElementCount="16384" maxElementCountSource="MAXIMUM_SHARED_EDGES_PER_GEOMETRY_SECTION">
+              <Layout regolithID="block:structure_shared_edge" internalName="structure_shared_edge_block" name="structure_shared_edge_block">
+                <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct structure_shared_edge)" isLatest="true">
+                  <Array CStyleName="vertex_indices" pascalStyleName="VertexIndices" name="vertex indices" readOnly="true" count="2">
+                    <ShortInteger CStyleName="vertex_index" pascalStyleName="VertexIndex" name="vertex index" readOnly="true" />
+                  </Array>
+                  <ShortInteger CStyleName="triangle_index" pascalStyleName="TriangleIndex" name="triangle index" readOnly="true" />
+                  <ShortInteger CStyleName="adjacent_cluster_shared_edge_index" pascalStyleName="AdjacentClusterSharedEdgeIndex" name="adjacent cluster shared edge index" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="forward_edge_groups" pascalStyleName="ForwardEdgeGroups" name="forward edge groups" readOnly="true" maxElementCount="512" maxElementCountSource="MAXIMUM_SHARED_EDGE_GROUPS_PER_GEOMETRY_SECTION">
+              <Layout regolithID="block:structure_shared_edge_group" internalName="structure_shared_edge_group_block" name="structure_shared_edge_group_block">
+                <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct structure_shared_edge_group)" isLatest="true">
+                  <ShortInteger CStyleName="first_shared_edge_index" pascalStyleName="FirstSharedEdgeIndex" name="first shared edge index" readOnly="true" />
+                  <ShortInteger CStyleName="shared_edge_count" pascalStyleName="SharedEdgeCount" name="shared edge count" readOnly="true" />
+                  <ShortInteger CStyleName="adjacent_cluster_index" pascalStyleName="AdjacentClusterIndex" name="adjacent cluster index" readOnly="true" />
+                  <ShortInteger CStyleName="subcluster_index" pascalStyleName="SubclusterIndex" name="subcluster index" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="backward_edges" pascalStyleName="BackwardEdges" name="backward edges" readOnly="true" maxElementCount="16384" maxElementCountSource="MAXIMUM_SHARED_EDGES_PER_GEOMETRY_SECTION">
+              <LayoutXRef>block:structure_shared_edge</LayoutXRef>
+            </Block>
+            <Block CStyleName="backward_edge_groups" pascalStyleName="BackwardEdgeGroups" name="backward edge groups" readOnly="true" maxElementCount="512" maxElementCountSource="MAXIMUM_SHARED_EDGE_GROUPS_PER_GEOMETRY_SECTION">
+              <LayoutXRef>block:structure_shared_edge_group</LayoutXRef>
+            </Block>
+            <Block CStyleName="subcluster_boundaries" pascalStyleName="SubclusterBoundaries" name="subcluster boundaries" readOnly="true" maxElementCount="6144" maxElementCountSource="MAXIMUM_SUBCLUSTER_BOUNDARIES_PER_STRUCTURE_CLUSTER">
+              <Layout regolithID="block:structure_subcluster_boundary" internalName="structure_subcluster_boundary_block" name="structure_subcluster_boundary_block">
+                <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct structure_subcluster_boundary)" isLatest="true">
+                  <ShortInteger CStyleName="lower_subcluster_index" pascalStyleName="LowerSubclusterIndex" name="lower subcluster index" readOnly="true" />
+                  <ShortInteger CStyleName="upper_subcluster_index" pascalStyleName="UpperSubclusterIndex" name="upper subcluster index" readOnly="true" />
+                  <ShortInteger CStyleName="first_explicit_edge_index" pascalStyleName="FirstExplicitEdgeIndex" name="first explicit edge index" readOnly="true" />
+                  <ShortInteger CStyleName="explicit_edge_count" pascalStyleName="ExplicitEdgeCount" name="explicit edge count" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="first_triangle_indices" pascalStyleName="FirstTriangleIndices" name="first triangle indices" readOnly="true" maxElementCount="16384" maxElementCountSource="MAXIMUM_STRIP_SEGMENTS_PER_STRUCTURE_CLUSTER">
+              <Layout regolithID="block:structure_strip_segment_first_triangle_index" internalName="structure_strip_segment_first_triangle_index_block" name="structure_strip_segment_first_triangle_index_block">
+                <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(word)" isLatest="true">
+                  <ShortInteger CStyleName="triangle_index" pascalStyleName="TriangleIndex" name="triangle index" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="lightmap_fragments" pascalStyleName="LightmapFragments" name="lightmap fragments" readOnly="true" maxElementCount="128" maxElementCountSource="MAXIMUM_LIGHTMAP_GROUPS_PER_STRUCTURE">
+              <Layout regolithID="block:structure_bsp_cluster_lightmap_data" internalName="structure_bsp_cluster_lightmap_data_block" name="structure_bsp_cluster_lightmap_data_block">
+                <FieldSet version="0" sizeofValue="48" sizeofSource="sizeof(struct structure_cluster_lightmap_data)" isLatest="true">
+                  <ShortEnum CStyleName="type" pascalStyleName="Type" name="type" readOnly="true">
+                    <Options regolithID="enum:structure_bsp_cluster_lightmap_data_type" CStyleName="structure_bsp_cluster_lightmap_data_type" pascalStyleName="StructureBspClusterLightmapDataType">
+                      <Enum name="single texture" CStyleName="single_texture" pascalStyleName="SingleTexture" />
+                    </Options>
+                  </ShortEnum>
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags" readOnly="true">
+                    <Options regolithID="enum:cluster_lightmap_flags" CStyleName="cluster_lightmap_flags" pascalStyleName="ClusterLightmapFlags">
+                      <Bit name="use cluster vertex buffer" CStyleName="use_cluster_vertex_buffer_bit" pascalStyleName="UseClusterVertexBufferBit" />
+                    </Options>
+                  </WordFlags>
+                  <LongInteger name="lightmap group index" readOnly="true" />
+                  <LongInteger name="lightmap group index" readOnly="true" />
+                  <Block CStyleName="indices" pascalStyleName="Indices" name="indices" readOnly="true" maxElementCount="20000" maxElementCountSource="MAXIMUM_INDICES_PER_LIGHTMAP_GROUP">
+                    <Layout regolithID="block:structure_bsp_cluster_lightmap_index" internalName="structure_bsp_cluster_lightmap_index_block" name="structure_bsp_cluster_lightmap_index_block">
+                      <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(word)" isLatest="true">
+                        <ShortInteger CStyleName="triangle_index" pascalStyleName="TriangleIndex" name="triangle index" readOnly="true" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="texture_coordinates" pascalStyleName="TextureCoordinates" name="texture coordinates" readOnly="true" maxElementCount="32767" maxElementCountSource="MAXIMUM_VERTICES_PER_GEOMETRY_SECTION">
+                    <Layout regolithID="block:structure_bsp_cluster_lightmap_texture_coordinate" internalName="structure_bsp_cluster_lightmap_texture_coordinate_block" name="structure_bsp_cluster_lightmap_texture_coordinate_block">
+                      <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(real_point2d)" isLatest="true">
+                        <RealPoint2D CStyleName="texture_coordinate" pascalStyleName="TextureCoordinate" name="texture coordinate" readOnly="true" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="duplicate_indices" pascalStyleName="DuplicateIndices" name="duplicate indices" readOnly="true" maxElementCount="32767" maxElementCountSource="MAXIMUM_VERTICES_PER_GEOMETRY_SECTION">
+                    <Layout regolithID="block:structure_bsp_cluster_lightmap_duplicate_index" internalName="structure_bsp_cluster_lightmap_duplicate_index_block" name="structure_bsp_cluster_lightmap_duplicate_index_block">
+                      <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(long)" isLatest="true">
+                        <LongInteger CStyleName="duplicate_vertex_index" pascalStyleName="DuplicateVertexIndex" name="duplicate vertex index" readOnly="true" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="lightmap_sampling_info" pascalStyleName="LightmapSamplingInfo" name="lightmap sampling info" readOnly="true" maxElementCount="1">
+              <Layout regolithID="block:structure_lightmap_sampling_info" internalName="structure_lightmap_sampling_info_block" name="structure_lightmap_sampling_info_block">
+                <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(struct structure_lightmap_sampling_info)" isLatest="true">
+                  <Block CStyleName="leaves" pascalStyleName="Leaves" name="leaves" readOnly="true" maxElementCount="4096" maxElementCountSource="MAXIMUM_LIGHTMAP_BSP_LEAVES_PER_STRUCTURE_CLUSTER">
+                    <Layout regolithID="block:structure_lightmap_bsp_leaf" internalName="structure_lightmap_bsp_leaf_block" name="structure_lightmap_bsp_leaf_block">
+                      <FieldSet version="0" sizeofValue="10" sizeofSource="sizeof(struct structure_lightmap_bsp_leaf)" isLatest="true">
+                        <CharInteger CStyleName="bounds_min_x" pascalStyleName="BoundsMinX" name="bounds min x" readOnly="true" />
+                        <CharInteger CStyleName="bounds_min_y" pascalStyleName="BoundsMinY" name="bounds min y" readOnly="true" />
+                        <CharInteger CStyleName="bounds_min_z" pascalStyleName="BoundsMinZ" name="bounds min z" readOnly="true" />
+                        <CharInteger CStyleName="bounds_max_x" pascalStyleName="BoundsMaxX" name="bounds max x" readOnly="true" />
+                        <CharInteger CStyleName="bounds_max_y" pascalStyleName="BoundsMaxY" name="bounds max y" readOnly="true" />
+                        <CharInteger CStyleName="bounds_max_z" pascalStyleName="BoundsMaxZ" name="bounds max z" readOnly="true" />
+                        <ShortInteger CStyleName="first_surface_index" pascalStyleName="FirstSurfaceIndex" name="first surface index" readOnly="true" />
+                        <ShortInteger CStyleName="surface_count" pascalStyleName="SurfaceCount" name="surface count" readOnly="true" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="surfaces" pascalStyleName="Surfaces" name="surfaces" readOnly="true" maxElementCount="4096" maxElementCountSource="MAXIMUM_LIGHTMAP_SURFACES_PER_STRUCTURE_CLUSTER">
+                    <Layout regolithID="block:structure_lightmap_surface" internalName="structure_lightmap_surface_block" name="structure_lightmap_surface_block">
+                      <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct structure_lightmap_surface)" isLatest="true">
+                        <LongInteger CStyleName="plane_designator" pascalStyleName="PlaneDesignator" name="plane designator" readOnly="true" />
+                        <ShortInteger CStyleName="strip_segment_reference_index" pascalStyleName="StripSegmentReferenceIndex" name="strip segment reference index" readOnly="true" />
+                        <ShortInteger CStyleName="strip_triangle_index" pascalStyleName="StripTriangleIndex" name="strip triangle index" readOnly="true" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <LongInteger CStyleName="checksum_from_structure" pascalStyleName="ChecksumFromStructure" name="checksum from structure" readOnly="true" />
+            <Ptr CStyleName="runtime_dx9_index_buffer" pascalStyleName="RuntimeDx9IndexBuffer" name="runtime_dx9_index_buffer" tag="nuke" length="4" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="304" sizeofSource="sizeof(struct structure_cluster_v2)">
+            <Struct CStyleName="section_info" pascalStyleName="SectionInfo" name="section info" readOnly="true">
+              <LayoutXRef>structure:global_geometry_section_info</LayoutXRef>
+            </Struct>
+            <Struct CStyleName="geometry_block_info" pascalStyleName="GeometryBlockInfo" name="geometry block info" readOnly="true">
+              <LayoutXRef>structure:global_geometry_block_info</LayoutXRef>
+            </Struct>
+            <Block CStyleName="cluster_data" pascalStyleName="ClusterData" name="cluster data" readOnly="true" maxElementCount="1">
+              <Layout regolithID="block:structure_bsp_cluster_data" internalName="structure_bsp_cluster_data_block" name="structure_bsp_cluster_data_block">
+                <FieldSet version="0" sizeofValue="300" sizeofSource="sizeof(struct structure_cluster_data_old)" isLatest="true">
+                  <Struct CStyleName="section" pascalStyleName="Section" name="section" readOnly="true">
+                    <LayoutXRef>structure:global_geometry_section</LayoutXRef>
+                  </Struct>
+                  <Block CStyleName="strip_segments" pascalStyleName="StripSegments" name="strip segments" readOnly="true" maxElementCount="16384" maxElementCountSource="MAXIMUM_STRIP_SEGMENTS_PER_STRUCTURE_CLUSTER">
+                    <LayoutXRef>block:structure_indices_segment</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="strip_segment_references" pascalStyleName="StripSegmentReferences" name="strip segment references" readOnly="true" maxElementCount="16384" maxElementCountSource="MAXIMUM_STRIP_SEGMENT_REFERENCES_PER_STRUCTURE_CLUSTER">
+                    <LayoutXRef>block:structure_indices_segment_reference</LayoutXRef>
+                  </Block>
+                  <Explanation name="ISQ INFO" />
+                  <Struct CStyleName="isq_info" pascalStyleName="IsqInfo" name="isq info" readOnly="true">
+                    <LayoutXRef>structure:global_geometry_isq_info</LayoutXRef>
+                  </Struct>
+                  <Block CStyleName="forward_edges" pascalStyleName="ForwardEdges" name="forward edges" readOnly="true" maxElementCount="16384" maxElementCountSource="MAXIMUM_SHARED_EDGES_PER_GEOMETRY_SECTION">
+                    <LayoutXRef>block:structure_shared_edge</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="forward_edge_groups" pascalStyleName="ForwardEdgeGroups" name="forward edge groups" readOnly="true" maxElementCount="512" maxElementCountSource="MAXIMUM_SHARED_EDGE_GROUPS_PER_GEOMETRY_SECTION">
+                    <LayoutXRef>block:structure_shared_edge_group</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="backward_edges" pascalStyleName="BackwardEdges" name="backward edges" readOnly="true" maxElementCount="16384" maxElementCountSource="MAXIMUM_SHARED_EDGES_PER_GEOMETRY_SECTION">
+                    <LayoutXRef>block:structure_shared_edge</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="backward_edge_groups" pascalStyleName="BackwardEdgeGroups" name="backward edge groups" readOnly="true" maxElementCount="512" maxElementCountSource="MAXIMUM_SHARED_EDGE_GROUPS_PER_GEOMETRY_SECTION">
+                    <LayoutXRef>block:structure_shared_edge_group</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="subcluster_boundaries" pascalStyleName="SubclusterBoundaries" name="subcluster boundaries" readOnly="true" maxElementCount="6144" maxElementCountSource="MAXIMUM_SUBCLUSTER_BOUNDARIES_PER_STRUCTURE_CLUSTER">
+                    <LayoutXRef>block:structure_subcluster_boundary</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="first_triangle_indices" pascalStyleName="FirstTriangleIndices" name="first triangle indices" readOnly="true" maxElementCount="16384" maxElementCountSource="MAXIMUM_STRIP_SEGMENTS_PER_STRUCTURE_CLUSTER">
+                    <LayoutXRef>block:structure_strip_segment_first_triangle_index</LayoutXRef>
+                  </Block>
+                  <Pad tag="pd64" length="4" />
+                  <Ptr CStyleName="runtime_dx9_index_buffer" pascalStyleName="RuntimeDx9IndexBuffer" name="runtime_dx9_index_buffer" tag="nuke" length="4" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Explanation name="CLUSTER INFO" />
+            <RealBounds CStyleName="bounds_x" pascalStyleName="BoundsX" name="bounds x" readOnly="true" />
+            <RealBounds CStyleName="bounds_y" pascalStyleName="BoundsY" name="bounds y" readOnly="true" />
+            <RealBounds CStyleName="bounds_z" pascalStyleName="BoundsZ" name="bounds z" readOnly="true" />
+            <CharInteger CStyleName="scenario_sky_index" pascalStyleName="ScenarioSkyIndex" name="scenario sky index" readOnly="true" />
+            <CharInteger CStyleName="media_index" pascalStyleName="MediaIndex" name="media index" readOnly="true" />
+            <CharInteger CStyleName="scenario_visible_sky_index" pascalStyleName="ScenarioVisibleSkyIndex" name="scenario visible sky index" readOnly="true" />
+            <CharInteger CStyleName="scenario_atmospheric_fog_index" pascalStyleName="ScenarioAtmosphericFogIndex" name="scenario atmospheric fog index" readOnly="true" />
+            <CharInteger CStyleName="planar_fog_designator" pascalStyleName="PlanarFogDesignator" name="planar fog designator" readOnly="true" />
+            <CharInteger CStyleName="visible_fog_plane_index" pascalStyleName="VisibleFogPlaneIndex" name="visible fog plane index" readOnly="true" />
+            <ShortBlockIndex CStyleName="background_sound" pascalStyleName="BackgroundSound" name="background sound" readOnly="true" />
+            <ShortBlockIndex CStyleName="sound_environment" pascalStyleName="SoundEnvironment" name="sound environment" readOnly="true" />
+            <ShortBlockIndex CStyleName="weather" pascalStyleName="Weather" name="weather" readOnly="true" />
+            <ShortInteger CStyleName="transition_structure_bsp" pascalStyleName="TransitionStructureBsp" name="transition structure bsp" />
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <Pad sizeOfSource="2*sizeof(word)" length="4" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:structure_bsp_cluster_flags" CStyleName="structure_bsp_cluster_flags" pascalStyleName="StructureBspClusterFlags">
+                <Bit name="one way portal" CStyleName="one_way_portal_bit" pascalStyleName="OneWayPortalBit" />
+                <Bit name="door portal" CStyleName="door_portal_bit" pascalStyleName="DoorPortalBit" />
+                <Bit name="postprocessed geometry" CStyleName="postprocessed_geometry_bit" pascalStyleName="PostprocessedGeometryBit" />
+                <Bit name="is the sky" CStyleName="is_the_sky_bit" pascalStyleName="IsTheSkyBit" />
+              </Options>
+            </WordFlags>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <Block CStyleName="subclusters" pascalStyleName="Subclusters" name="subclusters" readOnly="true" maxElementCount="32768" maxElementCountSource="MAXIMUM_SUBCLUSTERS_PER_CLUSTER">
+              <LayoutXRef>block:structure_subcluster</LayoutXRef>
+            </Block>
+            <Block CStyleName="predicted_resources" pascalStyleName="PredictedResources" name="predicted resources" readOnly="true" maxElementCount="2048">
+              <LayoutXRef>block:predicted_resource</LayoutXRef>
+            </Block>
+            <Block CStyleName="portals" pascalStyleName="Portals" name="portals" readOnly="true" maxElementCount="512" maxElementCountSource="MAXIMUM_CLUSTER_PORTALS_PER_CLUSTER">
+              <LayoutXRef>block:structure_bsp_cluster_portal_index</LayoutXRef>
+            </Block>
+            <LongInteger CStyleName="checksum_from_structure" pascalStyleName="ChecksumFromStructure" name="checksum from structure" readOnly="true" />
+            <Data CStyleName="visibility_mopp_code" pascalStyleName="VisibilityMoppCode" name="visibility mopp code" readOnly="true" />
+            <Struct CStyleName="mopp_shape" pascalStyleName="MoppShape" name="mopp shape" readOnly="true">
+              <Layout regolithID="structure:structure_bsp_cluster_mopp_shape" tag="scms" internalName="structure_bsp_cluster_mopp_shape" backingBlockInternalName="structure_bsp_cluster_mopp_shape_block" name="structure_bsp_cluster_mopp_shape">
+                <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_cluster_mopp_shape)" isLatest="true">
+                  <Pad sizeOfSource="sizeof(hkMoppBvTreeShape)" length="20" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Block CStyleName="visibility_mopp_leaves" pascalStyleName="VisibilityMoppLeaves" name="visibility mopp leaves" readOnly="true" maxElementCount="32768" maxElementCountSource="k_maximum_structure_bsp_leaves_per_cluster">
+              <Layout regolithID="block:structure_bsp_cluster_visibility_mopp_leaf" internalName="structure_bsp_cluster_visibility_mopp_leaf_block" name="structure_bsp_cluster_visibility_mopp_leaf_block">
+                <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(struct structure_cluster_visibility_mopp_leaf)" isLatest="true">
+                  <LongInteger CStyleName="identifier" pascalStyleName="Identifier" name="identifier" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Data CStyleName="visibility_subcluster_bitvector" pascalStyleName="VisibilitySubclusterBitvector" name="visibility subcluster bitvector" readOnly="true" />
+            <Struct CStyleName="cluster_mopp_shape" pascalStyleName="ClusterMoppShape" name="cluster mopp shape" readOnly="true">
+              <Layout regolithID="structure:structure_bsp_cluster_havok_shape" tag="schs" internalName="structure_bsp_cluster_havok_shape" backingBlockInternalName="structure_bsp_cluster_havok_shape_block" name="structure_bsp_cluster_havok_shape">
+                <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(hkShapeCollection)+3*sizeof(long)" isLatest="true">
+                  <Pad sizeOfSource="sizeof(hkShapeCollection)+3*sizeof(long)" length="24" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Block CStyleName="instanced_geometry_indices" pascalStyleName="InstancedGeometryIndices" name="instanced geometry indices" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_instance_geometry_instances_per_cluster">
+              <Layout regolithID="block:structure_bsp_cluster_instanced_geometry_index" internalName="structure_bsp_cluster_instanced_geometry_index_block" name="structure_bsp_cluster_instanced_geometry_index_block">
+                <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(word)" isLatest="true">
+                  <ShortInteger CStyleName="instanced_geometry_index" pascalStyleName="InstancedGeometryIndex" name="instanced geometry index" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="visibility_mopp_reorder_table" pascalStyleName="VisibilityMoppReorderTable" name="visibility mopp reorder table" readOnly="true" maxElementCount="32768" maxElementCountSource="k_maximum_structure_bsp_leaves_per_cluster">
+              <Layout regolithID="block:visibility_mopp_reorder_table" internalName="visibility_mopp_reorder_table_block" name="visibility_mopp_reorder_table_block">
+                <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(word)" isLatest="true">
+                  <ShortInteger CStyleName="mopp_leaf_index" pascalStyleName="MoppLeafIndex" name="mopp leaf index" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+          <FieldSet version="2" sizeofValue="216" sizeofSource="sizeof(struct structure_cluster)" isLatest="true">
+            <Struct CStyleName="section_info" pascalStyleName="SectionInfo" name="section info" readOnly="true">
+              <LayoutXRef>structure:global_geometry_section_info</LayoutXRef>
+            </Struct>
+            <Struct CStyleName="geometry_block_info" pascalStyleName="GeometryBlockInfo" name="geometry block info" readOnly="true">
+              <LayoutXRef>structure:global_geometry_block_info</LayoutXRef>
+            </Struct>
+            <Block CStyleName="cluster_data" pascalStyleName="ClusterData" name="cluster data" readOnly="true" maxElementCount="1">
+              <Layout regolithID="block:structure_bsp_cluster_data_block_new" internalName="structure_bsp_cluster_data_block_new" name="structure_bsp_cluster_data_block_new">
+                <FieldSet version="0" sizeofValue="108" sizeofSource="sizeof(struct structure_cluster_data)" isLatest="true">
+                  <Struct CStyleName="section" pascalStyleName="Section" name="section" readOnly="true">
+                    <LayoutXRef>structure:global_geometry_section</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Explanation name="CLUSTER INFO" />
+            <RealBounds CStyleName="bounds_x" pascalStyleName="BoundsX" name="bounds x" readOnly="true" />
+            <RealBounds CStyleName="bounds_y" pascalStyleName="BoundsY" name="bounds y" readOnly="true" />
+            <RealBounds CStyleName="bounds_z" pascalStyleName="BoundsZ" name="bounds z" readOnly="true" />
+            <CharInteger CStyleName="scenario_sky_index" pascalStyleName="ScenarioSkyIndex" name="scenario sky index" readOnly="true" />
+            <CharInteger CStyleName="media_index" pascalStyleName="MediaIndex" name="media index" readOnly="true" />
+            <CharInteger CStyleName="scenario_visible_sky_index" pascalStyleName="ScenarioVisibleSkyIndex" name="scenario visible sky index" readOnly="true" />
+            <CharInteger CStyleName="scenario_atmospheric_fog_index" pascalStyleName="ScenarioAtmosphericFogIndex" name="scenario atmospheric fog index" readOnly="true" />
+            <CharInteger CStyleName="planar_fog_designator" pascalStyleName="PlanarFogDesignator" name="planar fog designator" readOnly="true" />
+            <CharInteger CStyleName="visible_fog_plane_index" pascalStyleName="VisibleFogPlaneIndex" name="visible fog plane index" readOnly="true" />
+            <ShortBlockIndex CStyleName="background_sound" pascalStyleName="BackgroundSound" name="background sound" readOnly="true" blockReference="block:structure_bsp_background_sound_palette" />
+            <ShortBlockIndex CStyleName="sound_environment" pascalStyleName="SoundEnvironment" name="sound environment" readOnly="true" blockReference="block:structure_bsp_sound_environment_palette" />
+            <ShortBlockIndex CStyleName="weather" pascalStyleName="Weather" name="weather" readOnly="true" blockReference="block:structure_bsp_weather_palette" />
+            <ShortInteger CStyleName="transition_structure_bsp" pascalStyleName="TransitionStructureBsp" name="transition structure bsp" />
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <Pad sizeOfSource="2*sizeof(word)" length="4" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:structure_bsp_cluster_flags</OptionsXRef>
+            </WordFlags>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <Block CStyleName="predicted_resources" pascalStyleName="PredictedResources" name="predicted resources" readOnly="true" maxElementCount="2048">
+              <LayoutXRef>block:predicted_resource</LayoutXRef>
+            </Block>
+            <Block CStyleName="portals" pascalStyleName="Portals" name="portals" readOnly="true" maxElementCount="512" maxElementCountSource="MAXIMUM_CLUSTER_PORTALS_PER_CLUSTER">
+              <LayoutXRef>block:structure_bsp_cluster_portal_index</LayoutXRef>
+            </Block>
+            <LongInteger CStyleName="checksum_from_structure" pascalStyleName="ChecksumFromStructure" name="checksum from structure" readOnly="true" />
+            <Block CStyleName="instanced_geometry_indices" pascalStyleName="InstancedGeometryIndices" name="instanced geometry indices" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_instance_geometry_instances_per_cluster">
+              <LayoutXRef>block:structure_bsp_cluster_instanced_geometry_index</LayoutXRef>
+            </Block>
+            <Block CStyleName="index_reorder_table" pascalStyleName="IndexReorderTable" name="index reorder table" readOnly="true" maxElementCount="65535" maxElementCountSource="MAXIMUM_STRIP_INDICES_PER_GEOMETRY_SECTION">
+              <LayoutXRef>block:global_geometry_section_strip_index</LayoutXRef>
+            </Block>
+            <Data CStyleName="collision_mopp_code" pascalStyleName="CollisionMoppCode" name="collision mopp code" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="materials" pascalStyleName="Materials" name="materials" readOnly="true" maxElementCount="1024" maxElementCountSource="MAXIMUM_MATERIALS_PER_GEOMETRY">
+        <LayoutXRef>block:global_geometry_material</LayoutXRef>
+      </Block>
+      <Block CStyleName="sky_owner_cluster" pascalStyleName="SkyOwnerCluster" name="sky owner cluster" readOnly="true" maxElementCount="32" maxElementCountSource="MAXIMUM_SKIES_PER_SCENARIO">
+        <Layout regolithID="block:structure_bsp_sky_owner_cluster" internalName="structure_bsp_sky_owner_cluster_block" name="structure_bsp_sky_owner_cluster_block">
+          <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(short)" isLatest="true">
+            <ShortInteger CStyleName="cluster_owner" pascalStyleName="ClusterOwner" name="cluster owner" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="conveyor_surfaces" pascalStyleName="ConveyorSurfaces" name="conveyor surfaces" readOnly="true" maxElementCount="512" maxElementCountSource="MAXIMUM_COLLISION_MATERIALS_PER_STRUCTURE">
+        <Layout regolithID="block:structure_bsp_conveyor_surface" internalName="structure_bsp_conveyor_surface_block" name="structure_bsp_conveyor_surface_block">
+          <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(struct structure_conveyor_surface)" isLatest="true">
+            <RealVector3D CStyleName="u" pascalStyleName="U" name="u" />
+            <RealVector3D CStyleName="v" pascalStyleName="V" name="v" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="breakable_surfaces" pascalStyleName="BreakableSurfaces" name="breakable surfaces" readOnly="true" maxElementCount="8448" maxElementCountSource="k_maximum_breakable_surfaces_per_structure_bsp+k_maximum_instance_geometry_instances_per_structure_bsp*k_maximum_breakable_surfaces_per_instanced_geometry_instance">
+        <Layout regolithID="block:structure_bsp_breakable_surface" internalName="structure_bsp_breakable_surface_block" name="structure_bsp_breakable_surface_block">
+          <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(struct structure_breakable_surface)" isLatest="true">
+            <ShortBlockIndex CStyleName="instanced_geometry_instance" pascalStyleName="InstancedGeometryInstance" name="instanced geometry instance" readOnly="true" blockReference="block:structure_bsp_instanced_geometry_instances" />
+            <ShortInteger CStyleName="breakable_surface_index" pascalStyleName="BreakableSurfaceIndex" name="breakable surface index" readOnly="true" />
+            <RealPoint3D CStyleName="centroid" pascalStyleName="Centroid" name="centroid" readOnly="true" />
+            <Real CStyleName="radius" pascalStyleName="Radius" name="radius" readOnly="true" />
+            <LongInteger CStyleName="collision_surface_index" pascalStyleName="CollisionSurfaceIndex" name="collision surface index" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="pathfinding_data" pascalStyleName="PathfindingData" name="pathfinding data" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:pathfinding_data</LayoutXRef>
+      </Block>
+      <Block CStyleName="pathfinding_edges" pascalStyleName="PathfindingEdges" name="pathfinding edges" readOnly="true" maxElementCount="262144" maxElementCountSource="MAXIMUM_EDGES_PER_COLLISION_BSP">
+        <Layout regolithID="block:structure_bsp_pathfinding_edges" internalName="structure_bsp_pathfinding_edges_block" name="structure_bsp_pathfinding_edges_block">
+          <FieldSet version="0" sizeofValue="1" sizeofSource="sizeof(byte)" isLatest="true">
+            <CharInteger CStyleName="midpoint" pascalStyleName="Midpoint" name="midpoint" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="background_sound_palette" pascalStyleName="BackgroundSoundPalette" name="background sound palette" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_cluster_sound_palette_entries_per_structure">
+        <LayoutXRef>block:structure_bsp_background_sound_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="sound_environment_palette" pascalStyleName="SoundEnvironmentPalette" name="sound environment palette" readOnly="true" maxElementCount="64" maxElementCountSource="k_maximum_cluster_sound_palette_entries_per_structure">
+        <LayoutXRef>block:structure_bsp_sound_environment_palette</LayoutXRef>
+      </Block>
+      <Data CStyleName="sound_pas_data" pascalStyleName="SoundPasData" name="sound PAS data" readOnly="true" />
+      <Block CStyleName="markers" pascalStyleName="Markers" name="markers" readOnly="true" maxElementCount="1024" maxElementCountSource="MAXIMUM_MARKERS_PER_STRUCTURE">
+        <Layout regolithID="block:structure_bsp_marker" internalName="structure_bsp_marker_block" name="structure_bsp_marker_block">
+          <FieldSet version="0" sizeofValue="60" sizeofSource="sizeof(struct structure_marker)" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" readOnly="true" />
+            <RealQuaternion CStyleName="rotation" pascalStyleName="Rotation" name="rotation" />
+            <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="runtime_decals" pascalStyleName="RuntimeDecals" name="runtime decals" readOnly="true" maxElementCount="6144" maxElementCountSource="MAXIMUM_DECALS_PER_STRUCTURE">
+        <Layout regolithID="block:structure_bsp_runtime_decal" internalName="structure_bsp_runtime_decal_block" name="structure_bsp_runtime_decal_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct structure_runtime_decal)" isLatest="true">
+            <Skip sizeOfSource="sizeof(struct structure_runtime_decal)" length="16" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="environment_object_palette" pascalStyleName="EnvironmentObjectPalette" name="environment object palette" readOnly="true" maxElementCount="100" maxElementCountSource="MAXIMUM_ENVIRONMENT_OBJECT_PALETTE_ENTRIES_PER_STRUCTURE">
+        <Layout regolithID="block:structure_bsp_environment_object_palette" internalName="structure_bsp_environment_object_palette_block" name="structure_bsp_environment_object_palette_block">
+          <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(struct structure_environment_object_palette_entry)" isLatest="true">
+            <TagReference CStyleName="definition" pascalStyleName="Definition" name="definition">
+              <tag>scen</tag>
+            </TagReference>
+            <TagReference CStyleName="model" pascalStyleName="Model" name="model">
+              <tag>mode</tag>
+            </TagReference>
+            <Pad sizeOfSource="sizeof(dword)" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="environment_objects" pascalStyleName="EnvironmentObjects" name="environment objects" readOnly="true" maxElementCount="16384" maxElementCountSource="MAXIMUM_ENVIRONMENT_OBJECTS_PER_STRUCTURE">
+        <Layout regolithID="block:structure_bsp_environment_object" internalName="structure_bsp_environment_object_block" name="structure_bsp_environment_object_block">
+          <FieldSet version="0" sizeofValue="104" sizeofSource="sizeof(struct structure_environment_object)" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+            <RealQuaternion CStyleName="rotation" pascalStyleName="Rotation" name="rotation" />
+            <RealPoint3D CStyleName="translation" pascalStyleName="Translation" name="translation" />
+            <ShortBlockIndex CStyleName="palette_index" pascalStyleName="PaletteIndex" name="palette_index" blockReference="block:structure_bsp_environment_object_palette" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <LongInteger CStyleName="unique_id" pascalStyleName="UniqueId" name="unique id" readOnly="true" />
+            <Tag CStyleName="exported_object_type" pascalStyleName="ExportedObjectType" name="exported object type" />
+            <String CStyleName="scenario_object_name" pascalStyleName="ScenarioObjectName" name="scenario object name" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="lightmaps" pascalStyleName="Lightmaps" name="lightmaps" readOnly="true" maxElementCount="128" maxElementCountSource="MAXIMUM_LIGHTMAP_GROUPS_PER_STRUCTURE">
+        <Layout regolithID="block:structure_bsp_lightmap_data" internalName="structure_bsp_lightmap_data_block" name="structure_bsp_lightmap_data_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct structure_lightmap_data)" isLatest="true">
+            <TagReference CStyleName="bitmap_group" pascalStyleName="BitmapGroup" name="bitmap group">
+              <tag>bitm</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <Block CStyleName="leaf_map_leaves" pascalStyleName="LeafMapLeaves" name="leaf map leaves" readOnly="true" maxElementCount="65536" maxElementCountSource="MAXIMUM_LEAVES_PER_BSP3D">
+        <Layout regolithID="block:global_map_leaf" internalName="global_map_leaf_block" name="global_map_leaf_block">
+          <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(struct map_leaf)" isLatest="true">
+            <Block CStyleName="faces" pascalStyleName="Faces" name="faces" readOnly="true" maxElementCount="512" maxElementCountSource="MAXIMUM_FACES_PER_MAP_LEAF">
+              <Layout regolithID="block:map_leaf_face" internalName="map_leaf_face_block" name="map_leaf_face_block">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct map_leaf_face)" isLatest="true">
+                  <LongInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" readOnly="true" />
+                  <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" readOnly="true" maxElementCount="64" maxElementCountSource="MAXIMUM_VERTICES_PER_LEAF_CONNECTION">
+                    <Layout regolithID="block:map_leaf_face_vertex" internalName="map_leaf_face_vertex_block" name="map_leaf_face_vertex_block">
+                      <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(real_point3d)" isLatest="true">
+                        <RealPoint3D CStyleName="vertex" pascalStyleName="Vertex" name="vertex" readOnly="true" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="connection_indices" pascalStyleName="ConnectionIndices" name="connection indices" readOnly="true" maxElementCount="512" maxElementCountSource="MAXIMUM_CONNECTIONS_PER_MAP_LEAF">
+              <Layout regolithID="block:map_leaf_connection_index" internalName="map_leaf_connection_index_block" name="map_leaf_connection_index_block">
+                <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(long)" isLatest="true">
+                  <LongInteger CStyleName="connection_index" pascalStyleName="ConnectionIndex" name="connection index" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="leaf_map_connections" pascalStyleName="LeafMapConnections" name="leaf map connections" readOnly="true" maxElementCount="524288" maxElementCountSource="MAXIMUM_CONNECTIONS_PER_LEAF_MAP">
+        <Layout regolithID="block:global_leaf_connection" internalName="global_leaf_connection_block" name="global_leaf_connection_block">
+          <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(struct leaf_connection)" isLatest="true">
+            <LongInteger CStyleName="plane_index" pascalStyleName="PlaneIndex" name="plane index" readOnly="true" />
+            <LongInteger CStyleName="back_leaf_index" pascalStyleName="BackLeafIndex" name="back leaf index" readOnly="true" />
+            <LongInteger CStyleName="front_leaf_index" pascalStyleName="FrontLeafIndex" name="front leaf index" readOnly="true" />
+            <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" readOnly="true" maxElementCount="64" maxElementCountSource="MAXIMUM_VERTICES_PER_LEAF_CONNECTION">
+              <Layout regolithID="block:leaf_connection_vertex" internalName="leaf_connection_vertex_block" name="leaf_connection_vertex_block">
+                <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(real_point3d)" isLatest="true">
+                  <RealPoint3D CStyleName="vertex" pascalStyleName="Vertex" name="vertex" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Real CStyleName="area" pascalStyleName="Area" name="area" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="errors" pascalStyleName="Errors" name="errors" readOnly="true" maxElementCount="64" maxElementCountSource="MAXIMUM_ERROR_REPORT_CATEGORIES">
+        <LayoutXRef>block:global_error_report_categories</LayoutXRef>
+      </Block>
+      <Block CStyleName="precomputed_lighting" pascalStyleName="PrecomputedLighting" name="precomputed lighting" readOnly="true" maxElementCount="350" maxElementCountSource="MAXIMUM_LIGHTS_PER_MAP">
+        <Layout regolithID="block:structure_bsp_precomputed_lighting" internalName="structure_bsp_precomputed_lighting_block" name="structure_bsp_precomputed_lighting_block">
+          <FieldSet version="0" sizeofValue="96" sizeofSource="sizeof(struct structure_precomputed_lighting)" isLatest="true">
+            <LongInteger CStyleName="index" pascalStyleName="Index" name="index" readOnly="true" />
+            <ShortEnum CStyleName="light_type" pascalStyleName="LightType" name="light type" readOnly="true">
+              <Options regolithID="enum:light_type" CStyleName="light_type" pascalStyleName="LightType">
+                <Enum name="free standing" CStyleName="free_standing" pascalStyleName="FreeStanding" />
+                <Enum name="attached to editor object" CStyleName="attached_to_editor_object" pascalStyleName="AttachedToEditorObject" />
+                <Enum name="attached to structure object" CStyleName="attached_to_structure_object" pascalStyleName="AttachedToStructureObject" />
+              </Options>
+            </ShortEnum>
+            <CharInteger CStyleName="attachment_index" pascalStyleName="AttachmentIndex" name="attachment index" readOnly="true" />
+            <CharInteger CStyleName="object_type" pascalStyleName="ObjectType" name="object type" readOnly="true" />
+            <Struct CStyleName="visibility" pascalStyleName="Visibility" name="visibility" readOnly="true">
+              <Layout regolithID="structure:visibility" tag="svis" internalName="visibility_struct" backingBlockInternalName="visibility_struct_block" name="visibility_struct">
+                <FieldSet version="0" sizeofValue="88" sizeofSource="sizeof(struct structure_precomputed_lighting_visiblity)" isLatest="true">
+                  <ShortInteger CStyleName="projection_count" pascalStyleName="ProjectionCount" name="projection count" readOnly="true" />
+                  <ShortInteger CStyleName="cluster_count" pascalStyleName="ClusterCount" name="cluster count" readOnly="true" />
+                  <ShortInteger CStyleName="volume_count" pascalStyleName="VolumeCount" name="volume count" readOnly="true" />
+                  <Pad sizeOfSource="2" length="2" />
+                  <Data CStyleName="projections" pascalStyleName="Projections" name="projections" readOnly="true" />
+                  <Data CStyleName="visibility_clusters" pascalStyleName="VisibilityClusters" name="visibility clusters" readOnly="true" />
+                  <Data CStyleName="cluster_remap_table" pascalStyleName="ClusterRemapTable" name="cluster remap table" readOnly="true" />
+                  <Data CStyleName="visibility_volumes" pascalStyleName="VisibilityVolumes" name="visibility volumes" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="instanced_geometries_definitions" pascalStyleName="InstancedGeometriesDefinitions" name="instanced geometries definitions" readOnly="true" maxElementCount="512" maxElementCountSource="k_maximum_instance_geometry_definitions_per_structure_bsp">
+        <Layout regolithID="block:structure_bsp_instanced_geometry_definition" internalName="structure_bsp_instanced_geometry_definition_block" name="structure_bsp_instanced_geometry_definition_block">
+          <FieldSet version="0" sizeofValue="260" sizeofSource="sizeof(struct structure_instanced_geometry_definition)" isLatest="true">
+            <Struct CStyleName="render_info" pascalStyleName="RenderInfo" name="render info">
+              <Layout regolithID="structure:structure_instanced_geometry_render_info" tag="igri" internalName="structure_instanced_geometry_render_info_struct" backingBlockInternalName="structure_instanced_geometry_render_info_struct_block" name="structure_instanced_geometry_render_info_struct">
+                <FieldSet version="0" sizeofValue="108" sizeofSource="sizeof(struct structure_instanced_geometry_render_info_v1)">
+                  <Struct CStyleName="section_info" pascalStyleName="SectionInfo" name="section info" readOnly="true">
+                    <LayoutXRef>structure:global_geometry_section_info</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="geometry_block_info" pascalStyleName="GeometryBlockInfo" name="geometry block info" readOnly="true">
+                    <LayoutXRef>structure:global_geometry_block_info</LayoutXRef>
+                  </Struct>
+                  <Block CStyleName="render_data" pascalStyleName="RenderData" name="render data" readOnly="true" maxElementCount="1">
+                    <LayoutXRef>block:structure_bsp_cluster_data</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="instance_definition_subclusters" pascalStyleName="InstanceDefinitionSubclusters" name="instance definition subclusters" maxElementCount="32768" maxElementCountSource="MAXIMUM_SUBCLUSTERS_PER_CLUSTER">
+                    <LayoutXRef>block:structure_subcluster</LayoutXRef>
+                  </Block>
+                </FieldSet>
+                <FieldSet version="1" sizeofValue="108" sizeofSource="sizeof(struct structure_instanced_geometry_render_info)" isLatest="true">
+                  <Struct CStyleName="section_info" pascalStyleName="SectionInfo" name="section info" readOnly="true">
+                    <LayoutXRef>structure:global_geometry_section_info</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="geometry_block_info" pascalStyleName="GeometryBlockInfo" name="geometry block info" readOnly="true">
+                    <LayoutXRef>structure:global_geometry_block_info</LayoutXRef>
+                  </Struct>
+                  <Block CStyleName="render_data" pascalStyleName="RenderData" name="render data" readOnly="true" maxElementCount="1">
+                    <LayoutXRef>block:structure_bsp_cluster_data_block_new</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="index_reorder_table" pascalStyleName="IndexReorderTable" name="index reorder table" readOnly="true" maxElementCount="65535" maxElementCountSource="MAXIMUM_STRIP_INDICES_PER_GEOMETRY_SECTION">
+                    <LayoutXRef>block:global_geometry_section_strip_index</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <LongInteger CStyleName="checksum" pascalStyleName="Checksum" name="checksum" readOnly="true" />
+            <RealPoint3D CStyleName="bounding_sphere_center" pascalStyleName="BoundingSphereCenter" name="bounding sphere center" />
+            <Real CStyleName="bounding_sphere_radius" pascalStyleName="BoundingSphereRadius" name="bounding sphere radius" />
+            <Struct CStyleName="collision_info" pascalStyleName="CollisionInfo" name="collision info">
+              <LayoutXRef>structure:global_collision_bsp</LayoutXRef>
+            </Struct>
+            <Block CStyleName="bsp_physics" pascalStyleName="BspPhysics" name="bsp_physics" readOnly="true" maxElementCount="1024" maxElementCountSource="(1024)">
+              <LayoutXRef>block:collision_bsp_physics</LayoutXRef>
+            </Block>
+            <Block CStyleName="render_leaves" pascalStyleName="RenderLeaves" name="render leaves" readOnly="true" maxElementCount="65536" maxElementCountSource="MAXIMUM_LEAVES_PER_BSP3D">
+              <LayoutXRef>block:structure_bsp_leaf</LayoutXRef>
+            </Block>
+            <Block CStyleName="surface_references" pascalStyleName="SurfaceReferences" name="surface references" readOnly="true" maxElementCount="262144" maxElementCountSource="MAXIMUM_SURFACE_REFERENCES_PER_STRUCTURE">
+              <LayoutXRef>block:structure_bsp_surface_reference</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="instanced_geometry_instances" pascalStyleName="InstancedGeometryInstances" name="instanced geometry instances" readOnly="true" maxElementCount="1024" maxElementCountSource="k_maximum_instance_geometry_instances_per_structure_bsp">
+        <Layout regolithID="block:structure_bsp_instanced_geometry_instances" internalName="structure_bsp_instanced_geometry_instances_block" name="structure_bsp_instanced_geometry_instances_block">
+          <FieldSet version="0" sizeofValue="88" sizeofSource="sizeof(structure_instanced_geometry_instance_v2)">
+            <Real CStyleName="scale" pascalStyleName="Scale" name="scale" />
+            <RealVector3D CStyleName="forward" pascalStyleName="Forward" name="forward" />
+            <RealVector3D CStyleName="left" pascalStyleName="Left" name="left" />
+            <RealVector3D CStyleName="up" pascalStyleName="Up" name="up" />
+            <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" />
+            <ShortBlockIndex CStyleName="instance_definition" pascalStyleName="InstanceDefinition" name="instance definition" readOnly="true" />
+            <ShortInteger CStyleName="render_first_bitvector_index" pascalStyleName="RenderFirstBitvectorIndex" name="render first bitvector index" readOnly="true" />
+            <Pad sizeOfSource="2*sizeof(short)" length="4" />
+            <TagReference CStyleName="lightmap_bitmap" pascalStyleName="LightmapBitmap" name="lightmap bitmap" readOnly="true">
+              <tag>bitm</tag>
+            </TagReference>
+            <LongInteger CStyleName="checksum" pascalStyleName="Checksum" name="checksum" readOnly="true" />
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <ShortInteger CStyleName="pathfinding_object_index" pascalStyleName="PathfindingObjectIndex" name="pathfinding object index" readOnly="true" />
+            <Skip sizeOfSource="sizeof(short)" length="2" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="88" sizeofSource="sizeof(struct structure_instanced_geometry_instance_v2)">
+            <Real CStyleName="scale" pascalStyleName="Scale" name="scale" />
+            <RealVector3D CStyleName="forward" pascalStyleName="Forward" name="forward" />
+            <RealVector3D CStyleName="left" pascalStyleName="Left" name="left" />
+            <RealVector3D CStyleName="up" pascalStyleName="Up" name="up" />
+            <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" />
+            <ShortBlockIndex CStyleName="instance_definition" pascalStyleName="InstanceDefinition" name="instance definition" readOnly="true" />
+            <ShortInteger CStyleName="render_first_bitvector_index" pascalStyleName="RenderFirstBitvectorIndex" name="render first bitvector index" readOnly="true" />
+            <Pad sizeOfSource="2*sizeof(short)" length="4" />
+            <TagReference CStyleName="lightmap_bitmap" pascalStyleName="LightmapBitmap" name="lightmap bitmap" readOnly="true">
+              <tag>bitm</tag>
+            </TagReference>
+            <LongInteger CStyleName="checksum" pascalStyleName="Checksum" name="checksum" readOnly="true" />
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <ShortInteger CStyleName="pathfinding_object_index" pascalStyleName="PathfindingObjectIndex" name="pathfinding object index" readOnly="true" />
+            <Skip sizeOfSource="sizeof(short)" length="2" />
+          </FieldSet>
+          <FieldSet version="2" sizeofValue="88" sizeofSource="sizeof(struct structure_instanced_geometry_instance)" isLatest="true">
+            <Real CStyleName="scale" pascalStyleName="Scale" name="scale" />
+            <RealVector3D CStyleName="forward" pascalStyleName="Forward" name="forward" />
+            <RealVector3D CStyleName="left" pascalStyleName="Left" name="left" />
+            <RealVector3D CStyleName="up" pascalStyleName="Up" name="up" />
+            <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" />
+            <ShortBlockIndex CStyleName="instance_definition" pascalStyleName="InstanceDefinition" name="instance definition" readOnly="true" blockReference="block:structure_bsp_instanced_geometry_definition" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:light_probes_flags" CStyleName="light_probes_flags" pascalStyleName="LightProbesFlags">
+                <Bit name="not in lightprobes" CStyleName="not_in_lightprobes_bit" pascalStyleName="NotInLightprobesBit" />
+              </Options>
+            </WordFlags>
+            <Pad sizeOfSource="2*sizeof(short)" length="4" />
+            <Skip sizeOfSource="sizeof(real_point3d)" length="12" />
+            <Skip sizeOfSource="sizeof(real)" length="4" />
+            <LongInteger CStyleName="checksum" pascalStyleName="Checksum" name="checksum" readOnly="true" />
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <ShortEnum CStyleName="pathfinding_policy" pascalStyleName="PathfindingPolicy" name="pathfinding policy" readOnly="true">
+              <Options regolithID="enum:structure_bsp_geometry_pathfinding_policy" CStyleName="structure_bsp_geometry_pathfinding_policy" pascalStyleName="StructureBspGeometryPathfindingPolicy">
+                <Enum name="cut-out" CStyleName="cut_out" pascalStyleName="CutOut" />
+                <Enum name="static" CStyleName="_static" pascalStyleName="Static" />
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="lightmapping_policy" pascalStyleName="LightmappingPolicy" name="lightmapping policy" readOnly="true">
+              <Options regolithID="enum:lightmapping_policy" CStyleName="lightmapping_policy" pascalStyleName="LightmappingPolicy">
+                <Enum name="per-pixel" CStyleName="per_pixel" pascalStyleName="PerPixel" />
+                <Enum name="per-vertex" CStyleName="per_vertex" pascalStyleName="PerVertex" />
+              </Options>
+            </ShortEnum>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="ambience_sound_clusters" pascalStyleName="AmbienceSoundClusters" name="ambience sound clusters" expertOnly="true" maxElementCount="512" maxElementCountSource="MAXIMUM_CLUSTERS_PER_STRUCTURE">
+        <Layout regolithID="block:structure_bsp_sound_cluster" internalName="structure_bsp_sound_cluster_block" name="structure_bsp_sound_cluster_block">
+          <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(s_structure_sound_cluster)" isLatest="true">
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Block CStyleName="enclosing_portal_designators" pascalStyleName="EnclosingPortalDesignators" name="enclosing portal designators" maxElementCount="512" maxElementCountSource="MAXIMUM_CLUSTER_PORTALS_PER_STRUCTURE">
+              <Layout regolithID="block:structure_sound_cluster_portal_designators" internalName="structure_sound_cluster_portal_designators" name="structure_sound_cluster_portal_designators">
+                <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(short)" isLatest="true">
+                  <ShortInteger CStyleName="portal_designator" pascalStyleName="PortalDesignator" name="portal designator" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="interior_cluster_indices" pascalStyleName="InteriorClusterIndices" name="interior cluster indices" maxElementCount="512" maxElementCountSource="MAXIMUM_CLUSTERS_PER_STRUCTURE">
+              <Layout regolithID="block:structure_sound_cluster_interior_cluster_indices" internalName="structure_sound_cluster_interior_cluster_indices" name="structure_sound_cluster_interior_cluster_indices">
+                <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(short)" isLatest="true">
+                  <ShortInteger CStyleName="interior_cluster_index" pascalStyleName="InteriorClusterIndex" name="interior cluster index" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="reverb_sound_clusters" pascalStyleName="ReverbSoundClusters" name="reverb sound clusters" expertOnly="true" maxElementCount="512" maxElementCountSource="MAXIMUM_CLUSTERS_PER_STRUCTURE">
+        <LayoutXRef>block:structure_bsp_sound_cluster</LayoutXRef>
+      </Block>
+      <Block CStyleName="transparent_planes" pascalStyleName="TransparentPlanes" name="transparent planes" readOnly="true" maxElementCount="32768" maxElementCountSource="32*k_kilo">
+        <Layout regolithID="block:transparent_planes" internalName="transparent_planes_block" name="transparent_planes_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_transparent_plane)" isLatest="true">
+            <ShortInteger CStyleName="section_index" pascalStyleName="SectionIndex" name="section index" />
+            <ShortInteger CStyleName="part_index" pascalStyleName="PartIndex" name="part index" />
+            <RealPlane3D CStyleName="plane" pascalStyleName="Plane" name="plane" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="24*sizeof(long)" length="96" />
+      <Real CStyleName="vehicle_spherical_limit_radius" pascalStyleName="VehicleSphericalLimitRadius" name="vehicle spherical limit radius" description="distances this far from the limit origin and greater will pull you the fuck back in." />
+      <RealPoint3D CStyleName="vehicle_spherical_limit_center" pascalStyleName="VehicleSphericalLimitCenter" name="vehicle spherical limit center" description="center of the space in which the vehicle can move." />
+      <Block CStyleName="debug_info" pascalStyleName="DebugInfo" name="debug info" readOnly="true" maxElementCount="1">
+        <Layout regolithID="block:structure_bsp_debug_info" internalName="structure_bsp_debug_info_block" name="structure_bsp_debug_info_block">
+          <FieldSet version="0" sizeofValue="100" sizeofSource="sizeof(s_structure_debug_info)" isLatest="true">
+            <Pad sizeOfSource="16*sizeof(long)" length="64" />
+            <Block CStyleName="clusters" pascalStyleName="Clusters" name="clusters" readOnly="true" maxElementCount="512" maxElementCountSource="MAXIMUM_CLUSTERS_PER_STRUCTURE">
+              <Layout regolithID="block:structure_bsp_cluster_debug_info" internalName="structure_bsp_cluster_debug_info_block" name="structure_bsp_cluster_debug_info_block">
+                <FieldSet version="0" sizeofValue="92" sizeofSource="sizeof(s_structure_cluster_debug_info)" isLatest="true">
+                  <WordFlags CStyleName="errors" pascalStyleName="Errors" name="errors" readOnly="true">
+                    <Options regolithID="enum:structure_bsp_cluster_debug_info_errors" CStyleName="structure_bsp_cluster_debug_info_errors" pascalStyleName="StructureBspClusterDebugInfoErrors">
+                      <Bit name="multiple fog planes" CStyleName="multiple_fog_planes_bit" pascalStyleName="MultipleFogPlanesBit" />
+                      <Bit name="fog zone collision" CStyleName="fog_zone_collision_bit" pascalStyleName="FogZoneCollisionBit" />
+                      <Bit name="fog zone immersion" CStyleName="fog_zone_immersion_bit" pascalStyleName="FogZoneImmersionBit" />
+                    </Options>
+                  </WordFlags>
+                  <WordFlags CStyleName="warnings" pascalStyleName="Warnings" name="warnings" readOnly="true">
+                    <Options regolithID="enum:structure_bsp_cluster_debug_info_warnings" CStyleName="structure_bsp_cluster_debug_info_warnings" pascalStyleName="StructureBspClusterDebugInfoWarnings">
+                      <Bit name="multiple visible fog planes" CStyleName="multiple_visible_fog_planes_bit" pascalStyleName="MultipleVisibleFogPlanesBit" />
+                      <Bit name="visible fog cluster omission" CStyleName="visible_fog_cluster_omission_bit" pascalStyleName="VisibleFogClusterOmissionBit" />
+                      <Bit name="fog plane missed render-bsp" CStyleName="fog_plane_missed_render_bsp_bit" pascalStyleName="FogPlaneMissedRenderBspBit" />
+                    </Options>
+                  </WordFlags>
+                  <Pad sizeOfSource="7*sizeof(long)" length="28" />
+                  <Block CStyleName="lines" pascalStyleName="Lines" name="lines" readOnly="true" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+                    <Layout regolithID="block:structure_bsp_debug_info_render_line" internalName="structure_bsp_debug_info_render_line_block" name="structure_bsp_debug_info_render_line_block">
+                      <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(s_structure_debug_info_render_line)" isLatest="true">
+                        <ShortEnum CStyleName="type" pascalStyleName="Type" name="type" readOnly="true">
+                          <Options regolithID="enum:bsp_debug_info_render_line_type" CStyleName="bsp_debug_info_render_line_type" pascalStyleName="BspDebugInfoRenderLineType">
+                            <Enum name="fog plane boundary edge" CStyleName="fog_plane_boundary_edge" pascalStyleName="FogPlaneBoundaryEdge" />
+                            <Enum name="fog plane internal edge" CStyleName="fog_plane_internal_edge" pascalStyleName="FogPlaneInternalEdge" />
+                            <Enum name="fog zone floodfill" CStyleName="fog_zone_floodfill" pascalStyleName="FogZoneFloodfill" />
+                            <Enum name="fog zone cluster centroid" CStyleName="fog_zone_cluster_centroid" pascalStyleName="FogZoneClusterCentroid" />
+                            <Enum name="fog zone cluster geometry" CStyleName="fog_zone_cluster_geometry" pascalStyleName="FogZoneClusterGeometry" />
+                            <Enum name="fog zone portal centroid" CStyleName="fog_zone_portal_centroid" pascalStyleName="FogZonePortalCentroid" />
+                            <Enum name="fog zone portal geometry" CStyleName="fog_zone_portal_geometry" pascalStyleName="FogZonePortalGeometry" />
+                          </Options>
+                        </ShortEnum>
+                        <ShortInteger CStyleName="code" pascalStyleName="Code" name="code" readOnly="true" />
+                        <ShortInteger CStyleName="pad_thai" pascalStyleName="PadThai" name="pad thai" readOnly="true" />
+                        <Pad sizeOfSource="sizeof(word)" length="2" />
+                        <RealPoint3D CStyleName="point_0" pascalStyleName="Point0" name="point 0" readOnly="true" />
+                        <RealPoint3D CStyleName="point_1" pascalStyleName="Point1" name="point 1" readOnly="true" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="fog_plane_indices" pascalStyleName="FogPlaneIndices" name="fog plane indices" readOnly="true" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+                    <Layout regolithID="block:structure_bsp_debug_info_indices" internalName="structure_bsp_debug_info_indices_block" name="structure_bsp_debug_info_indices_block">
+                      <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(long)" isLatest="true">
+                        <LongInteger CStyleName="index" pascalStyleName="Index" name="index" readOnly="true" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="visible_fog_plane_indices" pascalStyleName="VisibleFogPlaneIndices" name="visible fog plane indices" readOnly="true" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+                    <LayoutXRef>block:structure_bsp_debug_info_indices</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="vis_fog_omission_cluster_indices" pascalStyleName="VisFogOmissionClusterIndices" name="vis-fog omission cluster indices" readOnly="true" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+                    <LayoutXRef>block:structure_bsp_debug_info_indices</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="containing_fog_zone_indices" pascalStyleName="ContainingFogZoneIndices" name="containing fog zone indices" readOnly="true" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+                    <LayoutXRef>block:structure_bsp_debug_info_indices</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="fog_planes" pascalStyleName="FogPlanes" name="fog planes" readOnly="true" maxElementCount="127" maxElementCountSource="MAXIMUM_FOG_PLANES_PER_STRUCTURE">
+              <Layout regolithID="block:structure_bsp_fog_plane_debug_info" internalName="structure_bsp_fog_plane_debug_info_block" name="structure_bsp_fog_plane_debug_info_block">
+                <FieldSet version="0" sizeofValue="68" sizeofSource="sizeof(s_structure_fog_plane_debug_info)" isLatest="true">
+                  <LongInteger CStyleName="fog_zone_index" pascalStyleName="FogZoneIndex" name="fog zone index" readOnly="true" />
+                  <Pad sizeOfSource="6*sizeof(long)" length="24" />
+                  <LongInteger CStyleName="connected_plane_designator" pascalStyleName="ConnectedPlaneDesignator" name="connected plane designator" readOnly="true" />
+                  <Block CStyleName="lines" pascalStyleName="Lines" name="lines" readOnly="true" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+                    <LayoutXRef>block:structure_bsp_debug_info_render_line</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="intersected_cluster_indices" pascalStyleName="IntersectedClusterIndices" name="intersected cluster indices" readOnly="true" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+                    <LayoutXRef>block:structure_bsp_debug_info_indices</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="inf_extent_cluster_indices" pascalStyleName="InfExtentClusterIndices" name="inf. extent cluster indices" readOnly="true" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+                    <LayoutXRef>block:structure_bsp_debug_info_indices</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="fog_zones" pascalStyleName="FogZones" name="fog zones" readOnly="true" maxElementCount="127" maxElementCountSource="MAXIMUM_FOG_ZONES_PER_STRUCTURE">
+              <Layout regolithID="block:structure_bsp_fog_zone_debug_info" internalName="structure_bsp_fog_zone_debug_info_block" name="structure_bsp_fog_zone_debug_info_block">
+                <FieldSet version="0" sizeofValue="80" sizeofSource="sizeof(s_structure_fog_zone_debug_info)" isLatest="true">
+                  <LongInteger CStyleName="media_index" pascalStyleName="MediaIndex" name="media index" units="scenario fog plane*" />
+                  <LongInteger CStyleName="base_fog_plane_index" pascalStyleName="BaseFogPlaneIndex" name="base fog plane index" readOnly="true" />
+                  <Pad sizeOfSource="6*sizeof(long)" length="24" />
+                  <Block CStyleName="lines" pascalStyleName="Lines" name="lines" readOnly="true" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+                    <LayoutXRef>block:structure_bsp_debug_info_render_line</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="immersed_cluster_indices" pascalStyleName="ImmersedClusterIndices" name="immersed cluster indices" readOnly="true" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+                    <LayoutXRef>block:structure_bsp_debug_info_indices</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="bounding_fog_plane_indices" pascalStyleName="BoundingFogPlaneIndices" name="bounding fog plane indices" readOnly="true" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+                    <LayoutXRef>block:structure_bsp_debug_info_indices</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="collision_fog_plane_indices" pascalStyleName="CollisionFogPlaneIndices" name="collision fog plane indices" readOnly="true" maxElementCount="32767" maxElementCountSource="SHORT_MAX">
+                    <LayoutXRef>block:structure_bsp_debug_info_indices</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <TagReference name="decorators">
+        <tag>DECP</tag>
+      </TagReference>
+      <Struct CStyleName="structure_physics" pascalStyleName="StructurePhysics" name="structure_physics" readOnly="true">
+        <Layout regolithID="structure:global_structure_physics" Name="structure physics" tag="spdf" internalName="global_structure_physics_struct" backingBlockInternalName="global_structure_physics_struct_block">
+          <FieldSet version="0" sizeofValue="80" sizeofSource="sizeof(s_structure_physics)" sizeofOverride="0" isLatest="true">
+            <Data CStyleName="mopp_code" pascalStyleName="MoppCode" name="mopp code" readOnly="true" />
+            <Pad sizeOfSource="sizeof(real)" length="4" />
+            <RealPoint3D CStyleName="mopp_bounds_min" pascalStyleName="MoppBoundsMin" name="mopp bounds min" readOnly="true" />
+            <RealPoint3D CStyleName="mopp_bounds_max" pascalStyleName="MoppBoundsMax" name="mopp bounds max" readOnly="true" />
+            <Data CStyleName="breakable_surfaces_mopp_code" pascalStyleName="BreakableSurfacesMoppCode" name="breakable surfaces mopp code" readOnly="true" />
+            <Block CStyleName="breakable_surfaace_key_table" pascalStyleName="BreakableSurfaaceKeyTable" name="breakable surfaace key table" maxElementCount="8192" maxElementCountSource="(8*1024)">
+              <Layout regolithID="block:breakable_surface_key_table" internalName="breakable_surface_key_table_block" name="breakable_surface_key_table_block">
+                <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(struct s_strucure_physics_breakable_surface_key_value)" isLatest="true">
+                  <ShortInteger CStyleName="instanced_geometry_index" pascalStyleName="InstancedGeometryIndex" name="instanced geometry index" readOnly="true" />
+                  <ShortInteger CStyleName="breakable_surface_index" pascalStyleName="BreakableSurfaceIndex" name="breakable surface index" readOnly="true" />
+                  <LongInteger CStyleName="seed_surface_index" pascalStyleName="SeedSurfaceIndex" name="seed surface index" readOnly="true" />
+                  <Real CStyleName="x0" pascalStyleName="X0" name="x0" readOnly="true" />
+                  <Real CStyleName="x1" pascalStyleName="X1" name="x1" readOnly="true" />
+                  <Real CStyleName="y0" pascalStyleName="Y0" name="y0" readOnly="true" />
+                  <Real CStyleName="y1" pascalStyleName="Y1" name="y1" readOnly="true" />
+                  <Real CStyleName="z0" pascalStyleName="Z0" name="z0" readOnly="true" />
+                  <Real CStyleName="z1" pascalStyleName="Z1" name="z1" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Block CStyleName="water_definitions" pascalStyleName="WaterDefinitions" name="water definitions" maxElementCount="1">
+        <Layout regolithID="block:global_water_definitions" internalName="global_water_definitions_block" name="global_water_definitions_block">
+          <FieldSet version="0" sizeofValue="188" sizeofSource="sizeof(struct s_water_definition)" isLatest="true">
+            <TagReference CStyleName="shader" pascalStyleName="Shader" name="shader">
+              <tag>shad</tag>
+            </TagReference>
+            <Block CStyleName="section" pascalStyleName="Section" name="section" maxElementCount="1">
+              <Layout regolithID="block:water_geometry_section" internalName="water_geometry_section_block" name="water_geometry_section_block">
+                <FieldSet version="0" sizeofValue="108" sizeofSource="sizeof(struct water_geometry_data)" isLatest="true">
+                  <Struct CStyleName="section" pascalStyleName="Section" name="section" readOnly="true">
+                    <LayoutXRef>structure:global_geometry_section</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Struct CStyleName="geometry_block_info" pascalStyleName="GeometryBlockInfo" name="geometry block info" readOnly="true">
+              <LayoutXRef>structure:global_geometry_block_info</LayoutXRef>
+            </Struct>
+            <RealRgbColor CStyleName="sun_spot_color" pascalStyleName="SunSpotColor" name="sun spot color" />
+            <RealRgbColor CStyleName="reflection_tint" pascalStyleName="ReflectionTint" name="reflection tint" />
+            <RealRgbColor CStyleName="refraction_tint" pascalStyleName="RefractionTint" name="refraction tint" />
+            <RealRgbColor CStyleName="horizon_color" pascalStyleName="HorizonColor" name="horizon color" />
+            <Real CStyleName="sun_specular_power" pascalStyleName="SunSpecularPower" name="sun specular power" />
+            <Real CStyleName="reflection_bump_scale" pascalStyleName="ReflectionBumpScale" name="reflection bump scale" />
+            <Real CStyleName="refraction_bump_scale" pascalStyleName="RefractionBumpScale" name="refraction bump scale" />
+            <Real CStyleName="fresnel_scale" pascalStyleName="FresnelScale" name="fresnel scale" />
+            <Real CStyleName="sun_dir_heading" pascalStyleName="SunDirHeading" name="sun dir heading" />
+            <Real CStyleName="sun_dir_pitch" pascalStyleName="SunDirPitch" name="sun dir pitch" />
+            <Real CStyleName="fov" pascalStyleName="Fov" name="fov" />
+            <Real CStyleName="aspect" pascalStyleName="Aspect" name="aspect" />
+            <Real CStyleName="height" pascalStyleName="Height" name="height" />
+            <Real CStyleName="farz" pascalStyleName="Farz" name="farz" />
+            <Real CStyleName="rotate_offset" pascalStyleName="RotateOffset" name="rotate_offset" />
+            <RealVector2D CStyleName="center" pascalStyleName="Center" name="center" />
+            <RealVector2D CStyleName="extents" pascalStyleName="Extents" name="extents" />
+            <Real CStyleName="fog_near" pascalStyleName="FogNear" name="fog near" />
+            <Real CStyleName="fog_far" pascalStyleName="FogFar" name="fog far" />
+            <Real CStyleName="dynamic_height_bias" pascalStyleName="DynamicHeightBias" name="dynamic_height_bias" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="portaldevice_mapping" pascalStyleName="PortaldeviceMapping" name="portal=&gt;device mapping" expertOnly="true" maxElementCount="1">
+        <Layout regolithID="block:structure_portal_device_mapping" internalName="structure_portal_device_mapping_block" name="structure_portal_device_mapping_block">
+          <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(s_structure_portal_device_map)" isLatest="true">
+            <Block CStyleName="device_portal_associations" pascalStyleName="DevicePortalAssociations" name="device portal associations" maxElementCount="128" maxElementCountSource="k_maximum_machine_door_portal_associations">
+              <Layout regolithID="block:structure_device_portal_association" internalName="structure_device_portal_association_block" name="structure_device_portal_association_block">
+                <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_structure_portal_device_machine_association)" isLatest="true">
+                  <Struct CStyleName="device_id" pascalStyleName="DeviceId" name="device id">
+                    <LayoutXRef>structure:scenario_object_id</LayoutXRef>
+                  </Struct>
+                  <ShortInteger CStyleName="first_game_portal_index" pascalStyleName="FirstGamePortalIndex" name="first game portal index" />
+                  <ShortInteger CStyleName="game_portal_count" pascalStyleName="GamePortalCount" name="game portal count" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="game_portal_to_portal_map" pascalStyleName="GamePortalToPortalMap" name="game portal to portal map" maxElementCount="128" maxElementCountSource="k_maximum_machine_door_portal_associations">
+              <Layout regolithID="block:game_portal_to_portal_mapping" internalName="game_portal_to_portal_mapping_block" name="game_portal_to_portal_mapping_block">
+                <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(short)" isLatest="true">
+                  <ShortInteger CStyleName="portal_index" pascalStyleName="PortalIndex" name="portal index" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="audibility" pascalStyleName="Audibility" name="audibility" expertOnly="true" maxElementCount="1">
+        <Layout regolithID="block:structure_bsp_audibility" internalName="structure_bsp_audibility_block" name="structure_bsp_audibility_block">
+          <FieldSet version="0" sizeofValue="72" sizeofSource="sizeof(s_structure_audibility)" isLatest="true">
+            <LongInteger CStyleName="door_portal_count" pascalStyleName="DoorPortalCount" name="door portal count" />
+            <RealBounds CStyleName="cluster_distance_bounds" pascalStyleName="ClusterDistanceBounds" name="cluster distance bounds" />
+            <Block CStyleName="encoded_door_pas" pascalStyleName="EncodedDoorPas" name="encoded door pas" maxElementCount="4096" maxElementCountSource="k_maximum_machine_door_portal_associations*2*((((MAXIMUM_CLUSTERS_PER_STRUCTURE)+(LONG_BITS-1))&gt;&gt;LONG_BITS_BITS))">
+              <Layout regolithID="block:door_encoded_pas" internalName="door_encoded_pas_block" name="door_encoded_pas_block">
+                <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(dword)" isLatest="true">
+                  <LongInteger CStyleName="encoded_data" pascalStyleName="EncodedData" name="encoded data" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="cluster_door_portal_encoded_pas" pascalStyleName="ClusterDoorPortalEncodedPas" name="cluster door portal encoded pas" maxElementCount="2048" maxElementCountSource="MAXIMUM_CLUSTERS_PER_STRUCTURE*((((k_maximum_machine_door_portal_associations)+(LONG_BITS-1))&gt;&gt;LONG_BITS_BITS))">
+              <Layout regolithID="block:cluster_door_portal_encoded_pas" internalName="cluster_door_portal_encoded_pas_block" name="cluster_door_portal_encoded_pas_block">
+                <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(dword)" isLatest="true">
+                  <LongInteger CStyleName="encoded_data" pascalStyleName="EncodedData" name="encoded data" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="ai_deafening_pas" pascalStyleName="AiDeafeningPas" name="ai deafening pas" maxElementCount="4088" maxElementCountSource="(((((MAXIMUM_CLUSTERS_PER_STRUCTURE*(MAXIMUM_CLUSTERS_PER_STRUCTURE-1))/2)+(LONG_BITS-1))&gt;&gt;LONG_BITS_BITS))">
+              <Layout regolithID="block:ai_deafening_encoded_pas" internalName="ai_deafening_encoded_pas_block" name="ai_deafening_encoded_pas_block">
+                <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(dword)" isLatest="true">
+                  <LongInteger CStyleName="encoded_data" pascalStyleName="EncodedData" name="encoded data" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="cluster_distances" pascalStyleName="ClusterDistances" name="cluster distances" maxElementCount="130816" maxElementCountSource="(MAXIMUM_CLUSTERS_PER_STRUCTURE*(MAXIMUM_CLUSTERS_PER_STRUCTURE-1))/2">
+              <Layout regolithID="block:encoded_cluster_distances" internalName="encoded_cluster_distances_block" name="encoded_cluster_distances_block">
+                <FieldSet version="0" sizeofValue="1" sizeofSource="sizeof(byte)" isLatest="true">
+                  <CharInteger CStyleName="encoded_data" pascalStyleName="EncodedData" name="encoded data" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="machine_door_mapping" pascalStyleName="MachineDoorMapping" name="machine door mapping" maxElementCount="128" maxElementCountSource="k_maximum_machine_door_portal_associations">
+              <Layout regolithID="block:occluder_to_machine_door_mapping" internalName="occluder_to_machine_door_mapping" name="occluder_to_machine_door_mapping">
+                <FieldSet version="0" sizeofValue="1" sizeofSource="sizeof(char)" isLatest="true">
+                  <CharInteger CStyleName="machine_door_index" pascalStyleName="MachineDoorIndex" name="machine door index" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="object_fake_lightprobes" pascalStyleName="ObjectFakeLightprobes" name="object fake lightprobes" expertOnly="true" maxElementCount="2048" maxElementCountSource="k_maximum_fake_lightprobes_per_structure_bsp">
+        <Layout regolithID="block:structure_bsp_fake_lightprobes" internalName="structure_bsp_fake_lightprobes_block" name="structure_bsp_fake_lightprobes_block">
+          <FieldSet version="0" sizeofValue="92" sizeofSource="sizeof(struct s_object_fake_lightprobe)" isLatest="true">
+            <Struct CStyleName="object_identifier" pascalStyleName="ObjectIdentifier" name="object identifier" readOnly="true">
+              <LayoutXRef>structure:scenario_object_id</LayoutXRef>
+            </Struct>
+            <Struct CStyleName="render_lighting" pascalStyleName="RenderLighting" name="render lighting" readOnly="true">
+              <Layout regolithID="structure:render_lighting" tag="rnli" internalName="render_lighting_struct" backingBlockInternalName="render_lighting_struct_block" name="render_lighting_struct">
+                <FieldSet version="0" sizeofValue="84" sizeofSource="sizeof(struct render_lighting)" isLatest="true">
+                  <RealRgbColor CStyleName="ambient" pascalStyleName="Ambient" name="ambient" />
+                  <RealVector3D CStyleName="shadow_direction" pascalStyleName="ShadowDirection" name="shadow direction" />
+                  <Real CStyleName="lighting_accuracy" pascalStyleName="LightingAccuracy" name="lighting_accuracy" />
+                  <Real CStyleName="shadow_opacity" pascalStyleName="ShadowOpacity" name="shadow opacity" />
+                  <RealRgbColor CStyleName="primary_direction_color" pascalStyleName="PrimaryDirectionColor" name="primary direction color" />
+                  <RealVector3D CStyleName="primary_direction" pascalStyleName="PrimaryDirection" name="primary direction" />
+                  <RealRgbColor CStyleName="secondary_direction_color" pascalStyleName="SecondaryDirectionColor" name="secondary direction color" />
+                  <RealVector3D CStyleName="secondary_direction" pascalStyleName="SecondaryDirection" name="secondary direction" />
+                  <ShortInteger CStyleName="sh_index" pascalStyleName="ShIndex" name="sh index" />
+                  <Pad sizeOfSource="2" length="2" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block name="decorators" maxElementCount="1">
+        <LayoutXRef>block:decorator_placement_definition</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

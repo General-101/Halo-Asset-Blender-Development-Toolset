@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="clu*" name="scenario_cluster_data_resource" version="1">
+  <Layout regolithID="block:scenario_cluster_data_resource" internalName="scenario_cluster_data_resource_block" name="scenario_cluster_data_resource">
+    <FieldSet version="0" sizeofValue="60" sizeofSource="sizeof(s_scenario_cluster_data_resource)" isLatest="true">
+      <Block CStyleName="cluster_data" pascalStyleName="ClusterData" name="cluster data" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_cluster_data</LayoutXRef>
+      </Block>
+      <Block CStyleName="background_sound_palette" pascalStyleName="BackgroundSoundPalette" name="background sound palette" maxElementCount="64" maxElementCountSource="k_maximum_cluster_sound_palette_entries_per_structure">
+        <LayoutXRef>block:structure_bsp_background_sound_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="sound_environment_palette" pascalStyleName="SoundEnvironmentPalette" name="sound environment palette" maxElementCount="64" maxElementCountSource="k_maximum_cluster_sound_palette_entries_per_structure">
+        <LayoutXRef>block:structure_bsp_sound_environment_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="weather_palette" pascalStyleName="WeatherPalette" name="weather palette" maxElementCount="32" maxElementCountSource="MAXIMUM_WEATHER_PALETTE_ENTRIES_PER_STRUCTURE">
+        <LayoutXRef>block:structure_bsp_weather_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="atmospheric_fog_palette" pascalStyleName="AtmosphericFogPalette" name="atmospheric fog palette" maxElementCount="127" maxElementCountSource="MAXIMUM_ATMOSPHERIC_FOG_PALETTE_ENTRIES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_atmospheric_fog_palette</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

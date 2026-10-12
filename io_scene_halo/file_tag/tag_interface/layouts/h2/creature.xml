@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="crea" parent="obje" name="creature" version="1">
+  <Layout regolithID="block:creature" internalName="creature_block" name="creature">
+    <FieldSet version="0" sizeofValue="480" sizeofSource="sizeof(struct _creature_definition)" parentVersion="0" isLatest="true">
+      <Explanation name="$$$ CREATURE $$$" />
+      <WordFlags CStyleName="creature_flags" pascalStyleName="CreatureFlags" name="flags">
+        <Options regolithID="enum:creature_flags" CStyleName="creature_flags" pascalStyleName="CreatureFlags">
+          <Bit name="unused" CStyleName="unused0_bit" pascalStyleName="Unused0Bit" />
+          <Bit name="infection form" CStyleName="infection_form_bit" pascalStyleName="InfectionFormBit" />
+          <Bit name="immune to falling damage" CStyleName="immune_to_falling_damage_bit" pascalStyleName="ImmuneToFallingDamageBit" />
+          <Bit name="rotate while airborne" CStyleName="rotate_while_airborne_bit" pascalStyleName="RotateWhileAirborneBit" />
+          <Bit name="zapped by shields" CStyleName="zapped_by_shields_bit" pascalStyleName="ZappedByShieldsBit" />
+          <Bit name="attach upon impact" CStyleName="attach_upon_impact_bit" pascalStyleName="AttachUponImpactBit" />
+          <Bit name="not on motion sensor" CStyleName="not_on_motion_sensor_bit" pascalStyleName="NotOnMotionSensorBit" />
+        </Options>
+      </WordFlags>
+      <Struct CStyleName="campaign_metagame_bucket" pascalStyleName="CampaignMetagameBucket" name="campaign metagame bucket">
+        <LayoutXRef>structure:campaign_metagame_bucket</LayoutXRef>
+      </Struct>
+      <ShortEnum CStyleName="default_team" pascalStyleName="DefaultTeam" name="default team">
+        <Options regolithID="enum:creature_default_team" CStyleName="creature_default_team" pascalStyleName="CreatureDefaultTeam">
+          <Enum name="default" CStyleName="default_value" pascalStyleName="Default" />
+          <Enum name="player" CStyleName="player" pascalStyleName="Player" />
+          <Enum name="human" CStyleName="human" pascalStyleName="Human" />
+          <Enum name="covenant" CStyleName="covenant" pascalStyleName="Covenant" />
+          <Enum name="flood" CStyleName="flood" pascalStyleName="Flood" />
+          <Enum name="sentinel" CStyleName="sentinel" pascalStyleName="Sentinel" />
+          <Enum name="heretic" CStyleName="heretic" pascalStyleName="Heretic" />
+          <Enum name="prophet" CStyleName="prophet" pascalStyleName="Prophet" />
+          <Enum name="unused8" CStyleName="unused8" pascalStyleName="Unused8" />
+          <Enum name="unused9" CStyleName="unused9" pascalStyleName="Unused9" />
+          <Enum name="unused10" CStyleName="unused10" pascalStyleName="Unused10" />
+          <Enum name="unused11" CStyleName="unused11" pascalStyleName="Unused11" />
+          <Enum name="unused12" CStyleName="unused12" pascalStyleName="Unused12" />
+          <Enum name="unused13" CStyleName="unused13" pascalStyleName="Unused13" />
+          <Enum name="unused14" CStyleName="unused14" pascalStyleName="Unused14" />
+          <Enum name="unused15" CStyleName="unused15" pascalStyleName="Unused15" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="motion_sensor_blip_size" pascalStyleName="MotionSensorBlipSize" name="motion sensor blip size">
+        <OptionsXRef>enum:motion_sensor_blip_size</OptionsXRef>
+      </ShortEnum>
+      <Angle CStyleName="turning_velocity_maximum" pascalStyleName="TurningVelocityMaximum" name="turning velocity maximum" units="degrees per second" />
+      <Angle CStyleName="turning_acceleration_maximum" pascalStyleName="TurningAccelerationMaximum" name="turning acceleration maximum" units="degrees per second squared" />
+      <RealFraction CStyleName="casual_turning_modifier" pascalStyleName="CasualTurningModifier" name="casual turning modifier" units="[0,1]" />
+      <UselessPad length="4" />
+      <Real CStyleName="autoaim_width" pascalStyleName="AutoaimWidth" name="autoaim width" units="world units" />
+      <Struct CStyleName="physics" pascalStyleName="Physics" name="physics">
+        <LayoutXRef>structure:character_physics</LayoutXRef>
+      </Struct>
+      <UselessPad length="64" />
+      <TagReference CStyleName="impact_damage" pascalStyleName="ImpactDamage" name="impact damage">
+        <tag>jpt!</tag>
+      </TagReference>
+      <TagReference CStyleName="impact_shield_damage" pascalStyleName="ImpactShieldDamage" name="impact shield damage" description="if not specified, uses 'impact damage'">
+        <tag>jpt!</tag>
+      </TagReference>
+      <UselessPad length="32" />
+      <Explanation name="death and destruction" />
+      <RealBounds CStyleName="destroy_after_death_time" pascalStyleName="DestroyAfterDeathTime" name="destroy after death time" units="seconds" description="if non-zero, the creature will destroy itself upon death after this much time" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

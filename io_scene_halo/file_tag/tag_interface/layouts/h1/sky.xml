@@ -1,0 +1,115 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="sky " name="sky" version="1">
+  <Layout regolithID="block:sky" internalName="sky_block" name="sky">
+    <FieldSet version="0" sizeofValue="208" sizeofSource="sizeof(struct sky_group)" isLatest="true">
+      <TagReference CStyleName="model" pascalStyleName="Model" name="model">
+        <tag>model</tag>
+      </TagReference>
+      <TagReference CStyleName="animation_graph" pascalStyleName="AnimationGraph" name="animation graph">
+        <tag>model_animations</tag>
+      </TagReference>
+      <Pad name="pad" length="24" />
+      <Explanation name="Indoor Ambient Radiosity" />
+      <Struct CStyleName="indoor_ambient_radiosity" pascalStyleName="IndoorAmbientRadiosity" name="indoor ambient radiosity">
+        <Layout regolithID="structure:sky_ambient_radiosity" internalName="sky_ambient_radiosity_struct" backingBlockInternalName="sky_ambient_radiosity_struct_block" name="sky ambient radiosity">
+          <FieldSet version="0" sizeofValue="16" isLatest="true">
+            <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+            <Real CStyleName="power" pascalStyleName="Power" name="power" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Outdoor Ambient Radiosity" />
+      <Struct CStyleName="outdoor_ambient_radiosity" pascalStyleName="OutdoorAmbientRadiosity" name="outdoor ambient radiosity">
+        <Layout regolithID="structure:sky_ambient_radiosity" internalName="sky_ambient_radiosity_struct" backingBlockInternalName="sky_ambient_radiosity_struct_block" name="sky ambient radiosity">
+          <FieldSet version="0" sizeofValue="16" isLatest="true">
+            <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+            <Real CStyleName="power" pascalStyleName="Power" name="power" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Outdoor Fog" />
+      <Struct CStyleName="outdoor_fog" pascalStyleName="OutdoorFog" name="outdoor fog">
+        <Layout regolithID="structure:sky_fog" internalName="sky_fog_struct" backingBlockInternalName="sky_fog_struct_block" name="sky fog">
+          <FieldSet version="0" sizeofValue="32" isLatest="true">
+            <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+            <Pad name="pad" length="8" />
+            <Real CStyleName="maximum_density" pascalStyleName="MaximumDensity" name="maximum density" />
+            <Real CStyleName="start_distance" pascalStyleName="StartDistance" name="start distance" />
+            <Real CStyleName="opaque_distance" pascalStyleName="OpaqueDistance" name="opaque distance" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Indoor Fog" />
+      <Struct CStyleName="indoor_fog" pascalStyleName="IndoorFog" name="indoor fog">
+        <Layout regolithID="structure:sky_fog" internalName="sky_fog_struct" backingBlockInternalName="sky_fog_struct_block" name="sky fog">
+          <FieldSet version="0" sizeofValue="32" isLatest="true">
+            <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+            <Pad name="pad" length="8" />
+            <Real CStyleName="maximum_density" pascalStyleName="MaximumDensity" name="maximum density" />
+            <Real CStyleName="start_distance" pascalStyleName="StartDistance" name="start distance" />
+            <Real CStyleName="opaque_distance" pascalStyleName="OpaqueDistance" name="opaque distance" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <TagReference CStyleName="indoor_fog_screen" pascalStyleName="IndoorFogScreen" name="indoor fog screen">
+        <tag>fog</tag>
+      </TagReference>
+      <Pad name="pad" length="4" />
+      <Block CStyleName="shader_functions" pascalStyleName="ShaderFunctions" name="shader functions" maxElementCount="8">
+        <Layout regolithID="block:shader functions" internalName="shader functions_block" name="shader functions_block">
+          <FieldSet version="0" sizeofValue="36" isLatest="true">
+            <Pad name="pad" length="4" />
+            <String CStyleName="function_name" pascalStyleName="FunctionName" name="function name" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="animations" pascalStyleName="Animations" name="animations" maxElementCount="8">
+        <Layout regolithID="block:animations" internalName="animations_block" name="animations_block">
+          <FieldSet version="0" sizeofValue="36" isLatest="true">
+            <ShortInteger CStyleName="animation_index" pascalStyleName="AnimationIndex" name="animation index" />
+            <Pad name="pad" length="2" />
+            <Real CStyleName="period" pascalStyleName="Period" name="period" />
+            <Pad name="pad" length="28" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="lights" pascalStyleName="Lights" name="lights" maxElementCount="8">
+        <Layout regolithID="block:lights" internalName="lights_block" name="lights_block">
+          <FieldSet version="0" sizeofValue="116" isLatest="true">
+            <Explanation name="Lens Flare" />
+            <Struct CStyleName="lens_flare" pascalStyleName="LensFlare" name="lens flare">
+              <Layout regolithID="structure:sky_light_lens_flare" internalName="sky_light_lens_flare_struct" backingBlockInternalName="sky_light_lens_flare_struct_block" name="sky light lens flare">
+                <FieldSet version="0" sizeofValue="76" isLatest="true">
+                  <TagReference CStyleName="lens_flare" pascalStyleName="LensFlare" name="lens flare">
+                    <tag>lens_flare</tag>
+                  </TagReference>
+                  <String CStyleName="lens_flare_marker_name" pascalStyleName="LensFlareMarkerName" name="lens flare marker name" />
+                  <Pad name="pad" length="28" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Explanation name="Radiosity" />
+            <Struct CStyleName="radiosity" pascalStyleName="Radiosity" name="radiosity">
+              <Layout regolithID="structure:sky_light_radiosity" internalName="sky_light_radiosity_struct" backingBlockInternalName="sky_light_radiosity_struct_block" name="sky light radiosity">
+                <FieldSet version="0" sizeofValue="40" isLatest="true">
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                      <Bit name="affects exteriors" CStyleName="affects_exteriors_bit" pascalStyleName="AffectsExteriorsBit" />
+                      <Bit name="affects interiors" CStyleName="affects_interiors_bit" pascalStyleName="AffectsInteriorsBit" />
+                    </Options>
+                  </LongFlags>
+                  <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+                  <Real CStyleName="power" pascalStyleName="Power" name="power" />
+                  <Real CStyleName="test_distance" pascalStyleName="TestDistance" name="test distance" />
+                  <Pad name="pad" length="4" />
+                  <RealEulerAngles2D CStyleName="direction" pascalStyleName="Direction" name="direction" />
+                  <Real CStyleName="diameter" pascalStyleName="Diameter" name="diameter" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

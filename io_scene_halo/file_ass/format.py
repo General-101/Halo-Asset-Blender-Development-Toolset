@@ -45,15 +45,10 @@ class ASSAsset(global_functions.HaloAsset):
             self.scale = scale
 
     class Material:
-        def __init__(self, name="", asset_name="", texture_path="", slot=0, lod="", permutation="", region="", material_strings=[]):
+        def __init__(self, name="", variant="", lighting_info=None):
             self.name = name
-            self.asset_name = asset_name
-            self.texture_path = texture_path
-            self.slot = slot
-            self.lod = lod
-            self.permutation = permutation
-            self.region = region
-            self.material_strings = material_strings
+            self.variant = variant
+            self.lighting_info = lighting_info
 
     class Object:
         def __init__(self, geo_class="", xref_filepath="", xref_objectname="", material_index=-1, radius=0.0, extents=Vector(), height=0.0, vertices=[], triangles=[], node_index_list=[], light_properties=None):

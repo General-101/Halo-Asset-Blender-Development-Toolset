@@ -1,0 +1,297 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="actv" name="actor_variant" version="1">
+  <Layout regolithID="block:actor_variant" internalName="actor_variant_block" name="actor_variant">
+    <FieldSet version="0" sizeofValue="568" sizeofSource="sizeof(struct actor_variant_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="can shoot while flying" CStyleName="can_shoot_while_flying_bit" pascalStyleName="CanShootWhileFlyingBit" />
+          <Bit name="interpolate color in hsv" CStyleName="interpolate_color_in_hsv_bit" pascalStyleName="InterpolateColorInHsvBit" />
+          <Bit name="has unlimited grenades" CStyleName="has_unlimited_grenades_bit" pascalStyleName="HasUnlimitedGrenadesBit" />
+          <Bit name="movement switching try to stay with friends" CStyleName="movement_switching_try_to_stay_with_friends_bit" pascalStyleName="MovementSwitchingTryToStayWithFriendsBit" />
+          <Bit name="active camouflage" CStyleName="active_camouflage_bit" pascalStyleName="ActiveCamouflageBit" />
+          <Bit name="super active camouflage" CStyleName="super_active_camouflage_bit" pascalStyleName="SuperActiveCamouflageBit" />
+          <Bit name="cannot use ranged weapons" CStyleName="cannot_use_ranged_weapons_bit" pascalStyleName="CannotUseRangedWeaponsBit" />
+          <Bit name="prefer passenger seat" CStyleName="prefer_passenger_seat_bit" pascalStyleName="PreferPassengerSeatBit" />
+        </Options>
+      </LongFlags>
+      <TagReference CStyleName="actor_definition" pascalStyleName="ActorDefinition" name="actor definition">
+        <tag>actor</tag>
+      </TagReference>
+      <TagReference CStyleName="unit" pascalStyleName="Unit" name="unit">
+        <tag>unit</tag>
+      </TagReference>
+      <TagReference CStyleName="major_variant" pascalStyleName="MajorVariant" name="major variant">
+        <tag>actor_variant</tag>
+      </TagReference>
+      <Explanation name="Metagame Properties" />
+      <Struct CStyleName="metagame_properties" pascalStyleName="MetagameProperties" name="metagame properties">
+        <Layout regolithID="structure:metagame_properties" internalName="metagame_properties_struct" backingBlockInternalName="metagame_properties_struct_block" name="metagame properties">
+          <FieldSet version="0" sizeofValue="4" isLatest="true">
+            <ShortEnum CStyleName="metagame_type" pascalStyleName="MetagameType" name="metagame type" description="used for scoring in Halo: CE Anniversary (MCC only)">
+              <Options regolithID="enum:metagame_type" CStyleName="metagame_type" pascalStyleName="MetagameType">
+                <Enum name="brute" CStyleName="brute" pascalStyleName="Brute" />
+                <Enum name="grunt" CStyleName="grunt" pascalStyleName="Grunt" />
+                <Enum name="jackal" CStyleName="jackal" pascalStyleName="Jackal" />
+                <Enum name="skirmisher" CStyleName="skirmisher" pascalStyleName="Skirmisher" />
+                <Enum name="marine" CStyleName="marine" pascalStyleName="Marine" />
+                <Enum name="spartan" CStyleName="spartan" pascalStyleName="Spartan" />
+                <Enum name="bugger" CStyleName="bugger" pascalStyleName="Bugger" />
+                <Enum name="hunter" CStyleName="hunter" pascalStyleName="Hunter" />
+                <Enum name="flood infection" CStyleName="flood_infection" pascalStyleName="FloodInfection" />
+                <Enum name="flood carrier" CStyleName="flood_carrier" pascalStyleName="FloodCarrier" />
+                <Enum name="flood combat" CStyleName="flood_combat" pascalStyleName="FloodCombat" />
+                <Enum name="flood pure" CStyleName="flood_pure" pascalStyleName="FloodPure" />
+                <Enum name="sentinel" CStyleName="sentinel" pascalStyleName="Sentinel" />
+                <Enum name="elite" CStyleName="elite" pascalStyleName="Elite" />
+                <Enum name="engineer" CStyleName="engineer" pascalStyleName="Engineer" />
+                <Enum name="mule" CStyleName="mule" pascalStyleName="Mule" />
+                <Enum name="turret" CStyleName="turret" pascalStyleName="Turret" />
+                <Enum name="mongoose" CStyleName="mongoose" pascalStyleName="Mongoose" />
+                <Enum name="warthog" CStyleName="warthog" pascalStyleName="Warthog" />
+                <Enum name="scorpion" CStyleName="scorpion" pascalStyleName="Scorpion" />
+                <Enum name="hornet" CStyleName="hornet" pascalStyleName="Hornet" />
+                <Enum name="pelican" CStyleName="pelican" pascalStyleName="Pelican" />
+                <Enum name="revenant" CStyleName="revenant" pascalStyleName="Revenant" />
+                <Enum name="seraph" CStyleName="seraph" pascalStyleName="Seraph" />
+                <Enum name="shade" CStyleName="shade" pascalStyleName="Shade" />
+                <Enum name="watchtower" CStyleName="watchtower" pascalStyleName="Watchtower" />
+                <Enum name="ghost" CStyleName="ghost" pascalStyleName="Ghost" />
+                <Enum name="chopper" CStyleName="chopper" pascalStyleName="Chopper" />
+                <Enum name="mauler" CStyleName="mauler" pascalStyleName="Mauler" />
+                <Enum name="wraith" CStyleName="wraith" pascalStyleName="Wraith" />
+                <Enum name="banshee" CStyleName="banshee" pascalStyleName="Banshee" />
+                <Enum name="phantom" CStyleName="phantom" pascalStyleName="Phantom" />
+                <Enum name="scarab" CStyleName="scarab" pascalStyleName="Scarab" />
+                <Enum name="guntower" CStyleName="guntower" pascalStyleName="Guntower" />
+                <Enum name="tuning fork" CStyleName="tuning_fork" pascalStyleName="TuningFork" />
+                <Enum name="broadsword" CStyleName="broadsword" pascalStyleName="Broadsword" />
+                <Enum name="mammoth" CStyleName="mammoth" pascalStyleName="Mammoth" />
+                <Enum name="lich" CStyleName="lich" pascalStyleName="Lich" />
+                <Enum name="mantis" CStyleName="mantis" pascalStyleName="Mantis" />
+                <Enum name="wasp" CStyleName="wasp" pascalStyleName="Wasp" />
+                <Enum name="phaeton" CStyleName="phaeton" pascalStyleName="Phaeton" />
+                <Enum name="bishop" CStyleName="bishop" pascalStyleName="Bishop" />
+                <Enum name="knight" CStyleName="knight" pascalStyleName="Knight" />
+                <Enum name="pawn" CStyleName="pawn" pascalStyleName="Pawn" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="metagame_class" pascalStyleName="MetagameClass" name="metagame class" description="used for scoring in Halo: CE Anniversary (MCC only)">
+              <Options regolithID="enum:metagame_class" CStyleName="metagame_class" pascalStyleName="MetagameClass">
+                <Enum name="infantry" CStyleName="infantry" pascalStyleName="Infantry" />
+                <Enum name="leader" CStyleName="leader" pascalStyleName="Leader" />
+                <Enum name="hero" CStyleName="hero" pascalStyleName="Hero" />
+                <Enum name="specialist" CStyleName="specialist" pascalStyleName="Specialist" />
+                <Enum name="light vehicle" CStyleName="light_vehicle" pascalStyleName="LightVehicle" />
+                <Enum name="heavy vehicle" CStyleName="heavy_vehicle" pascalStyleName="HeavyVehicle" />
+                <Enum name="giant vehicle" CStyleName="giant_vehicle" pascalStyleName="GiantVehicle" />
+                <Enum name="standard vehicle" CStyleName="standard_vehicle" pascalStyleName="StandardVehicle" />
+              </Options>
+            </ShortEnum>
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Pad name="pad" length="20" />
+      <Explanation name="Movement Switching" />
+      <Struct CStyleName="movement_switching" pascalStyleName="MovementSwitching" name="movement switching">
+        <Layout regolithID="structure:actor_variant_movement_switching" internalName="actor_variant_movement_switching_struct" backingBlockInternalName="actor_variant_movement_switching_struct_block" name="actor variant movement switching">
+          <FieldSet version="0" sizeofValue="24" isLatest="true">
+            <ShortEnum CStyleName="movement_type" pascalStyleName="MovementType" name="movement type">
+              <Options regolithID="enum:movement_type" CStyleName="movement_type" pascalStyleName="MovementType">
+                <Enum name="always run" CStyleName="always_run" pascalStyleName="AlwaysRun" />
+                <Enum name="always crouch" CStyleName="always_crouch" pascalStyleName="AlwaysCrouch" />
+                <Enum name="switch types" CStyleName="switch_types" pascalStyleName="SwitchTypes" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Real CStyleName="initial_crouch_chance" pascalStyleName="InitialCrouchChance" name="initial crouch chance" />
+            <RealBounds CStyleName="crouch_time" pascalStyleName="CrouchTime" name="crouch time" />
+            <RealBounds CStyleName="run_time" pascalStyleName="RunTime" name="run time" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Ranged Combat" />
+      <Struct CStyleName="ranged_combat" pascalStyleName="RangedCombat" name="ranged combat">
+        <Layout regolithID="structure:actor_variant_ranged_combat" internalName="actor_variant_ranged_combat_struct" backingBlockInternalName="actor_variant_ranged_combat_struct_block" name="actor variant ranged combat">
+          <FieldSet version="0" sizeofValue="104" isLatest="true">
+            <TagReference CStyleName="weapon" pascalStyleName="Weapon" name="weapon">
+              <tag>weapon</tag>
+            </TagReference>
+            <Real CStyleName="maximum_firing_distance" pascalStyleName="MaximumFiringDistance" name="maximum firing distance" />
+            <Real CStyleName="rate_of_fire" pascalStyleName="RateOfFire" name="rate of fire" />
+            <Angle CStyleName="projectile_error" pascalStyleName="ProjectileError" name="projectile error" />
+            <RealBounds CStyleName="first_burst_delay_time" pascalStyleName="FirstBurstDelayTime" name="first burst delay time" />
+            <Real CStyleName="new_target_firing_pattern_time" pascalStyleName="NewTargetFiringPatternTime" name="new target firing pattern time" />
+            <Real CStyleName="surprise_delay_time" pascalStyleName="SurpriseDelayTime" name="surprise delay time" />
+            <Real CStyleName="surprise_fire_wildly_time" pascalStyleName="SurpriseFireWildlyTime" name="surprise fire wildly time" />
+            <Real CStyleName="death_fire_wildly_chance" pascalStyleName="DeathFireWildlyChance" name="death fire wildly chance" />
+            <Real CStyleName="death_fire_wildly_time" pascalStyleName="DeathFireWildlyTime" name="death fire wildly time" />
+            <RealBounds CStyleName="desired_combat_range" pascalStyleName="DesiredCombatRange" name="desired combat range" />
+            <RealVector3D CStyleName="custom_stand_gun_offset" pascalStyleName="CustomStandGunOffset" name="custom stand gun offset" />
+            <RealVector3D CStyleName="custom_crouch_gun_offset" pascalStyleName="CustomCrouchGunOffset" name="custom crouch gun offset" />
+            <Real CStyleName="target_tracking" pascalStyleName="TargetTracking" name="target tracking" />
+            <Real CStyleName="target_leading" pascalStyleName="TargetLeading" name="target leading" />
+            <Real CStyleName="weapon_damage_modifier" pascalStyleName="WeaponDamageModifier" name="weapon damage modifier" />
+            <Real CStyleName="damage_per_second" pascalStyleName="DamagePerSecond" name="damage per second" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Burst Geometry" />
+      <Struct CStyleName="burst_geometry" pascalStyleName="BurstGeometry" name="burst geometry">
+        <Layout regolithID="structure:actor_variant_burst_geometry" internalName="actor_variant_burst_geometry_struct" backingBlockInternalName="actor_variant_burst_geometry_struct_block" name="actor variant burst geometry">
+          <FieldSet version="0" sizeofValue="52" isLatest="true">
+            <Real CStyleName="burst_origin_radius" pascalStyleName="BurstOriginRadius" name="burst origin radius" />
+            <Angle CStyleName="burst_origin_angle" pascalStyleName="BurstOriginAngle" name="burst origin angle" />
+            <RealBounds CStyleName="burst_return_length" pascalStyleName="BurstReturnLength" name="burst return length" />
+            <Angle CStyleName="burst_return_angle" pascalStyleName="BurstReturnAngle" name="burst return angle" />
+            <RealBounds CStyleName="burst_duration" pascalStyleName="BurstDuration" name="burst duration" />
+            <RealBounds CStyleName="burst_separation" pascalStyleName="BurstSeparation" name="burst separation" />
+            <Angle CStyleName="burst_angular_velocity" pascalStyleName="BurstAngularVelocity" name="burst angular velocity" />
+            <Pad name="pad" length="4" />
+            <Real CStyleName="special_damage_modifier" pascalStyleName="SpecialDamageModifier" name="special damage modifier" />
+            <Angle CStyleName="special_projectile_error" pascalStyleName="SpecialProjectileError" name="special projectile error" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Firing Patterns" />
+      <Struct CStyleName="firing_patterns" pascalStyleName="FiringPatterns" name="firing patterns">
+        <Layout regolithID="structure:actor_variant_firing_patterns" internalName="actor_variant_firing_patterns_struct" backingBlockInternalName="actor_variant_firing_patterns_struct_block" name="actor variant firing patterns">
+          <FieldSet version="0" sizeofValue="72" isLatest="true">
+            <Real CStyleName="new_target_burst_duration" pascalStyleName="NewTargetBurstDuration" name="new-target burst duration" />
+            <Real CStyleName="new_target_burst_separation" pascalStyleName="NewTargetBurstSeparation" name="new-target burst separation" />
+            <Real CStyleName="new_target_rate_of_fire" pascalStyleName="NewTargetRateOfFire" name="new-target rate of fire" />
+            <Real CStyleName="new_target_projectile_error" pascalStyleName="NewTargetProjectileError" name="new-target projectile error" />
+            <Pad name="pad" length="8" />
+            <Real CStyleName="moving_burst_duration" pascalStyleName="MovingBurstDuration" name="moving burst duration" />
+            <Real CStyleName="moving_burst_separation" pascalStyleName="MovingBurstSeparation" name="moving burst separation" />
+            <Real CStyleName="moving_rate_of_fire" pascalStyleName="MovingRateOfFire" name="moving rate of fire" />
+            <Real CStyleName="moving_projectile_error" pascalStyleName="MovingProjectileError" name="moving projectile error" />
+            <Pad name="pad" length="8" />
+            <Real CStyleName="berserk_burst_duration" pascalStyleName="BerserkBurstDuration" name="berserk burst duration" />
+            <Real CStyleName="berserk_burst_separation" pascalStyleName="BerserkBurstSeparation" name="berserk burst separation" />
+            <Real CStyleName="berserk_rate_of_fire" pascalStyleName="BerserkRateOfFire" name="berserk rate of fire" />
+            <Real CStyleName="berserk_projectile_error" pascalStyleName="BerserkProjectileError" name="berserk projectile error" />
+            <Pad name="pad" length="8" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Special-Case Firing Properties" />
+      <Struct CStyleName="special_case_firing_properties" pascalStyleName="SpecialCaseFiringProperties" name="special-case firing properties">
+        <Layout regolithID="structure:actor_variant_special_case_firing_properties" internalName="actor_variant_special_case_firing_properties_struct" backingBlockInternalName="actor_variant_special_case_firing_properties_struct_block" name="actor variant special case firing properties">
+          <FieldSet version="0" sizeofValue="24" isLatest="true">
+            <Real CStyleName="super_ballistic_range" pascalStyleName="SuperBallisticRange" name="super-ballistic range" />
+            <Real CStyleName="bombardment_range" pascalStyleName="BombardmentRange" name="bombardment range" />
+            <Real CStyleName="modified_vision_range" pascalStyleName="ModifiedVisionRange" name="modified vision range" />
+            <ShortEnum CStyleName="special_fire_mode" pascalStyleName="SpecialFireMode" name="special fire mode">
+              <Options regolithID="enum:special_fire_mode" CStyleName="special_fire_mode" pascalStyleName="SpecialFireMode">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="overcharge" CStyleName="overcharge" pascalStyleName="Overcharge" />
+                <Enum name="secondary trigger" CStyleName="secondary_trigger" pascalStyleName="SecondaryTrigger" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="special_fire_situation" pascalStyleName="SpecialFireSituation" name="special fire situation">
+              <Options regolithID="enum:special_fire_situation" CStyleName="special_fire_situation" pascalStyleName="SpecialFireSituation">
+                <Enum name="never" CStyleName="never" pascalStyleName="Never" />
+                <Enum name="enemy visible" CStyleName="enemy_visible" pascalStyleName="EnemyVisible" />
+                <Enum name="enemy out of sight" CStyleName="enemy_out_of_sight" pascalStyleName="EnemyOutOfSight" />
+                <Enum name="strafing" CStyleName="strafing" pascalStyleName="Strafing" />
+              </Options>
+            </ShortEnum>
+            <Real CStyleName="special_fire_chance" pascalStyleName="SpecialFireChance" name="special fire chance" />
+            <Real CStyleName="special_fire_delay" pascalStyleName="SpecialFireDelay" name="special fire delay" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Berserking and Melee" />
+      <Struct CStyleName="berserking_and_melee" pascalStyleName="BerserkingAndMelee" name="berserking and melee">
+        <Layout regolithID="structure:actor_variant_berserking_and_melee" internalName="actor_variant_berserking_and_melee_struct" backingBlockInternalName="actor_variant_berserking_and_melee_struct_block" name="actor variant berserking and melee">
+          <FieldSet version="0" sizeofValue="32" isLatest="true">
+            <Real CStyleName="melee_range" pascalStyleName="MeleeRange" name="melee range" />
+            <Real CStyleName="melee_abort_range" pascalStyleName="MeleeAbortRange" name="melee abort range" />
+            <RealBounds CStyleName="berserk_firing_ranges" pascalStyleName="BerserkFiringRanges" name="berserk firing ranges" />
+            <Real CStyleName="berserk_melee_range" pascalStyleName="BerserkMeleeRange" name="berserk melee range" />
+            <Real CStyleName="berserk_melee_abort_range" pascalStyleName="BerserkMeleeAbortRange" name="berserk melee abort range" />
+            <Pad name="pad" length="8" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Grenades" />
+      <Struct CStyleName="grenades" pascalStyleName="Grenades" name="grenades">
+        <Layout regolithID="structure:actor_variant_grenades" internalName="actor_variant_grenades_struct" backingBlockInternalName="actor_variant_grenades_struct_block" name="actor variant grenades">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <ShortEnum CStyleName="grenade_type" pascalStyleName="GrenadeType" name="grenade type">
+              <Options regolithID="enum:grenade_type" CStyleName="grenade_type" pascalStyleName="GrenadeType">
+                <Enum name="human fragmentation" CStyleName="human_fragmentation" pascalStyleName="HumanFragmentation" />
+                <Enum name="covenant plasma" CStyleName="covenant_plasma" pascalStyleName="CovenantPlasma" />
+                <Enum name="grenade type 2" CStyleName="grenade_type_2" pascalStyleName="GrenadeType2" />
+                <Enum name="grenade type 3" CStyleName="grenade_type_3" pascalStyleName="GrenadeType3" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="trajectory_type" pascalStyleName="TrajectoryType" name="trajectory type">
+              <Options regolithID="enum:trajectory_type" CStyleName="trajectory_type" pascalStyleName="TrajectoryType">
+                <Enum name="toss" CStyleName="toss" pascalStyleName="Toss" />
+                <Enum name="lob" CStyleName="lob" pascalStyleName="Lob" />
+                <Enum name="bounce" CStyleName="bounce" pascalStyleName="Bounce" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="grenade_stimulus" pascalStyleName="GrenadeStimulus" name="grenade stimulus">
+              <Options regolithID="enum:grenade_stimulus" CStyleName="grenade_stimulus" pascalStyleName="GrenadeStimulus">
+                <Enum name="never" CStyleName="never" pascalStyleName="Never" />
+                <Enum name="visible target" CStyleName="visible_target" pascalStyleName="VisibleTarget" />
+                <Enum name="seek cover" CStyleName="seek_cover" pascalStyleName="SeekCover" />
+              </Options>
+            </ShortEnum>
+            <ShortInteger CStyleName="minimum_enemy_count" pascalStyleName="MinimumEnemyCount" name="minimum enemy count" />
+            <Real CStyleName="enemy_radius" pascalStyleName="EnemyRadius" name="enemy radius" />
+            <Pad name="pad" length="4" />
+            <Real CStyleName="grenade_velocity" pascalStyleName="GrenadeVelocity" name="grenade velocity" />
+            <RealBounds CStyleName="grenade_ranges" pascalStyleName="GrenadeRanges" name="grenade ranges" />
+            <Real CStyleName="collateral_damage_radius" pascalStyleName="CollateralDamageRadius" name="collateral damage radius" />
+            <Real CStyleName="grenade_chance" pascalStyleName="GrenadeChance" name="grenade chance" />
+            <Real CStyleName="grenade_check_time" pascalStyleName="GrenadeCheckTime" name="grenade check time" />
+            <Real CStyleName="encounter_grenade_timeout" pascalStyleName="EncounterGrenadeTimeout" name="encounter grenade timeout" />
+            <Pad name="pad" length="20" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Items" />
+      <Struct CStyleName="items" pascalStyleName="Items" name="items">
+        <Layout regolithID="structure:actor_variant_items" internalName="actor_variant_items_struct" backingBlockInternalName="actor_variant_items_struct_block" name="actor variant items">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <TagReference CStyleName="equipment" pascalStyleName="Equipment" name="equipment">
+              <tag>equipment</tag>
+            </TagReference>
+            <ShortBounds CStyleName="grenade_count" pascalStyleName="GrenadeCount" name="grenade count" />
+            <Real CStyleName="dont_drop_grenades_chance" pascalStyleName="DontDropGrenadesChance" name="dont drop grenades chance" />
+            <RealBounds CStyleName="drop_weapon_loaded" pascalStyleName="DropWeaponLoaded" name="drop weapon loaded" />
+            <ShortBounds CStyleName="drop_weapon_ammo" pascalStyleName="DropWeaponAmmo" name="drop weapon ammo" />
+            <Pad name="pad" length="12" />
+            <Pad name="pad" length="16" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Unit Properties" />
+      <Struct CStyleName="unit_properties" pascalStyleName="UnitProperties" name="unit properties">
+        <Layout regolithID="structure:actor_variant_unit_properties" internalName="actor_variant_unit_properties_struct" backingBlockInternalName="actor_variant_unit_properties_struct_block" name="actor variant unit properties">
+          <FieldSet version="0" sizeofValue="56" isLatest="true">
+            <Real CStyleName="body_vitality" pascalStyleName="BodyVitality" name="body vitality" />
+            <Real CStyleName="shield_vitality" pascalStyleName="ShieldVitality" name="shield vitality" />
+            <Real CStyleName="shield_sapping_radius" pascalStyleName="ShieldSappingRadius" name="shield sapping radius" />
+            <ShortInteger CStyleName="forced_shader_permutation" pascalStyleName="ForcedShaderPermutation" name="forced shader permutation" />
+            <Pad name="pad" length="2" />
+            <Pad name="pad" length="16" />
+            <Pad name="pad" length="12" />
+            <Block CStyleName="change_colors" pascalStyleName="ChangeColors" name="change colors" maxElementCount="4">
+              <Layout regolithID="block:change colors" internalName="change colors_block" name="change colors_block">
+                <FieldSet version="0" sizeofValue="32" isLatest="true">
+                  <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color lower bound" />
+                  <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color upper bound" />
+                  <Pad name="pad" length="8" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Struct>
+    </FieldSet>
+  </Layout>
+</TagGroup>

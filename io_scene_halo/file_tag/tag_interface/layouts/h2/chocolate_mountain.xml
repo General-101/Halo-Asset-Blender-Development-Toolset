@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="gldf" name="chocolate_mountain" version="1">
+  <Layout regolithID="block:chocolate_mountain" internalName="chocolate_mountain_block" name="chocolate_mountain">
+    <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct s_global_lighting_variables)" isLatest="true">
+      <Block CStyleName="lighting_variables" pascalStyleName="LightingVariables" name="lighting variables" maxElementCount="13" maxElementCountSource="k_object_types_count">
+        <Layout regolithID="block:lighting_variables" internalName="lighting_variables_block" name="lighting_variables_block">
+          <FieldSet version="0" sizeofValue="160" sizeofSource="sizeof(struct s_lighting_variables)" isLatest="true">
+            <LongFlags CStyleName="object_affected" pascalStyleName="ObjectAffected" name="object affected">
+              <Options regolithID="enum:lighting_variables_affected_object_type" CStyleName="lighting_variables_affected_object_type" pascalStyleName="LightingVariablesAffectedObjectType">
+                <Bit name="all" CStyleName="all_bit" pascalStyleName="AllBit" />
+                <Bit name="biped" CStyleName="biped_bit" pascalStyleName="BipedBit" />
+                <Bit name="vehicle" CStyleName="vehicle_bit" pascalStyleName="VehicleBit" />
+                <Bit name="weapon" CStyleName="weapon_bit" pascalStyleName="WeaponBit" />
+                <Bit name="equipment" CStyleName="equipment_bit" pascalStyleName="EquipmentBit" />
+                <Bit name="garbage" CStyleName="garbage_bit" pascalStyleName="GarbageBit" />
+                <Bit name="projectile" CStyleName="projectile_bit" pascalStyleName="ProjectileBit" />
+                <Bit name="scenery" CStyleName="scenery_bit" pascalStyleName="SceneryBit" />
+                <Bit name="machine" CStyleName="machine_bit" pascalStyleName="MachineBit" />
+                <Bit name="control" CStyleName="control_bit" pascalStyleName="ControlBit" />
+                <Bit name="light fixture" CStyleName="light_fixture_bit" pascalStyleName="LightFixtureBit" />
+                <Bit name="sound scenery" CStyleName="sound_scenery_bit" pascalStyleName="SoundSceneryBit" />
+                <Bit name="crate" CStyleName="crate_bit" pascalStyleName="CrateBit" />
+                <Bit name="creature" CStyleName="creature_bit" pascalStyleName="CreatureBit" />
+              </Options>
+            </LongFlags>
+            <Explanation name="Global lightmap sample" />
+            <Real CStyleName="lightmap_brightness_offset" pascalStyleName="LightmapBrightnessOffset" name="Lightmap brightness offset" />
+            <Struct CStyleName="primary_light" pascalStyleName="PrimaryLight" name="primary light">
+              <Layout regolithID="structure:primary_light" Name="Primary light" tag="prli" internalName="primary_light_struct" backingBlockInternalName="primary_light_struct_block">
+                <FieldSet version="0" sizeofValue="40" sizeofSource="sizeof(s_primary_light)" isLatest="true">
+                  <Explanation name="Primary light" />
+                  <RealRgbColor CStyleName="min_lightmap_color" pascalStyleName="MinLightmapColor" name="Min lightmap color" />
+                  <RealRgbColor CStyleName="max_lightmap_color" pascalStyleName="MaxLightmapColor" name="Max lightmap color" />
+                  <Real CStyleName="exclusion_angle_from_up" pascalStyleName="ExclusionAngleFromUp" name="exclusion angle from up" description="degrees from up the direct light cannot be" />
+                  <Explanation name="Primary light function" description="input: accuracy, output: primary light scale" />
+                  <Custom name="function" tag="fned" />
+                  <Struct CStyleName="function" pascalStyleName="Function" name="function">
+                    <LayoutXRef>structure:mapping_function</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Struct CStyleName="secondary_light" pascalStyleName="SecondaryLight" name="secondary light">
+              <Layout regolithID="structure:secondary_light" Name="Secondary light" tag="scli" internalName="secondary_light_struct" backingBlockInternalName="secondary_light_struct_block">
+                <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(s_secondary_light)" isLatest="true">
+                  <Explanation name="Secondary light" />
+                  <RealRgbColor CStyleName="min_lightmap_color" pascalStyleName="MinLightmapColor" name="Min lightmap color" />
+                  <RealRgbColor CStyleName="max_lightmap_color" pascalStyleName="MaxLightmapColor" name="Max lightmap color" />
+                  <RealRgbColor CStyleName="min_diffuse_sample" pascalStyleName="MinDiffuseSample" name="Min diffuse sample" />
+                  <RealRgbColor CStyleName="max_diffuse_sample" pascalStyleName="MaxDiffuseSample" name="Max diffuse sample" />
+                  <Real CStyleName="z_axis_rotation" pascalStyleName="ZAxisRotation" name="z axis rotation" description="degrees" />
+                  <Explanation name="Secondary light function" description="input: accuracy, output: secondary light scale" />
+                  <Custom name="function" tag="fned" />
+                  <Struct CStyleName="function" pascalStyleName="Function" name="function">
+                    <LayoutXRef>structure:mapping_function</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Struct CStyleName="ambient_light" pascalStyleName="AmbientLight" name="ambient light">
+              <Layout regolithID="structure:ambient_light" Name="ambient light" tag="amli" internalName="ambient_light_struct" backingBlockInternalName="ambient_light_struct_block">
+                <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(s_ambient_light)" isLatest="true">
+                  <Explanation name="Ambient light" />
+                  <RealRgbColor CStyleName="min_lightmap_sample" pascalStyleName="MinLightmapSample" name="Min lightmap sample" />
+                  <RealRgbColor CStyleName="max_lightmap_sample" pascalStyleName="MaxLightmapSample" name="Max lightmap sample" />
+                  <Explanation name="Ambient light function" description="Ambient light scale. (left side min brightness, right side max brightness). Before this scale it determines a global ambient scale, which added to either light will total ~1.0 scale. Then this scale modifies that." />
+                  <Custom name="function" tag="fned" />
+                  <Struct CStyleName="function" pascalStyleName="Function" name="function">
+                    <LayoutXRef>structure:mapping_function</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Struct>
+            <Struct CStyleName="lightmap_shadows" pascalStyleName="LightmapShadows" name="lightmap shadows">
+              <Layout regolithID="structure:lightmap_shadows" Name="Lightmap shadows" tag="lmsh" internalName="lightmap_shadows_struct" backingBlockInternalName="lightmap_shadows_struct_block">
+                <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_lightmap_shadows)" isLatest="true">
+                  <Explanation name="Lightmap shadows" description="Shadows generated by the lightmaps get direction from lightmap primary incoming light direction and darken based on how accurate that light is fed into the function below" />
+                  <Custom name="accuracy function" tag="fned" />
+                  <Struct CStyleName="function_1" pascalStyleName="Function1" name="function 1">
+                    <LayoutXRef>structure:mapping_function</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

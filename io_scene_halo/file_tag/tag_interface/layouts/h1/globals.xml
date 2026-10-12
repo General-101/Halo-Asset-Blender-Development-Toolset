@@ -1,0 +1,543 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="matg" name="globals" version="3">
+  <Layout regolithID="block:globals" internalName="globals_block" name="globals">
+    <FieldSet version="0" sizeofValue="428" sizeofSource="sizeof(struct globals_group)" isLatest="true">
+      <Pad name="pad" length="248" />
+      <Block CStyleName="sounds" pascalStyleName="Sounds" name="sounds" maxElementCount="2">
+        <Layout regolithID="block:sounds" internalName="sounds_block" name="sounds_block">
+          <FieldSet version="0" sizeofValue="16" isLatest="true">
+            <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound">
+              <tag>sound</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="camera" pascalStyleName="Camera" name="camera" maxElementCount="1">
+        <Layout regolithID="block:camera" internalName="camera_block" name="camera_block">
+          <FieldSet version="0" sizeofValue="16" isLatest="true">
+            <TagReference CStyleName="default_unit_camera_track" pascalStyleName="DefaultUnitCameraTrack" name="default unit camera track">
+              <tag>camera_track</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="player_control" pascalStyleName="PlayerControl" name="player control" maxElementCount="1">
+        <Layout regolithID="block:player control" internalName="player control_block" name="player control_block">
+          <FieldSet version="0" sizeofValue="128" isLatest="true">
+            <Real CStyleName="magnetism_friction" pascalStyleName="MagnetismFriction" name="magnetism friction" />
+            <Real CStyleName="magnetism_adhesion" pascalStyleName="MagnetismAdhesion" name="magnetism adhesion" />
+            <Real CStyleName="inconsequential_target_scale" pascalStyleName="InconsequentialTargetScale" name="inconsequential target scale" />
+            <Pad name="pad" length="52" />
+            <Real CStyleName="look_acceleration_time" pascalStyleName="LookAccelerationTime" name="look acceleration time" />
+            <Real CStyleName="look_acceleration_scale" pascalStyleName="LookAccelerationScale" name="look acceleration scale" />
+            <Real CStyleName="look_peg_threshold" pascalStyleName="LookPegThreshold" name="look peg threshold" />
+            <Real CStyleName="look_default_pitch_rate" pascalStyleName="LookDefaultPitchRate" name="look default pitch rate" />
+            <Real CStyleName="look_default_yaw_rate" pascalStyleName="LookDefaultYawRate" name="look default yaw rate" />
+            <Real CStyleName="look_autolevelling_scale" pascalStyleName="LookAutolevellingScale" name="look autolevelling scale" />
+            <Pad name="pad" length="20" />
+            <ShortInteger CStyleName="minimum_weapon_swap_ticks" pascalStyleName="MinimumWeaponSwapTicks" name="minimum weapon swap ticks" />
+            <ShortInteger CStyleName="minimum_autolevelling_ticks" pascalStyleName="MinimumAutolevellingTicks" name="minimum autolevelling ticks" />
+            <Angle CStyleName="minimum_angle_for_vehicle_flipping" pascalStyleName="MinimumAngleForVehicleFlipping" name="minimum angle for vehicle flipping" />
+            <Block CStyleName="look_function" pascalStyleName="LookFunction" name="look function" maxElementCount="16">
+              <Layout regolithID="block:look function" internalName="look function_block" name="look function_block">
+                <FieldSet version="0" sizeofValue="4" isLatest="true">
+                  <Real CStyleName="scale" pascalStyleName="Scale" name="scale" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="difficulty" pascalStyleName="Difficulty" name="difficulty" maxElementCount="1">
+        <Layout regolithID="block:difficulty" internalName="difficulty_block" name="difficulty_block">
+          <FieldSet version="0" sizeofValue="644" isLatest="true">
+            <Real CStyleName="easy_enemy_damage" pascalStyleName="EasyEnemyDamage" name="easy enemy damage" />
+            <Real CStyleName="normal_enemy_damage" pascalStyleName="NormalEnemyDamage" name="normal enemy damage" />
+            <Real CStyleName="hard_enemy_damage" pascalStyleName="HardEnemyDamage" name="hard enemy damage" />
+            <Real CStyleName="imposs_enemy_damage" pascalStyleName="ImpossEnemyDamage" name="imposs enemy damage" />
+            <Real CStyleName="easy_enemy_vitality" pascalStyleName="EasyEnemyVitality" name="easy enemy vitality" />
+            <Real CStyleName="normal_enemy_vitality" pascalStyleName="NormalEnemyVitality" name="normal enemy vitality" />
+            <Real CStyleName="hard_enemy_vitality" pascalStyleName="HardEnemyVitality" name="hard enemy vitality" />
+            <Real CStyleName="imposs_enemy_vitality" pascalStyleName="ImpossEnemyVitality" name="imposs enemy vitality" />
+            <Real CStyleName="easy_enemy_shield" pascalStyleName="EasyEnemyShield" name="easy enemy shield" />
+            <Real CStyleName="normal_enemy_shield" pascalStyleName="NormalEnemyShield" name="normal enemy shield" />
+            <Real CStyleName="hard_enemy_shield" pascalStyleName="HardEnemyShield" name="hard enemy shield" />
+            <Real CStyleName="imposs_enemy_shield" pascalStyleName="ImpossEnemyShield" name="imposs enemy shield" />
+            <Real CStyleName="easy_enemy_recharge" pascalStyleName="EasyEnemyRecharge" name="easy enemy recharge" />
+            <Real CStyleName="normal_enemy_recharge" pascalStyleName="NormalEnemyRecharge" name="normal enemy recharge" />
+            <Real CStyleName="hard_enemy_recharge" pascalStyleName="HardEnemyRecharge" name="hard enemy recharge" />
+            <Real CStyleName="imposs_enemy_recharge" pascalStyleName="ImpossEnemyRecharge" name="imposs enemy recharge" />
+            <Real CStyleName="easy_friend_damage" pascalStyleName="EasyFriendDamage" name="easy friend damage" />
+            <Real CStyleName="normal_friend_damage" pascalStyleName="NormalFriendDamage" name="normal friend damage" />
+            <Real CStyleName="hard_friend_damage" pascalStyleName="HardFriendDamage" name="hard friend damage" />
+            <Real CStyleName="imposs_friend_damage" pascalStyleName="ImpossFriendDamage" name="imposs friend damage" />
+            <Real CStyleName="easy_friend_vitality" pascalStyleName="EasyFriendVitality" name="easy friend vitality" />
+            <Real CStyleName="normal_friend_vitality" pascalStyleName="NormalFriendVitality" name="normal friend vitality" />
+            <Real CStyleName="hard_friend_vitality" pascalStyleName="HardFriendVitality" name="hard friend vitality" />
+            <Real CStyleName="imposs_friend_vitality" pascalStyleName="ImpossFriendVitality" name="imposs friend vitality" />
+            <Real CStyleName="easy_friend_shield" pascalStyleName="EasyFriendShield" name="easy friend shield" />
+            <Real CStyleName="normal_friend_shield" pascalStyleName="NormalFriendShield" name="normal friend shield" />
+            <Real CStyleName="hard_friend_shield" pascalStyleName="HardFriendShield" name="hard friend shield" />
+            <Real CStyleName="imposs_friend_shield" pascalStyleName="ImpossFriendShield" name="imposs friend shield" />
+            <Real CStyleName="easy_friend_recharge" pascalStyleName="EasyFriendRecharge" name="easy friend recharge" />
+            <Real CStyleName="normal_friend_recharge" pascalStyleName="NormalFriendRecharge" name="normal friend recharge" />
+            <Real CStyleName="hard_friend_recharge" pascalStyleName="HardFriendRecharge" name="hard friend recharge" />
+            <Real CStyleName="imposs_friend_recharge" pascalStyleName="ImpossFriendRecharge" name="imposs friend recharge" />
+            <Real CStyleName="easy_infection_forms" pascalStyleName="EasyInfectionForms" name="easy infection forms" />
+            <Real CStyleName="normal_infection_forms" pascalStyleName="NormalInfectionForms" name="normal infection forms" />
+            <Real CStyleName="hard_infection_forms" pascalStyleName="HardInfectionForms" name="hard infection forms" />
+            <Real CStyleName="imposs_infection_forms" pascalStyleName="ImpossInfectionForms" name="imposs infection forms" />
+            <Pad name="pad" length="16" />
+            <Real CStyleName="easy_rate_of_fire" pascalStyleName="EasyRateOfFire" name="easy rate of fire" />
+            <Real CStyleName="normal_rate_of_fire" pascalStyleName="NormalRateOfFire" name="normal rate of fire" />
+            <Real CStyleName="hard_rate_of_fire" pascalStyleName="HardRateOfFire" name="hard rate of fire" />
+            <Real CStyleName="imposs_rate_of_fire" pascalStyleName="ImpossRateOfFire" name="imposs rate of fire" />
+            <Real CStyleName="easy_projectile_error" pascalStyleName="EasyProjectileError" name="easy projectile error" />
+            <Real CStyleName="normal_projectile_error" pascalStyleName="NormalProjectileError" name="normal projectile error" />
+            <Real CStyleName="hard_projectile_error" pascalStyleName="HardProjectileError" name="hard projectile error" />
+            <Real CStyleName="imposs_projectile_error" pascalStyleName="ImpossProjectileError" name="imposs projectile error" />
+            <Real CStyleName="easy_burst_error" pascalStyleName="EasyBurstError" name="easy burst error" />
+            <Real CStyleName="normal_burst_error" pascalStyleName="NormalBurstError" name="normal burst error" />
+            <Real CStyleName="hard_burst_error" pascalStyleName="HardBurstError" name="hard burst error" />
+            <Real CStyleName="imposs_burst_error" pascalStyleName="ImpossBurstError" name="imposs burst error" />
+            <Real CStyleName="easy_new_target_delay" pascalStyleName="EasyNewTargetDelay" name="easy new target delay" />
+            <Real CStyleName="normal_new_target_delay" pascalStyleName="NormalNewTargetDelay" name="normal new target delay" />
+            <Real CStyleName="hard_new_target_delay" pascalStyleName="HardNewTargetDelay" name="hard new target delay" />
+            <Real CStyleName="imposs_new_target_delay" pascalStyleName="ImpossNewTargetDelay" name="imposs new target delay" />
+            <Real CStyleName="easy_burst_separation" pascalStyleName="EasyBurstSeparation" name="easy burst separation" />
+            <Real CStyleName="normal_burst_separation" pascalStyleName="NormalBurstSeparation" name="normal burst separation" />
+            <Real CStyleName="hard_burst_separation" pascalStyleName="HardBurstSeparation" name="hard burst separation" />
+            <Real CStyleName="imposs_burst_separation" pascalStyleName="ImpossBurstSeparation" name="imposs burst separation" />
+            <Real CStyleName="easy_target_tracking" pascalStyleName="EasyTargetTracking" name="easy target tracking" />
+            <Real CStyleName="normal_target_tracking" pascalStyleName="NormalTargetTracking" name="normal target tracking" />
+            <Real CStyleName="hard_target_tracking" pascalStyleName="HardTargetTracking" name="hard target tracking" />
+            <Real CStyleName="imposs_target_tracking" pascalStyleName="ImpossTargetTracking" name="imposs target tracking" />
+            <Real CStyleName="easy_target_leading" pascalStyleName="EasyTargetLeading" name="easy target leading" />
+            <Real CStyleName="normal_target_leading" pascalStyleName="NormalTargetLeading" name="normal target leading" />
+            <Real CStyleName="hard_target_leading" pascalStyleName="HardTargetLeading" name="hard target leading" />
+            <Real CStyleName="imposs_target_leading" pascalStyleName="ImpossTargetLeading" name="imposs target leading" />
+            <Real CStyleName="easy_overcharge_chance" pascalStyleName="EasyOverchargeChance" name="easy overcharge chance" />
+            <Real CStyleName="normal_overcharge_chance" pascalStyleName="NormalOverchargeChance" name="normal overcharge chance" />
+            <Real CStyleName="hard_overcharge_chance" pascalStyleName="HardOverchargeChance" name="hard overcharge chance" />
+            <Real CStyleName="imposs_overcharge_chance" pascalStyleName="ImpossOverchargeChance" name="imposs overcharge chance" />
+            <Real CStyleName="easy_special_fire_delay" pascalStyleName="EasySpecialFireDelay" name="easy special fire delay" />
+            <Real CStyleName="normal_special_fire_delay" pascalStyleName="NormalSpecialFireDelay" name="normal special fire delay" />
+            <Real CStyleName="hard_special_fire_delay" pascalStyleName="HardSpecialFireDelay" name="hard special fire delay" />
+            <Real CStyleName="imposs_special_fire_delay" pascalStyleName="ImpossSpecialFireDelay" name="imposs special fire delay" />
+            <Real CStyleName="easy_guidance_vs_player" pascalStyleName="EasyGuidanceVsPlayer" name="easy guidance vs player" />
+            <Real CStyleName="normal_guidance_vs_player" pascalStyleName="NormalGuidanceVsPlayer" name="normal guidance vs player" />
+            <Real CStyleName="hard_guidance_vs_player" pascalStyleName="HardGuidanceVsPlayer" name="hard guidance vs player" />
+            <Real CStyleName="imposs_guidance_vs_player" pascalStyleName="ImpossGuidanceVsPlayer" name="imposs guidance vs player" />
+            <Real CStyleName="easy_melee_delay_base" pascalStyleName="EasyMeleeDelayBase" name="easy melee delay base" />
+            <Real CStyleName="normal_melee_delay_base" pascalStyleName="NormalMeleeDelayBase" name="normal melee delay base" />
+            <Real CStyleName="hard_melee_delay_base" pascalStyleName="HardMeleeDelayBase" name="hard melee delay base" />
+            <Real CStyleName="imposs_melee_delay_base" pascalStyleName="ImpossMeleeDelayBase" name="imposs melee delay base" />
+            <Real CStyleName="easy_melee_delay_scale" pascalStyleName="EasyMeleeDelayScale" name="easy melee delay scale" />
+            <Real CStyleName="normal_melee_delay_scale" pascalStyleName="NormalMeleeDelayScale" name="normal melee delay scale" />
+            <Real CStyleName="hard_melee_delay_scale" pascalStyleName="HardMeleeDelayScale" name="hard melee delay scale" />
+            <Real CStyleName="imposs_melee_delay_scale" pascalStyleName="ImpossMeleeDelayScale" name="imposs melee delay scale" />
+            <Pad name="pad" length="16" />
+            <Real CStyleName="easy_grenade_chance_scale" pascalStyleName="EasyGrenadeChanceScale" name="easy grenade chance scale" />
+            <Real CStyleName="normal_grenade_chance_scale" pascalStyleName="NormalGrenadeChanceScale" name="normal grenade chance scale" />
+            <Real CStyleName="hard_grenade_chance_scale" pascalStyleName="HardGrenadeChanceScale" name="hard grenade chance scale" />
+            <Real CStyleName="imposs_grenade_chance_scale" pascalStyleName="ImpossGrenadeChanceScale" name="imposs grenade chance scale" />
+            <Real CStyleName="easy_grenade_timer_scale" pascalStyleName="EasyGrenadeTimerScale" name="easy grenade timer scale" />
+            <Real CStyleName="normal_grenade_timer_scale" pascalStyleName="NormalGrenadeTimerScale" name="normal grenade timer scale" />
+            <Real CStyleName="hard_grenade_timer_scale" pascalStyleName="HardGrenadeTimerScale" name="hard grenade timer scale" />
+            <Real CStyleName="imposs_grenade_timer_scale" pascalStyleName="ImpossGrenadeTimerScale" name="imposs grenade timer scale" />
+            <Pad name="pad" length="16" />
+            <Pad name="pad" length="16" />
+            <Pad name="pad" length="16" />
+            <Real CStyleName="easy_major_upgrade" pascalStyleName="EasyMajorUpgrade" name="easy major upgrade" />
+            <Real CStyleName="normal_major_upgrade" pascalStyleName="NormalMajorUpgrade" name="normal major upgrade" />
+            <Real CStyleName="hard_major_upgrade" pascalStyleName="HardMajorUpgrade" name="hard major upgrade" />
+            <Real CStyleName="imposs_major_upgrade" pascalStyleName="ImpossMajorUpgrade" name="imposs major upgrade" />
+            <Real CStyleName="easy_major_upgrade_1" pascalStyleName="EasyMajorUpgrade1" name="easy major upgrade 1" />
+            <Real CStyleName="normal_major_upgrade_1" pascalStyleName="NormalMajorUpgrade1" name="normal major upgrade 1" />
+            <Real CStyleName="hard_major_upgrade_1" pascalStyleName="HardMajorUpgrade1" name="hard major upgrade 1" />
+            <Real CStyleName="imposs_major_upgrade_1" pascalStyleName="ImpossMajorUpgrade1" name="imposs major upgrade 1" />
+            <Real CStyleName="easy_major_upgrade_2" pascalStyleName="EasyMajorUpgrade2" name="easy major upgrade 2" />
+            <Real CStyleName="normal_major_upgrade_2" pascalStyleName="NormalMajorUpgrade2" name="normal major upgrade 2" />
+            <Real CStyleName="hard_major_upgrade_2" pascalStyleName="HardMajorUpgrade2" name="hard major upgrade 2" />
+            <Real CStyleName="imposs_major_upgrade_2" pascalStyleName="ImpossMajorUpgrade2" name="imposs major upgrade 2" />
+            <Pad name="pad" length="16" />
+            <Pad name="pad" length="16" />
+            <Pad name="pad" length="16" />
+            <Pad name="pad" length="16" />
+            <Pad name="pad" length="84" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="grenades" pascalStyleName="Grenades" name="grenades" maxElementCount="{'mcc-cea': 4, 'default': 2}">
+        <Layout regolithID="block:grenades" internalName="grenades_block" name="grenades_block">
+          <FieldSet version="0" sizeofValue="68" isLatest="true">
+            <Explanation name="Grenade Count" description="maximum count is the number of grenades the player can hold, while mp spawn default is the default number of grenades. On Xbox, mp spawn default will only be used if the player count is four players or less. Otherwise, the maximum count is used.&#10;&#10;NOTE: Do not use more than 7 grenades if creating a multiplayer map for the Gearbox versions of the game (i.e. custom, retail, demo), as the grenade count will underflow if the player exceeds 7 grenades due to the four-bit signed integer used in the netcode for syncing grenades." />
+            <ShortInteger CStyleName="maximum_count" pascalStyleName="MaximumCount" name="maximum count" unsigned="true" />
+            <ShortInteger CStyleName="mp_spawn_default" pascalStyleName="MpSpawnDefault" name="mp spawn default" unsigned="true" />
+            <TagReference CStyleName="throwing_effect" pascalStyleName="ThrowingEffect" name="throwing effect">
+              <tag>effect</tag>
+            </TagReference>
+            <TagReference CStyleName="hud_interface" pascalStyleName="HudInterface" name="hud interface">
+              <tag>grenade_hud_interface</tag>
+            </TagReference>
+            <TagReference CStyleName="equipment" pascalStyleName="Equipment" name="equipment">
+              <tag>equipment</tag>
+            </TagReference>
+            <TagReference CStyleName="projectile" pascalStyleName="Projectile" name="projectile">
+              <tag>object</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="rasterizer_data" pascalStyleName="RasterizerData" name="rasterizer data" maxElementCount="1">
+        <Layout regolithID="block:rasterizer data" internalName="rasterizer data_block" name="rasterizer data_block">
+          <FieldSet version="0" sizeofValue="428" isLatest="true">
+            <TagReference CStyleName="distance_attenuation" pascalStyleName="DistanceAttenuation" name="distance attenuation">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="vector_normalization" pascalStyleName="VectorNormalization" name="vector normalization">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="atmospheric_fog_density" pascalStyleName="AtmosphericFogDensity" name="atmospheric fog density">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="planar_fog_density" pascalStyleName="PlanarFogDensity" name="planar fog density">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="linear_corner_fade" pascalStyleName="LinearCornerFade" name="linear corner fade">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="active_camouflage_distortion" pascalStyleName="ActiveCamouflageDistortion" name="active camouflage distortion">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="glow" pascalStyleName="Glow" name="glow">
+              <tag>bitmap</tag>
+            </TagReference>
+            <Pad name="pad" length="60" />
+            <TagReference CStyleName="default_2d" pascalStyleName="Default2d" name="default 2d">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="default_3d" pascalStyleName="Default3d" name="default 3d">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="default_cube_map" pascalStyleName="DefaultCubeMap" name="default cube map">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="test_0" pascalStyleName="Test0" name="test 0">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="test_1" pascalStyleName="Test1" name="test 1">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="test_2" pascalStyleName="Test2" name="test 2">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="test_3" pascalStyleName="Test3" name="test 3">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="video_scanline_map" pascalStyleName="VideoScanlineMap" name="video scanline map">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="video_noise_map" pascalStyleName="VideoNoiseMap" name="video noise map">
+              <tag>bitmap</tag>
+            </TagReference>
+            <Pad name="pad" length="52" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="tint edge density" CStyleName="tint_edge_density_bit" pascalStyleName="TintEdgeDensityBit" />
+              </Options>
+            </WordFlags>
+            <Pad name="pad" length="2" />
+            <Real CStyleName="refraction_amount" pascalStyleName="RefractionAmount" name="refraction amount" />
+            <Real CStyleName="distance_falloff" pascalStyleName="DistanceFalloff" name="distance falloff" />
+            <RealRgbColor CStyleName="tint_color" pascalStyleName="TintColor" name="tint color" />
+            <Real CStyleName="hyper_stealth_refraction" pascalStyleName="HyperStealthRefraction" name="hyper stealth refraction" />
+            <Real CStyleName="hyper_stealth_distance_falloff" pascalStyleName="HyperStealthDistanceFalloff" name="hyper stealth distance falloff" />
+            <RealRgbColor CStyleName="hyper_stealth_tint_color" pascalStyleName="HyperStealthTintColor" name="hyper stealth tint color" />
+            <TagReference CStyleName="distance_attenuation_2d" pascalStyleName="DistanceAttenuation2d" name="distance attenuation 2d">
+              <tag>bitmap</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="interface_bitmaps" pascalStyleName="InterfaceBitmaps" name="interface bitmaps" maxElementCount="1">
+        <Layout regolithID="block:interface bitmaps" internalName="interface bitmaps_block" name="interface bitmaps_block">
+          <FieldSet version="0" sizeofValue="304" isLatest="true">
+            <TagReference CStyleName="font_system" pascalStyleName="FontSystem" name="font system">
+              <tag>font</tag>
+            </TagReference>
+            <TagReference CStyleName="font_terminal" pascalStyleName="FontTerminal" name="font terminal">
+              <tag>font</tag>
+            </TagReference>
+            <TagReference CStyleName="screen_color_table" pascalStyleName="ScreenColorTable" name="screen color table">
+              <tag>color_table</tag>
+            </TagReference>
+            <TagReference CStyleName="hud_color_table" pascalStyleName="HudColorTable" name="hud color table">
+              <tag>color_table</tag>
+            </TagReference>
+            <TagReference CStyleName="editor_color_table" pascalStyleName="EditorColorTable" name="editor color table">
+              <tag>color_table</tag>
+            </TagReference>
+            <TagReference CStyleName="dialog_color_table" pascalStyleName="DialogColorTable" name="dialog color table">
+              <tag>color_table</tag>
+            </TagReference>
+            <TagReference CStyleName="hud_globals" pascalStyleName="HudGlobals" name="hud globals">
+              <tag>hud_globals</tag>
+            </TagReference>
+            <TagReference CStyleName="motion_sensor_sweep_bitmap" pascalStyleName="MotionSensorSweepBitmap" name="motion sensor sweep bitmap">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="motion_sensor_sweep_bitmap_mask" pascalStyleName="MotionSensorSweepBitmapMask" name="motion sensor sweep bitmap mask">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="multiplayer_hud_bitmap" pascalStyleName="MultiplayerHudBitmap" name="multiplayer hud bitmap">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="localization" pascalStyleName="Localization" name="localization">
+              <tag>string_list</tag>
+            </TagReference>
+            <TagReference CStyleName="hud_digits_definition" pascalStyleName="HudDigitsDefinition" name="hud digits definition">
+              <tag>hud_number</tag>
+            </TagReference>
+            <TagReference CStyleName="motion_sensor_blip_bitmap" pascalStyleName="MotionSensorBlipBitmap" name="motion sensor blip bitmap">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="interface_goo_map1" pascalStyleName="InterfaceGooMap1" name="interface goo map1">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="interface_goo_map2" pascalStyleName="InterfaceGooMap2" name="interface goo map2">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="interface_goo_map3" pascalStyleName="InterfaceGooMap3" name="interface goo map3">
+              <tag>bitmap</tag>
+            </TagReference>
+            <Pad name="pad" length="48" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="weapon_list" pascalStyleName="WeaponList" name="weapon list" maxElementCount="20">
+        <Layout regolithID="block:weapon list" internalName="weapon list_block" name="weapon list_block">
+          <FieldSet version="0" sizeofValue="16" isLatest="true">
+            <TagReference CStyleName="weapon" pascalStyleName="Weapon" name="weapon">
+              <tag>item</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="cheat_powerups" pascalStyleName="CheatPowerups" name="cheat powerups" maxElementCount="20">
+        <Layout regolithID="block:cheat powerups" internalName="cheat powerups_block" name="cheat powerups_block">
+          <FieldSet version="0" sizeofValue="16" isLatest="true">
+            <TagReference CStyleName="powerup" pascalStyleName="Powerup" name="powerup">
+              <tag>equipment</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="multiplayer_information" pascalStyleName="MultiplayerInformation" name="multiplayer information" maxElementCount="1">
+        <Layout regolithID="block:multiplayer information" internalName="multiplayer information_block" name="multiplayer information_block">
+          <FieldSet version="0" sizeofValue="160" isLatest="true">
+            <TagReference CStyleName="flag" pascalStyleName="Flag" name="flag">
+              <tag>weapon</tag>
+            </TagReference>
+            <TagReference CStyleName="unit" pascalStyleName="Unit" name="unit">
+              <tag>unit</tag>
+            </TagReference>
+            <Block CStyleName="vehicles" pascalStyleName="Vehicles" name="vehicles" maxElementCount="20">
+              <Layout regolithID="block:vehicles" internalName="vehicles_block" name="vehicles_block">
+                <FieldSet version="0" sizeofValue="16" isLatest="true">
+                  <TagReference CStyleName="vehicle" pascalStyleName="Vehicle" name="vehicle">
+                    <tag>unit</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <TagReference CStyleName="hill_shader" pascalStyleName="HillShader" name="hill shader">
+              <tag>shader</tag>
+            </TagReference>
+            <TagReference CStyleName="flag_shader" pascalStyleName="FlagShader" name="flag shader">
+              <tag>shader</tag>
+            </TagReference>
+            <TagReference CStyleName="ball" pascalStyleName="Ball" name="ball">
+              <tag>weapon</tag>
+            </TagReference>
+            <Block CStyleName="sounds" pascalStyleName="Sounds" name="sounds" maxElementCount="60">
+              <Layout regolithID="block:sounds" internalName="sounds_block" name="sounds_block">
+                <FieldSet version="0" sizeofValue="16" isLatest="true">
+                  <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound">
+                    <tag>sound</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Pad name="pad" length="56" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="player_information" pascalStyleName="PlayerInformation" name="player information" maxElementCount="1">
+        <Layout regolithID="block:player information" internalName="player information_block" name="player information_block">
+          <FieldSet version="0" sizeofValue="244" isLatest="true">
+            <TagReference CStyleName="unit" pascalStyleName="Unit" name="unit">
+              <tag>unit</tag>
+            </TagReference>
+            <Pad name="pad" length="28" />
+            <Real CStyleName="walking_speed" pascalStyleName="WalkingSpeed" name="walking speed" />
+            <Real CStyleName="double_speed_multiplier" pascalStyleName="DoubleSpeedMultiplier" name="double speed multiplier" />
+            <Real CStyleName="run_forward" pascalStyleName="RunForward" name="run forward" />
+            <Real CStyleName="run_backward" pascalStyleName="RunBackward" name="run backward" />
+            <Real CStyleName="run_sideways" pascalStyleName="RunSideways" name="run sideways" />
+            <Real CStyleName="run_acceleration" pascalStyleName="RunAcceleration" name="run acceleration" />
+            <Real CStyleName="sneak_forward" pascalStyleName="SneakForward" name="sneak forward" />
+            <Real CStyleName="sneak_backward" pascalStyleName="SneakBackward" name="sneak backward" />
+            <Real CStyleName="sneak_sideways" pascalStyleName="SneakSideways" name="sneak sideways" />
+            <Real CStyleName="sneak_acceleration" pascalStyleName="SneakAcceleration" name="sneak acceleration" />
+            <Real CStyleName="airborne_acceleration" pascalStyleName="AirborneAcceleration" name="airborne acceleration" />
+            <Real CStyleName="speed_multiplier" pascalStyleName="SpeedMultiplier" name="speed multiplier" />
+            <Pad name="pad" length="12" />
+            <RealVector3D CStyleName="grenade_origin" pascalStyleName="GrenadeOrigin" name="grenade origin" />
+            <Pad name="pad" length="12" />
+            <Real CStyleName="stun_movement_penalty" pascalStyleName="StunMovementPenalty" name="stun movement penalty" />
+            <Real CStyleName="stun_turning_penalty" pascalStyleName="StunTurningPenalty" name="stun turning penalty" />
+            <Real CStyleName="stun_jumping_penalty" pascalStyleName="StunJumpingPenalty" name="stun jumping penalty" />
+            <Real CStyleName="minimum_stun_time" pascalStyleName="MinimumStunTime" name="minimum stun time" />
+            <Real CStyleName="maximum_stun_time" pascalStyleName="MaximumStunTime" name="maximum stun time" />
+            <Pad name="pad" length="8" />
+            <RealBounds CStyleName="first_person_idle_time" pascalStyleName="FirstPersonIdleTime" name="first person idle time" />
+            <Real CStyleName="first_person_skip_fraction" pascalStyleName="FirstPersonSkipFraction" name="first person skip fraction" />
+            <Pad name="pad" length="16" />
+            <TagReference CStyleName="coop_respawn_effect" pascalStyleName="CoopRespawnEffect" name="coop respawn effect">
+              <tag>effect</tag>
+            </TagReference>
+            <Pad name="pad" length="44" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="first_person_interface" pascalStyleName="FirstPersonInterface" name="first person interface" maxElementCount="1">
+        <Layout regolithID="block:first person interface" internalName="first person interface_block" name="first person interface_block">
+          <FieldSet version="0" sizeofValue="192" isLatest="true">
+            <Explanation name="First Person Interface" description="The first person hands model is used when holding a weapon that has first person animations. It will not appear if the player is unarmed or is using a weapon that doesnt have first person animations. The night vision on effect and night vision off effect are played once when enabling and disabling night vision, respectfully.&#10;&#10;The base bitmap, shield meter, shield meter origin, body meter, and body meter origin tags are not used, and they appear to be a holdover from an older, unreleased version of the original Halo engine. The unit HUD interface tag referenced in the biped is used, instead." />
+            <TagReference CStyleName="first_person_hands" pascalStyleName="FirstPersonHands" name="first person hands">
+              <tag>model</tag>
+            </TagReference>
+            <TagReference CStyleName="base_bitmap" pascalStyleName="BaseBitmap" name="base bitmap">
+              <tag>bitmap</tag>
+            </TagReference>
+            <TagReference CStyleName="shield_meter" pascalStyleName="ShieldMeter" name="shield meter">
+              <tag>meter</tag>
+            </TagReference>
+            <Point2D CStyleName="shield_meter_origin" pascalStyleName="ShieldMeterOrigin" name="shield meter origin" />
+            <TagReference CStyleName="body_meter" pascalStyleName="BodyMeter" name="body meter">
+              <tag>meter</tag>
+            </TagReference>
+            <Point2D CStyleName="body_meter_origin" pascalStyleName="BodyMeterOrigin" name="body meter origin" />
+            <TagReference CStyleName="night_vision_on_effect" pascalStyleName="NightVisionOnEffect" name="night vision on effect">
+              <tag>effect</tag>
+            </TagReference>
+            <TagReference CStyleName="night_vision_off_effect" pascalStyleName="NightVisionOffEffect" name="night vision off effect">
+              <tag>effect</tag>
+            </TagReference>
+            <Pad name="pad" length="88" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="falling_damage" pascalStyleName="FallingDamage" name="falling damage" maxElementCount="1">
+        <Layout regolithID="block:falling damage" internalName="falling damage_block" name="falling damage_block">
+          <FieldSet version="0" sizeofValue="152" isLatest="true">
+            <Pad name="pad" length="8" />
+            <RealBounds CStyleName="harmful_falling_distance" pascalStyleName="HarmfulFallingDistance" name="harmful falling distance" />
+            <TagReference CStyleName="falling_damage" pascalStyleName="FallingDamage" name="falling damage">
+              <tag>damage_effect</tag>
+            </TagReference>
+            <Pad name="pad" length="8" />
+            <Real CStyleName="maximum_falling_distance" pascalStyleName="MaximumFallingDistance" name="maximum falling distance" />
+            <TagReference CStyleName="distance_damage" pascalStyleName="DistanceDamage" name="distance damage">
+              <tag>damage_effect</tag>
+            </TagReference>
+            <TagReference CStyleName="vehicle_environment_collision_damage" pascalStyleName="VehicleEnvironmentCollisionDamage" name="vehicle environment collision damage">
+              <tag>damage_effect</tag>
+            </TagReference>
+            <TagReference CStyleName="vehicle_killed_unit_damage" pascalStyleName="VehicleKilledUnitDamage" name="vehicle killed unit damage">
+              <tag>damage_effect</tag>
+            </TagReference>
+            <TagReference CStyleName="vehicle_collision_damage" pascalStyleName="VehicleCollisionDamage" name="vehicle collision damage">
+              <tag>damage_effect</tag>
+            </TagReference>
+            <TagReference CStyleName="flaming_death_damage" pascalStyleName="FlamingDeathDamage" name="flaming death damage">
+              <tag>damage_effect</tag>
+            </TagReference>
+            <Pad name="pad" length="16" />
+            <Real CStyleName="maximum_falling_velocity" pascalStyleName="MaximumFallingVelocity" name="maximum falling velocity" cacheOnly="true" />
+            <RealBounds CStyleName="harmful_falling_velocity" pascalStyleName="HarmfulFallingVelocity" name="harmful falling velocity" cacheOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="materials" pascalStyleName="Materials" name="materials" maxElementCount="33">
+        <Layout regolithID="block:materials" internalName="materials_block" name="materials_block">
+          <FieldSet version="0" sizeofValue="884" isLatest="true">
+            <Pad name="pad" length="100" />
+            <Pad name="pad" length="48" />
+            <Real CStyleName="ground_friction_scale" pascalStyleName="GroundFrictionScale" name="ground friction scale" />
+            <Real CStyleName="ground_friction_normal_k1_scale" pascalStyleName="GroundFrictionNormalK1Scale" name="ground friction normal k1 scale" />
+            <Real CStyleName="ground_friction_normal_k0_scale" pascalStyleName="GroundFrictionNormalK0Scale" name="ground friction normal k0 scale" />
+            <Real CStyleName="ground_depth_scale" pascalStyleName="GroundDepthScale" name="ground depth scale" />
+            <Real CStyleName="ground_damp_fraction_scale" pascalStyleName="GroundDampFractionScale" name="ground damp fraction scale" />
+            <Pad name="pad" length="76" />
+            <Pad name="pad" length="480" />
+            <Real CStyleName="maximum_vitality" pascalStyleName="MaximumVitality" name="maximum vitality" />
+            <Pad name="pad" length="8" />
+            <Pad name="pad" length="4" />
+            <TagReference CStyleName="effect" pascalStyleName="Effect" name="effect">
+              <tag>effect</tag>
+            </TagReference>
+            <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound">
+              <tag>sound</tag>
+            </TagReference>
+            <Pad name="pad" length="24" />
+            <Block CStyleName="particle_effects" pascalStyleName="ParticleEffects" name="particle effects" maxElementCount="8">
+              <Layout regolithID="block:particle effects" internalName="particle effects_block" name="particle effects_block">
+                <FieldSet version="0" sizeofValue="128" isLatest="true">
+                  <TagReference CStyleName="particle_type" pascalStyleName="ParticleType" name="particle type">
+                    <tag>particle</tag>
+                  </TagReference>
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                      <Bit name="interpolate color in hsv" CStyleName="interpolate_color_in_hsv_bit" pascalStyleName="InterpolateColorInHsvBit" />
+                      <Bit name="more colors" CStyleName="more_colors_bit" pascalStyleName="MoreColorsBit" />
+                    </Options>
+                  </LongFlags>
+                  <Real CStyleName="density" pascalStyleName="Density" name="density" />
+                  <RealBounds CStyleName="velocity_scale" pascalStyleName="VelocityScale" name="velocity scale" />
+                  <Pad name="pad" length="4" />
+                  <RealBounds CStyleName="angular_velocity" pascalStyleName="AngularVelocity" name="angular velocity" />
+                  <Pad name="pad" length="8" />
+                  <RealBounds CStyleName="radius" pascalStyleName="Radius" name="radius" />
+                  <Pad name="pad" length="8" />
+                  <RealArgbColor CStyleName="tint" pascalStyleName="Tint" name="tint lower bound" />
+                  <RealArgbColor CStyleName="tint" pascalStyleName="Tint" name="tint upper bound" />
+                  <Pad name="pad" length="28" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Pad name="pad" length="60" />
+            <TagReference CStyleName="melee_hit_sound" pascalStyleName="MeleeHitSound" name="melee hit sound">
+              <tag>sound</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="playlist_members" pascalStyleName="PlaylistMembers" name="playlist members" maxElementCount="20">
+        <Layout regolithID="block:playlist members" internalName="playlist members_block" name="playlist members_block">
+          <FieldSet version="0" sizeofValue="148" isLatest="true">
+            <String CStyleName="map_name" pascalStyleName="MapName" name="map name" />
+            <String CStyleName="game_variant" pascalStyleName="GameVariant" name="game variant" />
+            <LongInteger CStyleName="minimum_experience" pascalStyleName="MinimumExperience" name="minimum experience" />
+            <LongInteger CStyleName="maximum_experience" pascalStyleName="MaximumExperience" name="maximum experience" />
+            <LongInteger CStyleName="minimum_player_count" pascalStyleName="MinimumPlayerCount" name="minimum player count" />
+            <LongInteger CStyleName="maximum_player_count" pascalStyleName="MaximumPlayerCount" name="maximum player count" />
+            <LongInteger CStyleName="rating" pascalStyleName="Rating" name="rating" />
+            <Pad name="pad" length="64" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

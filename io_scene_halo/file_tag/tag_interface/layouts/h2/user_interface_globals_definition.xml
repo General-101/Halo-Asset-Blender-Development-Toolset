@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="wgtz" name="user_interface_globals_definition" version="3">
+  <Layout regolithID="block:user_interface_globals_definition" internalName="user_interface_globals_definition_block" name="user_interface_globals_definition">
+    <FieldSet version="0" sizeofValue="60" sizeofSource="sizeof(s_user_interface_tag_globals)" isLatest="true">
+      <Explanation name="Shared Globals" description="This is a reference to the ui shared globals tag" />
+      <TagReference CStyleName="shared_globals" pascalStyleName="SharedGlobals" name="shared globals">
+        <tag>wigl</tag>
+      </TagReference>
+      <Explanation name="Screen Widgets" description="These are the screen widgets" />
+      <Block CStyleName="screen_widgets" pascalStyleName="ScreenWidgets" name="screen widgets" maxElementCount="256" maxElementCountSource="k_maximum_number_of_screen_widgets">
+        <Layout regolithID="block:user_interface_widget_reference" internalName="user_interface_widget_reference_block" name="user_interface_widget_reference_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_user_interface_widget_reference)" isLatest="true">
+            <TagReference CStyleName="widget_tag" pascalStyleName="WidgetTag" name="widget tag">
+              <tag>wgit</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="Multiplayer Variant Settings Interface" description="This blob defines the ui for setting multiplayer game variant parameters" />
+      <TagReference CStyleName="mp_variant_settings_ui" pascalStyleName="MpVariantSettingsUi" name="mp variant settings ui">
+        <tag>goof</tag>
+      </TagReference>
+      <Explanation name="Game Hopper Localization Strings" description="This is for the loc game hopper strings" />
+      <TagReference CStyleName="game_hopper_descriptions" pascalStyleName="GameHopperDescriptions" name="game hopper descriptions">
+        <tag>unic</tag>
+      </TagReference>
+    </FieldSet>
+  </Layout>
+</TagGroup>

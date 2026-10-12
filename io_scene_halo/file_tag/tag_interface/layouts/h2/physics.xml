@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="phys" name="physics" version="4">
+  <Layout regolithID="block:physics" internalName="physics_block" name="physics">
+    <FieldSet version="0" sizeofValue="128" sizeofSource="sizeof(struct physics_definition)" isLatest="true">
+      <Real CStyleName="radius" pascalStyleName="Radius" name="radius" description="positive uses old inferior physics, negative uses new improved physics" />
+      <RealFraction CStyleName="moment_scale" pascalStyleName="MomentScale" name="moment scale" />
+      <Real CStyleName="mass" pascalStyleName="Mass" name="mass" />
+      <RealPoint3D CStyleName="center_of_mass" pascalStyleName="CenterOfMass" name="center of mass" readOnly="true" />
+      <Real CStyleName="density" pascalStyleName="Density" name="density" />
+      <Real CStyleName="gravity_scale" pascalStyleName="GravityScale" name="gravity scale" />
+      <Real CStyleName="ground_friction" pascalStyleName="GroundFriction" name="ground friction" />
+      <Real CStyleName="ground_depth" pascalStyleName="GroundDepth" name="ground depth" />
+      <RealFraction CStyleName="ground_damp_fraction" pascalStyleName="GroundDampFraction" name="ground damp fraction" />
+      <Real CStyleName="ground_normal_k1" pascalStyleName="GroundNormalK1" name="ground normal k1" />
+      <Real CStyleName="ground_normal_k0" pascalStyleName="GroundNormalK0" name="ground normal k0" />
+      <Pad tag="pd64" length="4" />
+      <Ptr length="4" />
+      <Real CStyleName="water_friction" pascalStyleName="WaterFriction" name="water friction" />
+      <Real CStyleName="water_depth" pascalStyleName="WaterDepth" name="water depth" />
+      <Real CStyleName="water_density" pascalStyleName="WaterDensity" name="water density" />
+      <Pad sizeOfSource="sizeof(real)" length="4" />
+      <RealFraction CStyleName="air_friction" pascalStyleName="AirFriction" name="air friction" />
+      <Pad sizeOfSource="sizeof(real)" length="4" />
+      <Real CStyleName="xx_moment" pascalStyleName="XxMoment" name="xx moment" />
+      <Real CStyleName="yy_moment" pascalStyleName="YyMoment" name="yy moment" />
+      <Real CStyleName="zz_moment" pascalStyleName="ZzMoment" name="zz moment" />
+      <Block CStyleName="inertial_matrix_and_inverse" pascalStyleName="InertialMatrixAndInverse" name="inertial matrix and inverse" readOnly="true" maxElementCount="2">
+        <Layout regolithID="block:inertial_matrix" internalName="inertial_matrix_block" name="inertial_matrix_block">
+          <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(real_matrix3x3)" isLatest="true">
+            <RealVector3D CStyleName="yyzz_____xy______zx" pascalStyleName="YyzzXyZx" name="yy+zz    -xy     -zx" />
+            <RealVector3D CStyleName="__xy____zzxx_____yz" pascalStyleName="XyZzxxYz" name="-xy    zz+xx    -yz" />
+            <RealVector3D CStyleName="__zx______yz____xxyy" pascalStyleName="ZxYzXxyy" name="-zx     -yz    xx+yy" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="powered_mass_points" pascalStyleName="PoweredMassPoints" name="powered mass points" maxElementCount="32" maxElementCountSource="MAXIMUM_POWERED_MASS_POINTS_PER_PHYSICS">
+        <Layout regolithID="block:powered_mass_point" internalName="powered_mass_point_block" name="powered_mass_point_block">
+          <FieldSet version="0" sizeofValue="128" sizeofSource="sizeof(struct powered_mass_point_definition)" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:powered_mass_point_flags" CStyleName="powered_mass_point_flags" pascalStyleName="PoweredMassPointFlags">
+                <Bit name="ground friction" CStyleName="ground_friction_bit" pascalStyleName="GroundFrictionBit" />
+                <Bit name="water friction" CStyleName="water_friction_bit" pascalStyleName="WaterFrictionBit" />
+                <Bit name="air friction" CStyleName="air_friction_bit" pascalStyleName="AirFrictionBit" />
+                <Bit name="water lift" CStyleName="water_lift_bit" pascalStyleName="WaterLiftBit" />
+                <Bit name="air lift" CStyleName="air_lift_bit" pascalStyleName="AirLiftBit" />
+                <Bit name="thrust" CStyleName="thrust_bit" pascalStyleName="ThrustBit" />
+                <Bit name="antigrav" CStyleName="antigrav_bit" pascalStyleName="AntigravBit" />
+                <Bit name="gets damage from region" CStyleName="gets_damage_from_region_bit" pascalStyleName="GetsDamageFromRegionBit" />
+              </Options>
+            </LongFlags>
+            <Real CStyleName="antigrav_strength" pascalStyleName="AntigravStrength" name="antigrav strength" />
+            <Real CStyleName="antigrav_offset" pascalStyleName="AntigravOffset" name="antigrav offset" />
+            <Real CStyleName="antigrav_height" pascalStyleName="AntigravHeight" name="antigrav height" />
+            <Real CStyleName="antigrav_damp_fraction" pascalStyleName="AntigravDampFraction" name="antigrav damp fraction" />
+            <Real CStyleName="antigrav_normal_k1" pascalStyleName="AntigravNormalK1" name="antigrav normal k1" />
+            <Real CStyleName="antigrav_normal_k0" pascalStyleName="AntigravNormalK0" name="antigrav normal k0" />
+            <StringId CStyleName="damage_source_region_name" pascalStyleName="DamageSourceRegionName" name="damage source region name" />
+            <Pad sizeOfSource="16*sizeof(real)" length="64" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="mass_points" pascalStyleName="MassPoints" name="mass points" maxElementCount="32" maxElementCountSource="MAXIMUM_MASS_POINTS_PER_PHYSICS">
+        <Layout regolithID="block:mass_point" internalName="mass_point_block" name="mass_point_block">
+          <FieldSet version="0" sizeofValue="128" sizeofSource="sizeof(struct mass_point_definition)" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <ShortBlockIndex CStyleName="powered_mass_point" pascalStyleName="PoweredMassPoint" name="powered mass point" blockReference="block:powered_mass_point" />
+            <ShortInteger CStyleName="model_node" pascalStyleName="ModelNode" name="model node" readOnly="true" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:mass_point_flags" CStyleName="mass_point_flags" pascalStyleName="MassPointFlags">
+                <Bit name="metallic" CStyleName="metallic_bit" pascalStyleName="MetallicBit" />
+              </Options>
+            </LongFlags>
+            <Real CStyleName="relative_mass" pascalStyleName="RelativeMass" name="relative mass" />
+            <Real CStyleName="mass" pascalStyleName="Mass" name="mass" readOnly="true" />
+            <Real CStyleName="relative_density" pascalStyleName="RelativeDensity" name="relative density" />
+            <Real CStyleName="density" pascalStyleName="Density" name="density" readOnly="true" />
+            <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" />
+            <RealVector3D CStyleName="forward" pascalStyleName="Forward" name="forward" />
+            <RealVector3D CStyleName="up" pascalStyleName="Up" name="up" />
+            <ShortEnum CStyleName="friction_type" pascalStyleName="FrictionType" name="friction type">
+              <Options regolithID="enum:mass_point_friction_type" CStyleName="mass_point_friction_type" pascalStyleName="MassPointFrictionType">
+                <Enum name="point" CStyleName="point" pascalStyleName="Point" />
+                <Enum name="forward" CStyleName="forward" pascalStyleName="Forward" />
+                <Enum name="left" CStyleName="left" pascalStyleName="Left" />
+                <Enum name="up" CStyleName="up" pascalStyleName="Up" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Real CStyleName="friction_parallel_scale" pascalStyleName="FrictionParallelScale" name="friction parallel scale" />
+            <Real CStyleName="friction_perpendicular_scale" pascalStyleName="FrictionPerpendicularScale" name="friction perpendicular scale" />
+            <Real CStyleName="radius" pascalStyleName="Radius" name="radius" />
+            <Pad sizeOfSource="5*sizeof(real)" length="20" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad tag="pd64" length="4" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="itmc" name="item_collection" version="0">
+  <Layout regolithID="block:item_collection" internalName="item_collection_block" name="item_collection">
+    <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct item_collection_definition)" isLatest="true">
+      <Block CStyleName="item_permutations" pascalStyleName="ItemPermutations" name="item permutations" maxElementCount="32">
+        <Layout regolithID="block:item_permutation" internalName="item_permutation" name="item_permutation">
+          <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(struct item_permutation_definition)" isLatest="true">
+            <UselessPad length="32" />
+            <Real CStyleName="weight" pascalStyleName="Weight" name="weight" description="relatively how likely this item will be chosen" />
+            <TagReference CStyleName="item" pascalStyleName="Item" name="item" description="which item to" blockNameSource="true">
+              <tag>item</tag>
+            </TagReference>
+            <StringId CStyleName="variant_name" pascalStyleName="VariantName" name="variant name" />
+            <UselessPad length="28" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <ShortInteger CStyleName="spawn_time_in_seconds_0__default" pascalStyleName="SpawnTimeInSeconds0Default" name="spawn time (in seconds, 0 = default)" />
+      <Pad sizeOfSource="1 * sizeof(short)" length="2" />
+      <UselessPad length="76" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

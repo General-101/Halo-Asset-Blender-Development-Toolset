@@ -1,0 +1,28 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="foot" name="material_effects" version="1">
+  <Layout regolithID="block:material_effects" internalName="material_effects_block" name="material_effects">
+    <FieldSet version="0" sizeofValue="140" sizeofSource="sizeof(struct material_effects_group)" isLatest="true">
+      <Block CStyleName="effects" pascalStyleName="Effects" name="effects" maxElementCount="13">
+        <Layout regolithID="block:effects" internalName="effects_block" name="effects_block">
+          <FieldSet version="0" sizeofValue="28" isLatest="true">
+            <Block CStyleName="materials" pascalStyleName="Materials" name="materials" maxElementCount="33">
+              <Layout regolithID="block:materials" internalName="materials_block" name="materials_block">
+                <FieldSet version="0" sizeofValue="48" isLatest="true">
+                  <TagReference CStyleName="effect" pascalStyleName="Effect" name="effect">
+                    <tag>effect</tag>
+                  </TagReference>
+                  <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound">
+                    <tag>sound</tag>
+                  </TagReference>
+                  <Pad name="pad" length="16" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Pad name="pad" length="16" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="128" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,67 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="isls" name="islands.scenarios" version="1">
+  <Layout regolithID="block:islands.scenarios" internalName="islands.scenarios_block" name="islands.scenarios">
+    <FieldSet version="0" sizeofValue="220" sizeofSource="sizeof(struct islands.scenarios_group)" isLatest="true">
+      <TagReference CStyleName="materials_group" pascalStyleName="MaterialsGroup" name="materials group" />
+      <TagReference CStyleName="script" pascalStyleName="Script" name="script" />
+      <Pad name="pad" length="92" />
+      <Block CStyleName="marker_types" pascalStyleName="MarkerTypes" name="marker types">
+        <Layout regolithID="block:marker types" internalName="marker types_block" name="marker types_block">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <TagReference CStyleName="object" pascalStyleName="Object" name="object" />
+            <Pad name="pad" length="24" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="markers" pascalStyleName="Markers" name="markers">
+        <Layout regolithID="block:markers" internalName="markers_block" name="markers_block">
+          <FieldSet version="0" sizeofValue="72" isLatest="true">
+            <Pad name="pad" length="32" />
+            <ShortBlockIndex CStyleName="type_index" pascalStyleName="TypeIndex" name="type index" blockReference="block:marker types" />
+            <ShortInteger CStyleName="team_index" pascalStyleName="TeamIndex" name="team index" />
+            <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" />
+            <RealVector3D CStyleName="forward" pascalStyleName="Forward" name="forward" />
+            <RealVector3D CStyleName="up" pascalStyleName="Up" name="up" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="12" />
+      <Block CStyleName="structure_layers" pascalStyleName="StructureLayers" name="structure layers">
+        <Layout regolithID="block:structure layers" internalName="structure layers_block" name="structure layers_block">
+          <FieldSet version="0" sizeofValue="100" isLatest="true">
+            <ShortInteger CStyleName="next_layer_index" pascalStyleName="NextLayerIndex" name="next layer index" />
+            <Pad name="pad" length="2" />
+            <LongInteger CStyleName="z_minimum" pascalStyleName="ZMinimum" name="z minimum" />
+            <LongInteger CStyleName="unique_identifier" pascalStyleName="UniqueIdentifier" name="unique identifier" />
+            <Pad name="pad" length="64" />
+            <Block CStyleName="surfaces" pascalStyleName="Surfaces" name="surfaces">
+              <Layout regolithID="block:surfaces" internalName="surfaces_block" name="surfaces_block">
+                <FieldSet version="0" sizeofValue="28" isLatest="true">
+                  <Real CStyleName="a" pascalStyleName="A" name="a" />
+                  <Real CStyleName="b" pascalStyleName="B" name="b" />
+                  <Real CStyleName="c" pascalStyleName="C" name="c" />
+                  <RealVector3D CStyleName="normal" pascalStyleName="Normal" name="normal" />
+                  <ShortInteger CStyleName="terrain_type" pascalStyleName="TerrainType" name="terrain type" />
+                  <Pad name="pad" length="2" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes">
+              <Layout regolithID="block:nodes" internalName="nodes_block" name="nodes_block">
+                <FieldSet version="0" sizeofValue="20" isLatest="true">
+                  <ShortInteger CStyleName="negative_surface_index" pascalStyleName="NegativeSurfaceIndex" name="negative surface index" />
+                  <ShortInteger CStyleName="positive_surface_index" pascalStyleName="PositiveSurfaceIndex" name="positive surface index" />
+                  <ShortInteger CStyleName="negative_node_index" pascalStyleName="NegativeNodeIndex" name="negative node index" />
+                  <ShortInteger CStyleName="positive_node_index" pascalStyleName="PositiveNodeIndex" name="positive node index" />
+                  <Real CStyleName="a" pascalStyleName="A" name="a" />
+                  <Real CStyleName="b" pascalStyleName="B" name="b" />
+                  <Real CStyleName="c" pascalStyleName="C" name="c" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

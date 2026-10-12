@@ -34,7 +34,6 @@ from .format import JMIAsset
 
 def build_asset(
     context,
-
     JMS_args: JMIAsset.JMSArgs,
     version,
     game_version,
@@ -106,6 +105,7 @@ def build_asset(
             permutation_name,
             lod_setting,
             True,
+            0,
             True,
             write_textures,
             JMS_args.hidden_geo,
@@ -122,6 +122,7 @@ def build_asset(
             JMS_args.use_maya_sorting,
             JMS_args.folder_type,
             JMS_args.scale_value,
+            False,
             report
         )
 

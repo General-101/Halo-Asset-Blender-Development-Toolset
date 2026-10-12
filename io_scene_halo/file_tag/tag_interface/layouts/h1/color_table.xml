@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="colo" name="color_table" version="1">
+  <Layout regolithID="block:color_table" internalName="color_table_block" name="color_table">
+    <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct color_table_group)" isLatest="true">
+      <Block CStyleName="colors" pascalStyleName="Colors" name="colors" maxElementCount="512">
+        <Layout regolithID="block:colors" internalName="colors_block" name="colors_block">
+          <FieldSet version="0" sizeofValue="48" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <RealArgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

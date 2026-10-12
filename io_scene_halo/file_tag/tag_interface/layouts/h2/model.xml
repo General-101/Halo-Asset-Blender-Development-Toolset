@@ -1,0 +1,718 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="hlmt" name="model" version="1">
+  <Layout regolithID="block:model" internalName="model_block" name="model">
+    <FieldSet version="0" sizeofValue="200" sizeofSource="sizeof(struct s_model_definition_v1)">
+      <Explanation name="MODEL" />
+      <TagReference CStyleName="render_model" pascalStyleName="RenderModel" name="render model">
+        <tag>mode</tag>
+      </TagReference>
+      <TagReference CStyleName="collision_model" pascalStyleName="CollisionModel" name="collision model">
+        <tag>coll</tag>
+      </TagReference>
+      <TagReference CStyleName="animation" pascalStyleName="Animation" name="animation">
+        <tag>jmad</tag>
+      </TagReference>
+      <TagReference CStyleName="physics" pascalStyleName="Physics" name="physics">
+        <tag>phys</tag>
+      </TagReference>
+      <TagReference CStyleName="physics_model" pascalStyleName="PhysicsModel" name="physics model">
+        <tag>phmo</tag>
+      </TagReference>
+      <Explanation name="level of detail" description="If a model is further away than the LOD reduction distance, it will be reduced to that LOD.&#xA;So the L1 reduction distance should be really long and the L5 reduction distance should be really short.&#xA;This means distances should be in descending order, e.g. 5 4 3 2 1.&#xA;&#xA;Note that if we run out of memory or too many models are on screen at once, the engine may reduce&#xA;models to a lower LOD BEFORE they reach the reduction distance for that LOD.&#xA;&#xA;If a model has a max draw distance, it will disappear when it reaches that distance. The max draw distance&#xA;should be greater than all of the LOD reduction distances.&#xA;" />
+      <Real CStyleName="max_draw_distance" pascalStyleName="MaxDrawDistance" name="max draw distance" units="world units" />
+      <Real CStyleName="reduce_to_l1" pascalStyleName="ReduceToL1" name="reduce to L1" units="world units (super low)" />
+      <Real CStyleName="reduce_to_l2" pascalStyleName="ReduceToL2" name="reduce to L2" units="world units (low)" />
+      <Real CStyleName="reduce_to_l3" pascalStyleName="ReduceToL3" name="reduce to L3" units="world units (medium)" />
+      <Real CStyleName="reduce_to_l4" pascalStyleName="ReduceToL4" name="reduce to L4" units="world units (high)" />
+      <Real CStyleName="reduce_to_l5" pascalStyleName="ReduceToL5" name="reduce to L5" units="world units (super high)" />
+      <Skip sizeOfSource="sizeof(real)" length="4" />
+      <ShortEnum CStyleName="shadow_fade_distance" pascalStyleName="ShadowFadeDistance" name="shadow fade distance">
+        <Options regolithID="enum:model_shadow_fade_distance" CStyleName="model_shadow_fade_distance" pascalStyleName="ModelShadowFadeDistance">
+          <Enum name="fade at super high detail level" CStyleName="fade_at_super_high_detail_level" pascalStyleName="FadeAtSuperHighDetailLevel" />
+          <Enum name="fade at high detail level" CStyleName="fade_at_high_detail_level" pascalStyleName="FadeAtHighDetailLevel" />
+          <Enum name="fade at medium detail level" CStyleName="fade_at_medium_detail_level" pascalStyleName="FadeAtMediumDetailLevel" />
+          <Enum name="fade at low detail level" CStyleName="fade_at_low_detail_level" pascalStyleName="FadeAtLowDetailLevel" />
+          <Enum name="fade at super low detail level" CStyleName="fade_at_super_low_detail_level" pascalStyleName="FadeAtSuperLowDetailLevel" />
+          <Enum name="fade never" CStyleName="fade_never" pascalStyleName="FadeNever" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Block CStyleName="variants" pascalStyleName="Variants" name="variants" maxElementCount="64" maxElementCountSource="k_maximum_variants_per_model">
+        <Layout regolithID="block:model_variant" internalName="model_variant_block" name="variant">
+          <FieldSet version="0" sizeofValue="72" sizeofSource="sizeof(s_model_variant)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+            <Pad sizeOfSource="MAXIMUM_REGIONS_PER_MODEL*sizeof(char)" length="16" />
+            <Block CStyleName="regions" pascalStyleName="Regions" name="regions" maxElementCount="16" maxElementCountSource="MAXIMUM_REGIONS_PER_MODEL">
+              <Layout regolithID="block:model_variant_region" internalName="model_variant_region_block" name="region">
+                <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(s_model_variant_region)" isLatest="true">
+                  <StringId CStyleName="region_name" pascalStyleName="RegionName" name="region name" units="must match region name in render_model" blockNameSource="true" />
+                  <Pad sizeOfSource="sizeof(char)" length="1" />
+                  <Pad sizeOfSource="1*sizeof(byte)" length="1" />
+                  <ShortBlockIndex CStyleName="parent_variant" pascalStyleName="ParentVariant" name="parent variant" blockReference="block:model_variant" />
+                  <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations" maxElementCount="32" maxElementCountSource="MAXIMUM_PERMUTATIONS_PER_MODEL_REGION">
+                    <Layout regolithID="block:model_variant_permutation" internalName="model_variant_permutation_block" name="permutation">
+                      <FieldSet version="0" sizeofValue="36" sizeofSource="sizeof(s_model_variant_permutation)" isLatest="true">
+                        <StringId CStyleName="permutation_name" pascalStyleName="PermutationName" name="permutation name" blockNameSource="true" />
+                        <Pad sizeOfSource="sizeof(char)" length="1" />
+                        <ByteFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                          <Options regolithID="enum:model_variant_permutation_flags" CStyleName="model_variant_permutation_flags" pascalStyleName="ModelVariantPermutationFlags">
+                            <Bit name="copy states to all permutations" CStyleName="copy_states_to_all_permutations_bit" pascalStyleName="CopyStatesToAllPermutationsBit" />
+                          </Options>
+                        </ByteFlags>
+                        <Pad sizeOfSource="2*sizeof(byte)" length="2" />
+                        <Real CStyleName="probability" pascalStyleName="Probability" name="probability" units="(0,+inf)" />
+                        <Block CStyleName="states" pascalStyleName="States" name="states" maxElementCount="10" maxElementCountSource="MAXIMUM_STATES_PER_MODEL_PERMUTATION">
+                          <Layout regolithID="block:model_variant_state" internalName="model_variant_state_block" name="model_variant_state_block">
+                            <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(s_model_variant_state_v1)">
+                              <StringId CStyleName="permutation_name" pascalStyleName="PermutationName" name="permutation name" />
+                              <Pad sizeOfSource="sizeof(word)" length="2" />
+                              <ShortEnum CStyleName="state" pascalStyleName="State" name="state" blockNameSource="true">
+                                <Options regolithID="enum:model_variant_state" CStyleName="model_variant_state" pascalStyleName="ModelVariantState">
+                                  <Enum name="default" CStyleName="default_value" pascalStyleName="Default" />
+                                  <Enum name="minor damage" CStyleName="minor_damage" pascalStyleName="MinorDamage" />
+                                  <Enum name="medium damage" CStyleName="medium_damage" pascalStyleName="MediumDamage" />
+                                  <Enum name="major damage" CStyleName="major_damage" pascalStyleName="MajorDamage" />
+                                  <Enum name="destroyed" CStyleName="destroyed" pascalStyleName="Destroyed" />
+                                  <Enum name="blurred (DEPRECIATED)" CStyleName="blurred_depreciated" pascalStyleName="BlurredDepreciated" />
+                                  <Enum name="very blurred (DEPRECIATED)" CStyleName="very_blurred_depreciated" pascalStyleName="VeryBlurredDepreciated" />
+                                  <Enum name="shield active (DEPRECIATED)" CStyleName="shield_active_depreciated" pascalStyleName="ShieldActiveDepreciated" />
+                                  <Enum name="shield inactive (DEPRECIATED)" CStyleName="shield_inactive_depreciated" pascalStyleName="ShieldInactiveDepreciated" />
+                                </Options>
+                              </ShortEnum>
+                            </FieldSet>
+                            <FieldSet version="1" sizeofValue="32" sizeofSource="sizeof(s_model_variant_state)" isLatest="true">
+                              <StringId CStyleName="permutation_name" pascalStyleName="PermutationName" name="permutation name" />
+                              <Pad sizeOfSource="sizeof(char)" length="1" />
+                              <ByteFlags CStyleName="property_flags" pascalStyleName="PropertyFlags" name="property flags">
+                                <Options regolithID="enum:model_variant_state_property_flags" CStyleName="model_variant_state_property_flags" pascalStyleName="ModelVariantStatePropertyFlags">
+                                  <Bit name="blurred" CStyleName="blurred_bit" pascalStyleName="BlurredBit" />
+                                  <Bit name="hella blurred" CStyleName="hella_blurred_bit" pascalStyleName="HellaBlurredBit" />
+                                  <Bit name="shielded" CStyleName="shielded_bit" pascalStyleName="ShieldedBit" />
+                                </Options>
+                              </ByteFlags>
+                              <ShortEnum CStyleName="state" pascalStyleName="State" name="state" blockNameSource="true">
+                                <Options regolithID="enum:object_state" CStyleName="object_state" pascalStyleName="ObjectState">
+                                  <Enum name="default" CStyleName="default_value" pascalStyleName="Default" />
+                                  <Enum name="minor damage" CStyleName="minor_damage" pascalStyleName="MinorDamage" />
+                                  <Enum name="medium damage" CStyleName="medium_damage" pascalStyleName="MediumDamage" />
+                                  <Enum name="major damage" CStyleName="major_damage" pascalStyleName="MajorDamage" />
+                                  <Enum name="destroyed" CStyleName="destroyed" pascalStyleName="Destroyed" />
+                                </Options>
+                              </ShortEnum>
+                              <TagReference CStyleName="looping_effect" pascalStyleName="LoopingEffect" name="looping effect" description="played while the model is in this state">
+                                <tag>effe</tag>
+                              </TagReference>
+                              <StringId CStyleName="looping_effect_marker_name" pascalStyleName="LoopingEffectMarkerName" name="looping effect marker name" />
+                              <RealFraction CStyleName="initial_probability" pascalStyleName="InitialProbability" name="initial probability" />
+                            </FieldSet>
+                          </Layout>
+                        </Block>
+                        <Pad sizeOfSource="k_number_of_model_states*sizeof(char)" length="5" />
+                        <Pad sizeOfSource="(k_maximum_number_of_model_states - k_number_of_model_states)*sizeof(byte)" length="7" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <ShortEnum CStyleName="sort_order" pascalStyleName="SortOrder" name="sort order" description="negative values mean closer to the camera">
+                    <Options regolithID="enum:model_variant_sort_order" CStyleName="model_variant_sort_order" pascalStyleName="ModelVariantSortOrder">
+                      <Enum name="no sorting" CStyleName="no_sorting" pascalStyleName="NoSorting" />
+                      <Enum name="-5 (closest)" CStyleName="__5_closest" pascalStyleName="5Closest" />
+                      <Enum name="-4" CStyleName="__4" pascalStyleName="4" />
+                      <Enum name="-3" CStyleName="__3" pascalStyleName="3" />
+                      <Enum name="-2" CStyleName="__2" pascalStyleName="2" />
+                      <Enum name="-1" CStyleName="__1" pascalStyleName="1" />
+                      <Enum name="0 (same as model)" CStyleName="_0_same_as_model" pascalStyleName="0SameAsModel" />
+                      <Enum name="1" CStyleName="_1" pascalStyleName="Unnamed7" />
+                      <Enum name="2" CStyleName="_2" pascalStyleName="Unnamed8" />
+                      <Enum name="3" CStyleName="_3" pascalStyleName="Unnamed9" />
+                      <Enum name="4" CStyleName="_4" pascalStyleName="Unnamed10" />
+                      <Enum name="5 (farthest)" CStyleName="_5_farthest" pascalStyleName="5Farthest" />
+                    </Options>
+                  </ShortEnum>
+                  <Pad sizeOfSource="2" length="2" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="objects" pascalStyleName="Objects" name="objects" maxElementCount="16" maxElementCountSource="k_maximum_objects_per_model_variant">
+              <Layout regolithID="block:model_variant_object" internalName="model_variant_object_block" name="object">
+                <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(s_model_variant_object)" isLatest="true">
+                  <StringId CStyleName="parent_marker" pascalStyleName="ParentMarker" name="parent marker" blockNameSource="true" />
+                  <StringId CStyleName="child_marker" pascalStyleName="ChildMarker" name="child marker" />
+                  <TagReference CStyleName="child_object" pascalStyleName="ChildObject" name="child object">
+                    <tag>obje</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Pad sizeOfSource="2*sizeof(long)" length="8" />
+            <StringId CStyleName="dialogue_sound_effect" pascalStyleName="DialogueSoundEffect" name="dialogue sound effect" />
+            <TagReference CStyleName="dialogue" pascalStyleName="Dialogue" name="dialogue">
+              <tag>udlg</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="materials" pascalStyleName="Materials" name="materials" maxElementCount="32" maxElementCountSource="MAXIMUM_MATERIALS_PER_MODEL">
+        <Layout regolithID="block:model_material" internalName="model_material_block" name="material">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_model_material)" isLatest="true">
+            <StringId CStyleName="material_name" pascalStyleName="MaterialName" name="material name" />
+            <ShortEnum CStyleName="material_type" pascalStyleName="MaterialType" name="material type">
+              <Options regolithID="enum:model_material" CStyleName="model_material" pascalStyleName="ModelMaterial">
+                <Enum name="dirt" CStyleName="dirt" pascalStyleName="Dirt" />
+                <Enum name="sand" CStyleName="sand" pascalStyleName="Sand" />
+                <Enum name="stone" CStyleName="stone" pascalStyleName="Stone" />
+                <Enum name="snow" CStyleName="snow" pascalStyleName="Snow" />
+                <Enum name="wood" CStyleName="wood" pascalStyleName="Wood" />
+                <Enum name="metal (hollow)" CStyleName="metal_hollow" pascalStyleName="MetalHollow" />
+                <Enum name="metal (thin)" CStyleName="metal_thin" pascalStyleName="MetalThin" />
+                <Enum name="metal (thick)" CStyleName="metal_thick" pascalStyleName="MetalThick" />
+                <Enum name="rubber" CStyleName="rubber" pascalStyleName="Rubber" />
+                <Enum name="glass" CStyleName="glass" pascalStyleName="Glass" />
+                <Enum name="force field" CStyleName="force_field" pascalStyleName="ForceField" />
+                <Enum name="grunt" CStyleName="grunt" pascalStyleName="Grunt" />
+                <Enum name="hunter armor" CStyleName="hunter_armor" pascalStyleName="HunterArmor" />
+                <Enum name="hunter skin" CStyleName="hunter_skin" pascalStyleName="HunterSkin" />
+                <Enum name="elite" CStyleName="elite" pascalStyleName="Elite" />
+                <Enum name="jackal" CStyleName="jackal" pascalStyleName="Jackal" />
+                <Enum name="jackal energy shield" CStyleName="jackal_energy_shield" pascalStyleName="JackalEnergyShield" />
+                <Enum name="engineer skin" CStyleName="engineer_skin" pascalStyleName="EngineerSkin" />
+                <Enum name="engineer force field" CStyleName="engineer_force_field" pascalStyleName="EngineerForceField" />
+                <Enum name="flood combat form" CStyleName="flood_combat_form" pascalStyleName="FloodCombatForm" />
+                <Enum name="flood carrier form" CStyleName="flood_carrier_form" pascalStyleName="FloodCarrierForm" />
+                <Enum name="cyborg armor" CStyleName="cyborg_armor" pascalStyleName="CyborgArmor" />
+                <Enum name="cyborg energy shield" CStyleName="cyborg_energy_shield" pascalStyleName="CyborgEnergyShield" />
+                <Enum name="human armor" CStyleName="human_armor" pascalStyleName="HumanArmor" />
+                <Enum name="human skin" CStyleName="human_skin" pascalStyleName="HumanSkin" />
+                <Enum name="sentinel" CStyleName="sentinel" pascalStyleName="Sentinel" />
+                <Enum name="monitor" CStyleName="monitor" pascalStyleName="Monitor" />
+                <Enum name="plastic" CStyleName="plastic" pascalStyleName="Plastic" />
+                <Enum name="water" CStyleName="water" pascalStyleName="Water" />
+                <Enum name="leaves" CStyleName="leaves" pascalStyleName="Leaves" />
+                <Enum name="elite energy shield" CStyleName="elite_energy_shield" pascalStyleName="EliteEnergyShield" />
+                <Enum name="ice" CStyleName="ice" pascalStyleName="Ice" />
+                <Enum name="hunter shield" CStyleName="hunter_shield" pascalStyleName="HunterShield" />
+              </Options>
+            </ShortEnum>
+            <CustomShortBlockIndex CStyleName="damage_section" pascalStyleName="DamageSection" name="damage section" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <StringId CStyleName="global_material_name" pascalStyleName="GlobalMaterialName" name="global material name" tag="sted" />
+            <Pad sizeOfSource="1*sizeof(long)" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="new_damage_info" pascalStyleName="NewDamageInfo" name="new damage info" maxElementCount="1">
+        <Layout regolithID="block:global_damage_info" internalName="global_damage_info_block" name="global_damage_info_block">
+          <FieldSet version="0" sizeofValue="216" sizeofSource="sizeof(s_model_damage_info_v1)">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:global_damage_info_flags" CStyleName="global_damage_info_flags" pascalStyleName="GlobalDamageInfoFlags">
+                <Bit name="takes shield damage for children" CStyleName="takes_shield_damage_for_children_bit" pascalStyleName="TakesShieldDamageForChildrenBit" />
+                <Bit name="takes body damage for children" CStyleName="takes_body_damage_for_children_bit" pascalStyleName="TakesBodyDamageForChildrenBit" />
+                <Bit name="always shields friendly damage" CStyleName="always_shields_friendly_damage_bit" pascalStyleName="AlwaysShieldsFriendlyDamageBit" />
+                <Bit name="passes area damage to children" CStyleName="passes_area_damage_to_children_bit" pascalStyleName="PassesAreaDamageToChildrenBit" />
+                <Bit name="parent never takes body damage for us" CStyleName="parent_never_takes_body_damage_for_us_bit" pascalStyleName="ParentNeverTakesBodyDamageForUsBit" />
+                <Bit name="only damaged by explosives" CStyleName="only_damaged_by_explosives_bit" pascalStyleName="OnlyDamagedByExplosivesBit" />
+                <Bit name="parent never takes shield damage for us" CStyleName="parent_never_takes_shield_damage_for_us_bit" pascalStyleName="ParentNeverTakesShieldDamageForUsBit" />
+                <Bit name="cannot die from damage" CStyleName="cannot_die_from_damage_bit" pascalStyleName="CannotDieFromDamageBit" />
+                <Bit name="passes attached damage to riders" CStyleName="passes_attached_damage_to_riders_bit" pascalStyleName="PassesAttachedDamageToRidersBit" />
+              </Options>
+            </LongFlags>
+            <StringId CStyleName="global_indirect_material_name" pascalStyleName="GlobalIndirectMaterialName" name="global indirect material name" description="absorbes AOE or child damage" />
+            <Real CStyleName="maximum_vitality" pascalStyleName="MaximumVitality" name="maximum vitality" />
+            <Real CStyleName="body_system_shock" pascalStyleName="BodySystemShock" name="body system shock" description="anything that kills us (body depleted) doing more than this amount of damage also destroys us" />
+            <RealFraction CStyleName="friendly_damage_resistance" pascalStyleName="FriendlyDamageResistance" name="friendly damage resistance" units="[0,1]" description="the fraction of damage caused by friendly units ignored by this object (zero means full damage)" />
+            <TagReference CStyleName="localized_damage_effect" pascalStyleName="LocalizedDamageEffect" name="localized damage effect">
+              <tag>effe</tag>
+            </TagReference>
+            <Real CStyleName="area_damage_effect_threshold" pascalStyleName="AreaDamageEffectThreshold" name="area damage effect threshold" units="[0,1]" />
+            <TagReference CStyleName="area_damage_effect" pascalStyleName="AreaDamageEffect" name="area damage effect">
+              <tag>effe</tag>
+            </TagReference>
+            <Real CStyleName="body_damaged_threshold" pascalStyleName="BodyDamagedThreshold" name="body damaged threshold" description="when passing this vitality the 'body damaged' effect, below, is created" />
+            <TagReference CStyleName="body_damaged_effect" pascalStyleName="BodyDamagedEffect" name="body damaged effect">
+              <tag>effe</tag>
+            </TagReference>
+            <TagReference CStyleName="body_depleted_effect" pascalStyleName="BodyDepletedEffect" name="body depleted effect">
+              <tag>effe</tag>
+            </TagReference>
+            <Real CStyleName="body_destroyed_threshold" pascalStyleName="BodyDestroyedThreshold" name="body destroyed threshold" description="when passing this vitality (usually negative) the object is deleted" />
+            <TagReference CStyleName="body_destroyed_effect" pascalStyleName="BodyDestroyedEffect" name="body destroyed effect">
+              <tag>effe</tag>
+            </TagReference>
+            <Real CStyleName="maximum_shield_vitality" pascalStyleName="MaximumShieldVitality" name="maximum shield vitality" description="the default initial and maximum shield vitality of this object" />
+            <StringId CStyleName="global_shield_material_name" pascalStyleName="GlobalShieldMaterialName" name="global shield material name" tag="sted" />
+            <Real CStyleName="minimum_stun_damage" pascalStyleName="MinimumStunDamage" name="minimum stun damage" description="the minimum damage required to stun this object's shields" />
+            <Real CStyleName="stun_time" pascalStyleName="StunTime" name="stun time" units="seconds" description="the length of time the shields stay stunned (do not recharge) after taking damage" />
+            <Real CStyleName="recharge_time" pascalStyleName="RechargeTime" name="recharge time" units="seconds" description="the length of time it would take for the shields to fully recharge after being completely depleted" />
+            <Real CStyleName="shield_damaged_threshold" pascalStyleName="ShieldDamagedThreshold" name="shield damaged threshold" />
+            <TagReference CStyleName="shield_damaged_effect" pascalStyleName="ShieldDamagedEffect" name="shield damaged effect">
+              <tag>effe</tag>
+            </TagReference>
+            <TagReference CStyleName="shield_depleted_effect" pascalStyleName="ShieldDepletedEffect" name="shield depleted effect">
+              <tag>effe</tag>
+            </TagReference>
+            <TagReference CStyleName="shield_recharging_effect" pascalStyleName="ShieldRechargingEffect" name="shield recharging effect">
+              <tag>effe</tag>
+            </TagReference>
+            <Block CStyleName="damage_sections" pascalStyleName="DamageSections" name="damage sections" maxElementCount="16" maxElementCountSource="MAXIMUM_DAMAGE_SECTIONS_PER_MODEL">
+              <Layout regolithID="block:global_damage_section" internalName="global_damage_section_block" name="global_damage_section_block">
+                <FieldSet version="0" sizeofValue="68" sizeofSource="sizeof(s_model_damage_section)" isLatest="true">
+                  <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+                  <Explanation name="damage section flags" description="* absorbs body damage: damage to this section does not count against body vitality&#xA;* headshottable: takes extra headshot damage when shot&#xA;* ignores shields: damage to this section bypasses shields" />
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:global_damage_section_flags" CStyleName="global_damage_section_flags" pascalStyleName="GlobalDamageSectionFlags">
+                      <Bit name="absorbs body damage" CStyleName="absorbs_body_damage_bit" pascalStyleName="AbsorbsBodyDamageBit" />
+                      <Bit name="takes full dmg when object dies" CStyleName="takes_full_dmg_when_object_dies_bit" pascalStyleName="TakesFullDmgWhenObjectDiesBit" />
+                      <Bit name="cannot die with riders" CStyleName="cannot_die_with_riders_bit" pascalStyleName="CannotDieWithRidersBit" />
+                      <Bit name="takes full dmg when obj dstryd" CStyleName="takes_full_dmg_when_obj_dstryd_bit" pascalStyleName="TakesFullDmgWhenObjDstrydBit" />
+                      <Bit name="restored on ressurection" CStyleName="restored_on_ressurection_bit" pascalStyleName="RestoredOnRessurectionBit" />
+                      <Bit name="unused" CStyleName="unused5_bit" pascalStyleName="Unused5Bit" />
+                      <Bit name="unused" CStyleName="unused6_bit" pascalStyleName="Unused6Bit" />
+                      <Bit name="heatshottable" CStyleName="heatshottable_bit" pascalStyleName="HeatshottableBit" />
+                      <Bit name="ignores shields" CStyleName="ignores_shields_bit" pascalStyleName="IgnoresShieldsBit" />
+                    </Options>
+                  </LongFlags>
+                  <RealFraction CStyleName="vitality_percentage" pascalStyleName="VitalityPercentage" name="vitality percentage" units="[0.1]" description="percentage of total object vitality" />
+                  <Block CStyleName="instant_responses" pascalStyleName="InstantResponses" name="instant responses" maxElementCount="16" maxElementCountSource="MAXIMUM_RESPONSES_PER_DAMAGE_SECTION">
+                    <Layout regolithID="block:instantaneous_damage_repsonse" internalName="instantaneous_damage_repsonse_block" name="instantaneous_damage_repsonse_block">
+                      <FieldSet version="0" sizeofValue="104" sizeofSource="sizeof(s_instantaneous_damage_response)" isLatest="true">
+                        <ShortEnum CStyleName="response_type" pascalStyleName="ResponseType" name="response type">
+                          <Options regolithID="enum:instantaneous_damage_response" CStyleName="instantaneous_damage_response" pascalStyleName="InstantaneousDamageResponse">
+                            <Enum name="receives all damage" CStyleName="receives_all_damage" pascalStyleName="ReceivesAllDamage" />
+                            <Enum name="receives area effect damage" CStyleName="receives_area_effect_damage" pascalStyleName="ReceivesAreaEffectDamage" />
+                            <Enum name="receives local damage" CStyleName="receives_local_damage" pascalStyleName="ReceivesLocalDamage" />
+                          </Options>
+                        </ShortEnum>
+                        <Explanation name="Constraint damage type" description="* if you specify a constraint group name (see lower section of this block)&#xA;  you can specify a constraint damage&#xA;* loosening a constraint takes it out of the rigid state - activates it&#xA;* destroying a constraint sets the attached body free" />
+                        <ShortEnum CStyleName="constraint_damage_type" pascalStyleName="ConstraintDamageType" name="constraint damage type">
+                          <Options regolithID="enum:constraint_damage_type" CStyleName="constraint_damage_type" pascalStyleName="ConstraintDamageType">
+                            <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                            <Enum name="destroy one of group" CStyleName="destroy_one_of_group" pascalStyleName="DestroyOneOfGroup" />
+                            <Enum name="destroy entire group" CStyleName="destroy_entire_group" pascalStyleName="DestroyEntireGroup" />
+                            <Enum name="loosen one of group" CStyleName="loosen_one_of_group" pascalStyleName="LoosenOneOfGroup" />
+                            <Enum name="loosen entire group" CStyleName="loosen_entire_group" pascalStyleName="LoosenEntireGroup" />
+                          </Options>
+                        </ShortEnum>
+                        <Explanation name="Damage response flags" description="* kills object: when the response fires the object dies regardless of its current health&#xA;* inhibits &lt;x&gt;: from halo 1 - disallows basic behaviors for a unit&#xA;* forces drop weapon: from halo 1 - makes the unit drop its current weapon&#xA;* kills weapon &lt;x&gt; trigger: destroys the &lt;x&gt; trigger on the unit's current weapon&#xA;* destroys object: when the response fires the object is destroyed" />
+                        <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                          <Options regolithID="enum:instantaneous_damage_response_flags" CStyleName="instantaneous_damage_response_flags" pascalStyleName="InstantaneousDamageResponseFlags">
+                            <Bit name="kills object" CStyleName="kills_object_bit" pascalStyleName="KillsObjectBit" />
+                            <Bit name="inhibits melee attack" CStyleName="inhibits_melee_attack_bit" pascalStyleName="InhibitsMeleeAttackBit" />
+                            <Bit name="inhibits weapon attack" CStyleName="inhibits_weapon_attack_bit" pascalStyleName="InhibitsWeaponAttackBit" />
+                            <Bit name="inhibits walking" CStyleName="inhibits_walking_bit" pascalStyleName="InhibitsWalkingBit" />
+                            <Bit name="forces drop weapon" CStyleName="forces_drop_weapon_bit" pascalStyleName="ForcesDropWeaponBit" />
+                            <Bit name="kills weapon primary trigger" CStyleName="kills_weapon_primary_trigger_bit" pascalStyleName="KillsWeaponPrimaryTriggerBit" />
+                            <Bit name="kills weapon secondary trigger" CStyleName="kills_weapon_secondary_trigger_bit" pascalStyleName="KillsWeaponSecondaryTriggerBit" />
+                            <Bit name="destroys object" CStyleName="destroys_object_bit" pascalStyleName="DestroysObjectBit" />
+                            <Bit name="damages weapon primary trigger" CStyleName="damages_weapon_primary_trigger_bit" pascalStyleName="DamagesWeaponPrimaryTriggerBit" />
+                            <Bit name="damages weapon secondary trigger" CStyleName="damages_weapon_secondary_trigger_bit" pascalStyleName="DamagesWeaponSecondaryTriggerBit" />
+                            <Bit name="light damage left turn" CStyleName="light_damage_left_turn_bit" pascalStyleName="LightDamageLeftTurnBit" />
+                            <Bit name="major damage left turn" CStyleName="major_damage_left_turn_bit" pascalStyleName="MajorDamageLeftTurnBit" />
+                            <Bit name="light damage right turn" CStyleName="light_damage_right_turn_bit" pascalStyleName="LightDamageRightTurnBit" />
+                            <Bit name="major damage right turn" CStyleName="major_damage_right_turn_bit" pascalStyleName="MajorDamageRightTurnBit" />
+                            <Bit name="light damage engine" CStyleName="light_damage_engine_bit" pascalStyleName="LightDamageEngineBit" />
+                            <Bit name="major damage engine" CStyleName="major_damage_engine_bit" pascalStyleName="MajorDamageEngineBit" />
+                            <Bit name="kills object (no player solo)" CStyleName="kills_object_no_player_solo_bit" pascalStyleName="KillsObjectNoPlayerSoloBit" />
+                            <Bit name="causes detonation" CStyleName="causes_detonation_bit" pascalStyleName="CausesDetonationBit" />
+                            <Bit name="destroy all group constraints" CStyleName="destroy_all_group_constraints_bit" pascalStyleName="DestroyAllGroupConstraintsBit" />
+                            <Bit name="kills variant objects" CStyleName="kills_variant_objects_bit" pascalStyleName="KillsVariantObjectsBit" />
+                            <Bit name="force unattached effects" CStyleName="force_unattached_effects_bit" pascalStyleName="ForceUnattachedEffectsBit" />
+                            <Bit name="fires under threshold" CStyleName="fires_under_threshold_bit" pascalStyleName="FiresUnderThresholdBit" />
+                            <Bit name="triggers special death" CStyleName="triggers_special_death_bit" pascalStyleName="TriggersSpecialDeathBit" />
+                            <Bit name="only on special death" CStyleName="only_on_special_death_bit" pascalStyleName="OnlyOnSpecialDeathBit" />
+                            <Bit name="only NOT on special death" CStyleName="only_not_on_special_death_bit" pascalStyleName="OnlyNotOnSpecialDeathBit" />
+                            <Bit name="forces object to loose vitality" CStyleName="forces_object_to_loose_vitality_bit" pascalStyleName="ForcesObjectToLooseVitalityBit" />
+                          </Options>
+                        </LongFlags>
+                        <Real CStyleName="damage_threshold" pascalStyleName="DamageThreshold" name="damage threshold" description="repsonse fires after crossing this threshold.  1=full health" />
+                        <TagReference CStyleName="transition_effect" pascalStyleName="TransitionEffect" name="transition effect">
+                          <tag>effe</tag>
+                        </TagReference>
+                        <Struct CStyleName="damage_effect" pascalStyleName="DamageEffect" name="damage effect">
+                          <Layout regolithID="structure:instantaneous_response_damage_effect" tag="ires" internalName="instantaneous_response_damage_effect_struct" backingBlockInternalName="instantaneous_response_damage_effect_struct_block" name="instantaneous_response_damage_effect_struct">
+                            <FieldSet version="0" sizeofValue="0" sizeofSource="0" />
+                            <FieldSet version="1" sizeofValue="16" sizeofSource="sizeof(struct tag_reference)" isLatest="true">
+                              <TagReference CStyleName="transition_damage_effect" pascalStyleName="TransitionDamageEffect" name="transition damage effect">
+                                <tag>jpt!</tag>
+                              </TagReference>
+                            </FieldSet>
+                          </Layout>
+                        </Struct>
+                        <StringId CStyleName="region" pascalStyleName="Region" name="region" />
+                        <ShortEnum CStyleName="new_state" pascalStyleName="NewState" name="new state">
+                          <OptionsXRef>enum:object_state</OptionsXRef>
+                        </ShortEnum>
+                        <ShortInteger CStyleName="runtime_region_index" pascalStyleName="RuntimeRegionIndex" name="runtime region index" readOnly="true" />
+                        <StringId CStyleName="effect_marker_name" pascalStyleName="EffectMarkerName" name="effect marker name" />
+                        <Struct CStyleName="damage_effect_marker" pascalStyleName="DamageEffectMarker" name="damage effect marker">
+                          <Layout regolithID="structure:instantaneous_response_damage_effect_marker" tag="irem" internalName="instantaneous_response_damage_effect_marker_struct" backingBlockInternalName="instantaneous_response_damage_effect_marker_struct_block" name="instantaneous_response_damage_effect_marker_struct">
+                            <FieldSet version="0" sizeofValue="0" sizeofSource="0" />
+                            <FieldSet version="1" sizeofValue="4" sizeofSource="sizeof(string_id)" isLatest="true">
+                              <StringId CStyleName="damage_effect_marker_name" pascalStyleName="DamageEffectMarkerName" name="damage effect marker name" />
+                            </FieldSet>
+                          </Layout>
+                        </Struct>
+                        <Explanation name="Response delay" description="If desired, you can specify a delay until the response fires.This delay is pre-empted if another timed response for the same section fires.The delay effect plays while the timer is counting down" />
+                        <Real CStyleName="response_delay" pascalStyleName="ResponseDelay" name="response delay" description="in seconds" />
+                        <TagReference CStyleName="delay_effect" pascalStyleName="DelayEffect" name="delay effect">
+                          <tag>effe</tag>
+                        </TagReference>
+                        <StringId CStyleName="delay_effect_marker_name" pascalStyleName="DelayEffectMarkerName" name="delay effect marker name" />
+                        <Explanation name="Constraint destruction" description="- a response can destroy a single constraint by naming it explicitly.&#xA;- alternatively it can randomly destroy a single constraint from a specified group if the &quot;destroy one group constraint&quot; flag is set&#xA;- also it can destroy all constraints in a specified group if the &quot;destroy all group constraints&quot; flag is set&#xA;" />
+                        <StringId CStyleName="constraintgroup_name" pascalStyleName="ConstraintgroupName" name="constraint/group name" />
+                        <Explanation name="seat ejaculation" />
+                        <StringId CStyleName="ejecting_seat_label" pascalStyleName="EjectingSeatLabel" name="ejecting seat label" />
+                        <Explanation name="skip fraction" description="0.0 always fires, 1.0 never fires" />
+                        <RealFraction CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+                        <Explanation name="destroyed child object marker name" description="when this response fires, any children objects created at the supplied marker name will be destroyed" />
+                        <StringId CStyleName="destroyed_child_object_marker_name" pascalStyleName="DestroyedChildObjectMarkerName" name="destroyed child object marker name" />
+                        <Explanation name="total damage threshold" description="scale on total damage section vitality" />
+                        <RealFraction CStyleName="total_damage_threshold" pascalStyleName="TotalDamageThreshold" name="total damage threshold" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block maxElementCount="0">
+                    <LayoutXRef>block:g_null</LayoutXRef>
+                  </Block>
+                  <Block maxElementCount="0">
+                    <LayoutXRef>block:g_null</LayoutXRef>
+                  </Block>
+                  <Real CStyleName="stun_time" pascalStyleName="StunTime" name="stun time" units="seconds" />
+                  <Real CStyleName="recharge_time" pascalStyleName="RechargeTime" name="recharge time" units="seconds" />
+                  <Pad sizeOfSource="sizeof(real)" length="4" />
+                  <StringId CStyleName="resurrection_restored_region_name" pascalStyleName="ResurrectionRestoredRegionName" name="resurrection restored region name" />
+                  <Pad sizeOfSource="sizeof(short)*2" length="4" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes" readOnly="true" maxElementCount="255" maxElementCountSource="MAXIMUM_NODES_PER_MODEL">
+              <Layout regolithID="block:global_damage_nodes" internalName="global_damage_nodes_block" name="global_damage_nodes_block">
+                <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_damage_node)" isLatest="true">
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Pad sizeOfSource="sizeof(c_global_material_type)" length="2" />
+            <Pad sizeOfSource="sizeof(c_global_material_type)" length="2" />
+            <Pad sizeOfSource="sizeof(real)" length="4" />
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="320" sizeofSource="sizeof(s_model_damage_info)" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:global_damage_info_flags</OptionsXRef>
+            </LongFlags>
+            <StringId CStyleName="global_indirect_material_name" pascalStyleName="GlobalIndirectMaterialName" name="global indirect material name" description="absorbes AOE or child damage" />
+            <CustomShortBlockIndex CStyleName="indirect_damage_section" pascalStyleName="IndirectDamageSection" name="indirect damage section" description="absorbes AOE or child damage" />
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <Pad sizeOfSource="sizeof(real)" length="4" />
+            <CharEnum CStyleName="collision_damage_reporting_type" pascalStyleName="CollisionDamageReportingType" name="collision damage reporting type">
+              <Options regolithID="enum:weapon_damage_type" CStyleName="weapon_damage_type" pascalStyleName="WeaponDamageType">
+                <Enum name="teh guardians11" expertOnly="true" CStyleName="teh_guardians11" pascalStyleName="TehGuardians11" />
+                <Enum name="falling damage" CStyleName="falling_damage" pascalStyleName="FallingDamage" />
+                <Enum name="generic collision damage" CStyleName="generic_collision_damage" pascalStyleName="GenericCollisionDamage" />
+                <Enum name="generic melee damage" CStyleName="generic_melee_damage" pascalStyleName="GenericMeleeDamage" />
+                <Enum name="generic explosion" CStyleName="generic_explosion" pascalStyleName="GenericExplosion" />
+                <Enum name="magnum pistol" CStyleName="magnum_pistol" pascalStyleName="MagnumPistol" />
+                <Enum name="plasma pistol" CStyleName="plasma_pistol" pascalStyleName="PlasmaPistol" />
+                <Enum name="needler" CStyleName="needler" pascalStyleName="Needler" />
+                <Enum name="smg" CStyleName="smg" pascalStyleName="Smg" />
+                <Enum name="plasma rifle" CStyleName="plasma_rifle" pascalStyleName="PlasmaRifle" />
+                <Enum name="battle rifle" CStyleName="battle_rifle" pascalStyleName="BattleRifle" />
+                <Enum name="carbine" CStyleName="carbine" pascalStyleName="Carbine" />
+                <Enum name="shotgun" CStyleName="shotgun" pascalStyleName="Shotgun" />
+                <Enum name="sniper rifle" CStyleName="sniper_rifle" pascalStyleName="SniperRifle" />
+                <Enum name="beam rifle" CStyleName="beam_rifle" pascalStyleName="BeamRifle" />
+                <Enum name="rocket launcher" CStyleName="rocket_launcher" pascalStyleName="RocketLauncher" />
+                <Enum name="flak cannon" CStyleName="flak_cannon" pascalStyleName="FlakCannon" />
+                <Enum name="brute shot" CStyleName="brute_shot" pascalStyleName="BruteShot" />
+                <Enum name="disintegrator" CStyleName="disintegrator" pascalStyleName="Disintegrator" />
+                <Enum name="brute plasma rifle" CStyleName="brute_plasma_rifle" pascalStyleName="BrutePlasmaRifle" />
+                <Enum name="energy sword" CStyleName="energy_sword" pascalStyleName="EnergySword" />
+                <Enum name="frag grenade" CStyleName="frag_grenade" pascalStyleName="FragGrenade" />
+                <Enum name="plasma grenade" CStyleName="plasma_grenade" pascalStyleName="PlasmaGrenade" />
+                <Enum name="flag melee damage" CStyleName="flag_melee_damage" pascalStyleName="FlagMeleeDamage" />
+                <Enum name="bomb melee damage" CStyleName="bomb_melee_damage" pascalStyleName="BombMeleeDamage" />
+                <Enum name="bomb explosion damage" CStyleName="bomb_explosion_damage" pascalStyleName="BombExplosionDamage" />
+                <Enum name="ball melee damage" CStyleName="ball_melee_damage" pascalStyleName="BallMeleeDamage" />
+                <Enum name="human turret" CStyleName="human_turret" pascalStyleName="HumanTurret" />
+                <Enum name="plasma turret" CStyleName="plasma_turret" pascalStyleName="PlasmaTurret" />
+                <Enum name="banshee" CStyleName="banshee" pascalStyleName="Banshee" />
+                <Enum name="ghost" CStyleName="ghost" pascalStyleName="Ghost" />
+                <Enum name="mongoose" CStyleName="mongoose" pascalStyleName="Mongoose" />
+                <Enum name="scorpion" CStyleName="scorpion" pascalStyleName="Scorpion" />
+                <Enum name="spectre driver" CStyleName="spectre_driver" pascalStyleName="SpectreDriver" />
+                <Enum name="spectre gunner" CStyleName="spectre_gunner" pascalStyleName="SpectreGunner" />
+                <Enum name="warthog driver" CStyleName="warthog_driver" pascalStyleName="WarthogDriver" />
+                <Enum name="warthog gunner" CStyleName="warthog_gunner" pascalStyleName="WarthogGunner" />
+                <Enum name="wraith" CStyleName="wraith" pascalStyleName="Wraith" />
+                <Enum name="tank" CStyleName="tank" pascalStyleName="Tank" />
+                <Enum name="sentinel beam" CStyleName="sentinel_beam" pascalStyleName="SentinelBeam" />
+                <Enum name="sentinel rpg" CStyleName="sentinel_rpg" pascalStyleName="SentinelRpg" />
+                <Enum name="teleporter" CStyleName="teleporter" pascalStyleName="Teleporter" />
+                <Enum name="warthog gunner gauss" CStyleName="warthog_gunner_gauss" pascalStyleName="WarthogGunnerGauss" />
+                <Enum name="warthog gunner rocket" CStyleName="warthog_gunner_rocket" pascalStyleName="WarthogGunnerRocket" />
+              </Options>
+            </CharEnum>
+            <CharEnum CStyleName="response_damage_reporting_type" pascalStyleName="ResponseDamageReportingType" name="response damage reporting type">
+              <OptionsXRef>enum:weapon_damage_type</OptionsXRef>
+            </CharEnum>
+            <Pad sizeOfSource="sizeof(byte)*2" length="2" />
+            <Pad sizeOfSource="sizeof(long)*5" length="20" />
+            <Explanation name="body" />
+            <Real CStyleName="maximum_vitality" pascalStyleName="MaximumVitality" name="maximum vitality" />
+            <Real name="minimum stun damage" description="the minimum damage required to stun this object's health" />
+            <Real name="stun time" units="seconds" description="the length of time the health stay stunned (do not recharge) after taking damage" />
+            <Real name="recharge time" units="seconds" description="the length of time it would take for the shields to fully recharge after being completely depleted" />
+            <RealFraction CStyleName="recharge_fraction" pascalStyleName="RechargeFraction" name="recharge fraction" description="0 defaults to 1 - to what maximum level the body health will be allowed to recharge" />
+            <Pad sizeOfSource="sizeof(long)*16" length="64" />
+            <Explanation name="shield" />
+            <TagReference CStyleName="shield_damaged_first_person_shader" pascalStyleName="ShieldDamagedFirstPersonShader" name="shield damaged first person shader">
+              <tag>shad</tag>
+            </TagReference>
+            <TagReference CStyleName="shield_damaged_shader" pascalStyleName="ShieldDamagedShader" name="shield damaged shader">
+              <tag>shad</tag>
+            </TagReference>
+            <Real CStyleName="maximum_shield_vitality" pascalStyleName="MaximumShieldVitality" name="maximum shield vitality" description="the default initial and maximum shield vitality of this object" />
+            <StringId CStyleName="global_shield_material_name" pascalStyleName="GlobalShieldMaterialName" name="global shield material name" tag="sted" />
+            <Real name="minimum stun damage" description="the minimum damage required to stun this object's shields" />
+            <Real name="stun time" units="seconds" description="the length of time the shields stay stunned (do not recharge) after taking damage" />
+            <Real name="recharge time" units="seconds" description="the length of time it would take for the shields to fully recharge after being completely depleted" />
+            <Real CStyleName="shield_damaged_threshold" pascalStyleName="ShieldDamagedThreshold" name="shield damaged threshold" />
+            <TagReference CStyleName="shield_damaged_effect" pascalStyleName="ShieldDamagedEffect" name="shield damaged effect">
+              <tag>effe</tag>
+            </TagReference>
+            <TagReference CStyleName="shield_depleted_effect" pascalStyleName="ShieldDepletedEffect" name="shield depleted effect">
+              <tag>effe</tag>
+            </TagReference>
+            <TagReference CStyleName="shield_recharging_effect" pascalStyleName="ShieldRechargingEffect" name="shield recharging effect">
+              <tag>effe</tag>
+            </TagReference>
+            <Block CStyleName="damage_sections" pascalStyleName="DamageSections" name="damage sections" maxElementCount="16" maxElementCountSource="MAXIMUM_DAMAGE_SECTIONS_PER_MODEL">
+              <LayoutXRef>block:global_damage_section</LayoutXRef>
+            </Block>
+            <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes" readOnly="true" maxElementCount="255" maxElementCountSource="MAXIMUM_NODES_PER_MODEL">
+              <LayoutXRef>block:global_damage_nodes</LayoutXRef>
+            </Block>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="sizeof(real)" length="4" />
+            <Pad sizeOfSource="sizeof(long)" length="4" />
+            <Block CStyleName="damage_seats" pascalStyleName="DamageSeats" name="damage seats" maxElementCount="16" maxElementCountSource="MAXIMUM_DAMAGE_SEAT_INFOS_PER_MODEL">
+              <Layout regolithID="block:damage_seat_info" internalName="damage_seat_info_block" name="damage_seat_info_block">
+                <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_damage_seat_info)" isLatest="true">
+                  <StringId CStyleName="seat_label" pascalStyleName="SeatLabel" name="seat label" blockNameSource="true" />
+                  <RealFraction CStyleName="direct_damage_scale" pascalStyleName="DirectDamageScale" name="direct damage scale" description="0==no damage, 1==full damage" />
+                  <Real CStyleName="damage_transfer_fall_off_radius" pascalStyleName="DamageTransferFallOffRadius" name="damage transfer fall-off radius" />
+                  <Real CStyleName="maximum_transfer_damage_scale" pascalStyleName="MaximumTransferDamageScale" name="maximum transfer damage scale" />
+                  <Real CStyleName="minimum_transfer_damage_scale" pascalStyleName="MinimumTransferDamageScale" name="minimum transfer damage scale" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="damage_constraints" pascalStyleName="DamageConstraints" name="damage constraints" maxElementCount="16" maxElementCountSource="MAXIMUM_DAMAGE_CONSTRAINT_INFOS_PER_MODEL">
+              <Layout regolithID="block:damage_constraint_info" internalName="damage_constraint_info_block" name="damage_constraint_info_block">
+                <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_damage_constraint_info)" isLatest="true">
+                  <StringId CStyleName="physics_model_constraint_name" pascalStyleName="PhysicsModelConstraintName" name="physics model constraint name" />
+                  <StringId CStyleName="damage_constraint_name" pascalStyleName="DamageConstraintName" name="damage constraint name" />
+                  <StringId CStyleName="damage_constraint_group_name" pascalStyleName="DamageConstraintGroupName" name="damage constraint group name" />
+                  <Real CStyleName="group_probability_scale" pascalStyleName="GroupProbabilityScale" name="group probability scale" />
+                  <Pad sizeOfSource="sizeof(short)*2" length="4" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Explanation name="overshield" />
+            <TagReference CStyleName="overshield_first_person_shader" pascalStyleName="OvershieldFirstPersonShader" name="overshield first person shader">
+              <tag>shad</tag>
+            </TagReference>
+            <TagReference CStyleName="overshield_shader" pascalStyleName="OvershieldShader" name="overshield shader">
+              <tag>shad</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="sizeof(struct tag_block)" length="12" />
+      <Block CStyleName="runtime_regions" pascalStyleName="RuntimeRegions" name="runtime regions" expertOnly="true" maxElementCount="16" maxElementCountSource="MAXIMUM_REGIONS_PER_MODEL">
+        <Layout regolithID="block:model_region" internalName="model_region_block" name="model_region_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_model_region)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <CharInteger CStyleName="collision_region_index" pascalStyleName="CollisionRegionIndex" name="collision region index" readOnly="true" />
+            <CharInteger CStyleName="physics_region_index" pascalStyleName="PhysicsRegionIndex" name="physics region index" readOnly="true" />
+            <Pad sizeOfSource="2*sizeof(byte)" length="2" />
+            <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations" readOnly="true" maxElementCount="32" maxElementCountSource="MAXIMUM_PERMUTATIONS_PER_MODEL_REGION">
+              <Layout regolithID="block:model_permutation" internalName="model_permutation_block" name="model_permutation_block">
+                <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(s_model_permutation)" isLatest="true">
+                  <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+                  <ByteFlags CStyleName="flags" pascalStyleName="Flags" name="flags" readOnly="true">
+                    <Options regolithID="enum:model_permutation_flags" CStyleName="model_permutation_flags" pascalStyleName="ModelPermutationFlags">
+                      <Bit name="cannot be chosen randomly" CStyleName="cannot_be_chosen_randomly_bit" pascalStyleName="CannotBeChosenRandomlyBit" />
+                    </Options>
+                  </ByteFlags>
+                  <CharInteger CStyleName="collision_permutation_index" pascalStyleName="CollisionPermutationIndex" name="collision permutation index" readOnly="true" />
+                  <Pad sizeOfSource="2*sizeof(byte)" length="2" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="runtime_nodes" pascalStyleName="RuntimeNodes" name="runtime nodes" expertOnly="true" maxElementCount="255" maxElementCountSource="MAXIMUM_NODES_PER_MODEL">
+        <Layout regolithID="block:model_node" internalName="model_node_block" name="model_node_block">
+          <FieldSet version="0" sizeofValue="92" sizeofSource="sizeof(s_model_node)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" readOnly="true" />
+            <ShortBlockIndex CStyleName="parent_node" pascalStyleName="ParentNode" name="parent node" readOnly="true" blockReference="block:model_node" />
+            <ShortBlockIndex CStyleName="first_child_node" pascalStyleName="FirstChildNode" name="first child node" readOnly="true" blockReference="block:model_node" />
+            <ShortBlockIndex CStyleName="next_sibling_node" pascalStyleName="NextSiblingNode" name="next sibling node" readOnly="true" blockReference="block:model_node" />
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <RealPoint3D CStyleName="default_translation" pascalStyleName="DefaultTranslation" name="default translation" readOnly="true" />
+            <RealQuaternion CStyleName="default_rotation" pascalStyleName="DefaultRotation" name="default rotation" readOnly="true" />
+            <Real CStyleName="default_inverse_scale" pascalStyleName="DefaultInverseScale" name="default inverse scale" readOnly="true" />
+            <RealVector3D CStyleName="default_inverse_forward" pascalStyleName="DefaultInverseForward" name="default inverse forward" readOnly="true" />
+            <RealVector3D CStyleName="default_inverse_left" pascalStyleName="DefaultInverseLeft" name="default inverse left" readOnly="true" />
+            <RealVector3D CStyleName="default_inverse_up" pascalStyleName="DefaultInverseUp" name="default inverse up" readOnly="true" />
+            <RealPoint3D CStyleName="default_inverse_position" pascalStyleName="DefaultInversePosition" name="default inverse position" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="sizeof(dword)" length="4" />
+      <Block CStyleName="model_object_data" pascalStyleName="ModelObjectData" name="model object data" maxElementCount="1">
+        <Layout regolithID="block:model_object_data" internalName="model_object_data_block" name="model_object_data_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_model_object_data)" isLatest="true">
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type" readOnly="true">
+              <Options regolithID="enum:model_object_data_type" CStyleName="model_object_data_type" pascalStyleName="ModelObjectDataType">
+                <Enum name="not set" CStyleName="not_set" pascalStyleName="NotSet" />
+                <Enum name="user defined" CStyleName="user_defined" pascalStyleName="UserDefined" />
+                <Enum name="auto generated" CStyleName="auto_generated" pascalStyleName="AutoGenerated" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="2" length="2" />
+            <RealPoint3D CStyleName="offset" pascalStyleName="Offset" name="offset" readOnly="true" />
+            <Real CStyleName="radius" pascalStyleName="Radius" name="radius" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="348" sizeofSource="sizeof(struct s_model_definition)" isLatest="true">
+      <Explanation name="MODEL" />
+      <Custom name="MODEL_DEFINITION_TAG" tag="hlmt" />
+      <TagReference CStyleName="render_model" pascalStyleName="RenderModel" name="render model">
+        <tag>mode</tag>
+      </TagReference>
+      <TagReference CStyleName="collision_model" pascalStyleName="CollisionModel" name="collision model">
+        <tag>coll</tag>
+      </TagReference>
+      <TagReference CStyleName="animation" pascalStyleName="Animation" name="animation">
+        <tag>jmad</tag>
+      </TagReference>
+      <TagReference CStyleName="physics" pascalStyleName="Physics" name="physics">
+        <tag>phys</tag>
+      </TagReference>
+      <TagReference CStyleName="physics_model" pascalStyleName="PhysicsModel" name="physics_model">
+        <tag>phmo</tag>
+      </TagReference>
+      <Explanation name="level of detail" description="If a model is further away than the LOD reduction distance, it will be reduced to that LOD.&#xA;So the L1 reduction distance should be really long and the L5 reduction distance should be really short.&#xA;This means distances should be in descending order, e.g. 5 4 3 2 1.&#xA;&#xA;Note that if we run out of memory or too many models are on screen at once, the engine may reduce&#xA;models to a lower LOD BEFORE they reach the reduction distance for that LOD.&#xA;&#xA;If a model has a begin fade distance and disappear distance, it will begin fading out at that distance,&#xA;reaching zero alpha and disappearing at the disappear distance. These distances should be greater than all&#xA;of the LOD reduction distances.&#xA;" />
+      <Real CStyleName="disappear_distance" pascalStyleName="DisappearDistance" name="disappear distance" units="world units" />
+      <Real CStyleName="begin_fade_distance" pascalStyleName="BeginFadeDistance" name="begin fade distance" units="world units" />
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <Real CStyleName="reduce_to_l1" pascalStyleName="ReduceToL1" name="reduce to L1" units="world units (super low)" />
+      <Real CStyleName="reduce_to_l2" pascalStyleName="ReduceToL2" name="reduce to L2" units="world units (low)" />
+      <Real CStyleName="reduce_to_l3" pascalStyleName="ReduceToL3" name="reduce to L3" units="world units (medium)" />
+      <Real CStyleName="reduce_to_l4" pascalStyleName="ReduceToL4" name="reduce to L4" units="world units (high)" />
+      <Real CStyleName="reduce_to_l5" pascalStyleName="ReduceToL5" name="reduce to L5" units="world units (super high)" />
+      <Skip sizeOfSource="sizeof(real)" length="4" />
+      <ShortEnum CStyleName="shadow_fade_distance" pascalStyleName="ShadowFadeDistance" name="shadow fade distance">
+        <OptionsXRef>enum:model_shadow_fade_distance</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <Block CStyleName="variants" pascalStyleName="Variants" name="variants" maxElementCount="64" maxElementCountSource="k_maximum_variants_per_model">
+        <LayoutXRef>block:model_variant</LayoutXRef>
+      </Block>
+      <Block CStyleName="materials" pascalStyleName="Materials" name="materials" maxElementCount="32" maxElementCountSource="MAXIMUM_MATERIALS_PER_MODEL">
+        <LayoutXRef>block:model_material</LayoutXRef>
+      </Block>
+      <Block CStyleName="new_damage_info" pascalStyleName="NewDamageInfo" name="new damage info" maxElementCount="1">
+        <LayoutXRef>block:global_damage_info</LayoutXRef>
+      </Block>
+      <Block CStyleName="targets" pascalStyleName="Targets" name="targets" maxElementCount="32" maxElementCountSource="MAXIMUM_MODEL_TARGETS_PER_MODEL">
+        <Layout regolithID="block:model_target" internalName="model_target_block" name="model_target_block">
+          <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(s_model_target)" isLatest="true">
+            <StringId CStyleName="marker_name" pascalStyleName="MarkerName" name="marker name" description="multiple markers become multiple spheres of the same radius" blockNameSource="true" />
+            <Real CStyleName="size" pascalStyleName="Size" name="size" description="sphere radius" />
+            <Angle CStyleName="cone_angle" pascalStyleName="ConeAngle" name="cone angle" description="the target is only visible when viewed within this angle of the marker's x axis" />
+            <CustomShortBlockIndex CStyleName="damage_section" pascalStyleName="DamageSection" name="damage section" description="the target is associated with this damage section" />
+            <ShortBlockIndex CStyleName="variant" pascalStyleName="Variant" name="variant" description="the target will only appear with this variant" blockReference="block:model_variant" />
+            <RealFraction CStyleName="targeting_relevance" pascalStyleName="TargetingRelevance" name="targeting relevance" description="higher relevances turn into stronger magnetisms" />
+            <Struct CStyleName="lock_on_data" pascalStyleName="LockOnData" name="lock-on data">
+              <Layout regolithID="structure:model_target_lock_on_data" tag="MTLO" internalName="model_target_lock_on_data_struct" backingBlockInternalName="model_target_lock_on_data_struct_block" name="model_target_lock_on_data_struct">
+                <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(struct s_model_target_lock_on_data)" isLatest="true">
+                  <Explanation name="lock-on fields" />
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:model_target_lock_flags" CStyleName="model_target_lock_flags" pascalStyleName="ModelTargetLockFlags">
+                      <Bit name="locked by human tracking" CStyleName="locked_by_human_tracking_bit" pascalStyleName="LockedByHumanTrackingBit" />
+                      <Bit name="locked by plasma tracking" CStyleName="locked_by_plasma_tracking_bit" pascalStyleName="LockedByPlasmaTrackingBit" />
+                      <Bit name="headshot" CStyleName="headshot_bit" pascalStyleName="HeadshotBit" />
+                      <Bit name="vulnerable" CStyleName="vulnerable_bit" pascalStyleName="VulnerableBit" />
+                      <Bit name="alwas locked by plasma tracking" CStyleName="alwas_locked_by_plasma_tracking_bit" pascalStyleName="AlwasLockedByPlasmaTrackingBit" />
+                    </Options>
+                  </LongFlags>
+                  <Real CStyleName="lock_on_distance" pascalStyleName="LockOnDistance" name="lock on distance" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="runtime_regions" pascalStyleName="RuntimeRegions" name="runtime regions" expertOnly="true" maxElementCount="16" maxElementCountSource="MAXIMUM_REGIONS_PER_MODEL">
+        <LayoutXRef>block:model_region</LayoutXRef>
+      </Block>
+      <Block CStyleName="runtime_nodes" pascalStyleName="RuntimeNodes" name="runtime nodes" expertOnly="true" maxElementCount="255" maxElementCountSource="MAXIMUM_NODES_PER_MODEL">
+        <LayoutXRef>block:model_node</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="sizeof(dword)" length="4" />
+      <Block CStyleName="model_object_data" pascalStyleName="ModelObjectData" name="model object data" maxElementCount="1">
+        <LayoutXRef>block:model_object_data</LayoutXRef>
+      </Block>
+      <Explanation name="more stuff" />
+      <TagReference CStyleName="default_dialogue" pascalStyleName="DefaultDialogue" name="default dialogue" description="The default dialogue tag for this model (overriden by variants)">
+        <tag>udlg</tag>
+      </TagReference>
+      <TagReference CStyleName="unused" pascalStyleName="Unused" name="UNUSED" readOnly="true" expertOnly="true">
+        <tag>shad</tag>
+      </TagReference>
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:model_active_camouflage_flags" CStyleName="model_active_camouflage_flags" pascalStyleName="ModelActiveCamouflageFlags">
+          <Bit name="active camo always on" CStyleName="active_camo_always_on_bit" pascalStyleName="ActiveCamoAlwaysOnBit" />
+          <Bit name="active camo always merge" CStyleName="active_camo_always_merge_bit" pascalStyleName="ActiveCamoAlwaysMergeBit" />
+          <Bit name="active camo never merge" CStyleName="active_camo_never_merge_bit" pascalStyleName="ActiveCamoNeverMergeBit" />
+        </Options>
+      </LongFlags>
+      <StringId CStyleName="default_dialogue_effect" pascalStyleName="DefaultDialogueEffect" name="default dialogue effect" description="The default dialogue tag for this model (overriden by variants)" />
+      <Array CStyleName="render_only_node_flags" pascalStyleName="RenderOnlyNodeFlags" name="render-only node flags" readOnly="true" expertOnly="true" count="32">
+        <CharInteger />
+      </Array>
+      <Array CStyleName="render_only_section_flags" pascalStyleName="RenderOnlySectionFlags" name="render-only section flags" readOnly="true" expertOnly="true" count="32">
+        <CharInteger />
+      </Array>
+      <LongFlags CStyleName="runtime_flags" pascalStyleName="RuntimeFlags" name="runtime flags" readOnly="true" expertOnly="true">
+        <Options regolithID="enum:model_runtime_flags" CStyleName="model_runtime_flags" pascalStyleName="ModelRuntimeFlags">
+          <Bit name="contains run-time nodes" CStyleName="contains_run_time_nodes_bit" pascalStyleName="ContainsRunTimeNodesBit" />
+        </Options>
+      </LongFlags>
+      <Block CStyleName="scenario_load_parameters" pascalStyleName="ScenarioLoadParameters" name="scenario load parameters" maxElementCount="32" maxElementCountSource="k_scenario_load_maximum_parameter_blocks">
+        <Layout regolithID="block:global_scenario_load_parameters" internalName="global_scenario_load_parameters_block" name="scenario load parameters">
+          <FieldSet version="0" sizeofValue="68" sizeofSource="sizeof(struct s_scenario_load_parameters)" isLatest="true">
+            <Explanation name="SCENARIO LOAD PARAMETERS" description="strip-variant &lt;variant-name&gt;&#xA;strips a given variant out of the model tag&#xA;strip-dialogue&#xA;strips all the dialogue for this model i.e. cinematic only" />
+            <TagReference CStyleName="scenario" pascalStyleName="Scenario" name="scenario" blockNameSource="true">
+              <tag>scnr</tag>
+            </TagReference>
+            <Data CStyleName="parameters" pascalStyleName="Parameters" name="parameters" />
+            <Pad sizeOfSource="8*sizeof(long)" length="32" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="HOLOGRAM" description="hologram shader is applied whenever the control function from it's object is non-zero" />
+      <TagReference CStyleName="hologram_shader" pascalStyleName="HologramShader" name="hologram shader">
+        <tag>shad</tag>
+      </TagReference>
+      <StringId CStyleName="hologram_control_function" pascalStyleName="HologramControlFunction" name="hologram control function" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="wind" name="wind" version="1">
+  <Layout regolithID="block:wind" internalName="wind_block" name="wind">
+    <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(struct wind_definition)" isLatest="true">
+      <RealBounds CStyleName="velocity" pascalStyleName="Velocity" name="velocity" units="world units" description="the wind magnitude in the weather region scales the wind between these bounds" />
+      <RealEulerAngles2D CStyleName="variation_area" pascalStyleName="VariationArea" name="variation area" description="the wind direction varies inside a box defined by these angles on either side of the direction from the weather region." />
+      <Real CStyleName="local_variation_weight" pascalStyleName="LocalVariationWeight" name="local variation weight" />
+      <Real CStyleName="local_variation_rate" pascalStyleName="LocalVariationRate" name="local variation rate" />
+      <Real CStyleName="damping" pascalStyleName="Damping" name="damping" />
+      <Pad sizeOfSource="9*sizeof(long)" length="36" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

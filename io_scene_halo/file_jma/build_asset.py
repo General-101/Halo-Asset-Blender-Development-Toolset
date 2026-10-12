@@ -174,9 +174,9 @@ def update_decimal(value):
     DECIMAL_3 = '\n%0.{decimal_point}f\t%0.{decimal_point}f\t%0.{decimal_point}f'.format(decimal_point=DECIMAL_POINT)
     DECIMAL_4 = '\n%0.{decimal_point}f\t%0.{decimal_point}f\t%0.{decimal_point}f\t%0.{decimal_point}f'.format(decimal_point=DECIMAL_POINT)
 
-def build_asset(context, filepath, report, extension, jma_version, game_title, generate_checksum, folder_structure, fix_rotations, use_maya_sorting, frame_rate_value, scale_value, JMA=None):
+def build_asset(context, filepath, report, extension, jma_version, game_title, generate_checksum, file_checksum, folder_structure, fix_rotations, use_maya_sorting, frame_rate_value, scale_value, JMA=None):
     if not JMA:
-        JMA = process_scene(context, extension, jma_version, game_title, generate_checksum, fix_rotations, use_maya_sorting, scale_value)
+        JMA = process_scene(context, extension, jma_version, game_title, generate_checksum, file_checksum, fix_rotations, use_maya_sorting, scale_value)
         JMA.version = jma_version
         JMA.frame_rate = frame_rate_value
 

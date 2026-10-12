@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="vehc" name="vehicle_collection" version="0">
+  <Layout regolithID="block:vehicle_collection" internalName="vehicle_collection_block" name="vehicle_collection">
+    <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct vehicle_collection_definition)" isLatest="true">
+      <Block CStyleName="vehicle_permutations" pascalStyleName="VehiclePermutations" name="vehicle permutations" maxElementCount="32">
+        <Layout regolithID="block:vehicle_permutation" internalName="vehicle_permutation" name="vehicle_permutation">
+          <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(struct vehicle_permutation_definition)" isLatest="true">
+            <Real CStyleName="weight" pascalStyleName="Weight" name="weight" description="relatively how likely this vehicle will be chosen" />
+            <TagReference CStyleName="vehicle" pascalStyleName="Vehicle" name="vehicle" description="which vehicle to" blockNameSource="true">
+              <tag>vehi</tag>
+            </TagReference>
+            <StringId CStyleName="variant_name" pascalStyleName="VariantName" name="variant name" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <ShortInteger CStyleName="spawn_time_in_seconds_0__default" pascalStyleName="SpawnTimeInSeconds0Default" name="spawn time (in seconds, 0 = default)" />
+      <Pad sizeOfSource="1 * sizeof(short)" length="2" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

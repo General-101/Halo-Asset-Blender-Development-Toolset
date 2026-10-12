@@ -1,0 +1,136 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="item" name="items" version="2">
+  <Layout regolithID="block:items" internalName="items_block" name="items">
+    <FieldSet version="0" sizeofValue="212" sizeofSource="sizeof(struct items_group)" isLatest="true">
+      <TagReference CStyleName="reference" pascalStyleName="Reference" name="reference" />
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="detonates at rest" CStyleName="detonates_at_rest" pascalStyleName="DetonatesAtRest" />
+        </Options>
+      </LongFlags>
+      <Real CStyleName="timer_duration_lower_bound" pascalStyleName="TimerDurationLowerBound" name="timer duration lower bound" />
+      <Real CStyleName="timer_duration_upper_bound" pascalStyleName="TimerDurationUpperBound" name="timer duration upper bound" />
+      <ShortEnum CStyleName="timer_expired_action" pascalStyleName="TimerExpiredAction" name="timer expired action">
+        <Options regolithID="enum:timer_expired_action" CStyleName="timer_expired_action" pascalStyleName="TimerExpiredAction">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="breaks" CStyleName="breaks" pascalStyleName="Breaks" />
+          <Enum name="detonates" CStyleName="detonates" pascalStyleName="Detonates" />
+          <Enum name="sparks" CStyleName="sparks" pascalStyleName="Sparks" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="export_timer_to_attachment" pascalStyleName="ExportTimerToAttachment" name="export timer to attachment">
+        <Options regolithID="enum:export_timer_to_attachment" CStyleName="export_timer_to_attachment" pascalStyleName="ExportTimerToAttachment">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="alpha" CStyleName="alpha" pascalStyleName="Alpha" />
+          <Enum name="beta" CStyleName="beta" pascalStyleName="Beta" />
+          <Enum name="gamma" CStyleName="gamma" pascalStyleName="Gamma" />
+          <Enum name="delta" CStyleName="delta" pascalStyleName="Delta" />
+        </Options>
+      </ShortEnum>
+      <Real CStyleName="arming_time" pascalStyleName="ArmingTime" name="arming time" />
+      <Real CStyleName="fueled_time" pascalStyleName="FueledTime" name="fueled time" />
+      <ShortEnum CStyleName="export_fuel_to_attachment" pascalStyleName="ExportFuelToAttachment" name="export fuel to attachment">
+        <Options regolithID="enum:export_fuel_to_attachment" CStyleName="export_fuel_to_attachment" pascalStyleName="ExportFuelToAttachment">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="alpha" CStyleName="alpha" pascalStyleName="Alpha" />
+          <Enum name="beta" CStyleName="beta" pascalStyleName="Beta" />
+          <Enum name="gamma" CStyleName="gamma" pascalStyleName="Gamma" />
+          <Enum name="delta" CStyleName="delta" pascalStyleName="Delta" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="10" />
+      <Real CStyleName="minimum_oriented_velocity" pascalStyleName="MinimumOrientedVelocity" name="minimum oriented velocity" />
+      <ShortEnum CStyleName="velocity_nonoriented_action" pascalStyleName="VelocityNonorientedAction" name="velocity nonoriented action">
+        <Options regolithID="enum:velocity_nonoriented_action" CStyleName="velocity_nonoriented_action" pascalStyleName="VelocityNonorientedAction">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="breaks" CStyleName="breaks" pascalStyleName="Breaks" />
+          <Enum name="detonates" CStyleName="detonates" pascalStyleName="Detonates" />
+          <Enum name="sparks" CStyleName="sparks" pascalStyleName="Sparks" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="2" />
+      <ShortEnum CStyleName="export_fuel_to_attachment" pascalStyleName="ExportFuelToAttachment" name="export fuel to attachment">
+        <Options regolithID="enum:export_fuel_to_attachment" CStyleName="export_fuel_to_attachment" pascalStyleName="ExportFuelToAttachment">
+          <Enum name="equipment" CStyleName="equipment" pascalStyleName="Equipment" />
+          <Enum name="ammunition" CStyleName="ammunition" pascalStyleName="Ammunition" />
+          <Enum name="backpack" CStyleName="backpack" pascalStyleName="Backpack" />
+          <Enum name="one handed weapon" CStyleName="one_handed_weapon" pascalStyleName="OneHandedWeapon" />
+          <Enum name="two handed weapon" CStyleName="two_handed_weapon" pascalStyleName="TwoHandedWeapon" />
+          <Enum name="secondary weapon" CStyleName="secondary_weapon" pascalStyleName="SecondaryWeapon" />
+        </Options>
+      </ShortEnum>
+      <ShortInteger CStyleName="sort_order" pascalStyleName="SortOrder" name="sort order" />
+      <Pad name="pad" length="32" />
+      <ShortEnum CStyleName="export_fuel_to_attachment" pascalStyleName="ExportFuelToAttachment" name="export fuel to attachment">
+        <Options regolithID="enum:export_fuel_to_attachment" CStyleName="export_fuel_to_attachment" pascalStyleName="ExportFuelToAttachment">
+          <Enum name="kinetic metal" CStyleName="kinetic_metal" pascalStyleName="KineticMetal" />
+          <Enum name="low kinetic energy" CStyleName="low_kinetic_energy" pascalStyleName="LowKineticEnergy" />
+          <Enum name="high kinetic energy" CStyleName="high_kinetic_energy" pascalStyleName="HighKineticEnergy" />
+          <Enum name="shell casing" CStyleName="shell_casing" pascalStyleName="ShellCasing" />
+          <Enum name="small debris" CStyleName="small_debris" pascalStyleName="SmallDebris" />
+          <Enum name="small metallic debris" CStyleName="small_metallic_debris" pascalStyleName="SmallMetallicDebris" />
+          <Enum name="large debris" CStyleName="large_debris" pascalStyleName="LargeDebris" />
+          <Enum name="large metallic debris" CStyleName="large_metallic_debris" pascalStyleName="LargeMetallicDebris" />
+          <Enum name="liquid" CStyleName="liquid" pascalStyleName="Liquid" />
+          <Enum name="unused 0" CStyleName="unused_0" pascalStyleName="Unused0" />
+          <Enum name="unused 1" CStyleName="unused_1" pascalStyleName="Unused1" />
+          <Enum name="unused 2" CStyleName="unused_2" pascalStyleName="Unused2" />
+          <Enum name="unused 3" CStyleName="unused_3" pascalStyleName="Unused3" />
+          <Enum name="unused 4" CStyleName="unused_4" pascalStyleName="Unused4" />
+          <Enum name="unused 5" CStyleName="unused_5" pascalStyleName="Unused5" />
+          <Enum name="unused 6" CStyleName="unused_6" pascalStyleName="Unused6" />
+          <Enum name="unused 7" CStyleName="unused_7" pascalStyleName="Unused7" />
+          <Enum name="unused 8" CStyleName="unused_8" pascalStyleName="Unused8" />
+          <Enum name="unused 9" CStyleName="unused_9" pascalStyleName="Unused9" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="2" />
+      <Real CStyleName="mass_modifier" pascalStyleName="MassModifier" name="mass modifier" />
+      <Real CStyleName="density_modifier" pascalStyleName="DensityModifier" name="density modifier" />
+      <Real CStyleName="minimum_penetration_velocity_modifier" pascalStyleName="MinimumPenetrationVelocityModifier" name="minimum penetration velocity modifier" />
+      <Real CStyleName="minimum_reflection_velocity_modifier" pascalStyleName="MinimumReflectionVelocityModifier" name="minimum reflection velocity modifier" />
+      <Real CStyleName="minimum_penetration_angle_modifier" pascalStyleName="MinimumPenetrationAngleModifier" name="minimum penetration angle modifier" />
+      <Real CStyleName="reflection_velocity_scale_modifier" pascalStyleName="ReflectionVelocityScaleModifier" name="reflection velocity scale modifier" />
+      <Real CStyleName="penetration_velocity_scale_modifier" pascalStyleName="PenetrationVelocityScaleModifier" name="penetration velocity scale modifier" />
+      <Real CStyleName="reflection_error_cone_modifier" pascalStyleName="ReflectionErrorConeModifier" name="reflection error cone modifier" />
+      <Real CStyleName="penetration_error_cone_modifier" pascalStyleName="PenetrationErrorConeModifier" name="penetration error cone modifier" />
+      <Real CStyleName="adhere_after_reflection_fraction" pascalStyleName="AdhereAfterReflectionFraction" name="adhere after reflection fraction" />
+      <Real CStyleName="stick_after_penetration_fraction" pascalStyleName="StickAfterPenetrationFraction" name="stick after penetration fraction" />
+      <Pad name="pad" length="4" />
+      <LongFlags CStyleName="damage_flags" pascalStyleName="DamageFlags" name="damage flags">
+        <Options regolithID="enum:damage_flags" CStyleName="damage_flags" pascalStyleName="DamageFlags">
+          <Bit name="detonates explosives" CStyleName="detonates_explosives" pascalStyleName="DetonatesExplosives" />
+          <Bit name="harmless" CStyleName="harmless" pascalStyleName="Harmless" />
+          <Bit name="fatal" CStyleName="fatal" pascalStyleName="Fatal" />
+          <Bit name="scaled" CStyleName="scaled" pascalStyleName="Scaled" />
+        </Options>
+      </LongFlags>
+      <LongFlags CStyleName="damage_effect_flags" pascalStyleName="DamageEffectFlags" name="damage effect flags">
+        <Options regolithID="enum:damage_effect_flags" CStyleName="damage_effect_flags" pascalStyleName="DamageEffectFlags">
+          <Bit name="poison" CStyleName="poison" pascalStyleName="Poison" />
+          <Bit name="paralysis" CStyleName="paralysis" pascalStyleName="Paralysis" />
+          <Bit name="berserk" CStyleName="berserk" pascalStyleName="Berserk" />
+          <Bit name="stun" CStyleName="stun" pascalStyleName="Stun" />
+          <Bit name="blind" CStyleName="blind" pascalStyleName="Blind" />
+          <Bit name="subdue" CStyleName="subdue" pascalStyleName="Subdue" />
+          <Bit name="disarm" CStyleName="disarm" pascalStyleName="Disarm" />
+        </Options>
+      </LongFlags>
+      <Real CStyleName="minimum_damage" pascalStyleName="MinimumDamage" name="minimum damage" />
+      <Real CStyleName="maximum_damage" pascalStyleName="MaximumDamage" name="maximum damage" />
+      <Real CStyleName="zero_damage_velocity" pascalStyleName="ZeroDamageVelocity" name="zero damage velocity" />
+      <Real CStyleName="maximum_damage_velocity" pascalStyleName="MaximumDamageVelocity" name="maximum damage velocity" />
+      <Pad name="pad" length="4" />
+      <Block CStyleName="effects" pascalStyleName="Effects" name="effects">
+        <Layout regolithID="block:effects" internalName="effects_block" name="effects_block">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <Real CStyleName="minimum_acceleration" pascalStyleName="MinimumAcceleration" name="minimum acceleration" />
+			<Real CStyleName="frequency" pascalStyleName="Frequency" name="frequency" />
+			<Pad name="pad" length="16" />
+			<TagReference CStyleName="effect" pascalStyleName="Effect" name="effect" />
+		  </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

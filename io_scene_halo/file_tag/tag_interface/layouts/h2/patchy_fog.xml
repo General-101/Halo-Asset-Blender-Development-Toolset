@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="fpch" name="patchy_fog" version="1">
+  <Layout regolithID="block:patchy_fog" internalName="patchy_fog_block" name="patchy_fog">
+    <FieldSet version="0" sizeofValue="88" sizeofSource="sizeof(struct s_patchy_fog_definition)" isLatest="true">
+      <Explanation name="PATCHY FOG" description="Use the separate_layer_depths flag carefully, it's expensive!" />
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:patchy_fog_flags" CStyleName="patchy_fog_flags" pascalStyleName="PatchyFogFlags">
+          <Bit name="separate layer depths" CStyleName="separate_layer_depths_bit" pascalStyleName="SeparateLayerDepthsBit" />
+          <Bit name="sort behind transparents" CStyleName="sort_behind_transparents_bit" pascalStyleName="SortBehindTransparentsBit" />
+        </Options>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <UselessPad length="60" />
+      <Explanation name="MOVEMENT MODIFIERS" />
+      <RealFraction CStyleName="rotation_multiplier" pascalStyleName="RotationMultiplier" name="rotation multiplier" units="[0,1]" />
+      <RealFraction CStyleName="strafing_multiplier" pascalStyleName="StrafingMultiplier" name="strafing multiplier" units="[0,1]" />
+      <RealFraction CStyleName="zoom_multiplier" pascalStyleName="ZoomMultiplier" name="zoom multiplier" units="[0,1]" />
+      <UselessPad length="32" />
+      <Explanation name="NOISE MAP" />
+      <Real CStyleName="noise_map_scale" pascalStyleName="NoiseMapScale" name="noise map scale" description="0 defaults to 1" />
+      <TagReference CStyleName="noise_map" pascalStyleName="NoiseMap" name="noise map">
+        <tag>bitm</tag>
+      </TagReference>
+      <Real CStyleName="noise_vertical_scale_forward" pascalStyleName="NoiseVerticalScaleForward" name="noise vertical scale forward" description="0 defaults to 1" />
+      <Real CStyleName="noise_vertical_scale_up" pascalStyleName="NoiseVerticalScaleUp" name="noise vertical scale up" description="0 defaults to 1" />
+      <Real CStyleName="noise_opacity_scale_up" pascalStyleName="NoiseOpacityScaleUp" name="noise opacity scale up" description="0 defaults to 1" />
+      <UselessPad length="20" />
+      <Explanation name="ANIMATION" />
+      <Real CStyleName="animation_period" pascalStyleName="AnimationPeriod" name="animation period" units="seconds" />
+      <UselessPad length="4" />
+      <RealBounds CStyleName="wind_velocity" pascalStyleName="WindVelocity" name="wind velocity" units="world units per second" />
+      <RealBounds CStyleName="wind_period" pascalStyleName="WindPeriod" name="wind period" units="seconds" description="0 defaults to 1" />
+      <RealFraction CStyleName="wind_acceleration_weight" pascalStyleName="WindAccelerationWeight" name="wind acceleration weight" units="[0,1]" />
+      <RealFraction CStyleName="wind_perpendicular_weight" pascalStyleName="WindPerpendicularWeight" name="wind perpendicular weight" units="[0,1]" />
+      <Real CStyleName="wind_constant_velocity_x" pascalStyleName="WindConstantVelocityX" name="wind constant velocity x" units="world units per second" />
+      <Real CStyleName="wind_constant_velocity_y" pascalStyleName="WindConstantVelocityY" name="wind constant velocity y" units="world units per second" />
+      <Real CStyleName="wind_constant_velocity_z" pascalStyleName="WindConstantVelocityZ" name="wind constant velocity z" units="world units per second" />
+      <UselessPad length="20" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,157 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="cdmg" name="continuous_damage_effect" version="1">
+  <Layout regolithID="block:continuous_damage_effect" internalName="continuous_damage_effect_block" name="continuous_damage_effect">
+    <FieldSet version="0" sizeofValue="512" sizeofSource="sizeof(struct continuous_damage_effect_group)" isLatest="true">
+      <RealBounds CStyleName="radius" pascalStyleName="Radius" name="radius" />
+      <Real CStyleName="cutoff_scale" pascalStyleName="CutoffScale" name="cutoff scale" />
+      <Pad name="pad" length="24" />
+      <Explanation name="Vibrate Parameters" />
+      <Struct CStyleName="vibrate_parameters" pascalStyleName="VibrateParameters" name="vibrate parameters">
+        <Layout regolithID="structure:continuous_damage_vibrate_parameters" internalName="continuous_damage_vibrate_parameters_struct" backingBlockInternalName="continuous_damage_vibrate_parameters_struct_block" name="continuous damage vibrate parameters">
+          <FieldSet version="0" sizeofValue="8" isLatest="true">
+            <Real CStyleName="low_frequency" pascalStyleName="LowFrequency" name="low frequency" />
+            <Real CStyleName="high_frequency" pascalStyleName="HighFrequency" name="high frequency" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Pad name="pad" length="24" />
+      <Struct CStyleName="camera_shaking" pascalStyleName="CameraShaking" name="camera shaking">
+        <Layout regolithID="structure:continuous_damage_camera_shaking" internalName="continuous_damage_camera_shaking_struct" backingBlockInternalName="continuous_damage_camera_shaking_struct_block" name="continuous damage camera shaking">
+          <FieldSet version="0" sizeofValue="32" isLatest="true">
+            <Real CStyleName="random_translation" pascalStyleName="RandomTranslation" name="random translation" />
+            <Angle CStyleName="random_rotation" pascalStyleName="RandomRotation" name="random rotation" />
+            <Pad name="pad" length="12" />
+            <ShortEnum CStyleName="wobble_function" pascalStyleName="WobbleFunction" name="wobble function">
+              <Options regolithID="enum:wobble_function" CStyleName="wobble_function" pascalStyleName="WobbleFunction">
+                <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                <Enum name="cosine variable period" CStyleName="cosine_variable_period" pascalStyleName="CosineVariablePeriod" />
+                <Enum name="diagonal wave" CStyleName="diagonal_wave" pascalStyleName="DiagonalWave" />
+                <Enum name="diagonal wave variable period" CStyleName="diagonal_wave_variable_period" pascalStyleName="DiagonalWaveVariablePeriod" />
+                <Enum name="slide" CStyleName="slide" pascalStyleName="Slide" />
+                <Enum name="slide variable period" CStyleName="slide_variable_period" pascalStyleName="SlideVariablePeriod" />
+                <Enum name="noise" CStyleName="noise" pascalStyleName="Noise" />
+                <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+                <Enum name="wander" CStyleName="wander" pascalStyleName="Wander" />
+                <Enum name="spark" CStyleName="spark" pascalStyleName="Spark" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Real CStyleName="wobble_period" pascalStyleName="WobblePeriod" name="wobble period" />
+            <Real CStyleName="wobble_weight" pascalStyleName="WobbleWeight" name="wobble weight" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Pad name="pad" length="4" />
+      <Pad name="pad" length="20" />
+      <Pad name="pad" length="8" />
+      <Pad name="pad" length="160" />
+      <Explanation name="Damage" />
+      <Struct CStyleName="damage" pascalStyleName="Damage" name="damage">
+        <Layout regolithID="structure:damage_effect_damage" internalName="damage_effect_damage_struct" backingBlockInternalName="damage_effect_damage_struct_block" name="damage effect damage">
+          <FieldSet version="0" sizeofValue="220" isLatest="true">
+            <ShortEnum CStyleName="side_effect" pascalStyleName="SideEffect" name="side effect">
+              <Options regolithID="enum:side_effect" CStyleName="side_effect" pascalStyleName="SideEffect">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="harmless" CStyleName="harmless" pascalStyleName="Harmless" />
+                <Enum name="lethal to the unsuspecting" CStyleName="lethal_to_the_unsuspecting" pascalStyleName="LethalToTheUnsuspecting" />
+                <Enum name="emp" CStyleName="emp" pascalStyleName="Emp" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="category" pascalStyleName="Category" name="category">
+              <Options regolithID="enum:category" CStyleName="category" pascalStyleName="Category">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="falling" CStyleName="falling" pascalStyleName="Falling" />
+                <Enum name="bullet" CStyleName="bullet" pascalStyleName="Bullet" />
+                <Enum name="grenade" CStyleName="grenade" pascalStyleName="Grenade" />
+                <Enum name="high explosive" CStyleName="high_explosive" pascalStyleName="HighExplosive" />
+                <Enum name="sniper" CStyleName="sniper" pascalStyleName="Sniper" />
+                <Enum name="melee" CStyleName="melee" pascalStyleName="Melee" />
+                <Enum name="flame" CStyleName="flame" pascalStyleName="Flame" />
+                <Enum name="mounted weapon" CStyleName="mounted_weapon" pascalStyleName="MountedWeapon" />
+                <Enum name="vehicle" CStyleName="vehicle" pascalStyleName="Vehicle" />
+                <Enum name="plasma" CStyleName="plasma" pascalStyleName="Plasma" />
+                <Enum name="needle" CStyleName="needle" pascalStyleName="Needle" />
+                <Enum name="shotgun" CStyleName="shotgun" pascalStyleName="Shotgun" />
+              </Options>
+            </ShortEnum>
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="does not hurt owner" CStyleName="does_not_hurt_owner_bit" pascalStyleName="DoesNotHurtOwnerBit" />
+                <Bit name="can cause headshots" CStyleName="can_cause_headshots_bit" pascalStyleName="CanCauseHeadshotsBit" />
+                <Bit name="pings resistant units" CStyleName="pings_resistant_units_bit" pascalStyleName="PingsResistantUnitsBit" />
+                <Bit name="does not hurt friends" CStyleName="does_not_hurt_friends_bit" pascalStyleName="DoesNotHurtFriendsBit" />
+                <Bit name="does not ping units" CStyleName="does_not_ping_units_bit" pascalStyleName="DoesNotPingUnitsBit" />
+                <Bit name="detonates explosives" CStyleName="detonates_explosives_bit" pascalStyleName="DetonatesExplosivesBit" />
+                <Bit name="only hurts shields" CStyleName="only_hurts_shields_bit" pascalStyleName="OnlyHurtsShieldsBit" />
+                <Bit name="causes flaming death" CStyleName="causes_flaming_death_bit" pascalStyleName="CausesFlamingDeathBit" />
+                <Bit name="damage indicators always point down" CStyleName="damage_indicators_always_point_down_bit" pascalStyleName="DamageIndicatorsAlwaysPointDownBit" />
+                <Bit name="skips shields" CStyleName="skips_shields_bit" pascalStyleName="SkipsShieldsBit" />
+                <Bit name="only hurts one infection form" CStyleName="only_hurts_one_infection_form_bit" pascalStyleName="OnlyHurtsOneInfectionFormBit" />
+                <Bit name="can cause multiplayer headshots" CStyleName="can_cause_multiplayer_headshots_bit" pascalStyleName="CanCauseMultiplayerHeadshotsBit" />
+                <Bit name="infection form pop" CStyleName="infection_form_pop_bit" pascalStyleName="InfectionFormPopBit" />
+                <Bit name="ignore seat scale for dir dmg" CStyleName="ignore_seat_scale_for_dir_dmg_bit" pascalStyleName="IgnoreSeatScaleForDirDmgBit" />
+                <Bit name="forces hard ping" CStyleName="forces_hard_ping_bit" pascalStyleName="ForcesHardPingBit" />
+                <Bit name="does not hurt players" CStyleName="does_not_hurt_players_bit" pascalStyleName="DoesNotHurtPlayersBit" />
+                <Bit name="use 3d instantaneous acceleration" CStyleName="use_3d_instantaneous_acceleration_bit" pascalStyleName="Use3dInstantaneousAccelerationBit" />
+                <Bit name="allow any non-zero acceleration value" CStyleName="allow_any_non_zero_acceleration_value_bit" pascalStyleName="AllowAnyNonZeroAccelerationValueBit" />
+              </Options>
+            </LongFlags>
+            <Real CStyleName="aoe_core_radius" pascalStyleName="AoeCoreRadius" name="AOE core radius" />
+            <Real CStyleName="lower_bound" pascalStyleName="LowerBound" name="lower bound" />
+            <RealBounds CStyleName="upper_bound" pascalStyleName="UpperBound" name="upper bound" />
+            <Real CStyleName="vehicle_passthrough_penalty" pascalStyleName="VehiclePassthroughPenalty" name="vehicle passthrough penalty" />
+            <Real CStyleName="active_camouflage_damage" pascalStyleName="ActiveCamouflageDamage" name="active camouflage damage" />
+            <Real CStyleName="stun" pascalStyleName="Stun" name="stun" />
+            <Real CStyleName="maximum_stun" pascalStyleName="MaximumStun" name="maximum stun" />
+            <Real CStyleName="stun_time" pascalStyleName="StunTime" name="stun time" />
+            <Pad name="pad" length="4" />
+            <RealVector3D CStyleName="instantaneous_acceleration" pascalStyleName="InstantaneousAcceleration" name="instantaneous acceleration" />
+            <Explanation name="Modifiers" description="Damage is multiplied by these modifiers based on the material the damage is applied to." />
+            <Struct CStyleName="modifiers" pascalStyleName="Modifiers" name="modifiers">
+              <Layout regolithID="structure:damage_effect_material_modifier" internalName="damage_effect_material_modifier_struct" backingBlockInternalName="damage_effect_material_modifier_struct_block" name="damage effect material modifier">
+                <FieldSet version="0" sizeofValue="160" isLatest="true">
+                  <Real CStyleName="dirt" pascalStyleName="Dirt" name="dirt" />
+                  <Real CStyleName="sand" pascalStyleName="Sand" name="sand" />
+                  <Real CStyleName="stone" pascalStyleName="Stone" name="stone" />
+                  <Real CStyleName="snow" pascalStyleName="Snow" name="snow" />
+                  <Real CStyleName="wood" pascalStyleName="Wood" name="wood" />
+                  <Real CStyleName="metal_hollow" pascalStyleName="MetalHollow" name="metal hollow" />
+                  <Real CStyleName="metal_thin" pascalStyleName="MetalThin" name="metal thin" />
+                  <Real CStyleName="metal_thick" pascalStyleName="MetalThick" name="metal thick" />
+                  <Real CStyleName="rubber" pascalStyleName="Rubber" name="rubber" />
+                  <Real CStyleName="glass" pascalStyleName="Glass" name="glass" />
+                  <Real CStyleName="force_field" pascalStyleName="ForceField" name="force field" />
+                  <Real CStyleName="grunt" pascalStyleName="Grunt" name="grunt" />
+                  <Real CStyleName="hunter_armor" pascalStyleName="HunterArmor" name="hunter armor" />
+                  <Real CStyleName="hunter_skin" pascalStyleName="HunterSkin" name="hunter skin" />
+                  <Real CStyleName="elite" pascalStyleName="Elite" name="elite" />
+                  <Real CStyleName="jackal" pascalStyleName="Jackal" name="jackal" />
+                  <Real CStyleName="jackal_energy_shield" pascalStyleName="JackalEnergyShield" name="jackal energy shield" />
+                  <Real CStyleName="engineer_skin" pascalStyleName="EngineerSkin" name="engineer skin" />
+                  <Real CStyleName="engineer_force_field" pascalStyleName="EngineerForceField" name="engineer force field" />
+                  <Real CStyleName="flood_combat_form" pascalStyleName="FloodCombatForm" name="flood combat form" />
+                  <Real CStyleName="flood_carrier_form" pascalStyleName="FloodCarrierForm" name="flood carrier form" />
+                  <Real CStyleName="cyborg_armor" pascalStyleName="CyborgArmor" name="cyborg armor" />
+                  <Real CStyleName="cyborg_energy_shield" pascalStyleName="CyborgEnergyShield" name="cyborg energy shield" />
+                  <Real CStyleName="human_armor" pascalStyleName="HumanArmor" name="human armor" />
+                  <Real CStyleName="human_skin" pascalStyleName="HumanSkin" name="human skin" />
+                  <Real CStyleName="sentinel" pascalStyleName="Sentinel" name="sentinel" />
+                  <Real CStyleName="monitor" pascalStyleName="Monitor" name="monitor" />
+                  <Real CStyleName="plastic" pascalStyleName="Plastic" name="plastic" />
+                  <Real CStyleName="water" pascalStyleName="Water" name="water" />
+                  <Real CStyleName="leaves" pascalStyleName="Leaves" name="leaves" />
+                  <Real CStyleName="elite_energy_shield" pascalStyleName="EliteEnergyShield" name="elite energy shield" />
+                  <Real CStyleName="ice" pascalStyleName="Ice" name="ice" />
+                  <Real CStyleName="hunter_shield" pascalStyleName="HunterShield" name="hunter shield" />
+                  <Pad name="pad" length="28" />
+                </FieldSet>
+              </Layout>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Struct>
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="pphy" name="point_physics" version="1">
+  <Layout regolithID="block:point_physics" internalName="point_physics_block" name="point_physics">
+    <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(struct point_physics_definition)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:physics_flags" CStyleName="physics_flags" pascalStyleName="PhysicsFlags">
+          <Bit name="UNUSED" CStyleName="unused0_bit" pascalStyleName="Unused0Bit" />
+          <Bit name="collides with structures" CStyleName="collides_with_structures_bit" pascalStyleName="CollidesWithStructuresBit" />
+          <Bit name="collides with water surface" CStyleName="collides_with_water_surface_bit" pascalStyleName="CollidesWithWaterSurfaceBit" />
+          <Bit name="uses simple wind" description="the wind on this point won't have high-frequency variations" CStyleName="uses_simple_wind_bit" pascalStyleName="UsesSimpleWindBit" />
+          <Bit name="uses damped wind" description="the wind on this point will be artificially slow" CStyleName="uses_damped_wind_bit" pascalStyleName="UsesDampedWindBit" />
+          <Bit name="no gravity" description="the point is not affected by gravity" CStyleName="no_gravity_bit" pascalStyleName="NoGravityBit" />
+        </Options>
+      </LongFlags>
+      <Pad sizeOfSource="7*sizeof(long)" length="28" />
+      <Real CStyleName="density" pascalStyleName="Density" name="density" units="g/mL" />
+      <Real CStyleName="air_friction" pascalStyleName="AirFriction" name="air friction" />
+      <Real CStyleName="water_friction" pascalStyleName="WaterFriction" name="water friction" />
+      <Real CStyleName="surface_friction" pascalStyleName="SurfaceFriction" name="surface friction" description="when hitting the ground or interior, percentage of velocity lost in one collision" />
+      <Real CStyleName="elasticity" pascalStyleName="Elasticity" name="elasticity" description="0.0 is inelastic collisions (no bounce) 1.0 is perfectly elastic (reflected velocity equals incoming velocity)" />
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <Explanation name="Densities (g/mL)" description="air        0.0011 (g/mL)&#xA;snow       0.128&#xA;cork       0.24&#xA;cedar      0.43&#xA;oak        0.866&#xA;ice        0.897&#xA;water      1.0&#xA;soil       1.1&#xA;cotton     1.491&#xA;dry earth  1.52&#xA;sand       1.7&#xA;granite    2.4&#xA;glass      2.5&#xA;iron       7.65&#xA;steel      7.77&#xA;lead       11.37&#xA;uranium    18.74&#xA;gold       19.3&#xA;" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

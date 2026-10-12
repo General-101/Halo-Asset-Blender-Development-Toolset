@@ -1,0 +1,411 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="unhi" name="unit_hud_interface" version="1">
+  <Layout regolithID="block:unit_hud_interface" internalName="unit_hud_interface_block" name="unit_hud_interface">
+    <FieldSet version="0" sizeofValue="1404" sizeofSource="sizeof(struct unit_hud_interface_definition)" isLatest="true">
+      <Custom name="UNIT_HUD_INTERFACE_VIEW_CUSTOM_ID" tag="uhis" />
+      <Explanation name="Weapon hud screen alignment" />
+      <ShortEnum name="anchor">
+        <OptionsXRef>enum:hud_anchor</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(long)*8" length="32" />
+      <Explanation name="Unit hud background" />
+      <Point2D name="anchor offset" />
+      <Real name="width scale" />
+      <Real name="height scale" />
+      <WordFlags name="scaling flags">
+        <OptionsXRef>enum:hud_scaling_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(long)*5" length="20" />
+      <TagReference name="interface bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <ArgbColor name="default color" />
+      <ArgbColor name="flashing color" />
+      <Real name="flash period" />
+      <Real name="flash delay" description="time between flashes" />
+      <ShortInteger name="number of flashes" />
+      <WordFlags name="flash flags">
+        <OptionsXRef>enum:hud_flash_flags</OptionsXRef>
+      </WordFlags>
+      <Real name="flash length" description="time of each flash" />
+      <ArgbColor name="disabled color" />
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <ShortInteger name="sequence index" />
+      <Pad sizeOfSource="1*sizeof(short)" length="2" />
+      <Block name="multitex overlay" maxElementCount="30" maxElementCountSource="MAXIMUM_NUMBER_OF_MULTITEXTURE_OVERLAYS">
+        <LayoutXRef>block:global_hud_multitexture_overlay_definition</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <Explanation name="Shield panel background" />
+      <Point2D name="anchor offset" />
+      <Real name="width scale" />
+      <Real name="height scale" />
+      <WordFlags name="scaling flags">
+        <OptionsXRef>enum:hud_scaling_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(long)*5" length="20" />
+      <TagReference name="interface bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <ArgbColor name="default color" />
+      <ArgbColor name="flashing color" />
+      <Real name="flash period" />
+      <Real name="flash delay" description="time between flashes" />
+      <ShortInteger name="number of flashes" />
+      <WordFlags name="flash flags">
+        <OptionsXRef>enum:hud_flash_flags</OptionsXRef>
+      </WordFlags>
+      <Real name="flash length" description="time of each flash" />
+      <ArgbColor name="disabled color" />
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <ShortInteger name="sequence index" />
+      <Pad sizeOfSource="1*sizeof(short)" length="2" />
+      <Block name="multitex overlay" maxElementCount="30" maxElementCountSource="MAXIMUM_NUMBER_OF_MULTITEXTURE_OVERLAYS">
+        <LayoutXRef>block:global_hud_multitexture_overlay_definition</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <Explanation name="Shield panel meter" />
+      <Point2D name="anchor offset" />
+      <Real name="width scale" />
+      <Real name="height scale" />
+      <WordFlags name="scaling flags">
+        <OptionsXRef>enum:hud_scaling_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(long)*5" length="20" />
+      <TagReference name="meter bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <RgbColor name="color at meter minimum" />
+      <RgbColor name="color at meter maximum" />
+      <RgbColor name="flash color" />
+      <ArgbColor name="empty color" />
+      <ByteFlags name="flags">
+        <Options regolithID="enum:hud_flags" CStyleName="hud_flags" pascalStyleName="HudFlags">
+          <Bit name="use min/max for state changes" CStyleName="use_minmax_for_state_changes_bit" pascalStyleName="UseMinmaxForStateChangesBit" />
+          <Bit name="interpolate between min/max flash colors as state changes" CStyleName="interpolate_between_minmax_flash_colors_as_state_changes_bit" pascalStyleName="InterpolateBetweenMinmaxFlashColorsAsStateChangesBit" />
+          <Bit name="interpolate color along hsv space" CStyleName="interpolate_color_along_hsv_space_bit" pascalStyleName="InterpolateColorAlongHsvSpaceBit" />
+          <Bit name="...more colors for hsv interpolation" CStyleName="more_colors_for_hsv_interpolation_bit" pascalStyleName="MoreColorsForHsvInterpolationBit" />
+          <Bit name="invert interpolation" CStyleName="invert_interpolation_bit" pascalStyleName="InvertInterpolationBit" />
+        </Options>
+      </ByteFlags>
+      <CharInteger name="minumum meter value" />
+      <ShortInteger name="sequence index" />
+      <CharInteger name="alpha multiplier" />
+      <CharInteger name="alpha bias" />
+      <ShortInteger name="value scale" description="used for non-integral values, i.e. health and shields" />
+      <Real name="opacity" />
+      <Real name="translucency" />
+      <ArgbColor name="disabled color" />
+      <Block maxElementCount="0">
+        <LayoutXRef>block:g_null</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <RgbColor CStyleName="overcharge_minimum_color" pascalStyleName="OverchargeMinimumColor" name="overcharge minimum color" />
+      <RgbColor CStyleName="overcharge_maximum_color" pascalStyleName="OverchargeMaximumColor" name="overcharge maximum color" />
+      <RgbColor CStyleName="overcharge_flash_color" pascalStyleName="OverchargeFlashColor" name="overcharge flash color" />
+      <RgbColor CStyleName="overcharge_empty_color" pascalStyleName="OverchargeEmptyColor" name="overcharge empty color" />
+      <Pad sizeOfSource="sizeof(long)*4" length="16" />
+      <Explanation name="Health panel background" />
+      <Point2D name="anchor offset" />
+      <Real name="width scale" />
+      <Real name="height scale" />
+      <WordFlags name="scaling flags">
+        <OptionsXRef>enum:hud_scaling_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(long)*5" length="20" />
+      <TagReference name="interface bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <ArgbColor name="default color" />
+      <ArgbColor name="flashing color" />
+      <Real name="flash period" />
+      <Real name="flash delay" description="time between flashes" />
+      <ShortInteger name="number of flashes" />
+      <WordFlags name="flash flags">
+        <OptionsXRef>enum:hud_flash_flags</OptionsXRef>
+      </WordFlags>
+      <Real name="flash length" description="time of each flash" />
+      <ArgbColor name="disabled color" />
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <ShortInteger name="sequence index" />
+      <Pad sizeOfSource="1*sizeof(short)" length="2" />
+      <Block name="multitex overlay" maxElementCount="30" maxElementCountSource="MAXIMUM_NUMBER_OF_MULTITEXTURE_OVERLAYS">
+        <LayoutXRef>block:global_hud_multitexture_overlay_definition</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <Explanation name="Health panel meter" />
+      <Point2D name="anchor offset" />
+      <Real name="width scale" />
+      <Real name="height scale" />
+      <WordFlags name="scaling flags">
+        <OptionsXRef>enum:hud_scaling_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(long)*5" length="20" />
+      <TagReference name="meter bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <RgbColor name="color at meter minimum" />
+      <RgbColor name="color at meter maximum" />
+      <RgbColor name="flash color" />
+      <ArgbColor name="empty color" />
+      <ByteFlags name="flags">
+        <OptionsXRef>enum:hud_flags</OptionsXRef>
+      </ByteFlags>
+      <CharInteger name="minumum meter value" />
+      <ShortInteger name="sequence index" />
+      <CharInteger name="alpha multiplier" />
+      <CharInteger name="alpha bias" />
+      <ShortInteger name="value scale" description="used for non-integral values, i.e. health and shields" />
+      <Real name="opacity" />
+      <Real name="translucency" />
+      <ArgbColor name="disabled color" />
+      <Block maxElementCount="0">
+        <LayoutXRef>block:g_null</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <RgbColor CStyleName="medium_health_left_color" pascalStyleName="MediumHealthLeftColor" name="medium health left color" />
+      <Real CStyleName="max_color_health_fraction_cutoff" pascalStyleName="MaxColorHealthFractionCutoff" name="max color health fraction cutoff" />
+      <Real CStyleName="min_color_health_fraction_cutoff" pascalStyleName="MinColorHealthFractionCutoff" name="min color health fraction cutoff" />
+      <Pad sizeOfSource="sizeof(long)*5" length="20" />
+      <Explanation name="Motion sensor background" />
+      <Point2D name="anchor offset" />
+      <Real name="width scale" />
+      <Real name="height scale" />
+      <WordFlags name="scaling flags">
+        <OptionsXRef>enum:hud_scaling_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(long)*5" length="20" />
+      <TagReference name="interface bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <ArgbColor name="default color" />
+      <ArgbColor name="flashing color" />
+      <Real name="flash period" />
+      <Real name="flash delay" description="time between flashes" />
+      <ShortInteger name="number of flashes" />
+      <WordFlags name="flash flags">
+        <OptionsXRef>enum:hud_flash_flags</OptionsXRef>
+      </WordFlags>
+      <Real name="flash length" description="time of each flash" />
+      <ArgbColor name="disabled color" />
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <ShortInteger name="sequence index" />
+      <Pad sizeOfSource="1*sizeof(short)" length="2" />
+      <Block name="multitex overlay" maxElementCount="30" maxElementCountSource="MAXIMUM_NUMBER_OF_MULTITEXTURE_OVERLAYS">
+        <LayoutXRef>block:global_hud_multitexture_overlay_definition</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <Explanation name="Motion sensor foreground" />
+      <Point2D name="anchor offset" />
+      <Real name="width scale" />
+      <Real name="height scale" />
+      <WordFlags name="scaling flags">
+        <OptionsXRef>enum:hud_scaling_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(long)*5" length="20" />
+      <TagReference name="interface bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <ArgbColor name="default color" />
+      <ArgbColor name="flashing color" />
+      <Real name="flash period" />
+      <Real name="flash delay" description="time between flashes" />
+      <ShortInteger name="number of flashes" />
+      <WordFlags name="flash flags">
+        <OptionsXRef>enum:hud_flash_flags</OptionsXRef>
+      </WordFlags>
+      <Real name="flash length" description="time of each flash" />
+      <ArgbColor name="disabled color" />
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <ShortInteger name="sequence index" />
+      <Pad sizeOfSource="1*sizeof(short)" length="2" />
+      <Block name="multitex overlay" maxElementCount="30" maxElementCountSource="MAXIMUM_NUMBER_OF_MULTITEXTURE_OVERLAYS">
+        <LayoutXRef>block:global_hud_multitexture_overlay_definition</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <Pad sizeOfSource="sizeof(long)*8" length="32" />
+      <Explanation name="Motion sensor center" description="The blips use this as a reference point" />
+      <Point2D name="anchor offset" />
+      <Real name="width scale" />
+      <Real name="height scale" />
+      <WordFlags name="scaling flags">
+        <OptionsXRef>enum:hud_scaling_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(long)*5" length="20" />
+      <Explanation name="Auxilary overlays" />
+      <ShortEnum name="anchor">
+        <OptionsXRef>enum:hud_anchor</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(long)*8" length="32" />
+      <Block CStyleName="overlays" pascalStyleName="Overlays" name="overlays" maxElementCount="16">
+        <Layout regolithID="block:unit_hud_auxilary_overlay" internalName="unit_hud_auxilary_overlay_block" name="unit_hud_auxilary_overlay_block">
+          <FieldSet version="0" sizeofValue="132" sizeofSource="sizeof(struct auxilary_overlay_definition)" isLatest="true">
+            <Point2D CStyleName="anchor_offset" pascalStyleName="AnchorOffset" name="anchor offset" />
+            <Real CStyleName="width_scale" pascalStyleName="WidthScale" name="width scale" />
+            <Real CStyleName="height_scale" pascalStyleName="HeightScale" name="height scale" />
+            <WordFlags CStyleName="scaling_flags" pascalStyleName="ScalingFlags" name="scaling flags">
+              <OptionsXRef>enum:hud_scaling_flags</OptionsXRef>
+            </WordFlags>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="sizeof(long)*5" length="20" />
+            <TagReference CStyleName="interface_bitmap" pascalStyleName="InterfaceBitmap" name="interface bitmap">
+              <tag>bitm</tag>
+            </TagReference>
+            <ArgbColor CStyleName="default_color" pascalStyleName="DefaultColor" name="default color" />
+            <ArgbColor CStyleName="flashing_color" pascalStyleName="FlashingColor" name="flashing color" />
+            <Real CStyleName="flash_period" pascalStyleName="FlashPeriod" name="flash period" />
+            <Real CStyleName="flash_delay" pascalStyleName="FlashDelay" name="flash delay" description="time between flashes" />
+            <ShortInteger CStyleName="number_of_flashes" pascalStyleName="NumberOfFlashes" name="number of flashes" />
+            <WordFlags CStyleName="flash_flags" pascalStyleName="FlashFlags" name="flash flags">
+              <OptionsXRef>enum:hud_flash_flags</OptionsXRef>
+            </WordFlags>
+            <Real CStyleName="flash_length" pascalStyleName="FlashLength" name="flash length" description="time of each flash" />
+            <ArgbColor CStyleName="disabled_color" pascalStyleName="DisabledColor" name="disabled color" />
+            <Pad sizeOfSource="1*sizeof(long)" length="4" />
+            <ShortInteger CStyleName="sequence_index" pascalStyleName="SequenceIndex" name="sequence index" />
+            <Pad sizeOfSource="1*sizeof(short)" length="2" />
+            <Block CStyleName="multitex_overlay" pascalStyleName="MultitexOverlay" name="multitex overlay" maxElementCount="30" maxElementCountSource="MAXIMUM_NUMBER_OF_MULTITEXTURE_OVERLAYS">
+              <LayoutXRef>block:global_hud_multitexture_overlay_definition</LayoutXRef>
+            </Block>
+            <Pad sizeOfSource="1*sizeof(long)" length="4" />
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <Options regolithID="enum:unit_hud_icon_type" CStyleName="unit_hud_icon_type" pascalStyleName="UnitHudIconType">
+                <Enum name="team icon" CStyleName="team_icon" pascalStyleName="TeamIcon" />
+              </Options>
+            </ShortEnum>
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:unit_hud_auxiliary_overlay_flags" CStyleName="unit_hud_auxiliary_overlay_flags" pascalStyleName="UnitHudAuxiliaryOverlayFlags">
+                <Bit name="use team color" CStyleName="use_team_color_bit" pascalStyleName="UseTeamColorBit" />
+              </Options>
+            </WordFlags>
+            <Pad sizeOfSource="6*sizeof(long)" length="24" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="4*sizeof(long)" length="16" />
+      <Explanation name="Hud warning sounds" />
+      <Block CStyleName="sounds" pascalStyleName="Sounds" name="sounds" maxElementCount="12" maxElementCountSource="MAXIMUM_NUMBER_OF_HUD_SOUNDS">
+        <Layout regolithID="block:unit_hud_sound" internalName="unit_hud_sound_block" name="unit_hud_sound_block">
+          <FieldSet version="0" sizeofValue="56" sizeofSource="sizeof(struct sound_hud_element_definition)" isLatest="true">
+            <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound" blockNameSource="true">
+              <tag />
+            </TagReference>
+            <LongFlags CStyleName="latched_to" pascalStyleName="LatchedTo" name="latched to">
+              <Options regolithID="enum:unit_hud_sound_latch_level" CStyleName="unit_hud_sound_latch_level" pascalStyleName="UnitHudSoundLatchLevel">
+                <Bit name="shield recharging" CStyleName="shield_recharging_bit" pascalStyleName="ShieldRechargingBit" />
+                <Bit name="shield damaged" CStyleName="shield_damaged_bit" pascalStyleName="ShieldDamagedBit" />
+                <Bit name="shield low" CStyleName="shield_low_bit" pascalStyleName="ShieldLowBit" />
+                <Bit name="shield empty" CStyleName="shield_empty_bit" pascalStyleName="ShieldEmptyBit" />
+                <Bit name="health low" CStyleName="health_low_bit" pascalStyleName="HealthLowBit" />
+                <Bit name="health empty" CStyleName="health_empty_bit" pascalStyleName="HealthEmptyBit" />
+                <Bit name="health minor damage" CStyleName="health_minor_damage_bit" pascalStyleName="HealthMinorDamageBit" />
+                <Bit name="health major damage" CStyleName="health_major_damage_bit" pascalStyleName="HealthMajorDamageBit" />
+              </Options>
+            </LongFlags>
+            <Real CStyleName="scale" pascalStyleName="Scale" name="scale" />
+            <Pad sizeOfSource="8*sizeof(long)" length="32" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="Auxilary hud meters" />
+      <Block CStyleName="meters" pascalStyleName="Meters" name="meters" maxElementCount="16">
+        <Layout regolithID="block:unit_hud_auxilary_panel" internalName="unit_hud_auxilary_panel_block" name="unit_hud_auxilary_panel_block">
+          <FieldSet version="0" sizeofValue="324" sizeofSource="sizeof(struct auxilary_meter_definition)" isLatest="true">
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <Options regolithID="enum:hud_auxiliary_panel_light_type" CStyleName="hud_auxiliary_panel_light_type" pascalStyleName="HudAuxiliaryPanelLightType">
+                <Enum name="integrated light" CStyleName="integrated_light" pascalStyleName="IntegratedLight" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="4*sizeof(long)" length="16" />
+            <Explanation name="BACKGROUND" />
+            <Point2D name="anchor offset" />
+            <Real name="width scale" />
+            <Real name="height scale" />
+            <WordFlags name="scaling flags">
+              <OptionsXRef>enum:hud_scaling_flags</OptionsXRef>
+            </WordFlags>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="sizeof(long)*5" length="20" />
+            <TagReference CStyleName="interface_bitmap" pascalStyleName="InterfaceBitmap" name="interface bitmap">
+              <tag>bitm</tag>
+            </TagReference>
+            <ArgbColor CStyleName="default_color" pascalStyleName="DefaultColor" name="default color" />
+            <ArgbColor CStyleName="flashing_color" pascalStyleName="FlashingColor" name="flashing color" />
+            <Real CStyleName="flash_period" pascalStyleName="FlashPeriod" name="flash period" />
+            <Real CStyleName="flash_delay" pascalStyleName="FlashDelay" name="flash delay" description="time between flashes" />
+            <ShortInteger CStyleName="number_of_flashes" pascalStyleName="NumberOfFlashes" name="number of flashes" />
+            <WordFlags CStyleName="flash_flags" pascalStyleName="FlashFlags" name="flash flags">
+              <OptionsXRef>enum:hud_flash_flags</OptionsXRef>
+            </WordFlags>
+            <Real CStyleName="flash_length" pascalStyleName="FlashLength" name="flash length" description="time of each flash" />
+            <ArgbColor name="disabled color" />
+            <Pad sizeOfSource="1*sizeof(long)" length="4" />
+            <ShortInteger name="sequence index" />
+            <Pad sizeOfSource="1*sizeof(short)" length="2" />
+            <Block CStyleName="multitex_overlay" pascalStyleName="MultitexOverlay" name="multitex overlay" maxElementCount="30" maxElementCountSource="MAXIMUM_NUMBER_OF_MULTITEXTURE_OVERLAYS">
+              <LayoutXRef>block:global_hud_multitexture_overlay_definition</LayoutXRef>
+            </Block>
+            <Pad sizeOfSource="1*sizeof(long)" length="4" />
+            <Explanation name="METER" />
+            <Point2D name="anchor offset" />
+            <Real name="width scale" />
+            <Real name="height scale" />
+            <WordFlags name="scaling flags">
+              <OptionsXRef>enum:hud_scaling_flags</OptionsXRef>
+            </WordFlags>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="sizeof(long)*5" length="20" />
+            <TagReference CStyleName="meter_bitmap" pascalStyleName="MeterBitmap" name="meter bitmap">
+              <tag>bitm</tag>
+            </TagReference>
+            <RgbColor CStyleName="color_at_meter_minimum" pascalStyleName="ColorAtMeterMinimum" name="color at meter minimum" />
+            <RgbColor CStyleName="color_at_meter_maximum" pascalStyleName="ColorAtMeterMaximum" name="color at meter maximum" />
+            <RgbColor CStyleName="flash_color" pascalStyleName="FlashColor" name="flash color" />
+            <ArgbColor CStyleName="empty_color" pascalStyleName="EmptyColor" name="empty color" />
+            <ByteFlags name="flags">
+              <OptionsXRef>enum:hud_flags</OptionsXRef>
+            </ByteFlags>
+            <CharInteger CStyleName="minumum_meter_value" pascalStyleName="MinumumMeterValue" name="minumum meter value" />
+            <ShortInteger name="sequence index" />
+            <CharInteger CStyleName="alpha_multiplier" pascalStyleName="AlphaMultiplier" name="alpha multiplier" />
+            <CharInteger CStyleName="alpha_bias" pascalStyleName="AlphaBias" name="alpha bias" />
+            <ShortInteger CStyleName="value_scale" pascalStyleName="ValueScale" name="value scale" description="used for non-integral values, i.e. health and shields" />
+            <Real CStyleName="opacity" pascalStyleName="Opacity" name="opacity" />
+            <Real CStyleName="translucency" pascalStyleName="Translucency" name="translucency" />
+            <ArgbColor name="disabled color" />
+            <Block maxElementCount="0">
+              <LayoutXRef>block:g_null</LayoutXRef>
+            </Block>
+            <Pad sizeOfSource="1*sizeof(long)" length="4" />
+            <Real CStyleName="minimum_fraction_cutoff" pascalStyleName="MinimumFractionCutoff" name="minimum fraction cutoff" />
+            <LongFlags name="flags">
+              <Options regolithID="enum:unit_hud_auxiliary_panel_flags" CStyleName="unit_hud_auxiliary_panel_flags" pascalStyleName="UnitHudAuxiliaryPanelFlags">
+                <Bit name="show only when active" CStyleName="show_only_when_active_bit" pascalStyleName="ShowOnlyWhenActiveBit" />
+                <Bit name="flash once if activated while disabled" CStyleName="flash_once_if_activated_while_disabled_bit" pascalStyleName="FlashOnceIfActivatedWhileDisabledBit" />
+              </Options>
+            </LongFlags>
+            <Pad sizeOfSource="sizeof(long)*6" length="24" />
+            <Pad sizeOfSource="16*sizeof(long)" length="64" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="NEW hud" />
+      <TagReference CStyleName="new_hud" pascalStyleName="NewHud" name="new hud">
+        <tag>nhdt</tag>
+      </TagReference>
+      <Pad sizeOfSource="sizeof(long)*89" length="356" />
+      <Pad sizeOfSource="sizeof(long)*12" length="48" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="metr" name="meter" version="1">
+  <Layout regolithID="block:meter" internalName="meter_block" name="meter">
+    <FieldSet version="0" sizeofValue="172" sizeofSource="sizeof(struct meter_definition)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:meter_flags" CStyleName="meter_flags" pascalStyleName="MeterFlags" />
+      </LongFlags>
+      <TagReference CStyleName="stencil_bitmaps" pascalStyleName="StencilBitmaps" name="stencil bitmaps" description="two bitmaps specifying the mask and the meter levels">
+        <tag>bitm</tag>
+      </TagReference>
+      <TagReference CStyleName="source_bitmap" pascalStyleName="SourceBitmap" name="source bitmap" description="optional bitmap to draw into the unmasked regions of the meter (modulated by the colors below)">
+        <tag>bitm</tag>
+      </TagReference>
+      <ShortInteger CStyleName="stencil_sequence_index" pascalStyleName="StencilSequenceIndex" name="stencil sequence index" />
+      <ShortInteger CStyleName="source_sequence_index" pascalStyleName="SourceSequenceIndex" name="source sequence index" />
+      <Pad sizeOfSource="4*sizeof(long)" length="16" />
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+      <ShortEnum CStyleName="interpolate_colors" pascalStyleName="InterpolateColors" name="interpolate colors...">
+        <Options regolithID="enum:meter_interpolate_colors_method" CStyleName="meter_interpolate_colors_method" pascalStyleName="MeterInterpolateColorsMethod">
+          <Enum name="linearly" CStyleName="linearly" pascalStyleName="Linearly" />
+          <Enum name="faster near empty" CStyleName="faster_near_empty" pascalStyleName="FasterNearEmpty" />
+          <Enum name="faster near full" CStyleName="faster_near_full" pascalStyleName="FasterNearFull" />
+          <Enum name="through random noise" CStyleName="through_random_noise" pascalStyleName="ThroughRandomNoise" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="anchor_colors" pascalStyleName="AnchorColors" name="anchor colors...">
+        <Options regolithID="enum:meter_anchor_colors" CStyleName="meter_anchor_colors" pascalStyleName="MeterAnchorColors">
+          <Enum name="at both ends" CStyleName="at_both_ends" pascalStyleName="AtBothEnds" />
+          <Enum name="at empty" CStyleName="at_empty" pascalStyleName="AtEmpty" />
+          <Enum name="at full" CStyleName="at_full" pascalStyleName="AtFull" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="2*sizeof(long)" length="8" />
+      <RealArgbColor CStyleName="empty_color" pascalStyleName="EmptyColor" name="empty color" />
+      <RealArgbColor CStyleName="full_color" pascalStyleName="FullColor" name="full color" />
+      <Pad sizeOfSource="5*sizeof(long)" length="20" />
+      <Real CStyleName="unmask_distance" pascalStyleName="UnmaskDistance" name="unmask distance" units="meter units" description="fade from fully masked to fully unmasked this distance beyond full (and below empty)" />
+      <Real CStyleName="mask_distance" pascalStyleName="MaskDistance" name="mask distance" units="meter units" description="fade from fully unmasked to fully masked this distance below full (and beyond empty)" />
+      <Pad sizeOfSource="5*sizeof(long)" length="20" />
+      <Data CStyleName="encoded_stencil" pascalStyleName="EncodedStencil" name="encoded stencil" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

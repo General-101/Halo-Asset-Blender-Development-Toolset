@@ -57,7 +57,7 @@ def model_fixup(context, threshold):
     edge_split = global_functions.EdgeSplit(True, False, 0.523599, True)
     for obj in object_list:
         if obj.type== 'MESH':
-            mesh_processing.add_modifier(context, obj, False, edge_split, None)
+            mesh_processing.add_modifier(context, obj, False, edge_split, None, None)
             if not obj.data in processed_mesh_list:
                 processed_mesh_list.append(obj.data)
                 mesh_processing.select_object(context, obj)

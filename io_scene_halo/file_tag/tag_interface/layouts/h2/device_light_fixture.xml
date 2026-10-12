@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="lifi" parent="devi" name="device_light_fixture" version="1">
+  <Layout regolithID="block:device_light_fixture" internalName="device_light_fixture_block" name="device_light_fixture">
+    <FieldSet version="0" sizeofValue="408" sizeofSource="k_device_fixture_size" parentVersion="0" isLatest="true">
+      <Explanation name="$$$ LIGHT FIXTURE $$$" />
+      <UselessPad length="64" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

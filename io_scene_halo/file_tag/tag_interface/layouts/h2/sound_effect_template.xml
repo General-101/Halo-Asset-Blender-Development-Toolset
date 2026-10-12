@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="&lt;fx&gt;" name="sound_effect_template" version="1">
+  <Layout regolithID="block:sound_effect_template" internalName="sound_effect_template_block" name="sound_effect_template">
+    <FieldSet version="0" sizeofValue="44" sizeofSource="sizeof(s_sound_effect_template_definition)">
+      <StringId CStyleName="dsp_effect" pascalStyleName="DspEffect" name="dsp effect" />
+      <Explanation name="WARNING" description="DON'T MODIFY THIS TAG UNLESS YOU KNOW WHAT YOU ARE DOING" />
+      <Data CStyleName="explanation" pascalStyleName="Explanation" name="explanation" />
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:sound_effect_flags" CStyleName="sound_effect_flags" pascalStyleName="SoundEffectFlags">
+          <Bit name="use high level parameters" CStyleName="use_high_level_parameters_bit" pascalStyleName="UseHighLevelParametersBit" />
+          <Bit name="custom parameters" CStyleName="custom_parameters_bit" pascalStyleName="CustomParametersBit" />
+        </Options>
+      </LongFlags>
+      <ShortInteger />
+      <ShortInteger />
+      <Block CStyleName="parameters" pascalStyleName="Parameters" name="parameters" maxElementCount="128" maxElementCountSource="k_maximum_number_of_sound_effect_parameters">
+        <Layout regolithID="block:sound_effect_template_parameter" internalName="sound_effect_template_parameter_block" name="sound_effect_template_parameter_block">
+          <FieldSet version="0" sizeofValue="40" sizeofSource="sizeof(s_sound_effect_template_parameter_definition)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" />
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <Options regolithID="enum:sound_effect_template_parameter_type" CStyleName="sound_effect_template_parameter_type" pascalStyleName="SoundEffectTemplateParameterType">
+                <Enum name="integer" CStyleName="integer" pascalStyleName="Integer" />
+                <Enum name="real" CStyleName="real" pascalStyleName="Real" />
+                <Enum name="filter type" CStyleName="filter_type" pascalStyleName="FilterType" />
+              </Options>
+            </ShortEnum>
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:sound_effect_template_parameter_flags" CStyleName="sound_effect_template_parameter_flags" pascalStyleName="SoundEffectTemplateParameterFlags">
+                <Bit name="expose as function" CStyleName="expose_as_function_bit" pascalStyleName="ExposeAsFunctionBit" />
+              </Options>
+            </WordFlags>
+            <LongInteger CStyleName="hardware_offset" pascalStyleName="HardwareOffset" name="hardware offset" />
+            <LongInteger CStyleName="default_enum_integer_value" pascalStyleName="DefaultEnumIntegerValue" name="default enum integer value" />
+            <Real CStyleName="default_scalar_value" pascalStyleName="DefaultScalarValue" name="default scalar value" />
+            <Custom name="default function" tag="fned" />
+            <Struct CStyleName="default_function" pascalStyleName="DefaultFunction" name="default function">
+              <LayoutXRef>structure:mapping_function</LayoutXRef>
+            </Struct>
+            <Real CStyleName="minimum_scalar_value" pascalStyleName="MinimumScalarValue" name="minimum scalar value" />
+            <Real CStyleName="maximum_scalar_value" pascalStyleName="MaximumScalarValue" name="maximum scalar value" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="40" sizeofSource="sizeof(struct s_sound_effect_template_collection)" isLatest="true">
+      <Block CStyleName="template_collection" pascalStyleName="TemplateCollection" name="template collection" maxElementCount="8" maxElementCountSource="k_maximum_number_of_sound_effect_templates">
+        <Layout regolithID="block:sound_effect_templates" internalName="sound_effect_templates_block" name="sound_effect_templates_block">
+          <FieldSet version="0" sizeofValue="44" sizeofSource="sizeof(s_sound_effect_template_definition)" isLatest="true">
+            <StringId CStyleName="dsp_effect" pascalStyleName="DspEffect" name="dsp effect" />
+            <Explanation name="WARNING" description="DON'T MODIFY THIS TAG UNLESS YOU KNOW WHAT YOU ARE DOING" />
+            <Data CStyleName="explanation" pascalStyleName="Explanation" name="explanation" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:sound_effect_flags</OptionsXRef>
+            </LongFlags>
+            <ShortInteger />
+            <ShortInteger />
+            <Block CStyleName="parameters" pascalStyleName="Parameters" name="parameters" maxElementCount="128" maxElementCountSource="k_maximum_number_of_sound_effect_parameters">
+              <LayoutXRef>block:sound_effect_template_parameter</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <StringId CStyleName="input_effect_name" pascalStyleName="InputEffectName" name="input effect name" />
+      <Block CStyleName="additional_sound_inputs" pascalStyleName="AdditionalSoundInputs" name="additional sound inputs" maxElementCount="1">
+        <Layout regolithID="block:sound_effect_template_additional_sound_input" internalName="sound_effect_template_additional_sound_input_block" name="sound_effect_template_additional_sound_input_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_sound_effect_template_sound_input_definition)" isLatest="true">
+            <StringId CStyleName="dsp_effect" pascalStyleName="DspEffect" name="dsp effect" />
+            <Custom name="low frequency sound" tag="fned" />
+            <Struct CStyleName="low_frequency_sound" pascalStyleName="LowFrequencySound" name="low frequency sound">
+              <LayoutXRef>structure:mapping_function</LayoutXRef>
+            </Struct>
+            <Real CStyleName="time_period" pascalStyleName="TimePeriod" name="time period" units="seconds" tag="fn**" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block maxElementCount="1">
+        <Layout regolithID="block:platform_sound_effect_template_collection" internalName="platform_sound_effect_template_collection_block" name="platform_sound_effect_template_collection_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_platform_sound_effect_template_collection)" isLatest="true">
+            <Block CStyleName="platform_effect_templates" pascalStyleName="PlatformEffectTemplates" name="platform effect templates" maxElementCount="8" maxElementCountSource="k_maximum_number_of_sound_effect_templates">
+              <Layout regolithID="block:platform_sound_effect_template" internalName="platform_sound_effect_template_block" name="platform_sound_effect_template_block">
+                <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(s_platform_sound_effect_template)" isLatest="true">
+                  <StringId CStyleName="input_dsp_effect_name" pascalStyleName="InputDspEffectName" name="input dsp effect name" />
+                  <Pad sizeOfSource="sizeof(s_platform_sound_effect_header)" length="12" />
+                  <Block CStyleName="components" pascalStyleName="Components" name="components" maxElementCount="16" maxElementCountSource="k_maximum_number_of_sound_effect_components">
+                    <Layout regolithID="block:platform_sound_effect_template_component" internalName="platform_sound_effect_template_component_block" name="platform_sound_effect_template_component_block">
+                      <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_platform_sound_effect_template_component)" isLatest="true">
+                        <LongEnum CStyleName="value_type" pascalStyleName="ValueType" name="value type">
+                          <OptionsXRef>enum:platform_sound_effect_input_type</OptionsXRef>
+                        </LongEnum>
+                        <Real CStyleName="default_value" pascalStyleName="DefaultValue" name="default value" />
+                        <Real CStyleName="minimum_value" pascalStyleName="MinimumValue" name="minimum value" />
+                        <Real CStyleName="maximum_value" pascalStyleName="MaximumValue" name="maximum value" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <StringId CStyleName="input_dsp_effect_name" pascalStyleName="InputDspEffectName" name="input dsp effect name" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

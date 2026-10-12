@@ -1,0 +1,717 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="sbsp" name="scenario_structure_bsp" version="5">
+  <Layout regolithID="block:scenario_structure_bsp" internalName="scenario_structure_bsp_block" name="scenario_structure_bsp">
+    <FieldSet version="0" sizeofValue="648" sizeofSource="sizeof(struct scenario_structure_bsp_group)" isLatest="true">
+      <TagReference CStyleName="lightmaps_bitmap" pascalStyleName="LightmapsBitmap" name="lightmaps bitmap">
+        <tag>bitmap</tag>
+      </TagReference>
+      <Real CStyleName="vehicle_floor" pascalStyleName="VehicleFloor" name="vehicle floor" />
+      <Real CStyleName="vehicle_ceiling" pascalStyleName="VehicleCeiling" name="vehicle ceiling" />
+      <Pad name="pad" length="20" />
+      <RealRgbColor CStyleName="default_ambient_color" pascalStyleName="DefaultAmbientColor" name="default ambient color" />
+      <Pad name="pad" length="4" />
+      <RealRgbColor CStyleName="default_distant_light_0_color" pascalStyleName="DefaultDistantLight0Color" name="default distant light 0 color" />
+      <RealVector3D CStyleName="default_distant_light_0_direction" pascalStyleName="DefaultDistantLight0Direction" name="default distant light 0 direction" />
+      <RealRgbColor CStyleName="default_distant_light_1_color" pascalStyleName="DefaultDistantLight1Color" name="default distant light 1 color" />
+      <RealVector3D CStyleName="default_distant_light_1_direction" pascalStyleName="DefaultDistantLight1Direction" name="default distant light 1 direction" />
+      <Pad name="pad" length="12" />
+      <RealArgbColor CStyleName="default_reflection_tint" pascalStyleName="DefaultReflectionTint" name="default reflection tint" />
+      <RealVector3D CStyleName="default_shadow_vector" pascalStyleName="DefaultShadowVector" name="default shadow vector" />
+      <RealRgbColor CStyleName="default_shadow_color" pascalStyleName="DefaultShadowColor" name="default shadow color" />
+      <Pad name="pad" length="4" />
+      <Block CStyleName="collision_materials" pascalStyleName="CollisionMaterials" name="collision materials" maxElementCount="512">
+        <Layout regolithID="block:collision materials" internalName="collision materials_block" name="collision materials_block">
+          <FieldSet version="0" sizeofValue="20" isLatest="true">
+            <TagReference CStyleName="shader" pascalStyleName="Shader" name="shader">
+              <tag>shader</tag>
+            </TagReference>
+            <Pad name="pad" length="2" />
+            <ShortEnum CStyleName="material" pascalStyleName="Material" name="material" cacheOnly="true">
+              <Options regolithID="enum:material" CStyleName="material" pascalStyleName="Material">
+                <Enum name="dirt" CStyleName="dirt" pascalStyleName="Dirt" />
+                <Enum name="sand" CStyleName="sand" pascalStyleName="Sand" />
+                <Enum name="stone" CStyleName="stone" pascalStyleName="Stone" />
+                <Enum name="snow" CStyleName="snow" pascalStyleName="Snow" />
+                <Enum name="wood" CStyleName="wood" pascalStyleName="Wood" />
+                <Enum name="metal hollow" CStyleName="metal_hollow" pascalStyleName="MetalHollow" />
+                <Enum name="metal thin" CStyleName="metal_thin" pascalStyleName="MetalThin" />
+                <Enum name="metal thick" CStyleName="metal_thick" pascalStyleName="MetalThick" />
+                <Enum name="rubber" CStyleName="rubber" pascalStyleName="Rubber" />
+                <Enum name="glass" CStyleName="glass" pascalStyleName="Glass" />
+                <Enum name="force field" CStyleName="force_field" pascalStyleName="ForceField" />
+                <Enum name="grunt" CStyleName="grunt" pascalStyleName="Grunt" />
+                <Enum name="hunter armor" CStyleName="hunter_armor" pascalStyleName="HunterArmor" />
+                <Enum name="hunter skin" CStyleName="hunter_skin" pascalStyleName="HunterSkin" />
+                <Enum name="elite" CStyleName="elite" pascalStyleName="Elite" />
+                <Enum name="jackal" CStyleName="jackal" pascalStyleName="Jackal" />
+                <Enum name="jackal energy shield" CStyleName="jackal_energy_shield" pascalStyleName="JackalEnergyShield" />
+                <Enum name="engineer skin" CStyleName="engineer_skin" pascalStyleName="EngineerSkin" />
+                <Enum name="engineer force field" CStyleName="engineer_force_field" pascalStyleName="EngineerForceField" />
+                <Enum name="flood combat form" CStyleName="flood_combat_form" pascalStyleName="FloodCombatForm" />
+                <Enum name="flood carrier form" CStyleName="flood_carrier_form" pascalStyleName="FloodCarrierForm" />
+                <Enum name="cyborg armor" CStyleName="cyborg_armor" pascalStyleName="CyborgArmor" />
+                <Enum name="cyborg energy shield" CStyleName="cyborg_energy_shield" pascalStyleName="CyborgEnergyShield" />
+                <Enum name="human armor" CStyleName="human_armor" pascalStyleName="HumanArmor" />
+                <Enum name="human skin" CStyleName="human_skin" pascalStyleName="HumanSkin" />
+                <Enum name="sentinel" CStyleName="sentinel" pascalStyleName="Sentinel" />
+                <Enum name="monitor" CStyleName="monitor" pascalStyleName="Monitor" />
+                <Enum name="plastic" CStyleName="plastic" pascalStyleName="Plastic" />
+                <Enum name="water" CStyleName="water" pascalStyleName="Water" />
+                <Enum name="leaves" CStyleName="leaves" pascalStyleName="Leaves" />
+                <Enum name="elite energy shield" CStyleName="elite_energy_shield" pascalStyleName="EliteEnergyShield" />
+                <Enum name="ice" CStyleName="ice" pascalStyleName="Ice" />
+                <Enum name="hunter shield" CStyleName="hunter_shield" pascalStyleName="HunterShield" />
+              </Options>
+            </ShortEnum>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="collision_bsp" pascalStyleName="CollisionBsp" name="collision bsp" maxElementCount="1">
+        <Layout regolithID="block:collision bsp" internalName="collision bsp_block" name="collision bsp_block">
+          <FieldSet version="0" sizeofValue="96" isLatest="true">
+            <Block CStyleName="bsp3d_nodes" pascalStyleName="Bsp3dNodes" name="bsp3d nodes" maxElementCount="131072">
+              <Layout regolithID="block:bsp3d nodes" internalName="bsp3d nodes_block" name="bsp3d nodes_block">
+                <FieldSet version="0" sizeofValue="12" isLatest="true">
+                  <LongInteger CStyleName="plane" pascalStyleName="Plane" name="plane" unsigned="true" />
+                  <LongInteger CStyleName="back_child" pascalStyleName="BackChild" name="back child" unsigned="true" description="refers to a BSP3D node if not signed and a leaf if sign bit is set; null if 0xFFFFFFFF" />
+                  <LongInteger CStyleName="front_child" pascalStyleName="FrontChild" name="front child" unsigned="true" description="refers to a BSP3D node if not signed and a leaf if sign bit is set; null if 0xFFFFFFFF" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="planes" pascalStyleName="Planes" name="planes" maxElementCount="65536">
+              <Layout regolithID="block:planes" internalName="planes_block" name="planes_block">
+                <FieldSet version="0" sizeofValue="16" isLatest="true">
+                  <RealPlane3D CStyleName="plane" pascalStyleName="Plane" name="plane" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="leaves" pascalStyleName="Leaves" name="leaves" maxElementCount="65536">
+              <Layout regolithID="block:leaves" internalName="leaves_block" name="leaves_block">
+                <FieldSet version="0" sizeofValue="8" isLatest="true">
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                      <Bit name="contains double sided surfaces" CStyleName="contains_double_sided_surfaces_bit" pascalStyleName="ContainsDoubleSidedSurfacesBit" />
+                    </Options>
+                  </WordFlags>
+                  <ShortInteger CStyleName="bsp2d_reference_count" pascalStyleName="Bsp2dReferenceCount" name="bsp2d reference count" unsigned="true" />
+                  <LongInteger CStyleName="first_bsp2d_reference" pascalStyleName="FirstBsp2dReference" name="first bsp2d reference" unsigned="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="bsp2d_references" pascalStyleName="Bsp2dReferences" name="bsp2d references" maxElementCount="131072">
+              <Layout regolithID="block:bsp2d references" internalName="bsp2d references_block" name="bsp2d references_block">
+                <FieldSet version="0" sizeofValue="8" isLatest="true">
+                  <LongInteger CStyleName="plane" pascalStyleName="Plane" name="plane" unsigned="true" />
+                  <LongInteger CStyleName="bsp2d_node" pascalStyleName="Bsp2dNode" name="bsp2d node" unsigned="true" description="refers to a BSP2D node if not signed and a surface if sign bit is set; null if 0xFFFFFFFF" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="bsp2d_nodes" pascalStyleName="Bsp2dNodes" name="bsp2d nodes" maxElementCount="65535">
+              <Layout regolithID="block:bsp2d nodes" internalName="bsp2d nodes_block" name="bsp2d nodes_block">
+                <FieldSet version="0" sizeofValue="20" isLatest="true">
+                  <RealPlane2D CStyleName="plane" pascalStyleName="Plane" name="plane" />
+                  <LongInteger CStyleName="left_child" pascalStyleName="LeftChild" name="left child" unsigned="true" description="refers to a BSP2D node if not signed and a surface if sign bit is set; null if 0xFFFFFFFF" />
+                  <LongInteger CStyleName="right_child" pascalStyleName="RightChild" name="right child" unsigned="true" description="refers to a BSP2D node if not signed and a surface if sign bit is set; null if 0xFFFFFFFF" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="surfaces" pascalStyleName="Surfaces" name="surfaces" maxElementCount="131072">
+              <Layout regolithID="block:surfaces" internalName="surfaces_block" name="surfaces_block">
+                <FieldSet version="0" sizeofValue="12" isLatest="true">
+                  <LongInteger CStyleName="plane" pascalStyleName="Plane" name="plane" unsigned="true" />
+                  <LongInteger CStyleName="first_edge" pascalStyleName="FirstEdge" name="first edge" unsigned="true" />
+                  <ByteFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                      <Bit name="two sided" CStyleName="two_sided_bit" pascalStyleName="TwoSidedBit" />
+                      <Bit name="invisible" CStyleName="invisible_bit" pascalStyleName="InvisibleBit" />
+                      <Bit name="climbable" CStyleName="climbable_bit" pascalStyleName="ClimbableBit" />
+                      <Bit name="breakable" CStyleName="breakable_bit" pascalStyleName="BreakableBit" />
+                    </Options>
+                  </ByteFlags>
+                  <CharInteger CStyleName="breakable_surface" pascalStyleName="BreakableSurface" name="breakable surface" />
+                  <ShortInteger CStyleName="material" pascalStyleName="Material" name="material" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="edges" pascalStyleName="Edges" name="edges" maxElementCount="262144">
+              <Layout regolithID="block:edges" internalName="edges_block" name="edges_block">
+                <FieldSet version="0" sizeofValue="24" isLatest="true">
+                  <LongInteger CStyleName="start_vertex" pascalStyleName="StartVertex" name="start vertex" unsigned="true" />
+                  <LongInteger CStyleName="end_vertex" pascalStyleName="EndVertex" name="end vertex" unsigned="true" />
+                  <LongInteger CStyleName="forward_edge" pascalStyleName="ForwardEdge" name="forward edge" unsigned="true" />
+                  <LongInteger CStyleName="reverse_edge" pascalStyleName="ReverseEdge" name="reverse edge" unsigned="true" />
+                  <LongInteger CStyleName="left_surface" pascalStyleName="LeftSurface" name="left surface" unsigned="true" />
+                  <LongInteger CStyleName="right_surface" pascalStyleName="RightSurface" name="right surface" unsigned="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" maxElementCount="131072">
+              <Layout regolithID="block:vertices" internalName="vertices_block" name="vertices_block">
+                <FieldSet version="0" sizeofValue="16" isLatest="true">
+                  <RealVector3D CStyleName="point" pascalStyleName="Point" name="point" />
+                  <LongInteger CStyleName="first_edge" pascalStyleName="FirstEdge" name="first edge" unsigned="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes" maxElementCount="131072">
+        <Layout regolithID="block:nodes" internalName="nodes_block" name="nodes_block">
+          <FieldSet version="0" sizeofValue="6" isLatest="true">
+            <ShortInteger CStyleName="node_stuff" pascalStyleName="NodeStuff" name="node stuff" unsigned="true" />
+            <ShortInteger CStyleName="node_stuff" pascalStyleName="NodeStuff" name="node stuff" unsigned="true" />
+            <ShortInteger CStyleName="node_stuff" pascalStyleName="NodeStuff" name="node stuff" unsigned="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <RealBounds CStyleName="world_bounds_x" pascalStyleName="WorldBoundsX" name="world bounds x" />
+      <RealBounds CStyleName="world_bounds_y" pascalStyleName="WorldBoundsY" name="world bounds y" />
+      <RealBounds CStyleName="world_bounds_z" pascalStyleName="WorldBoundsZ" name="world bounds z" />
+      <Block CStyleName="leaves" pascalStyleName="Leaves" name="leaves" maxElementCount="65536">
+        <Layout regolithID="block:leaves" internalName="leaves_block" name="leaves_block">
+          <FieldSet version="0" sizeofValue="16" isLatest="true">
+            <ShortInteger CStyleName="vertices" pascalStyleName="Vertices" name="vertices" unsigned="true" />
+            <ShortInteger CStyleName="vertices" pascalStyleName="Vertices" name="vertices" unsigned="true" />
+            <ShortInteger CStyleName="vertices" pascalStyleName="Vertices" name="vertices" unsigned="true" />
+            <Pad name="pad" length="2" />
+            <ShortInteger CStyleName="cluster" pascalStyleName="Cluster" name="cluster" />
+            <ShortInteger CStyleName="surface_reference_count" pascalStyleName="SurfaceReferenceCount" name="surface reference count" />
+            <LongInteger CStyleName="surface_references" pascalStyleName="SurfaceReferences" name="surface references" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="leaf_surfaces" pascalStyleName="LeafSurfaces" name="leaf surfaces" maxElementCount="262144">
+        <Layout regolithID="block:leaf surfaces" internalName="leaf surfaces_block" name="leaf surfaces_block">
+          <FieldSet version="0" sizeofValue="8" isLatest="true">
+            <LongInteger CStyleName="surface" pascalStyleName="Surface" name="surface" />
+            <LongInteger CStyleName="node" pascalStyleName="Node" name="node" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="surfaces" pascalStyleName="Surfaces" name="surfaces" maxElementCount="131072">
+        <Layout regolithID="block:surfaces" internalName="surfaces_block" name="surfaces_block">
+          <FieldSet version="0" sizeofValue="6" isLatest="true">
+            <ShortInteger CStyleName="vertex0_index" pascalStyleName="Vertex0Index" name="vertex0 index" />
+            <ShortInteger CStyleName="vertex1_index" pascalStyleName="Vertex1Index" name="vertex1 index" />
+            <ShortInteger CStyleName="vertex2_index" pascalStyleName="Vertex2Index" name="vertex2 index" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="lightmaps" pascalStyleName="Lightmaps" name="lightmaps" maxElementCount="128">
+        <Layout regolithID="block:lightmaps" internalName="lightmaps_block" name="lightmaps_block">
+          <FieldSet version="0" sizeofValue="32" isLatest="true">
+            <ShortInteger CStyleName="bitmap" pascalStyleName="Bitmap" name="bitmap" />
+            <Pad name="pad" length="2" />
+            <Pad name="pad" length="16" />
+            <Block CStyleName="materials" pascalStyleName="Materials" name="materials" maxElementCount="2048">
+              <Layout regolithID="block:materials" internalName="materials_block" name="materials_block">
+                <FieldSet version="0" sizeofValue="256" isLatest="true">
+                  <TagReference CStyleName="shader" pascalStyleName="Shader" name="shader">
+                    <tag>shader</tag>
+                  </TagReference>
+                  <ShortInteger CStyleName="shader_permutation" pascalStyleName="ShaderPermutation" name="shader permutation" />
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                      <Bit name="coplanar" CStyleName="coplanar_bit" pascalStyleName="CoplanarBit" />
+                      <Bit name="fog plane" CStyleName="fog_plane_bit" pascalStyleName="FogPlaneBit" />
+                    </Options>
+                  </WordFlags>
+                  <LongInteger CStyleName="surfaces" pascalStyleName="Surfaces" name="surfaces" />
+                  <LongInteger CStyleName="surface_count" pascalStyleName="SurfaceCount" name="surface count" />
+                  <RealVector3D CStyleName="centroid" pascalStyleName="Centroid" name="centroid" />
+                  <RealRgbColor CStyleName="ambient_color" pascalStyleName="AmbientColor" name="ambient color" />
+                  <ShortInteger CStyleName="distant_light_count" pascalStyleName="DistantLightCount" name="distant light count" />
+                  <Pad name="pad" length="2" />
+                  <RealRgbColor CStyleName="distant_light_0_color" pascalStyleName="DistantLight0Color" name="distant light 0 color" />
+                  <RealVector3D CStyleName="distant_light_0_direction" pascalStyleName="DistantLight0Direction" name="distant light 0 direction" />
+                  <RealRgbColor CStyleName="distant_light_1_color" pascalStyleName="DistantLight1Color" name="distant light 1 color" />
+                  <RealVector3D CStyleName="distant_light_1_direction" pascalStyleName="DistantLight1Direction" name="distant light 1 direction" />
+                  <Pad name="pad" length="12" />
+                  <RealArgbColor CStyleName="reflection_tint" pascalStyleName="ReflectionTint" name="reflection tint" />
+                  <RealVector3D CStyleName="shadow_vector" pascalStyleName="ShadowVector" name="shadow vector" />
+                  <RealRgbColor CStyleName="shadow_color" pascalStyleName="ShadowColor" name="shadow color" />
+                  <RealPlane3D CStyleName="plane" pascalStyleName="Plane" name="plane" />
+                  <ShortInteger CStyleName="breakable_surface" pascalStyleName="BreakableSurface" name="breakable surface" />
+                  <Pad name="pad" length="2" />
+                  <Struct CStyleName="rendered_vertices" pascalStyleName="RenderedVertices" name="rendered vertices">
+                    <Layout regolithID="structure:model_vertex_reference" internalName="model_vertex_reference_struct" backingBlockInternalName="model_vertex_reference_struct_block" name="model vertex reference">
+                      <FieldSet version="0" sizeofValue="20" isLatest="true">
+                        <ShortEnum CStyleName="vertex_type" pascalStyleName="VertexType" name="vertex type" cacheOnly="true" description="set this or die">
+                          <Options regolithID="enum:vertex_type" CStyleName="vertex_type" pascalStyleName="VertexType">
+                            <Enum name="environment uncompressed" CStyleName="environment_uncompressed" pascalStyleName="EnvironmentUncompressed" />
+                            <Enum name="environment compressed" CStyleName="environment_compressed" pascalStyleName="EnvironmentCompressed" />
+                            <Enum name="environment lightmap uncompressed" CStyleName="environment_lightmap_uncompressed" pascalStyleName="EnvironmentLightmapUncompressed" />
+                            <Enum name="environment lightmap compressed" CStyleName="environment_lightmap_compressed" pascalStyleName="EnvironmentLightmapCompressed" />
+                            <Enum name="model uncompressed" CStyleName="model_uncompressed" pascalStyleName="ModelUncompressed" />
+                            <Enum name="model compressed" CStyleName="model_compressed" pascalStyleName="ModelCompressed" />
+                            <Enum name="dynamic unlit" CStyleName="dynamic_unlit" pascalStyleName="DynamicUnlit" />
+                            <Enum name="dynamic lit" CStyleName="dynamic_lit" pascalStyleName="DynamicLit" />
+                            <Enum name="dynamic screen" CStyleName="dynamic_screen" pascalStyleName="DynamicScreen" />
+                            <Enum name="debug" CStyleName="debug" pascalStyleName="Debug" />
+                            <Enum name="decal" CStyleName="decal" pascalStyleName="Decal" />
+                            <Enum name="detail object" CStyleName="detail_object" pascalStyleName="DetailObject" />
+                            <Enum name="environment uncompressed ff" CStyleName="environment_uncompressed_ff" pascalStyleName="EnvironmentUncompressedFf" />
+                            <Enum name="environment lightmap uncompressed ff" CStyleName="environment_lightmap_uncompressed_ff" pascalStyleName="EnvironmentLightmapUncompressedFf" />
+                            <Enum name="model uncompressed ff" CStyleName="model_uncompressed_ff" pascalStyleName="ModelUncompressedFf" />
+                            <Enum name="model processed" CStyleName="model_processed" pascalStyleName="ModelProcessed" />
+                            <Enum name="unlit zsprite" CStyleName="unlit_zsprite" pascalStyleName="UnlitZsprite" />
+                            <Enum name="widget" CStyleName="widget" pascalStyleName="Widget" />
+                          </Options>
+                        </ShortEnum>
+                        <Pad name="pad" length="2" />
+                        <LongInteger CStyleName="vertex_count" pascalStyleName="VertexCount" name="vertex count" unsigned="true" />
+                        <LongInteger CStyleName="offset" pascalStyleName="Offset" name="offset" cacheOnly="true" unsigned="true" />
+                        <LongInteger CStyleName="unknown_pointer" pascalStyleName="UnknownPointer" name="unknown pointer" cacheOnly="true" />
+                        <LongInteger CStyleName="vertex_pointer" pascalStyleName="VertexPointer" name="vertex pointer" cacheOnly="true" />
+                      </FieldSet>
+                    </Layout>
+                  </Struct>
+                  <Struct CStyleName="lightmap_vertices" pascalStyleName="LightmapVertices" name="lightmap vertices">
+                    <Layout regolithID="structure:model_vertex_reference" internalName="model_vertex_reference_struct" backingBlockInternalName="model_vertex_reference_struct_block" name="model vertex reference">
+                      <FieldSet version="0" sizeofValue="20" isLatest="true">
+                        <ShortEnum CStyleName="vertex_type" pascalStyleName="VertexType" name="vertex type" cacheOnly="true" description="set this or die">
+                          <Options regolithID="enum:vertex_type" CStyleName="vertex_type" pascalStyleName="VertexType">
+                            <Enum name="environment uncompressed" CStyleName="environment_uncompressed" pascalStyleName="EnvironmentUncompressed" />
+                            <Enum name="environment compressed" CStyleName="environment_compressed" pascalStyleName="EnvironmentCompressed" />
+                            <Enum name="environment lightmap uncompressed" CStyleName="environment_lightmap_uncompressed" pascalStyleName="EnvironmentLightmapUncompressed" />
+                            <Enum name="environment lightmap compressed" CStyleName="environment_lightmap_compressed" pascalStyleName="EnvironmentLightmapCompressed" />
+                            <Enum name="model uncompressed" CStyleName="model_uncompressed" pascalStyleName="ModelUncompressed" />
+                            <Enum name="model compressed" CStyleName="model_compressed" pascalStyleName="ModelCompressed" />
+                            <Enum name="dynamic unlit" CStyleName="dynamic_unlit" pascalStyleName="DynamicUnlit" />
+                            <Enum name="dynamic lit" CStyleName="dynamic_lit" pascalStyleName="DynamicLit" />
+                            <Enum name="dynamic screen" CStyleName="dynamic_screen" pascalStyleName="DynamicScreen" />
+                            <Enum name="debug" CStyleName="debug" pascalStyleName="Debug" />
+                            <Enum name="decal" CStyleName="decal" pascalStyleName="Decal" />
+                            <Enum name="detail object" CStyleName="detail_object" pascalStyleName="DetailObject" />
+                            <Enum name="environment uncompressed ff" CStyleName="environment_uncompressed_ff" pascalStyleName="EnvironmentUncompressedFf" />
+                            <Enum name="environment lightmap uncompressed ff" CStyleName="environment_lightmap_uncompressed_ff" pascalStyleName="EnvironmentLightmapUncompressedFf" />
+                            <Enum name="model uncompressed ff" CStyleName="model_uncompressed_ff" pascalStyleName="ModelUncompressedFf" />
+                            <Enum name="model processed" CStyleName="model_processed" pascalStyleName="ModelProcessed" />
+                            <Enum name="unlit zsprite" CStyleName="unlit_zsprite" pascalStyleName="UnlitZsprite" />
+                            <Enum name="widget" CStyleName="widget" pascalStyleName="Widget" />
+                          </Options>
+                        </ShortEnum>
+                        <Pad name="pad" length="2" />
+                        <LongInteger CStyleName="vertex_count" pascalStyleName="VertexCount" name="vertex count" unsigned="true" />
+                        <LongInteger CStyleName="offset" pascalStyleName="Offset" name="offset" cacheOnly="true" unsigned="true" />
+                        <LongInteger CStyleName="unknown_pointer" pascalStyleName="UnknownPointer" name="unknown pointer" cacheOnly="true" />
+                        <LongInteger CStyleName="vertex_pointer" pascalStyleName="VertexPointer" name="vertex pointer" cacheOnly="true" />
+                      </FieldSet>
+                    </Layout>
+                  </Struct>
+                  <Data CStyleName="uncompressed_vertices" pascalStyleName="UncompressedVertices" name="uncompressed vertices" />
+                  <Data CStyleName="compressed_vertices" pascalStyleName="CompressedVertices" name="compressed vertices" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="12" />
+      <Block CStyleName="lens_flares" pascalStyleName="LensFlares" name="lens flares" maxElementCount="256">
+        <Layout regolithID="block:lens flares" internalName="lens flares_block" name="lens flares_block">
+          <FieldSet version="0" sizeofValue="16" isLatest="true">
+            <TagReference CStyleName="lens" pascalStyleName="Lens" name="lens">
+              <tag>lens_flare</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="lens_flare_markers" pascalStyleName="LensFlareMarkers" name="lens flare markers" maxElementCount="65536">
+        <Layout regolithID="block:lens flare markers" internalName="lens flare markers_block" name="lens flare markers_block">
+          <FieldSet version="0" sizeofValue="16" isLatest="true">
+            <RealVector3D CStyleName="position" pascalStyleName="Position" name="position" />
+            <CharInteger CStyleName="direction_i_component" pascalStyleName="DirectionIComponent" name="direction i component" />
+            <CharInteger CStyleName="direction_j_component" pascalStyleName="DirectionJComponent" name="direction j component" />
+            <CharInteger CStyleName="direction_k_component" pascalStyleName="DirectionKComponent" name="direction k component" />
+            <CharInteger CStyleName="lens_flare_index" pascalStyleName="LensFlareIndex" name="lens flare index" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="clusters" pascalStyleName="Clusters" name="clusters" maxElementCount="8192">
+        <Layout regolithID="block:clusters" internalName="clusters_block" name="clusters_block">
+          <FieldSet version="0" sizeofValue="104" isLatest="true">
+            <ShortInteger CStyleName="sky" pascalStyleName="Sky" name="sky" />
+            <ShortInteger CStyleName="fog" pascalStyleName="Fog" name="fog" />
+            <ShortInteger CStyleName="background_sound" pascalStyleName="BackgroundSound" name="background sound" />
+            <ShortInteger CStyleName="sound_environment" pascalStyleName="SoundEnvironment" name="sound environment" />
+            <ShortInteger CStyleName="weather" pascalStyleName="Weather" name="weather" />
+            <ShortInteger CStyleName="transition_structure_bsp" pascalStyleName="TransitionStructureBsp" name="transition structure bsp" />
+            <ShortInteger CStyleName="first_decal_index" pascalStyleName="FirstDecalIndex" name="first decal index" cacheOnly="true" />
+            <ShortInteger CStyleName="decal_count" pascalStyleName="DecalCount" name="decal count" cacheOnly="true" unsigned="true" />
+            <Pad name="pad" length="24" />
+            <Block CStyleName="predicted_resources" pascalStyleName="PredictedResources" name="predicted resources" cacheOnly="true" maxElementCount="1024">
+              <Layout regolithID="block:predicted resources" internalName="predicted resources_block" name="predicted resources_block">
+                <FieldSet version="0" sizeofValue="8" isLatest="true">
+                  <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+                    <Options regolithID="enum:type" CStyleName="type" pascalStyleName="Type">
+                      <Enum name="bitmap" CStyleName="bitmap" pascalStyleName="Bitmap" />
+                      <Enum name="sound" CStyleName="sound" pascalStyleName="Sound" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortInteger CStyleName="resource_index" pascalStyleName="ResourceIndex" name="resource index" />
+                  <LongInteger CStyleName="tag" pascalStyleName="Tag" name="tag" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="subclusters" pascalStyleName="Subclusters" name="subclusters" maxElementCount="4096">
+              <Layout regolithID="block:subclusters" internalName="subclusters_block" name="subclusters_block">
+                <FieldSet version="0" sizeofValue="36" isLatest="true">
+                  <RealBounds CStyleName="world_bounds_x" pascalStyleName="WorldBoundsX" name="world bounds x" />
+                  <RealBounds CStyleName="world_bounds_y" pascalStyleName="WorldBoundsY" name="world bounds y" />
+                  <RealBounds CStyleName="world_bounds_z" pascalStyleName="WorldBoundsZ" name="world bounds z" />
+                  <Block CStyleName="surface_indices" pascalStyleName="SurfaceIndices" name="surface indices" maxElementCount="128">
+                    <Layout regolithID="block:surface indices" internalName="surface indices_block" name="surface indices_block">
+                      <FieldSet version="0" sizeofValue="4" isLatest="true">
+                        <LongInteger CStyleName="index" pascalStyleName="Index" name="index" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <ShortInteger CStyleName="first_lens_flare_marker_index" pascalStyleName="FirstLensFlareMarkerIndex" name="first lens flare marker index" />
+            <ShortInteger CStyleName="lens_flare_marker_count" pascalStyleName="LensFlareMarkerCount" name="lens flare marker count" />
+            <Block CStyleName="surface_indices" pascalStyleName="SurfaceIndices" name="surface indices" maxElementCount="32768">
+              <Layout regolithID="block:surface indices" internalName="surface indices_block" name="surface indices_block">
+                <FieldSet version="0" sizeofValue="4" isLatest="true">
+                  <LongInteger CStyleName="index" pascalStyleName="Index" name="index" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="mirrors" pascalStyleName="Mirrors" name="mirrors" maxElementCount="16">
+              <Layout regolithID="block:mirrors" internalName="mirrors_block" name="mirrors_block">
+                <FieldSet version="0" sizeofValue="64" isLatest="true">
+                  <RealPlane3D CStyleName="plane" pascalStyleName="Plane" name="plane" />
+                  <Pad name="pad" length="20" />
+                  <TagReference CStyleName="shader" pascalStyleName="Shader" name="shader">
+                    <tag>shader</tag>
+                  </TagReference>
+                  <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" maxElementCount="512">
+                    <Layout regolithID="block:vertices" internalName="vertices_block" name="vertices_block">
+                      <FieldSet version="0" sizeofValue="12" isLatest="true">
+                        <RealVector3D CStyleName="point" pascalStyleName="Point" name="point" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="portals" pascalStyleName="Portals" name="portals" maxElementCount="128">
+              <Layout regolithID="block:portals" internalName="portals_block" name="portals_block">
+                <FieldSet version="0" sizeofValue="2" isLatest="true">
+                  <ShortInteger CStyleName="portal" pascalStyleName="Portal" name="portal" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Data CStyleName="cluster_data" pascalStyleName="ClusterData" name="cluster data" />
+      <Block CStyleName="cluster_portals" pascalStyleName="ClusterPortals" name="cluster portals" maxElementCount="512">
+        <Layout regolithID="block:cluster portals" internalName="cluster portals_block" name="cluster portals_block">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <ShortInteger CStyleName="front_cluster" pascalStyleName="FrontCluster" name="front cluster" />
+            <ShortInteger CStyleName="back_cluster" pascalStyleName="BackCluster" name="back cluster" />
+            <LongInteger CStyleName="plane_index" pascalStyleName="PlaneIndex" name="plane index" />
+            <RealVector3D CStyleName="centroid" pascalStyleName="Centroid" name="centroid" />
+            <Real CStyleName="bounding_radius" pascalStyleName="BoundingRadius" name="bounding radius" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="ai cant hear through this shit" CStyleName="ai_cant_hear_through_this_shit_bit" pascalStyleName="AiCantHearThroughThisShitBit" />
+              </Options>
+            </LongFlags>
+            <Pad name="pad" length="24" />
+            <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" maxElementCount="128">
+              <Layout regolithID="block:vertices" internalName="vertices_block" name="vertices_block">
+                <FieldSet version="0" sizeofValue="12" isLatest="true">
+                  <RealVector3D CStyleName="point" pascalStyleName="Point" name="point" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="12" />
+      <Block CStyleName="breakable_surfaces" pascalStyleName="BreakableSurfaces" name="breakable surfaces" maxElementCount="256">
+        <Layout regolithID="block:breakable surfaces" internalName="breakable surfaces_block" name="breakable surfaces_block">
+          <FieldSet version="0" sizeofValue="48" isLatest="true">
+            <RealVector3D CStyleName="centroid" pascalStyleName="Centroid" name="centroid" />
+            <Real CStyleName="radius" pascalStyleName="Radius" name="radius" />
+            <LongInteger CStyleName="collision_surface_index" pascalStyleName="CollisionSurfaceIndex" name="collision surface index" />
+            <Pad name="pad" length="28" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="fog_planes" pascalStyleName="FogPlanes" name="fog planes" maxElementCount="32">
+        <Layout regolithID="block:fog planes" internalName="fog planes_block" name="fog planes_block">
+          <FieldSet version="0" sizeofValue="32" isLatest="true">
+            <ShortInteger CStyleName="front_region" pascalStyleName="FrontRegion" name="front region" />
+            <ShortEnum CStyleName="material_type" pascalStyleName="MaterialType" name="material type" cacheOnly="true">
+              <Options regolithID="enum:material_type" CStyleName="material_type" pascalStyleName="MaterialType">
+                <Enum name="dirt" CStyleName="dirt" pascalStyleName="Dirt" />
+                <Enum name="sand" CStyleName="sand" pascalStyleName="Sand" />
+                <Enum name="stone" CStyleName="stone" pascalStyleName="Stone" />
+                <Enum name="snow" CStyleName="snow" pascalStyleName="Snow" />
+                <Enum name="wood" CStyleName="wood" pascalStyleName="Wood" />
+                <Enum name="metal hollow" CStyleName="metal_hollow" pascalStyleName="MetalHollow" />
+                <Enum name="metal thin" CStyleName="metal_thin" pascalStyleName="MetalThin" />
+                <Enum name="metal thick" CStyleName="metal_thick" pascalStyleName="MetalThick" />
+                <Enum name="rubber" CStyleName="rubber" pascalStyleName="Rubber" />
+                <Enum name="glass" CStyleName="glass" pascalStyleName="Glass" />
+                <Enum name="force field" CStyleName="force_field" pascalStyleName="ForceField" />
+                <Enum name="grunt" CStyleName="grunt" pascalStyleName="Grunt" />
+                <Enum name="hunter armor" CStyleName="hunter_armor" pascalStyleName="HunterArmor" />
+                <Enum name="hunter skin" CStyleName="hunter_skin" pascalStyleName="HunterSkin" />
+                <Enum name="elite" CStyleName="elite" pascalStyleName="Elite" />
+                <Enum name="jackal" CStyleName="jackal" pascalStyleName="Jackal" />
+                <Enum name="jackal energy shield" CStyleName="jackal_energy_shield" pascalStyleName="JackalEnergyShield" />
+                <Enum name="engineer skin" CStyleName="engineer_skin" pascalStyleName="EngineerSkin" />
+                <Enum name="engineer force field" CStyleName="engineer_force_field" pascalStyleName="EngineerForceField" />
+                <Enum name="flood combat form" CStyleName="flood_combat_form" pascalStyleName="FloodCombatForm" />
+                <Enum name="flood carrier form" CStyleName="flood_carrier_form" pascalStyleName="FloodCarrierForm" />
+                <Enum name="cyborg armor" CStyleName="cyborg_armor" pascalStyleName="CyborgArmor" />
+                <Enum name="cyborg energy shield" CStyleName="cyborg_energy_shield" pascalStyleName="CyborgEnergyShield" />
+                <Enum name="human armor" CStyleName="human_armor" pascalStyleName="HumanArmor" />
+                <Enum name="human skin" CStyleName="human_skin" pascalStyleName="HumanSkin" />
+                <Enum name="sentinel" CStyleName="sentinel" pascalStyleName="Sentinel" />
+                <Enum name="monitor" CStyleName="monitor" pascalStyleName="Monitor" />
+                <Enum name="plastic" CStyleName="plastic" pascalStyleName="Plastic" />
+                <Enum name="water" CStyleName="water" pascalStyleName="Water" />
+                <Enum name="leaves" CStyleName="leaves" pascalStyleName="Leaves" />
+                <Enum name="elite energy shield" CStyleName="elite_energy_shield" pascalStyleName="EliteEnergyShield" />
+                <Enum name="ice" CStyleName="ice" pascalStyleName="Ice" />
+                <Enum name="hunter shield" CStyleName="hunter_shield" pascalStyleName="HunterShield" />
+              </Options>
+            </ShortEnum>
+            <RealPlane3D CStyleName="plane" pascalStyleName="Plane" name="plane" />
+            <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" maxElementCount="4096">
+              <Layout regolithID="block:vertices" internalName="vertices_block" name="vertices_block">
+                <FieldSet version="0" sizeofValue="12" isLatest="true">
+                  <RealVector3D CStyleName="point" pascalStyleName="Point" name="point" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="fog_regions" pascalStyleName="FogRegions" name="fog regions" maxElementCount="32">
+        <Layout regolithID="block:fog regions" internalName="fog regions_block" name="fog regions_block">
+          <FieldSet version="0" sizeofValue="40" isLatest="true">
+            <Pad name="pad" length="36" />
+            <ShortInteger CStyleName="fog" pascalStyleName="Fog" name="fog" />
+            <ShortInteger CStyleName="weather_palette" pascalStyleName="WeatherPalette" name="weather palette" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="fog_palette" pascalStyleName="FogPalette" name="fog palette" maxElementCount="32">
+        <Layout regolithID="block:fog palette" internalName="fog palette_block" name="fog palette_block">
+          <FieldSet version="0" sizeofValue="136" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <TagReference CStyleName="fog" pascalStyleName="Fog" name="fog">
+              <tag>fog</tag>
+            </TagReference>
+            <Pad name="pad" length="4" />
+            <String CStyleName="fog_scale_function" pascalStyleName="FogScaleFunction" name="fog scale function" />
+            <Pad name="pad" length="52" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="24" />
+      <Block CStyleName="weather_palette" pascalStyleName="WeatherPalette" name="weather palette" maxElementCount="32">
+        <Layout regolithID="block:weather palette" internalName="weather palette_block" name="weather palette_block">
+          <FieldSet version="0" sizeofValue="240" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <TagReference CStyleName="particle_system" pascalStyleName="ParticleSystem" name="particle system">
+              <tag>weather_particle_system</tag>
+            </TagReference>
+            <Pad name="pad" length="4" />
+            <String CStyleName="particle_system_scale_function" pascalStyleName="ParticleSystemScaleFunction" name="particle system scale function" />
+            <Pad name="pad" length="44" />
+            <TagReference CStyleName="wind" pascalStyleName="Wind" name="wind">
+              <tag>wind</tag>
+            </TagReference>
+            <RealVector3D CStyleName="wind_direction" pascalStyleName="WindDirection" name="wind direction" />
+            <Real CStyleName="wind_magnitude" pascalStyleName="WindMagnitude" name="wind magnitude" />
+            <Pad name="pad" length="4" />
+            <String CStyleName="wind_scale_function" pascalStyleName="WindScaleFunction" name="wind scale function" />
+            <Pad name="pad" length="44" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="weather_polyhedra" pascalStyleName="WeatherPolyhedra" name="weather polyhedra" maxElementCount="32">
+        <Layout regolithID="block:weather polyhedra" internalName="weather polyhedra_block" name="weather polyhedra_block">
+          <FieldSet version="0" sizeofValue="32" isLatest="true">
+            <RealVector3D CStyleName="bounding_sphere_center" pascalStyleName="BoundingSphereCenter" name="bounding sphere center" />
+            <Real CStyleName="bounding_sphere_radius" pascalStyleName="BoundingSphereRadius" name="bounding sphere radius" />
+            <Pad name="pad" length="4" />
+            <Block CStyleName="planes" pascalStyleName="Planes" name="planes" maxElementCount="16">
+              <Layout regolithID="block:planes" internalName="planes_block" name="planes_block">
+                <FieldSet version="0" sizeofValue="16" isLatest="true">
+                  <RealPlane3D CStyleName="plane" pascalStyleName="Plane" name="plane" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="24" />
+      <Block CStyleName="pathfinding_surfaces" pascalStyleName="PathfindingSurfaces" name="pathfinding surfaces" maxElementCount="131072">
+        <Layout regolithID="block:pathfinding surfaces" internalName="pathfinding surfaces_block" name="pathfinding surfaces_block">
+          <FieldSet version="0" sizeofValue="1" isLatest="true">
+            <CharInteger CStyleName="data" pascalStyleName="Data" name="data" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="pathfinding_edges" pascalStyleName="PathfindingEdges" name="pathfinding edges" maxElementCount="262144">
+        <Layout regolithID="block:pathfinding edges" internalName="pathfinding edges_block" name="pathfinding edges_block">
+          <FieldSet version="0" sizeofValue="1" isLatest="true">
+            <CharInteger CStyleName="midpoint" pascalStyleName="Midpoint" name="midpoint" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="background_sound_palette" pascalStyleName="BackgroundSoundPalette" name="background sound palette" maxElementCount="64">
+        <Layout regolithID="block:background sound palette" internalName="background sound palette_block" name="background sound palette_block">
+          <FieldSet version="0" sizeofValue="116" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <TagReference CStyleName="background_sound" pascalStyleName="BackgroundSound" name="background sound">
+              <tag>sound_looping</tag>
+            </TagReference>
+            <Pad name="pad" length="4" />
+            <String CStyleName="scale_function" pascalStyleName="ScaleFunction" name="scale function" />
+            <Pad name="pad" length="32" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="sound_environment_palette" pascalStyleName="SoundEnvironmentPalette" name="sound environment palette" maxElementCount="64">
+        <Layout regolithID="block:sound environment palette" internalName="sound environment palette_block" name="sound environment palette_block">
+          <FieldSet version="0" sizeofValue="80" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <TagReference CStyleName="sound_environment" pascalStyleName="SoundEnvironment" name="sound environment">
+              <tag>sound_environment</tag>
+            </TagReference>
+            <Pad name="pad" length="32" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Data CStyleName="sound_pas_data" pascalStyleName="SoundPasData" name="sound pas data" />
+      <Pad name="pad" length="24" />
+      <Block CStyleName="markers" pascalStyleName="Markers" name="markers" maxElementCount="1024">
+        <Layout regolithID="block:markers" internalName="markers_block" name="markers_block">
+          <FieldSet version="0" sizeofValue="60" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <RealQuaternion CStyleName="rotation" pascalStyleName="Rotation" name="rotation" />
+            <RealVector3D CStyleName="position" pascalStyleName="Position" name="position" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="detail_objects" pascalStyleName="DetailObjects" name="detail objects" maxElementCount="1">
+        <Layout regolithID="block:detail objects" internalName="detail objects_block" name="detail objects_block">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <Block CStyleName="cells" pascalStyleName="Cells" name="cells" maxElementCount="262144">
+              <Layout regolithID="block:cells" internalName="cells_block" name="cells_block">
+                <FieldSet version="0" sizeofValue="32" isLatest="true">
+                  <ShortInteger CStyleName="cell_x" pascalStyleName="CellX" name="cell x" />
+                  <ShortInteger CStyleName="cell_y" pascalStyleName="CellY" name="cell y" />
+                  <ShortInteger CStyleName="cell_z" pascalStyleName="CellZ" name="cell z" />
+                  <ShortInteger CStyleName="offset_z" pascalStyleName="OffsetZ" name="offset z" />
+                  <LongInteger CStyleName="valid_layers_flags" pascalStyleName="ValidLayersFlags" name="valid layers flags" />
+                  <LongInteger CStyleName="start_index" pascalStyleName="StartIndex" name="start index" unsigned="true" />
+                  <LongInteger CStyleName="count_index" pascalStyleName="CountIndex" name="count index" unsigned="true" />
+                  <Pad name="pad" length="12" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="instances" pascalStyleName="Instances" name="instances" maxElementCount="2097152">
+              <Layout regolithID="block:instances" internalName="instances_block" name="instances_block">
+                <FieldSet version="0" sizeofValue="6" isLatest="true">
+                  <CharInteger CStyleName="position_x" pascalStyleName="PositionX" name="position x" />
+                  <CharInteger CStyleName="position_y" pascalStyleName="PositionY" name="position y" />
+                  <CharInteger CStyleName="position_z" pascalStyleName="PositionZ" name="position z" />
+                  <CharInteger CStyleName="data" pascalStyleName="Data" name="data" />
+                  <ShortInteger CStyleName="color" pascalStyleName="Color" name="color" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="counts" pascalStyleName="Counts" name="counts" maxElementCount="8388608">
+              <Layout regolithID="block:counts" internalName="counts_block" name="counts_block">
+                <FieldSet version="0" sizeofValue="2" isLatest="true">
+                  <ShortInteger CStyleName="count" pascalStyleName="Count" name="count" unsigned="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="z_reference_vectors" pascalStyleName="ZReferenceVectors" name="z reference vectors" maxElementCount="262144">
+              <Layout regolithID="block:z reference vectors" internalName="z reference vectors_block" name="z reference vectors_block">
+                <FieldSet version="0" sizeofValue="16" isLatest="true">
+                  <Real CStyleName="z_reference_i" pascalStyleName="ZReferenceI" name="z reference i" />
+                  <Real CStyleName="z_reference_j" pascalStyleName="ZReferenceJ" name="z reference j" />
+                  <Real CStyleName="z_reference_k" pascalStyleName="ZReferenceK" name="z reference k" />
+                  <Real CStyleName="z_reference_l" pascalStyleName="ZReferenceL" name="z reference l" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <CharInteger CStyleName="bullshit" pascalStyleName="Bullshit" name="bullshit" cacheOnly="true" unsigned="true" />
+            <Pad name="pad" length="3" />
+            <Pad name="pad" length="12" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="runtime_decals" pascalStyleName="RuntimeDecals" name="runtime decals" cacheOnly="true" maxElementCount="6144">
+        <Layout regolithID="block:runtime decals" internalName="runtime decals_block" name="runtime decals_block">
+          <FieldSet version="0" sizeofValue="16" isLatest="true">
+            <RealVector3D CStyleName="position" pascalStyleName="Position" name="position" endianOverride="&lt;" />
+            <ShortInteger CStyleName="decal_type" pascalStyleName="DecalType" name="decal type" endianOverride="&lt;" />
+            <CharInteger CStyleName="yaw" pascalStyleName="Yaw" name="yaw" endianOverride="&lt;" />
+            <CharInteger CStyleName="pitch" pascalStyleName="Pitch" name="pitch" endianOverride="&lt;" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="8" />
+      <Pad name="pad" length="4" />
+      <Block CStyleName="leaf_map_leaves" pascalStyleName="LeafMapLeaves" name="leaf map leaves" maxElementCount="65536">
+        <Layout regolithID="block:leaf map leaves" internalName="leaf map leaves_block" name="leaf map leaves_block">
+          <FieldSet version="0" sizeofValue="24" isLatest="true">
+            <Block CStyleName="faces" pascalStyleName="Faces" name="faces" maxElementCount="256">
+              <Layout regolithID="block:faces" internalName="faces_block" name="faces_block">
+                <FieldSet version="0" sizeofValue="16" isLatest="true">
+                  <LongInteger CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" />
+                  <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" maxElementCount="64">
+                    <Layout regolithID="block:vertices" internalName="vertices_block" name="vertices_block">
+                      <FieldSet version="0" sizeofValue="8" isLatest="true">
+                        <RealPoint2D CStyleName="vertex" pascalStyleName="Vertex" name="vertex" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="portal_indices" pascalStyleName="PortalIndices" name="portal indices" maxElementCount="256">
+              <Layout regolithID="block:portal indices" internalName="portal indices_block" name="portal indices_block">
+                <FieldSet version="0" sizeofValue="4" isLatest="true">
+                  <LongInteger CStyleName="portal_index" pascalStyleName="PortalIndex" name="portal index" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="leaf_map_portals" pascalStyleName="LeafMapPortals" name="leaf map portals" maxElementCount="524288">
+        <Layout regolithID="block:leaf map portals" internalName="leaf map portals_block" name="leaf map portals_block">
+          <FieldSet version="0" sizeofValue="24" isLatest="true">
+            <LongInteger CStyleName="plane_index" pascalStyleName="PlaneIndex" name="plane index" />
+            <LongInteger CStyleName="back_leaf_index" pascalStyleName="BackLeafIndex" name="back leaf index" />
+            <LongInteger CStyleName="front_leaf_index" pascalStyleName="FrontLeafIndex" name="front leaf index" />
+            <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" maxElementCount="64">
+              <Layout regolithID="block:vertices" internalName="vertices_block" name="vertices_block">
+                <FieldSet version="0" sizeofValue="12" isLatest="true">
+                  <RealVector3D CStyleName="point" pascalStyleName="Point" name="point" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

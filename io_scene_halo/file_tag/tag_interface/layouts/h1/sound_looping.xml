@@ -1,0 +1,81 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="lsnd" name="sound_looping" version="3">
+  <Layout regolithID="block:sound_looping" internalName="sound_looping_block" name="sound_looping">
+    <FieldSet version="0" sizeofValue="84" sizeofSource="sizeof(struct sound_looping_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="deafening to ais" CStyleName="deafening_to_ais_bit" pascalStyleName="DeafeningToAisBit" />
+          <Bit name="not a loop" CStyleName="not_a_loop_bit" pascalStyleName="NotALoopBit" />
+          <Bit name="stops music" CStyleName="stops_music_bit" pascalStyleName="StopsMusicBit" />
+          <Bit name="siege of madrigal" CStyleName="siege_of_madrigal_bit" pascalStyleName="SiegeOfMadrigalBit" />
+        </Options>
+      </LongFlags>
+      <Real CStyleName="zero_detail_sound_period" pascalStyleName="ZeroDetailSoundPeriod" name="zero detail sound period" />
+      <Real CStyleName="zero_detail_unknown_floats" pascalStyleName="ZeroDetailUnknownFloats" name="zero detail unknown floats" cacheOnly="true" />
+      <Real CStyleName="zero_detail_unknown_floats" pascalStyleName="ZeroDetailUnknownFloats" name="zero detail unknown floats" cacheOnly="true" />
+      <Real CStyleName="one_detail_sound_period" pascalStyleName="OneDetailSoundPeriod" name="one detail sound period" />
+      <Real CStyleName="one_detail_unknown_floats" pascalStyleName="OneDetailUnknownFloats" name="one detail unknown floats" cacheOnly="true" />
+      <Real CStyleName="one_detail_unknown_floats" pascalStyleName="OneDetailUnknownFloats" name="one detail unknown floats" cacheOnly="true" />
+      <LongInteger CStyleName="runtime_scripting_sound" pascalStyleName="RuntimeScriptingSound" name="runtime scripting sound" cacheOnly="true" />
+      <Real CStyleName="maximum_distance" pascalStyleName="MaximumDistance" name="maximum distance" cacheOnly="true" />
+      <Pad name="pad" length="8" />
+      <TagReference CStyleName="continuous_damage_effect" pascalStyleName="ContinuousDamageEffect" name="continuous damage effect">
+        <tag>continuous_damage_effect</tag>
+      </TagReference>
+      <Block CStyleName="tracks" pascalStyleName="Tracks" name="tracks" maxElementCount="4">
+        <Layout regolithID="block:tracks" internalName="tracks_block" name="tracks_block">
+          <FieldSet version="0" sizeofValue="160" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="fade in at start" CStyleName="fade_in_at_start_bit" pascalStyleName="FadeInAtStartBit" />
+                <Bit name="fade out at stop" CStyleName="fade_out_at_stop_bit" pascalStyleName="FadeOutAtStopBit" />
+                <Bit name="fade in alternate" CStyleName="fade_in_alternate_bit" pascalStyleName="FadeInAlternateBit" />
+              </Options>
+            </LongFlags>
+            <Real CStyleName="gain" pascalStyleName="Gain" name="gain" />
+            <Real CStyleName="fade_in_duration" pascalStyleName="FadeInDuration" name="fade in duration" />
+            <Real CStyleName="fade_out_duration" pascalStyleName="FadeOutDuration" name="fade out duration" />
+            <Pad name="pad" length="32" />
+            <TagReference CStyleName="start" pascalStyleName="Start" name="start">
+              <tag>sound</tag>
+            </TagReference>
+            <TagReference CStyleName="loop" pascalStyleName="Loop" name="loop">
+              <tag>sound</tag>
+            </TagReference>
+            <TagReference CStyleName="end" pascalStyleName="End" name="end">
+              <tag>sound</tag>
+            </TagReference>
+            <Pad name="pad" length="32" />
+            <TagReference CStyleName="alternate_loop" pascalStyleName="AlternateLoop" name="alternate loop">
+              <tag>sound</tag>
+            </TagReference>
+            <TagReference CStyleName="alternate_end" pascalStyleName="AlternateEnd" name="alternate end">
+              <tag>sound</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="detail_sounds" pascalStyleName="DetailSounds" name="detail sounds" maxElementCount="32">
+        <Layout regolithID="block:detail sounds" internalName="detail sounds_block" name="detail sounds_block">
+          <FieldSet version="0" sizeofValue="104" isLatest="true">
+            <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound">
+              <tag>sound</tag>
+            </TagReference>
+            <RealBounds CStyleName="random_period_bounds" pascalStyleName="RandomPeriodBounds" name="random period bounds" />
+            <Real CStyleName="gain" pascalStyleName="Gain" name="gain" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="dont play with alternate" CStyleName="dont_play_with_alternate_bit" pascalStyleName="DontPlayWithAlternateBit" />
+                <Bit name="dont play without alternate" CStyleName="dont_play_without_alternate_bit" pascalStyleName="DontPlayWithoutAlternateBit" />
+              </Options>
+            </LongFlags>
+            <Pad name="pad" length="48" />
+            <AngleBounds CStyleName="yaw_bounds" pascalStyleName="YawBounds" name="yaw bounds" />
+            <AngleBounds CStyleName="pitch_bounds" pascalStyleName="PitchBounds" name="pitch bounds" />
+            <RealBounds CStyleName="distance_bounds" pascalStyleName="DistanceBounds" name="distance bounds" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,331 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="hudg" name="hud_globals" version="1">
+  <Layout regolithID="block:hud_globals" internalName="hud_globals_block" name="hud_globals">
+    <FieldSet version="0" sizeofValue="1364" sizeofSource="sizeof(struct hud_globals_definition)" isLatest="true">
+      <Explanation name="Messaging parameters" />
+      <ShortEnum CStyleName="anchor" pascalStyleName="Anchor" name="anchor">
+        <OptionsXRef>enum:hud_anchor</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(long)*8" length="32" />
+      <Point2D CStyleName="anchor_offset" pascalStyleName="AnchorOffset" name="anchor offset" />
+      <Real CStyleName="width_scale" pascalStyleName="WidthScale" name="width scale" />
+      <Real CStyleName="height_scale" pascalStyleName="HeightScale" name="height scale" />
+      <WordFlags CStyleName="scaling_flags" pascalStyleName="ScalingFlags" name="scaling flags">
+        <OptionsXRef>enum:hud_scaling_flags</OptionsXRef>
+      </WordFlags>
+      <Pad sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(long)*5" length="20" />
+      <TagReference CStyleName="obsolete1" pascalStyleName="Obsolete1" name="obsolete1" expertOnly="true">
+        <tag>bitm</tag>
+      </TagReference>
+      <TagReference CStyleName="obsolete2" pascalStyleName="Obsolete2" name="obsolete2" expertOnly="true">
+        <tag>bitm</tag>
+      </TagReference>
+      <Real CStyleName="up_time" pascalStyleName="UpTime" name="up time" />
+      <Real CStyleName="fade_time" pascalStyleName="FadeTime" name="fade time" />
+      <RealArgbColor CStyleName="icon_color" pascalStyleName="IconColor" name="icon color" />
+      <RealArgbColor CStyleName="text_color" pascalStyleName="TextColor" name="text color" />
+      <Real CStyleName="text_spacing" pascalStyleName="TextSpacing" name="text spacing" />
+      <TagReference CStyleName="item_message_text" pascalStyleName="ItemMessageText" name="item message text" expertOnly="true">
+        <tag>unic</tag>
+      </TagReference>
+      <TagReference CStyleName="icon_bitmap" pascalStyleName="IconBitmap" name="icon bitmap" expertOnly="true">
+        <tag>bitm</tag>
+      </TagReference>
+      <TagReference CStyleName="alternate_icon_text" pascalStyleName="AlternateIconText" name="alternate icon text" expertOnly="true">
+        <tag>unic</tag>
+      </TagReference>
+      <Block CStyleName="button_icons" pascalStyleName="ButtonIcons" name="button icons" expertOnly="true" maxElementCount="18" maxElementCountSource="NUMBER_OF_GAMEPAD_BUTTONS+NUMBER_OF_GAMEPAD_STICKS">
+        <Layout regolithID="block:hud_button_icon" internalName="hud_button_icon_block" name="hud_button_icon_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(struct icon_hud_element_definition)" isLatest="true">
+            <ShortInteger CStyleName="sequence_index" pascalStyleName="SequenceIndex" name="sequence index" description="sequence index into the global hud icon bitmap" />
+            <ShortInteger CStyleName="width_offset" pascalStyleName="WidthOffset" name="width offset" description="extra spacing beyond bitmap width for text alignment" />
+            <Point2D CStyleName="offset_from_reference_corner" pascalStyleName="OffsetFromReferenceCorner" name="offset from reference corner" />
+            <ArgbColor CStyleName="override_icon_color" pascalStyleName="OverrideIconColor" name="override icon color" />
+            <CharInteger CStyleName="frame_rate_030" pascalStyleName="FrameRate030" name="frame rate [0,30]" />
+            <ByteFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:hud_button_icon_flags</OptionsXRef>
+            </ByteFlags>
+            <ShortInteger CStyleName="text_index" pascalStyleName="TextIndex" name="text index" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Explanation name="HUD HELP TEXT COLOR" />
+      <ArgbColor name="default color" />
+      <ArgbColor name="flashing color" />
+      <Real name="flash period" />
+      <Real name="flash delay" description="time between flashes" />
+      <ShortInteger name="number of flashes" />
+      <WordFlags name="flash flags">
+        <OptionsXRef>enum:hud_flash_flags</OptionsXRef>
+      </WordFlags>
+      <Real name="flash length" description="time of each flash" />
+      <ArgbColor name="disabled color" />
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <Explanation name="Other hud messaging data" />
+      <TagReference CStyleName="hud_messages" pascalStyleName="HudMessages" name="hud messages" expertOnly="true">
+        <tag>hmt </tag>
+      </TagReference>
+      <Explanation name="Objective colors" />
+      <ArgbColor name="default color" />
+      <ArgbColor name="flashing color" />
+      <Real name="flash period" />
+      <Real name="flash delay" description="time between flashes" />
+      <ShortInteger name="number of flashes" />
+      <WordFlags name="flash flags">
+        <OptionsXRef>enum:hud_flash_flags</OptionsXRef>
+      </WordFlags>
+      <Real name="flash length" description="time of each flash" />
+      <ArgbColor name="disabled color" />
+      <ShortInteger CStyleName="uptime_ticks" pascalStyleName="UptimeTicks" name="uptime ticks" />
+      <ShortInteger CStyleName="fade_ticks" pascalStyleName="FadeTicks" name="fade ticks" />
+      <Explanation name="Waypoint parameters" description="The offset values are how much the waypoint rectangle border is offset from the safe camera bounds" />
+      <Real name="top offset" />
+      <Real name="bottom offset" />
+      <Real name="left offset" />
+      <Real name="right offset" />
+      <Pad sizeOfSource="8*sizeof(long)" length="32" />
+      <TagReference CStyleName="arrow_bitmap" pascalStyleName="ArrowBitmap" name="arrow bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <Block CStyleName="waypoint_arrows" pascalStyleName="WaypointArrows" name="waypoint arrows" maxElementCount="16" maxElementCountSource="MAXIMUM_NUMBER_OF_WAYPOINTS">
+        <Layout regolithID="block:hud_waypoint_arrow" internalName="hud_waypoint_arrow_block" name="hud_waypoint_arrow_block">
+          <FieldSet version="0" sizeofValue="104" sizeofSource="sizeof(struct hud_waypoint_arrow)" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+            <Pad sizeOfSource="2*sizeof(long)" length="8" />
+            <RgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+            <Real CStyleName="opacity" pascalStyleName="Opacity" name="opacity" />
+            <Real CStyleName="translucency" pascalStyleName="Translucency" name="translucency" />
+            <ShortInteger CStyleName="on_screen_sequence_index" pascalStyleName="OnScreenSequenceIndex" name="on screen sequence index" />
+            <ShortInteger CStyleName="off_screen_sequence_index" pascalStyleName="OffScreenSequenceIndex" name="off screen sequence index" />
+            <ShortInteger CStyleName="occluded_sequence_index" pascalStyleName="OccludedSequenceIndex" name="occluded sequence index" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="4*sizeof(long)" length="16" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:waypoint_arrow_flags" CStyleName="waypoint_arrow_flags" pascalStyleName="WaypointArrowFlags">
+                <Bit name="don't rotate when pointing offscreen" CStyleName="dont_rotate_when_pointing_offscreen_bit" pascalStyleName="DontRotateWhenPointingOffscreenBit" />
+              </Options>
+            </LongFlags>
+            <Pad sizeOfSource="6*sizeof(long)" length="24" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="20*sizeof(long)" length="80" />
+      <Explanation name="Multiplayer parameters" expertOnly="true" />
+      <Real CStyleName="hud_scale_in_multiplayer" pascalStyleName="HudScaleInMultiplayer" name="hud scale in multiplayer" expertOnly="true" />
+      <Pad sizeOfSource="64*sizeof(long)" length="256" />
+      <Explanation name="Hud globals" />
+      <Pad sizeOfSource="sizeof(long)*4" length="16" />
+      <Real CStyleName="motion_sensor_range" pascalStyleName="MotionSensorRange" name="motion sensor range" />
+      <Real CStyleName="motion_sensor_velocity_sensitivity" pascalStyleName="MotionSensorVelocitySensitivity" name="motion sensor velocity sensitivity" description="how fast something moves to show up on the motion sensor" />
+      <Real CStyleName="motion_sensor_scale_dont_touch_ever" pascalStyleName="MotionSensorScaleDontTouchEver" name="motion sensor scale [DON'T TOUCH EVER]" readOnly="true" expertOnly="true" />
+      <Rectangle2D CStyleName="default_chapter_title_bounds" pascalStyleName="DefaultChapterTitleBounds" name="default chapter title bounds" />
+      <Pad sizeOfSource="11*sizeof(long)" length="44" />
+      <Explanation name="Hud damage indicators" expertOnly="true" />
+      <ShortInteger name="top offset" expertOnly="true" />
+      <ShortInteger name="bottom offset" expertOnly="true" />
+      <ShortInteger name="left offset" expertOnly="true" />
+      <ShortInteger name="right offset" expertOnly="true" />
+      <Pad sizeOfSource="8*sizeof(long)" length="32" />
+      <TagReference CStyleName="indicator_bitmap" pascalStyleName="IndicatorBitmap" name="indicator bitmap" expertOnly="true">
+        <tag>bitm</tag>
+      </TagReference>
+      <ShortInteger CStyleName="sequence_index" pascalStyleName="SequenceIndex" name="sequence index" expertOnly="true" />
+      <ShortInteger CStyleName="multiplayer_sequence_index" pascalStyleName="MultiplayerSequenceIndex" name="multiplayer sequence index" expertOnly="true" />
+      <ArgbColor CStyleName="color" pascalStyleName="Color" name="color" expertOnly="true" />
+      <Pad sizeOfSource="4*sizeof(long)" length="16" />
+      <Explanation name="Hud timer definitions" />
+      <Explanation name="Not much time left flash color" />
+      <ArgbColor name="default color" />
+      <ArgbColor name="flashing color" />
+      <Real name="flash period" />
+      <Real name="flash delay" description="time between flashes" />
+      <ShortInteger name="number of flashes" />
+      <WordFlags name="flash flags">
+        <OptionsXRef>enum:hud_flash_flags</OptionsXRef>
+      </WordFlags>
+      <Real name="flash length" description="time of each flash" />
+      <ArgbColor name="disabled color" />
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <Explanation name="Time out flash color" />
+      <ArgbColor name="default color" />
+      <ArgbColor name="flashing color" />
+      <Real name="flash period" />
+      <Real name="flash delay" description="time between flashes" />
+      <ShortInteger name="number of flashes" />
+      <WordFlags name="flash flags">
+        <OptionsXRef>enum:hud_flash_flags</OptionsXRef>
+      </WordFlags>
+      <Real name="flash length" description="time of each flash" />
+      <ArgbColor name="disabled color" />
+      <Pad sizeOfSource="1*sizeof(long)" length="4" />
+      <Pad sizeOfSource="10*sizeof(long)" length="40" />
+      <TagReference CStyleName="carnage_report_bitmap" pascalStyleName="CarnageReportBitmap" name="carnage report bitmap" expertOnly="true">
+        <tag>bitm</tag>
+      </TagReference>
+      <Explanation name="Hud crap that wouldn't fit anywhere else" />
+      <ShortInteger CStyleName="loading_begin_text" pascalStyleName="LoadingBeginText" name="loading begin text" expertOnly="true" />
+      <ShortInteger CStyleName="loading_end_text" pascalStyleName="LoadingEndText" name="loading end text" expertOnly="true" />
+      <ShortInteger CStyleName="checkpoint_begin_text" pascalStyleName="CheckpointBeginText" name="checkpoint begin text" expertOnly="true" />
+      <ShortInteger CStyleName="checkpoint_end_text" pascalStyleName="CheckpointEndText" name="checkpoint end text" expertOnly="true" />
+      <TagReference CStyleName="checkpoint_sound" pascalStyleName="CheckpointSound" name="checkpoint sound">
+        <tag>snd!</tag>
+      </TagReference>
+      <Pad sizeOfSource="24*sizeof(long)" length="96" />
+      <Struct CStyleName="new_globals" pascalStyleName="NewGlobals" name="new globals">
+        <Layout regolithID="structure:global_new_hud_globals" tag="nhgs" internalName="global_new_hud_globals_struct" backingBlockInternalName="global_new_hud_globals_struct_block" name="global_new_hud_globals_struct">
+          <FieldSet version="0" sizeofValue="260" sizeofSource="sizeof(struct s_new_hud_globals)" isLatest="true">
+            <TagReference CStyleName="hud_text" pascalStyleName="HudText" name="hud text">
+              <tag>unic</tag>
+            </TagReference>
+            <Block CStyleName="dashlights" pascalStyleName="Dashlights" name="dashlights" maxElementCount="9" maxElementCountSource="k_hud_dashlight_count">
+              <Layout regolithID="block:hud_dashlights" internalName="hud_dashlights_block" name="hud_dashlights_block">
+                <FieldSet version="0" sizeofValue="52" sizeofSource="sizeof(struct s_new_hud_dashlight_definition)" isLatest="true">
+                  <TagReference CStyleName="bitmap" pascalStyleName="Bitmap" name="bitmap">
+                    <tag>bitm</tag>
+                  </TagReference>
+                  <TagReference CStyleName="shader" pascalStyleName="Shader" name="shader">
+                    <tag>shad</tag>
+                  </TagReference>
+                  <ShortInteger CStyleName="sequence_index" pascalStyleName="SequenceIndex" name="sequence index" />
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:hud_dashlights_flags" CStyleName="hud_dashlights_flags" pascalStyleName="HudDashlightsFlags">
+                      <Bit name="don't scale when pulsing" CStyleName="dont_scale_when_pulsing_bit" pascalStyleName="DontScaleWhenPulsingBit" />
+                    </Options>
+                  </WordFlags>
+                  <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound">
+                    <tag>snd!</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="waypoint_arrows" pascalStyleName="WaypointArrows" name="waypoint arrows" maxElementCount="4" maxElementCountSource="k_hud_waypoint_arrow_type_count">
+              <Layout regolithID="block:new_hud_waypoint_arrow" internalName="hud_waypoint_arrow_block" name="hud_waypoint_arrow_block">
+                <FieldSet version="0" sizeofValue="60" sizeofSource="sizeof(struct s_new_hud_waypoint_arrow_definition)" isLatest="true">
+                  <TagReference CStyleName="bitmap" pascalStyleName="Bitmap" name="bitmap">
+                    <tag>bitm</tag>
+                  </TagReference>
+                  <TagReference CStyleName="shader" pascalStyleName="Shader" name="shader">
+                    <tag>shad</tag>
+                  </TagReference>
+                  <ShortInteger CStyleName="sequence_index" pascalStyleName="SequenceIndex" name="sequence index" />
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <Real CStyleName="smallest_size" pascalStyleName="SmallestSize" name="smallest size" />
+                  <Real CStyleName="smallest_distance" pascalStyleName="SmallestDistance" name="smallest distance" />
+                  <TagReference CStyleName="border_bitmap" pascalStyleName="BorderBitmap" name="border bitmap">
+                    <tag>bitm</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="waypoints" pascalStyleName="Waypoints" name="waypoints" maxElementCount="12" maxElementCountSource="k_hud_waypoint_type_count">
+              <Layout regolithID="block:hud_waypoint" internalName="hud_waypoint_block" name="hud_waypoint_block">
+                <FieldSet version="0" sizeofValue="40" sizeofSource="sizeof(struct s_new_hud_waypoint_definition)" isLatest="true">
+                  <TagReference CStyleName="bitmap" pascalStyleName="Bitmap" name="bitmap">
+                    <tag>bitm</tag>
+                  </TagReference>
+                  <TagReference CStyleName="shader" pascalStyleName="Shader" name="shader">
+                    <tag>shad</tag>
+                  </TagReference>
+                  <ShortInteger CStyleName="onscreen_sequence_index" pascalStyleName="OnscreenSequenceIndex" name="onscreen sequence index" />
+                  <ShortInteger CStyleName="occluded_sequence_index" pascalStyleName="OccludedSequenceIndex" name="occluded sequence index" />
+                  <ShortInteger CStyleName="offscreen_sequence_index" pascalStyleName="OffscreenSequenceIndex" name="offscreen sequence index" />
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="hud_sounds" pascalStyleName="HudSounds" name="hud sounds" maxElementCount="6" maxElementCountSource="k_maximum_hud_sounds">
+              <Layout regolithID="block:new_hud_sound" internalName="new_hud_sound_block" name="new_hud_sound_block">
+                <FieldSet version="0" sizeofValue="40" sizeofSource="sizeof(struct new_hud_sound_element_definition)" isLatest="true">
+                  <TagReference CStyleName="chief_sound" pascalStyleName="ChiefSound" name="chief sound" blockNameSource="true">
+                    <tag />
+                  </TagReference>
+                  <LongFlags CStyleName="latched_to" pascalStyleName="LatchedTo" name="latched to">
+                    <Options regolithID="enum:new_hud_sound_latched_to" CStyleName="new_hud_sound_latched_to" pascalStyleName="NewHudSoundLatchedTo">
+                      <Bit name="shield recharging" CStyleName="shield_recharging_bit" pascalStyleName="ShieldRechargingBit" />
+                      <Bit name="shield damaged" CStyleName="shield_damaged_bit" pascalStyleName="ShieldDamagedBit" />
+                      <Bit name="shield low" CStyleName="shield_low_bit" pascalStyleName="ShieldLowBit" />
+                      <Bit name="shield empty" CStyleName="shield_empty_bit" pascalStyleName="ShieldEmptyBit" />
+                      <Bit name="health low" CStyleName="health_low_bit" pascalStyleName="HealthLowBit" />
+                      <Bit name="health empty" CStyleName="health_empty_bit" pascalStyleName="HealthEmptyBit" />
+                      <Bit name="health minor damage" CStyleName="health_minor_damage_bit" pascalStyleName="HealthMinorDamageBit" />
+                      <Bit name="health major damage" CStyleName="health_major_damage_bit" pascalStyleName="HealthMajorDamageBit" />
+                      <Bit name="rocket locking" CStyleName="rocket_locking_bit" pascalStyleName="RocketLockingBit" />
+                      <Bit name="rocket locked" CStyleName="rocket_locked_bit" pascalStyleName="RocketLockedBit" />
+                    </Options>
+                  </LongFlags>
+                  <Real CStyleName="scale" pascalStyleName="Scale" name="scale" />
+                  <TagReference CStyleName="dervish_sound" pascalStyleName="DervishSound" name="dervish sound">
+                    <tag />
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="player_training_data" pascalStyleName="PlayerTrainingData" name="player training data" maxElementCount="32" maxElementCountSource="k_player_training_count">
+              <Layout regolithID="block:player_training_entry_data" internalName="player_training_entry_data_block" name="player_training_entry_data_block">
+                <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(struct s_player_training_entry_data)" isLatest="true">
+                  <StringId CStyleName="display_string" pascalStyleName="DisplayString" name="display string" description="comes out of the HUD text globals" />
+                  <StringId CStyleName="display_string2" pascalStyleName="DisplayString2" name="display string2" description="comes out of the HUD text globals, used for grouped prompt" />
+                  <StringId CStyleName="display_string3" pascalStyleName="DisplayString3" name="display string3" description="comes out of the HUD text globals, used for ungrouped prompt" />
+                  <ShortInteger CStyleName="max_display_time" pascalStyleName="MaxDisplayTime" name="max display time" description="how long the message can be on screen before being hidden" />
+                  <ShortInteger CStyleName="display_count" pascalStyleName="DisplayCount" name="display count" description="how many times a training message will get displayed (0-3 only!)" />
+                  <ShortInteger CStyleName="dissapear_delay" pascalStyleName="DissapearDelay" name="dissapear delay" description="how long a displayed but untriggered message stays up" />
+                  <ShortInteger CStyleName="redisplay_delay" pascalStyleName="RedisplayDelay" name="redisplay delay" description="how long after display this message will stay hidden" />
+                  <Real CStyleName="display_delay_s" pascalStyleName="DisplayDelayS" name="display delay (s)" description="how long the event can be triggered before it's displayed" />
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:player_training_flags" CStyleName="player_training_flags" pascalStyleName="PlayerTrainingFlags">
+                      <Bit name="not in multiplayer" CStyleName="not_in_multiplayer_bit" pascalStyleName="NotInMultiplayerBit" />
+                    </Options>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Struct CStyleName="constants" pascalStyleName="Constants" name="constants">
+              <Layout regolithID="structure:global_new_hud_globals_constants" tag="nhgs" internalName="global_new_hud_globals_constants_struct" backingBlockInternalName="global_new_hud_globals_constants_struct_block" name="global_new_hud_globals_constants_struct">
+                <FieldSet version="0" sizeofValue="184" sizeofSource="sizeof(struct s_new_hud_globals_constants)" isLatest="true">
+                  <TagReference CStyleName="primary_message_sound" pascalStyleName="PrimaryMessageSound" name="primary message sound">
+                    <tag />
+                  </TagReference>
+                  <TagReference CStyleName="secondary_message_sound" pascalStyleName="SecondaryMessageSound" name="secondary message sound">
+                    <tag />
+                  </TagReference>
+                  <StringId CStyleName="boot_griefer_string" pascalStyleName="BootGrieferString" name="boot griefer string" />
+                  <StringId CStyleName="cannot_boot_griefer_string" pascalStyleName="CannotBootGrieferString" name="cannot boot griefer string" />
+                  <TagReference CStyleName="training_shader" pascalStyleName="TrainingShader" name="training shader">
+                    <tag>shad</tag>
+                  </TagReference>
+                  <TagReference CStyleName="human_training_top_right" pascalStyleName="HumanTrainingTopRight" name="human training top right">
+                    <tag>bitm</tag>
+                  </TagReference>
+                  <TagReference CStyleName="human_training_top_center" pascalStyleName="HumanTrainingTopCenter" name="human training top center">
+                    <tag>bitm</tag>
+                  </TagReference>
+                  <TagReference CStyleName="human_training_top_left" pascalStyleName="HumanTrainingTopLeft" name="human training top left">
+                    <tag>bitm</tag>
+                  </TagReference>
+                  <TagReference CStyleName="human_training_middle" pascalStyleName="HumanTrainingMiddle" name="human training middle">
+                    <tag>bitm</tag>
+                  </TagReference>
+                  <TagReference CStyleName="elite_training_top_right" pascalStyleName="EliteTrainingTopRight" name="elite training top right">
+                    <tag>bitm</tag>
+                  </TagReference>
+                  <TagReference CStyleName="elite_training_top_center" pascalStyleName="EliteTrainingTopCenter" name="elite training top center">
+                    <tag>bitm</tag>
+                  </TagReference>
+                  <TagReference CStyleName="elite_training_top_left" pascalStyleName="EliteTrainingTopLeft" name="elite training top left">
+                    <tag>bitm</tag>
+                  </TagReference>
+                  <TagReference CStyleName="elite_training_middle" pascalStyleName="EliteTrainingMiddle" name="elite training middle">
+                    <tag>bitm</tag>
+                  </TagReference>
+                </FieldSet>
+              </Layout>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Struct>
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="effe" name="effect" version="4">
+  <Layout regolithID="block:effect" internalName="effect_block" name="effect">
+    <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(struct effect_definition)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:effect_flags" CStyleName="effect_flags" pascalStyleName="EffectFlags">
+          <Bit name="deleted when attachment deactivates" CStyleName="deleted_when_attachment_deactivates_bit" pascalStyleName="DeletedWhenAttachmentDeactivatesBit" />
+        </Options>
+      </LongFlags>
+      <ShortBlockIndex CStyleName="loop_start_event" pascalStyleName="LoopStartEvent" name="loop start event" blockReference="block:effect_event" />
+      <Skip sizeOfSource="sizeof(short)" length="2" />
+      <Pad sizeOfSource="sizeof(real)" length="4" />
+      <Block CStyleName="locations" pascalStyleName="Locations" name="locations" maxElementCount="32" maxElementCountSource="k_maximum_effect_locations_count">
+        <LayoutXRef>block:effect_locations</LayoutXRef>
+      </Block>
+      <Block CStyleName="events" pascalStyleName="Events" name="events" maxElementCount="32" maxElementCountSource="k_maximum_effect_events_count">
+        <Layout regolithID="block:effect_event" internalName="effect_event_block" name="effect_event_block">
+          <FieldSet version="0" sizeofValue="72" sizeofSource="sizeof(struct effect_event_definition)" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:effect_event_flags" CStyleName="effect_event_flags" pascalStyleName="EffectEventFlags">
+                <Bit name="disabled for debugging" CStyleName="disabled_for_debugging_bit" pascalStyleName="DisabledForDebuggingBit" />
+              </Options>
+            </LongFlags>
+            <RealFraction CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" description="chance that this event will be skipped entirely" />
+            <RealBounds CStyleName="delay_bounds" pascalStyleName="DelayBounds" name="delay bounds" units="seconds" description="delay before this event takes place" />
+            <RealBounds CStyleName="duration_bounds" pascalStyleName="DurationBounds" name="duration bounds" units="seconds" description="duration of this event" />
+            <Block CStyleName="parts" pascalStyleName="Parts" name="parts" maxElementCount="32" maxElementCountSource="k_maximum_effect_parts_per_event_count">
+              <Layout regolithID="block:effect_part" internalName="effect_part_block" name="effect_part_block">
+                <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(struct effect_part_definition)" isLatest="true">
+                  <ShortEnum name="create in">
+                    <OptionsXRef>enum:effect_environment_create_in</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum name="create in">
+                    <OptionsXRef>enum:effect_disposition_mode</OptionsXRef>
+                  </ShortEnum>
+                  <ShortBlockIndex CStyleName="location" pascalStyleName="Location" name="location" blockReference="block:effect_locations" />
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:effect_part_flags" CStyleName="effect_part_flags" pascalStyleName="EffectPartFlags">
+                      <Bit name="face down regardless of location (decals)" CStyleName="face_down_regardless_of_location_decals_bit" pascalStyleName="FaceDownRegardlessOfLocationDecalsBit" />
+                      <Bit name="offset origin away from geometry (lights)" CStyleName="offset_origin_away_from_geometry_lights_bit" pascalStyleName="OffsetOriginAwayFromGeometryLightsBit" />
+                      <Bit name="never attached to object" CStyleName="never_attached_to_object_bit" pascalStyleName="NeverAttachedToObjectBit" />
+                      <Bit name="disabled for debugging" CStyleName="disabled_for_debugging_bit" pascalStyleName="DisabledForDebuggingBit" />
+                      <Bit name="draw regardless of distance" CStyleName="draw_regardless_of_distance_bit" pascalStyleName="DrawRegardlessOfDistanceBit" />
+                    </Options>
+                  </WordFlags>
+                  <Pad sizeOfSource="sizeof(tag)" length="4" />
+                  <TagReference CStyleName="type" pascalStyleName="Type" name="type" blockNameSource="true">
+                    <tag />
+                  </TagReference>
+                  <RealBounds CStyleName="velocity_bounds" pascalStyleName="VelocityBounds" name="velocity bounds" units="world units per second" description="initial velocity along the location's forward, for decals the distance at which decal is created (defaults to 0.5)" />
+                  <Angle CStyleName="velocity_cone_angle" pascalStyleName="VelocityConeAngle" name="velocity cone angle" units="degrees" description="initial velocity will be inside the cone defined by this angle." />
+                  <AngleBounds CStyleName="angular_velocity_bounds" pascalStyleName="AngularVelocityBounds" name="angular velocity bounds" units="degrees per second" />
+                  <RealBounds CStyleName="radius_modifier_bounds" pascalStyleName="RadiusModifierBounds" name="radius modifier bounds" />
+                  <Explanation name="SCALE MODIFIERS" />
+                  <LongFlags CStyleName="a_scales_values" pascalStyleName="AScalesValues" name="A scales values">
+                    <Options regolithID="enum:effect_part_scale_type" CStyleName="effect_part_scale_type" pascalStyleName="EffectPartScaleType">
+                      <Bit name="velocity" CStyleName="velocity_bit" pascalStyleName="VelocityBit" />
+                      <Bit name="velocity delta" CStyleName="velocity_delta_bit" pascalStyleName="VelocityDeltaBit" />
+                      <Bit name="velocity cone angle" CStyleName="velocity_cone_angle_bit" pascalStyleName="VelocityConeAngleBit" />
+                      <Bit name="angular velocity" CStyleName="angular_velocity_bit" pascalStyleName="AngularVelocityBit" />
+                      <Bit name="angular velocity delta" CStyleName="angular_velocity_delta_bit" pascalStyleName="AngularVelocityDeltaBit" />
+                      <Bit name="type-specific scale" CStyleName="type_specific_scale_bit" pascalStyleName="TypeSpecificScaleBit" />
+                    </Options>
+                  </LongFlags>
+                  <LongFlags CStyleName="b_scales_values" pascalStyleName="BScalesValues" name="B scales values">
+                    <OptionsXRef>enum:effect_part_scale_type</OptionsXRef>
+                  </LongFlags>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <UselessPad length="12" />
+            <Block CStyleName="beams" pascalStyleName="Beams" name="beams" maxElementCount="1024" maxElementCountSource="k_kilo">
+              <Layout regolithID="block:beam" internalName="beam_block" name="beam_block">
+                <FieldSet version="0" sizeofValue="92" sizeofSource="sizeof(c_beam_definition)" isLatest="true">
+                  <TagReference CStyleName="shader" pascalStyleName="Shader" name="shader">
+                    <tag>shad</tag>
+                  </TagReference>
+                  <ShortBlockIndex CStyleName="location" pascalStyleName="Location" name="location" blockReference="block:effect_locations" />
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <Explanation name="COLOR" description="tint color of the beam" />
+                  <Struct CStyleName="color" pascalStyleName="Color" name="color">
+                    <LayoutXRef>structure:color_function</LayoutXRef>
+                  </Struct>
+                  <Explanation name="ALPHA" description="how much to fade out beam" />
+                  <Struct CStyleName="alpha" pascalStyleName="Alpha" name="alpha">
+                    <LayoutXRef>structure:scalar_function</LayoutXRef>
+                  </Struct>
+                  <Explanation name="WIDTH" description="how wide in world units" />
+                  <Struct CStyleName="width" pascalStyleName="Width" name="width">
+                    <LayoutXRef>structure:scalar_function</LayoutXRef>
+                  </Struct>
+                  <Explanation name="LENGTH" description="how long in world units" />
+                  <Struct CStyleName="length" pascalStyleName="Length" name="length">
+                    <LayoutXRef>structure:scalar_function</LayoutXRef>
+                  </Struct>
+                  <Explanation name="YAW" description="rotate the marker" />
+                  <Struct CStyleName="yaw" pascalStyleName="Yaw" name="yaw">
+                    <LayoutXRef>structure:scalar_function</LayoutXRef>
+                  </Struct>
+                  <Explanation name="PITCH" description="rotate the marker" />
+                  <Struct CStyleName="pitch" pascalStyleName="Pitch" name="pitch">
+                    <LayoutXRef>structure:scalar_function</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="accelerations" pascalStyleName="Accelerations" name="accelerations" maxElementCount="32" maxElementCountSource="k_maximum_effect_accelerations_per_event_count">
+              <Layout regolithID="block:effect_accelerations" internalName="effect_accelerations_block" name="effect_accelerations_block">
+                <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(struct effect_acceleration_definition)" isLatest="true">
+                  <ShortEnum name="create in">
+                    <OptionsXRef>enum:effect_environment_create_in</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum name="create in">
+                    <OptionsXRef>enum:effect_disposition_mode</OptionsXRef>
+                  </ShortEnum>
+                  <ShortBlockIndex CStyleName="location" pascalStyleName="Location" name="location" blockReference="block:effect_locations" />
+                  <Pad sizeOfSource="sizeof(word)" length="2" />
+                  <Real CStyleName="acceleration" pascalStyleName="Acceleration" name="acceleration" />
+                  <Real CStyleName="inner_cone_angle" pascalStyleName="InnerConeAngle" name="inner cone angle" units="degrees" />
+                  <Real CStyleName="outer_cone_angle" pascalStyleName="OuterConeAngle" name="outer cone angle" units="degrees" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="particle_systems" pascalStyleName="ParticleSystems" name="particle systems" maxElementCount="32" maxElementCountSource="c_particle_system_definition::k_maximum_particle_systems_per_block">
+              <LayoutXRef>block:particle_system_definition_block_new</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <UselessPad length="12" />
+      <Explanation name="Looping Sound" />
+      <TagReference CStyleName="looping_sound" pascalStyleName="LoopingSound" name="looping sound">
+        <tag>lsnd</tag>
+      </TagReference>
+      <ShortBlockIndex CStyleName="location" pascalStyleName="Location" name="location" blockReference="block:effect_locations" />
+      <Skip sizeOfSource="sizeof(short)" length="2" />
+      <Real CStyleName="always_play_distance" pascalStyleName="AlwaysPlayDistance" name="always play distance" />
+      <Real CStyleName="never_play_distance" pascalStyleName="NeverPlayDistance" name="never play distance" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

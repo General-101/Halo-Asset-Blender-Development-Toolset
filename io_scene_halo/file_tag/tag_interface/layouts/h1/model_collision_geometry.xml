@@ -1,0 +1,331 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="coll" name="model_collision_geometry" version="10">
+  <Layout regolithID="block:model_collision_geometry" internalName="model_collision_geometry_block" name="model_collision_geometry">
+    <FieldSet version="0" sizeofValue="664" sizeofSource="sizeof(struct model_collision_geometry_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="takes shield damage for children" CStyleName="takes_shield_damage_for_children_bit" pascalStyleName="TakesShieldDamageForChildrenBit" />
+          <Bit name="takes body damage for children" CStyleName="takes_body_damage_for_children_bit" pascalStyleName="TakesBodyDamageForChildrenBit" />
+          <Bit name="always shields friendly damage" CStyleName="always_shields_friendly_damage_bit" pascalStyleName="AlwaysShieldsFriendlyDamageBit" />
+          <Bit name="passes area damage to children" CStyleName="passes_area_damage_to_children_bit" pascalStyleName="PassesAreaDamageToChildrenBit" />
+          <Bit name="parent never takes body damage for us" CStyleName="parent_never_takes_body_damage_for_us_bit" pascalStyleName="ParentNeverTakesBodyDamageForUsBit" />
+          <Bit name="only damaged by explosives" CStyleName="only_damaged_by_explosives_bit" pascalStyleName="OnlyDamagedByExplosivesBit" />
+          <Bit name="only damaged while occupied" CStyleName="only_damaged_while_occupied_bit" pascalStyleName="OnlyDamagedWhileOccupiedBit" />
+        </Options>
+      </LongFlags>
+      <ShortInteger CStyleName="indirect_damage_material" pascalStyleName="IndirectDamageMaterial" name="indirect damage material" />
+      <Pad name="pad" length="2" />
+      <Real CStyleName="maximum_body_vitality" pascalStyleName="MaximumBodyVitality" name="maximum body vitality" />
+      <Real CStyleName="body_system_shock" pascalStyleName="BodySystemShock" name="body system shock" />
+      <Pad name="pad" length="24" />
+      <Pad name="pad" length="28" />
+      <Real CStyleName="friendly_damage_resistance" pascalStyleName="FriendlyDamageResistance" name="friendly damage resistance" />
+      <Pad name="pad" length="8" />
+      <Pad name="pad" length="32" />
+      <TagReference CStyleName="localized_damage_effect" pascalStyleName="LocalizedDamageEffect" name="localized damage effect">
+        <tag>effect</tag>
+      </TagReference>
+      <Real CStyleName="area_damage_effect_threshold" pascalStyleName="AreaDamageEffectThreshold" name="area damage effect threshold" />
+      <TagReference CStyleName="area_damage_effect" pascalStyleName="AreaDamageEffect" name="area damage effect">
+        <tag>effect</tag>
+      </TagReference>
+      <Real CStyleName="body_damaged_threshold" pascalStyleName="BodyDamagedThreshold" name="body damaged threshold" />
+      <TagReference CStyleName="body_damaged_effect" pascalStyleName="BodyDamagedEffect" name="body damaged effect">
+        <tag>effect</tag>
+      </TagReference>
+      <TagReference CStyleName="body_depleted_effect" pascalStyleName="BodyDepletedEffect" name="body depleted effect">
+        <tag>effect</tag>
+      </TagReference>
+      <Real CStyleName="body_destroyed_threshold" pascalStyleName="BodyDestroyedThreshold" name="body destroyed threshold" />
+      <TagReference CStyleName="body_destroyed_effect" pascalStyleName="BodyDestroyedEffect" name="body destroyed effect">
+        <tag>effect</tag>
+      </TagReference>
+      <Real CStyleName="maximum_shield_vitality" pascalStyleName="MaximumShieldVitality" name="maximum shield vitality" />
+      <Pad name="pad" length="2" />
+      <ShortEnum CStyleName="shield_material_type" pascalStyleName="ShieldMaterialType" name="shield material type">
+        <Options regolithID="enum:shield_material_type" CStyleName="shield_material_type" pascalStyleName="ShieldMaterialType">
+          <Enum name="dirt" CStyleName="dirt" pascalStyleName="Dirt" />
+          <Enum name="sand" CStyleName="sand" pascalStyleName="Sand" />
+          <Enum name="stone" CStyleName="stone" pascalStyleName="Stone" />
+          <Enum name="snow" CStyleName="snow" pascalStyleName="Snow" />
+          <Enum name="wood" CStyleName="wood" pascalStyleName="Wood" />
+          <Enum name="metal hollow" CStyleName="metal_hollow" pascalStyleName="MetalHollow" />
+          <Enum name="metal thin" CStyleName="metal_thin" pascalStyleName="MetalThin" />
+          <Enum name="metal thick" CStyleName="metal_thick" pascalStyleName="MetalThick" />
+          <Enum name="rubber" CStyleName="rubber" pascalStyleName="Rubber" />
+          <Enum name="glass" CStyleName="glass" pascalStyleName="Glass" />
+          <Enum name="force field" CStyleName="force_field" pascalStyleName="ForceField" />
+          <Enum name="grunt" CStyleName="grunt" pascalStyleName="Grunt" />
+          <Enum name="hunter armor" CStyleName="hunter_armor" pascalStyleName="HunterArmor" />
+          <Enum name="hunter skin" CStyleName="hunter_skin" pascalStyleName="HunterSkin" />
+          <Enum name="elite" CStyleName="elite" pascalStyleName="Elite" />
+          <Enum name="jackal" CStyleName="jackal" pascalStyleName="Jackal" />
+          <Enum name="jackal energy shield" CStyleName="jackal_energy_shield" pascalStyleName="JackalEnergyShield" />
+          <Enum name="engineer skin" CStyleName="engineer_skin" pascalStyleName="EngineerSkin" />
+          <Enum name="engineer force field" CStyleName="engineer_force_field" pascalStyleName="EngineerForceField" />
+          <Enum name="flood combat form" CStyleName="flood_combat_form" pascalStyleName="FloodCombatForm" />
+          <Enum name="flood carrier form" CStyleName="flood_carrier_form" pascalStyleName="FloodCarrierForm" />
+          <Enum name="cyborg armor" CStyleName="cyborg_armor" pascalStyleName="CyborgArmor" />
+          <Enum name="cyborg energy shield" CStyleName="cyborg_energy_shield" pascalStyleName="CyborgEnergyShield" />
+          <Enum name="human armor" CStyleName="human_armor" pascalStyleName="HumanArmor" />
+          <Enum name="human skin" CStyleName="human_skin" pascalStyleName="HumanSkin" />
+          <Enum name="sentinel" CStyleName="sentinel" pascalStyleName="Sentinel" />
+          <Enum name="monitor" CStyleName="monitor" pascalStyleName="Monitor" />
+          <Enum name="plastic" CStyleName="plastic" pascalStyleName="Plastic" />
+          <Enum name="water" CStyleName="water" pascalStyleName="Water" />
+          <Enum name="leaves" CStyleName="leaves" pascalStyleName="Leaves" />
+          <Enum name="elite energy shield" CStyleName="elite_energy_shield" pascalStyleName="EliteEnergyShield" />
+          <Enum name="ice" CStyleName="ice" pascalStyleName="Ice" />
+          <Enum name="hunter shield" CStyleName="hunter_shield" pascalStyleName="HunterShield" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="24" />
+      <ShortEnum CStyleName="shield_failure_function" pascalStyleName="ShieldFailureFunction" name="shield failure function">
+        <Options regolithID="enum:shield_failure_function" CStyleName="shield_failure_function" pascalStyleName="ShieldFailureFunction">
+          <Enum name="linear" CStyleName="linear" pascalStyleName="Linear" />
+          <Enum name="early" CStyleName="early" pascalStyleName="Early" />
+          <Enum name="very early" CStyleName="very_early" pascalStyleName="VeryEarly" />
+          <Enum name="late" CStyleName="late" pascalStyleName="Late" />
+          <Enum name="very late" CStyleName="very_late" pascalStyleName="VeryLate" />
+          <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="2" />
+      <Real CStyleName="shield_failure_threshold" pascalStyleName="ShieldFailureThreshold" name="shield failure threshold" />
+      <Real CStyleName="failing_shield_leak_fraction" pascalStyleName="FailingShieldLeakFraction" name="failing shield leak fraction" />
+      <Pad name="pad" length="16" />
+      <Real CStyleName="minimum_stun_damage" pascalStyleName="MinimumStunDamage" name="minimum stun damage" />
+      <Real CStyleName="stun_time" pascalStyleName="StunTime" name="stun time" />
+      <Real CStyleName="recharge_time" pascalStyleName="RechargeTime" name="recharge time" />
+      <Pad name="pad" length="16" />
+      <Pad name="pad" length="96" />
+      <Real CStyleName="shield_damaged_threshold" pascalStyleName="ShieldDamagedThreshold" name="shield damaged threshold" />
+      <TagReference CStyleName="shield_damaged_effect" pascalStyleName="ShieldDamagedEffect" name="shield damaged effect">
+        <tag>effect</tag>
+      </TagReference>
+      <TagReference CStyleName="shield_depleted_effect" pascalStyleName="ShieldDepletedEffect" name="shield depleted effect">
+        <tag>effect</tag>
+      </TagReference>
+      <TagReference CStyleName="shield_recharging_effect" pascalStyleName="ShieldRechargingEffect" name="shield recharging effect">
+        <tag>effect</tag>
+      </TagReference>
+      <Pad name="pad" length="8" />
+      <Real CStyleName="shield_recharge_rate" pascalStyleName="ShieldRechargeRate" name="shield recharge rate" cacheOnly="true" />
+      <Pad name="pad" length="112" />
+      <Block CStyleName="materials" pascalStyleName="Materials" name="materials" maxElementCount="32">
+        <Layout regolithID="block:materials" internalName="materials_block" name="materials_block">
+          <FieldSet version="0" sizeofValue="72" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="head" CStyleName="head_bit" pascalStyleName="HeadBit" />
+              </Options>
+            </LongFlags>
+            <ShortEnum CStyleName="material_type" pascalStyleName="MaterialType" name="material type">
+              <Options regolithID="enum:material_type" CStyleName="material_type" pascalStyleName="MaterialType">
+                <Enum name="dirt" CStyleName="dirt" pascalStyleName="Dirt" />
+                <Enum name="sand" CStyleName="sand" pascalStyleName="Sand" />
+                <Enum name="stone" CStyleName="stone" pascalStyleName="Stone" />
+                <Enum name="snow" CStyleName="snow" pascalStyleName="Snow" />
+                <Enum name="wood" CStyleName="wood" pascalStyleName="Wood" />
+                <Enum name="metal hollow" CStyleName="metal_hollow" pascalStyleName="MetalHollow" />
+                <Enum name="metal thin" CStyleName="metal_thin" pascalStyleName="MetalThin" />
+                <Enum name="metal thick" CStyleName="metal_thick" pascalStyleName="MetalThick" />
+                <Enum name="rubber" CStyleName="rubber" pascalStyleName="Rubber" />
+                <Enum name="glass" CStyleName="glass" pascalStyleName="Glass" />
+                <Enum name="force field" CStyleName="force_field" pascalStyleName="ForceField" />
+                <Enum name="grunt" CStyleName="grunt" pascalStyleName="Grunt" />
+                <Enum name="hunter armor" CStyleName="hunter_armor" pascalStyleName="HunterArmor" />
+                <Enum name="hunter skin" CStyleName="hunter_skin" pascalStyleName="HunterSkin" />
+                <Enum name="elite" CStyleName="elite" pascalStyleName="Elite" />
+                <Enum name="jackal" CStyleName="jackal" pascalStyleName="Jackal" />
+                <Enum name="jackal energy shield" CStyleName="jackal_energy_shield" pascalStyleName="JackalEnergyShield" />
+                <Enum name="engineer skin" CStyleName="engineer_skin" pascalStyleName="EngineerSkin" />
+                <Enum name="engineer force field" CStyleName="engineer_force_field" pascalStyleName="EngineerForceField" />
+                <Enum name="flood combat form" CStyleName="flood_combat_form" pascalStyleName="FloodCombatForm" />
+                <Enum name="flood carrier form" CStyleName="flood_carrier_form" pascalStyleName="FloodCarrierForm" />
+                <Enum name="cyborg armor" CStyleName="cyborg_armor" pascalStyleName="CyborgArmor" />
+                <Enum name="cyborg energy shield" CStyleName="cyborg_energy_shield" pascalStyleName="CyborgEnergyShield" />
+                <Enum name="human armor" CStyleName="human_armor" pascalStyleName="HumanArmor" />
+                <Enum name="human skin" CStyleName="human_skin" pascalStyleName="HumanSkin" />
+                <Enum name="sentinel" CStyleName="sentinel" pascalStyleName="Sentinel" />
+                <Enum name="monitor" CStyleName="monitor" pascalStyleName="Monitor" />
+                <Enum name="plastic" CStyleName="plastic" pascalStyleName="Plastic" />
+                <Enum name="water" CStyleName="water" pascalStyleName="Water" />
+                <Enum name="leaves" CStyleName="leaves" pascalStyleName="Leaves" />
+                <Enum name="elite energy shield" CStyleName="elite_energy_shield" pascalStyleName="EliteEnergyShield" />
+                <Enum name="ice" CStyleName="ice" pascalStyleName="Ice" />
+                <Enum name="hunter shield" CStyleName="hunter_shield" pascalStyleName="HunterShield" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Real CStyleName="shield_leak_percentage" pascalStyleName="ShieldLeakPercentage" name="shield leak percentage" />
+            <Real CStyleName="shield_damage_multiplier" pascalStyleName="ShieldDamageMultiplier" name="shield damage multiplier" />
+            <Pad name="pad" length="12" />
+            <Real CStyleName="body_damage_multiplier" pascalStyleName="BodyDamageMultiplier" name="body damage multiplier" />
+            <Pad name="pad" length="8" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="regions" pascalStyleName="Regions" name="regions" maxElementCount="8">
+        <Layout regolithID="block:regions" internalName="regions_block" name="regions_block">
+          <FieldSet version="0" sizeofValue="84" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="lives until object dies" CStyleName="lives_until_object_dies_bit" pascalStyleName="LivesUntilObjectDiesBit" />
+                <Bit name="forces object to die" CStyleName="forces_object_to_die_bit" pascalStyleName="ForcesObjectToDieBit" />
+                <Bit name="dies when object dies" CStyleName="dies_when_object_dies_bit" pascalStyleName="DiesWhenObjectDiesBit" />
+                <Bit name="dies when object is damaged" CStyleName="dies_when_object_is_damaged_bit" pascalStyleName="DiesWhenObjectIsDamagedBit" />
+                <Bit name="disappears when shield is off" CStyleName="disappears_when_shield_is_off_bit" pascalStyleName="DisappearsWhenShieldIsOffBit" />
+                <Bit name="inhibits melee attack" CStyleName="inhibits_melee_attack_bit" pascalStyleName="InhibitsMeleeAttackBit" />
+                <Bit name="inhibits weapon attack" CStyleName="inhibits_weapon_attack_bit" pascalStyleName="InhibitsWeaponAttackBit" />
+                <Bit name="inhibits walking" CStyleName="inhibits_walking_bit" pascalStyleName="InhibitsWalkingBit" />
+                <Bit name="forces drop weapon" CStyleName="forces_drop_weapon_bit" pascalStyleName="ForcesDropWeaponBit" />
+                <Bit name="causes head maimed scream" CStyleName="causes_head_maimed_scream_bit" pascalStyleName="CausesHeadMaimedScreamBit" />
+              </Options>
+            </LongFlags>
+            <Pad name="pad" length="4" />
+            <Real CStyleName="damage_threshold" pascalStyleName="DamageThreshold" name="damage threshold" />
+            <Pad name="pad" length="12" />
+            <TagReference CStyleName="destroyed_effect" pascalStyleName="DestroyedEffect" name="destroyed effect">
+              <tag>effect</tag>
+            </TagReference>
+            <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations" maxElementCount="32">
+              <Layout regolithID="block:permutations" internalName="permutations_block" name="permutations_block">
+                <FieldSet version="0" sizeofValue="32" isLatest="true">
+                  <String CStyleName="name" pascalStyleName="Name" name="name" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="modifiers" pascalStyleName="Modifiers" name="modifiers" maxElementCount="0">
+        <Layout regolithID="block:modifiers" internalName="modifiers_block" name="modifiers_block">
+          <FieldSet version="0" sizeofValue="52" isLatest="true">
+            <Pad name="pad" length="52" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="16" />
+      <RealBounds CStyleName="x" pascalStyleName="X" name="x" />
+      <RealBounds CStyleName="y" pascalStyleName="Y" name="y" />
+      <RealBounds CStyleName="z" pascalStyleName="Z" name="z" />
+      <Block CStyleName="pathfinding_spheres" pascalStyleName="PathfindingSpheres" name="pathfinding spheres" maxElementCount="{'mcc-cea': 256, 'default': 32}">
+        <Layout regolithID="block:pathfinding spheres" internalName="pathfinding spheres_block" name="pathfinding spheres_block">
+          <FieldSet version="0" sizeofValue="32" isLatest="true">
+            <ShortInteger CStyleName="node" pascalStyleName="Node" name="node" />
+            <Pad name="pad" length="2" />
+            <Pad name="pad" length="12" />
+            <RealVector3D CStyleName="center" pascalStyleName="Center" name="center" />
+            <Real CStyleName="radius" pascalStyleName="Radius" name="radius" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes" maxElementCount="64">
+        <Layout regolithID="block:nodes" internalName="nodes_block" name="nodes_block">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <ShortInteger CStyleName="region" pascalStyleName="Region" name="region" />
+            <ShortInteger CStyleName="parent_node" pascalStyleName="ParentNode" name="parent node" />
+            <ShortInteger CStyleName="next_sibling_node" pascalStyleName="NextSiblingNode" name="next sibling node" />
+            <ShortInteger CStyleName="first_child_node" pascalStyleName="FirstChildNode" name="first child node" />
+            <Pad name="pad" length="10" />
+            <ShortInteger CStyleName="name_thing" pascalStyleName="NameThing" name="name thing" cacheOnly="true" />
+            <Block CStyleName="bsps" pascalStyleName="Bsps" name="bsps" maxElementCount="32">
+              <Layout regolithID="block:bsps" internalName="bsps_block" name="bsps_block">
+                <FieldSet version="0" sizeofValue="96" isLatest="true">
+                  <Block CStyleName="bsp3d_nodes" pascalStyleName="Bsp3dNodes" name="bsp3d nodes" maxElementCount="131072">
+                    <Layout regolithID="block:bsp3d nodes" internalName="bsp3d nodes_block" name="bsp3d nodes_block">
+                      <FieldSet version="0" sizeofValue="12" isLatest="true">
+                        <LongInteger CStyleName="plane" pascalStyleName="Plane" name="plane" unsigned="true" />
+                        <LongInteger CStyleName="back_child" pascalStyleName="BackChild" name="back child" unsigned="true" description="refers to a BSP3D node if not signed and a leaf if sign bit is set; null if 0xFFFFFFFF" />
+                        <LongInteger CStyleName="front_child" pascalStyleName="FrontChild" name="front child" unsigned="true" description="refers to a BSP3D node if not signed and a leaf if sign bit is set; null if 0xFFFFFFFF" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="planes" pascalStyleName="Planes" name="planes" maxElementCount="65536">
+                    <Layout regolithID="block:planes" internalName="planes_block" name="planes_block">
+                      <FieldSet version="0" sizeofValue="16" isLatest="true">
+                        <RealPlane3D CStyleName="plane" pascalStyleName="Plane" name="plane" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="leaves" pascalStyleName="Leaves" name="leaves" maxElementCount="65536">
+                    <Layout regolithID="block:leaves" internalName="leaves_block" name="leaves_block">
+                      <FieldSet version="0" sizeofValue="8" isLatest="true">
+                        <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                          <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                            <Bit name="contains double sided surfaces" CStyleName="contains_double_sided_surfaces_bit" pascalStyleName="ContainsDoubleSidedSurfacesBit" />
+                          </Options>
+                        </WordFlags>
+                        <ShortInteger CStyleName="bsp2d_reference_count" pascalStyleName="Bsp2dReferenceCount" name="bsp2d reference count" unsigned="true" />
+                        <LongInteger CStyleName="first_bsp2d_reference" pascalStyleName="FirstBsp2dReference" name="first bsp2d reference" unsigned="true" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="bsp2d_references" pascalStyleName="Bsp2dReferences" name="bsp2d references" maxElementCount="131072">
+                    <Layout regolithID="block:bsp2d references" internalName="bsp2d references_block" name="bsp2d references_block">
+                      <FieldSet version="0" sizeofValue="8" isLatest="true">
+                        <LongInteger CStyleName="plane" pascalStyleName="Plane" name="plane" unsigned="true" />
+                        <LongInteger CStyleName="bsp2d_node" pascalStyleName="Bsp2dNode" name="bsp2d node" unsigned="true" description="refers to a BSP2D node if not signed and a surface if sign bit is set; null if 0xFFFFFFFF" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="bsp2d_nodes" pascalStyleName="Bsp2dNodes" name="bsp2d nodes" maxElementCount="65535">
+                    <Layout regolithID="block:bsp2d nodes" internalName="bsp2d nodes_block" name="bsp2d nodes_block">
+                      <FieldSet version="0" sizeofValue="20" isLatest="true">
+                        <RealPlane2D CStyleName="plane" pascalStyleName="Plane" name="plane" />
+                        <LongInteger CStyleName="left_child" pascalStyleName="LeftChild" name="left child" unsigned="true" description="refers to a BSP2D node if not signed and a surface if sign bit is set; null if 0xFFFFFFFF" />
+                        <LongInteger CStyleName="right_child" pascalStyleName="RightChild" name="right child" unsigned="true" description="refers to a BSP2D node if not signed and a surface if sign bit is set; null if 0xFFFFFFFF" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="surfaces" pascalStyleName="Surfaces" name="surfaces" maxElementCount="131072">
+                    <Layout regolithID="block:surfaces" internalName="surfaces_block" name="surfaces_block">
+                      <FieldSet version="0" sizeofValue="12" isLatest="true">
+                        <LongInteger CStyleName="plane" pascalStyleName="Plane" name="plane" unsigned="true" />
+                        <LongInteger CStyleName="first_edge" pascalStyleName="FirstEdge" name="first edge" unsigned="true" />
+                        <ByteFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                          <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                            <Bit name="two sided" CStyleName="two_sided_bit" pascalStyleName="TwoSidedBit" />
+                            <Bit name="invisible" CStyleName="invisible_bit" pascalStyleName="InvisibleBit" />
+                            <Bit name="climbable" CStyleName="climbable_bit" pascalStyleName="ClimbableBit" />
+                            <Bit name="breakable" CStyleName="breakable_bit" pascalStyleName="BreakableBit" />
+                          </Options>
+                        </ByteFlags>
+                        <CharInteger CStyleName="breakable_surface" pascalStyleName="BreakableSurface" name="breakable surface" />
+                        <ShortInteger CStyleName="material" pascalStyleName="Material" name="material" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="edges" pascalStyleName="Edges" name="edges" maxElementCount="262144">
+                    <Layout regolithID="block:edges" internalName="edges_block" name="edges_block">
+                      <FieldSet version="0" sizeofValue="24" isLatest="true">
+                        <LongInteger CStyleName="start_vertex" pascalStyleName="StartVertex" name="start vertex" unsigned="true" />
+                        <LongInteger CStyleName="end_vertex" pascalStyleName="EndVertex" name="end vertex" unsigned="true" />
+                        <LongInteger CStyleName="forward_edge" pascalStyleName="ForwardEdge" name="forward edge" unsigned="true" />
+                        <LongInteger CStyleName="reverse_edge" pascalStyleName="ReverseEdge" name="reverse edge" unsigned="true" />
+                        <LongInteger CStyleName="left_surface" pascalStyleName="LeftSurface" name="left surface" unsigned="true" />
+                        <LongInteger CStyleName="right_surface" pascalStyleName="RightSurface" name="right surface" unsigned="true" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" maxElementCount="131072">
+                    <Layout regolithID="block:vertices" internalName="vertices_block" name="vertices_block">
+                      <FieldSet version="0" sizeofValue="16" isLatest="true">
+                        <RealVector3D CStyleName="point" pascalStyleName="Point" name="point" />
+                        <LongInteger CStyleName="first_edge" pascalStyleName="FirstEdge" name="first edge" unsigned="true" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

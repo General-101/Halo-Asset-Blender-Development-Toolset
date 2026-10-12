@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="ctrl" parent="devi" name="device_control" version="1">
+  <Layout regolithID="block:device_control" internalName="device_control_block" name="device_control">
+    <FieldSet version="0" sizeofValue="468" sizeofSource="sizeof(struct _control_definition)" parentVersion="0" isLatest="true">
+      <Explanation name="$$$ CONTROL $$$" />
+      <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+        <Options regolithID="enum:device_control_type" CStyleName="device_control_type" pascalStyleName="DeviceControlType">
+          <Enum name="toggle switch" CStyleName="toggle_switch" pascalStyleName="ToggleSwitch" />
+          <Enum name="on button" CStyleName="on_button" pascalStyleName="OnButton" />
+          <Enum name="off button" CStyleName="off_button" pascalStyleName="OffButton" />
+          <Enum name="call button" CStyleName="call_button" pascalStyleName="CallButton" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="triggers_when" pascalStyleName="TriggersWhen" name="triggers when">
+        <Options regolithID="enum:device_control_trigger_event" CStyleName="device_control_trigger_event" pascalStyleName="DeviceControlTriggerEvent">
+          <Enum name="touched by player" CStyleName="touched_by_player" pascalStyleName="TouchedByPlayer" />
+          <Enum name="destroyed" CStyleName="destroyed" pascalStyleName="Destroyed" />
+        </Options>
+      </ShortEnum>
+      <Real CStyleName="call_value" pascalStyleName="CallValue" name="call value" units="[0,1]" />
+      <StringId CStyleName="action_string" pascalStyleName="ActionString" name="action string" />
+      <UselessPad length="76" />
+      <TagReference CStyleName="on" pascalStyleName="On" name="on">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="off" pascalStyleName="Off" name="off">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="deny" pascalStyleName="Deny" name="deny">
+        <tag />
+      </TagReference>
+    </FieldSet>
+  </Layout>
+</TagGroup>

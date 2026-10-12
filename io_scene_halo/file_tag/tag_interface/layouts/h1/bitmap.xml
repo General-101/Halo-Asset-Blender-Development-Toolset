@@ -1,0 +1,205 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="bitm" name="bitmap" version="7">
+  <Layout regolithID="block:bitmap" internalName="bitmap_block" name="bitmap">
+    <FieldSet version="0" sizeofValue="108" sizeofSource="sizeof(struct bitmap_group)" isLatest="true">
+      <Explanation name="Type" description="Type determines the structure of the bitmap.&#10;&#10;2D textures generate regular 2D bitmaps.&#10;&#10;3D textures are composed of multiple 2D bitmaps.&#10;&#10;Cube maps form the face of a cube out of six 2D bitmaps.&#10;&#10;Sprites are used for multiple bitmaps that can be non-power-of-two, typically used for particles and HUD elements.&#10;&#10;Interface bitmaps are 2D bitmaps that can be non-power-of-two." />
+      <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+        <Options regolithID="enum:type" CStyleName="type" pascalStyleName="Type">
+          <Enum name="2d textures" CStyleName="_2d_textures" pascalStyleName="2dTextures" />
+          <Enum name="3d textures" CStyleName="_3d_textures" pascalStyleName="3dTextures" />
+          <Enum name="cube maps" CStyleName="cube_maps" pascalStyleName="CubeMaps" />
+          <Enum name="sprites" CStyleName="sprites" pascalStyleName="Sprites" />
+          <Enum name="interface bitmaps" CStyleName="interface_bitmaps" pascalStyleName="InterfaceBitmaps" />
+        </Options>
+      </ShortEnum>
+      <Explanation name="Encoding Format" description="Encoding format determines the maximum format of the bitmap when generating the tag. If disable height map compression is not set and usage is set to height map or vector map, then this will be ignored.&#10;&#10;dxt1 (4 bits per pixel) compression encodes pixels into 4x4 blocks interpolated between two colors. Alpha from the color plate is reduced to 1-bit alpha, though using alpha may result in even worse quality.&#10;&#10;dxt3 (8 bits per pixel) compression uses dxt1 for the color and explicit alpha from the color plate, reduced to 4 bits per pixel. This can cause banding for alpha gradients, but it may be better for noise and shapes. If alpha isnt used, dxt1 is used automatically.&#10;&#10;dxt5 (8 bits per pixel) compression uses dxt1 for the color while also compressing and interpolating the alpha similar. This is better than dxt3 for alpha gradients, but not as good for noisy alpha or definite shapes. If alpha isnt used, dxt1 is used automatically.&#10;&#10;16-bit (16 bits per pixel) reduces pixels to 16-bits per pixel. Alpha can optionally be present, but depending on the depth of the alpha, the depth of the colors is affected (no alpha = 5-bit red/blue and 6-bit green; 1-bit alpha = 5-bit red/green/blue, 4-bit alpha = 4-bit red/green/blue). This may cause heavy banding, but dithering can somewhat mitigate this at the cost of added noise.&#10;&#10;32-bit (32 bits per pixel) outputs the original color from the color plate with no loss in quality. Alpha may or may not be used, but it does not affect the size of the bitmap.&#10;&#10;monochrome (8 or 16 bits per pixel) signficantly reduces the size of the bitmap data losslessly if the original input is monochrome/grayscale. This can be especially useful for monochrome HUDs and noise maps. However, monochrome bitmaps do not work on the Gearbox version of Halo without a mod.&#10;&#10;bc7 (8 bits per pixel) compression encodes pixels to 4x4 blocks where bits are dynamically allocated between RGB color and Alpha. This is higher quality than the old DXT formats, however quality will degrade where complex alpha and complex color occupy the same space. This format is unsupported on Halo releases prior to MCC CEA." />
+      <ShortEnum CStyleName="encoding_format" pascalStyleName="EncodingFormat" name="encoding format" description="Format to use when generating the tag">
+        <Options regolithID="enum:encoding_format" CStyleName="encoding_format" pascalStyleName="EncodingFormat">
+          <Enum name="DXT1" CStyleName="dxt1" pascalStyleName="DXT1" description="Only use DXT1/BC1 compression with optional 1-bit alpha." />
+          <Enum name="DXT3" CStyleName="dxt3" pascalStyleName="DXT3" description="Prefer DXT3/BC2 compression, using DXT1/BC1 if no alpha channel." />
+          <Enum name="DXT5" CStyleName="dxt5" pascalStyleName="DXT5" description="Prefer DXT5/BC3 compression, using DXT1/BC1 if no alpha channel." />
+          <Enum name="16-bit" CStyleName="_16_bit" pascalStyleName="16Bit" description="Use 16 bpp (A)RGB formats." />
+          <Enum name="32-bit" CStyleName="_32_bit" pascalStyleName="32Bit" description="Use 32 bpp (A)RGB formats." />
+          <Enum name="monochrome" CStyleName="monochrome" pascalStyleName="Monochrome" description="Use monochrome formats and convert non-monochrome bitmaps into monochrome." />
+          <Enum name="BC7" CStyleName="bc7" pascalStyleName="Bc7" description="Use BC7 compression." />
+        </Options>
+      </ShortEnum>
+      <Explanation name="Usage" description="Usage affects how the bitmap is generated.&#10;&#10;alpha blend is the same as default except pixels with 0% alpha are discarded when generating mipmaps.&#10;&#10;default generates mipmaps using linear downscaling.&#10;&#10;height map generates bumpmaps, and if height map compression is enabled, converts it to a palettized format. Palettized bitmaps do not work on the Gearbox version of Halo without a mod, so it is recommended to set disable height map compression if using this.&#10;&#10;detail map is default except mipmap colors fade to gray based on the detail fade factor value&#10;&#10;light map does not generate mipmaps&#10;&#10;vector map generates a vector map. Pixels are normalized in post processing." />
+      <ShortEnum CStyleName="usage" pascalStyleName="Usage" name="usage">
+        <Options regolithID="enum:usage" CStyleName="usage" pascalStyleName="Usage">
+          <Enum name="alpha blend" CStyleName="alpha_blend" pascalStyleName="AlphaBlend" />
+          <Enum name="default" CStyleName="default_value" pascalStyleName="Default" />
+          <Enum name="height map" CStyleName="height_map" pascalStyleName="HeightMap" />
+          <Enum name="detail map" CStyleName="detail_map" pascalStyleName="DetailMap" />
+          <Enum name="light map" CStyleName="light_map" pascalStyleName="LightMap" />
+          <Enum name="vector map" CStyleName="vector_map" pascalStyleName="VectorMap" />
+        </Options>
+      </ShortEnum>
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="enable diffusion dithering" CStyleName="enable_diffusion_dithering_bit" pascalStyleName="EnableDiffusionDitheringBit" description="Enable dithering for 16-bit textures." />
+          <Bit name="disable height map compression" CStyleName="disable_height_map_compression_bit" pascalStyleName="DisableHeightMapCompressionBit" description="Disable palettization when usage is set to height or vector map." />
+          <Bit name="uniform sprite sequences" CStyleName="uniform_sprite_sequences_bit" pascalStyleName="UniformSpriteSequencesBit" description="hey - dont even try it!" />
+          <Bit name="filthy sprite bug fix" CStyleName="filthy_sprite_bug_fix_bit" pascalStyleName="FilthySpriteBugFixBit" description="Ignore sequence borders when calculating registration point." />
+          <Bit name="half hud scale" CStyleName="half_hud_scale_bit" pascalStyleName="HalfHudScaleBit" description="Draw the HUD at half the width and height." />
+          <Bit name="invert detail fade" CStyleName="invert_detail_fade_bit" pascalStyleName="InvertDetailFadeBit" description="Inverts the fading direction for fading to gray/color; base map is fully faded where lowest bitmap is not faded." />
+          <Bit name="use average color for detail fade" CStyleName="use_average_color_for_detail_fade_bit" pascalStyleName="UseAverageColorForDetailFadeBit" description="Instead of fading to gray, use the average color of the bitmap." />
+        </Options>
+      </WordFlags>
+      <Explanation name="Processing" />
+      <Struct CStyleName="processing" pascalStyleName="Processing" name="processing">
+        <Layout regolithID="structure:bitmap_processing" internalName="bitmap_processing_struct" backingBlockInternalName="bitmap_processing_struct_block" name="bitmap processing">
+          <FieldSet version="0" sizeofValue="12" isLatest="true">
+            <Real CStyleName="detail_fade_factor" pascalStyleName="DetailFadeFactor" name="detail fade factor" />
+            <Real CStyleName="sharpen_amount" pascalStyleName="SharpenAmount" name="sharpen amount" />
+            <Real CStyleName="bump_height" pascalStyleName="BumpHeight" name="bump height" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Sprite Budget" description="Sprite budget affects the sprite sheets that are generated.&#10;&#10;sprite budget size determines the maximum size of a sprite sheet. This value is ignored if sprite budget count is set to 0.&#10;&#10;sprite budget count multiplies the sprite budget size squared to get the maximum number of pixels.&#10;&#10;Note that invader-bitmap will try to ensure all sprites in each sprite sequence are in the same sprite sheet, but if the budget is set too low, it may have to split them across multiple sprite sheets. If this happens, you may, in some instances, experience graphical or performance issues.&#10;&#10;If the budget count is set to 0, then invader-bitmap will default to budget of 32767 sprite sheets with no hard limit. This will also guarantee that all sprites in a sequence share a sprite sheet." />
+      <Struct CStyleName="sprite_budget" pascalStyleName="SpriteBudget" name="sprite budget">
+        <Layout regolithID="structure:bitmap_sprite_budget" internalName="bitmap_sprite_budget_struct" backingBlockInternalName="bitmap_sprite_budget_struct_block" name="bitmap sprite budget">
+          <FieldSet version="0" sizeofValue="4" isLatest="true">
+            <ShortEnum CStyleName="size" pascalStyleName="Size" name="size">
+              <Options regolithID="enum:size" CStyleName="size" pascalStyleName="Size">
+                <Enum name="32x32" CStyleName="_32x32" pascalStyleName="32x32" />
+                <Enum name="64x64" CStyleName="_64x64" pascalStyleName="64x64" />
+                <Enum name="128x128" CStyleName="_128x128" pascalStyleName="128x128" />
+                <Enum name="256x256" CStyleName="_256x256" pascalStyleName="256x256" />
+                <Enum name="512x512" CStyleName="_512x512" pascalStyleName="512x512" />
+                <Enum name="1024x1024" CStyleName="_1024x1024" pascalStyleName="1024x1024" />
+              </Options>
+            </ShortEnum>
+            <ShortInteger CStyleName="count" pascalStyleName="Count" name="count" unsigned="true" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Color Plate" description="Copy of the source color plate bitmap used to generate the processed pixel data" />
+      <Struct CStyleName="color_plate" pascalStyleName="ColorPlate" name="color plate">
+        <Layout regolithID="structure:bitmap_color_plate" internalName="bitmap_color_plate_struct" backingBlockInternalName="bitmap_color_plate_struct_block" name="bitmap color plate">
+          <FieldSet version="0" sizeofValue="24" isLatest="true">
+            <ShortInteger CStyleName="color_plate_width" pascalStyleName="ColorPlateWidth" name="color plate width" unsigned="true" />
+            <ShortInteger CStyleName="color_plate_height" pascalStyleName="ColorPlateHeight" name="color plate height" unsigned="true" />
+            <Data CStyleName="compressed_color_plate_data" pascalStyleName="CompressedColorPlateData" name="compressed color plate data" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Processed Pixel Data" />
+      <Data CStyleName="processed_pixel_data" pascalStyleName="ProcessedPixelData" name="processed pixel data" />
+      <Explanation name="More Processing" />
+      <Struct CStyleName="more_processing" pascalStyleName="MoreProcessing" name="more processing">
+        <Layout regolithID="structure:bitmap_more_processing" internalName="bitmap_more_processing_struct" backingBlockInternalName="bitmap_more_processing_struct_block" name="bitmap more processing">
+          <FieldSet version="0" sizeofValue="10" isLatest="true">
+            <Real CStyleName="blur_filter_size" pascalStyleName="BlurFilterSize" name="blur filter size" />
+            <Real CStyleName="alpha_bias" pascalStyleName="AlphaBias" name="alpha bias" />
+            <ShortInteger CStyleName="mipmap_count" pascalStyleName="MipmapCount" name="mipmap count" unsigned="true" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Sprite Processing" description="sprite usage affects how sprite sheets are generated if making a sprites bitmap by controlling the background of the sprite sheet: blend add subtract max uses a transparent black background and replaces pixels with the sprites, multiply min uses a white background and alpha blends the sprites over white, and double multiply uses a 50% gray and 50% alpha background and replaces pixels with the sprites&#10;&#10;sprite spacing sets the padding added on the edge of each sprite (this is added into the sprite, itself). If it is 0, then it depends on mipmap count (1 if one mipmap, 4 otherwise). Note that sprite spacing is not added if a sprite is by itself on a sprite sheet which may result in unexpected behavior/sizing depending on how the budget is set." />
+      <Struct CStyleName="sprite_processing" pascalStyleName="SpriteProcessing" name="sprite processing">
+        <Layout regolithID="structure:bitmap_sprite_processing" internalName="bitmap_sprite_processing_struct" backingBlockInternalName="bitmap_sprite_processing_struct_block" name="bitmap sprite processing">
+          <FieldSet version="0" sizeofValue="6" isLatest="true">
+            <ShortEnum CStyleName="usage" pascalStyleName="Usage" name="usage">
+              <Options regolithID="enum:usage" CStyleName="usage" pascalStyleName="Usage">
+                <Enum name="blend add subtract max" CStyleName="blend_add_subtract_max" pascalStyleName="BlendAddSubtractMax" />
+                <Enum name="multiply min" CStyleName="multiply_min" pascalStyleName="MultiplyMin" />
+                <Enum name="double multiply" CStyleName="double_multiply" pascalStyleName="DoubleMultiply" />
+              </Options>
+            </ShortEnum>
+            <ShortInteger CStyleName="spacing" pascalStyleName="Spacing" name="spacing" unsigned="true" />
+            <Pad name="pad" length="2" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Block CStyleName="sequences" pascalStyleName="Sequences" name="sequences" maxElementCount="32767">
+        <Layout regolithID="block:bitmap group sequence" internalName="bitmap group sequence_block" name="bitmap group sequence_block">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <ShortInteger CStyleName="first_bitmap_index" pascalStyleName="FirstBitmapIndex" name="first bitmap index" />
+            <ShortInteger CStyleName="bitmap_count" pascalStyleName="BitmapCount" name="bitmap count" unsigned="true" />
+            <Pad name="pad" length="16" />
+            <Block CStyleName="sprites" pascalStyleName="Sprites" name="sprites" maxElementCount="32767">
+              <Layout regolithID="block:sprites" internalName="sprites_block" name="sprites_block">
+                <FieldSet version="0" sizeofValue="32" isLatest="true">
+                  <ShortInteger CStyleName="bitmap_index" pascalStyleName="BitmapIndex" name="bitmap index" />
+                  <Pad name="pad" length="2" />
+                  <Pad name="pad" length="4" />
+                  <Real CStyleName="left" pascalStyleName="Left" name="left" />
+                  <Real CStyleName="right" pascalStyleName="Right" name="right" />
+                  <Real CStyleName="top" pascalStyleName="Top" name="top" />
+                  <Real CStyleName="bottom" pascalStyleName="Bottom" name="bottom" />
+                  <RealPoint2D CStyleName="registration_point" pascalStyleName="RegistrationPoint" name="registration point" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="bitmaps" pascalStyleName="Bitmaps" name="bitmaps" maxElementCount="{'mcc-cea': 65536, 'default': 2048}">
+        <Layout regolithID="block:bitmap data" internalName="bitmap data_block" name="bitmap data_block">
+          <FieldSet version="0" sizeofValue="48" isLatest="true">
+            <Tag CStyleName="signature" pascalStyleName="Signature" name="signature" />
+            <ShortInteger CStyleName="width" pascalStyleName="Width" name="width" unsigned="true" />
+            <ShortInteger CStyleName="height" pascalStyleName="Height" name="height" unsigned="true" />
+            <ShortInteger CStyleName="depth" pascalStyleName="Depth" name="depth" unsigned="true" />
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <Options regolithID="enum:type" CStyleName="type" pascalStyleName="Type">
+                <Enum name="2d texture" CStyleName="_2d_texture" pascalStyleName="2dTexture" />
+                <Enum name="3d texture" CStyleName="_3d_texture" pascalStyleName="3dTexture" />
+                <Enum name="cube map" CStyleName="cube_map" pascalStyleName="CubeMap" />
+                <Enum name="white" CStyleName="white" pascalStyleName="White" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="format" pascalStyleName="Format" name="format">
+              <Options regolithID="enum:format" CStyleName="format" pascalStyleName="Format">
+                <Enum name="A8" CStyleName="a8" pascalStyleName="A8" description="8 bpp; 8-bit alpha on white" />
+                <Enum name="Y8" CStyleName="y8" pascalStyleName="Y8" description="8 bpp; 8-bit luminosity" />
+                <Enum name="AY8" CStyleName="ay8" pascalStyleName="Ay8" description="8 bpp; 8-bit luminosity-alpha (alpha = luminosity)" />
+                <Enum name="A8Y8" CStyleName="a8y8" pascalStyleName="A8y8" description="16 bpp; 8-bit luminosity with 8-bit alpha" />
+                <Enum name="unused1" CStyleName="unused1" pascalStyleName="Unused1" />
+                <Enum name="unused2" CStyleName="unused2" pascalStyleName="Unused2" />
+                <Enum name="R5G6B5" CStyleName="r5g6b5" pascalStyleName="R5g6b5" description="16 bpp; 16-bit RGB (5-bit red, 6-bit green, and 5-bit blue)" />
+                <Enum name="unused3" CStyleName="unused3" pascalStyleName="Unused3" />
+                <Enum name="A1R5G5B5" CStyleName="a1r5g5b5" pascalStyleName="A1r5g5b5" description="16 bpp; 15-bit RGB (5-bit red, green, and blue) with 1-bit alpha" />
+                <Enum name="A4R4G4B4" CStyleName="a4r4g4b4" pascalStyleName="A4r4g4b4" description="16 bpp; 12-bit RGB (4-bit red, green, and blue) with 4-bit alpha" />
+                <Enum name="X8R8G8B8" CStyleName="x8r8g8b8" pascalStyleName="X8r8g8b8" description="32 bpp; 24-bit RGB (8-bit red, green, and blue)" />
+                <Enum name="A8R8G8B8" CStyleName="a8r8g8b8" pascalStyleName="A8r8g8b8" description="32 bpp; 24-bit RGB (8-bit red, green, and blue) with 8-bit alpha" />
+                <Enum name="unused4" CStyleName="unused4" pascalStyleName="Unused4" />
+                <Enum name="unused5" CStyleName="unused5" pascalStyleName="Unused5" />
+                <Enum name="DXT1" CStyleName="dxt1" pascalStyleName="DXT1" description="4 bpp; BC1 compression with optional 1-bit alpha" />
+                <Enum name="DXT3" CStyleName="dxt3" pascalStyleName="DXT3" description="8 bpp; BC2 compression (effectively BC1 + explicit alpha)" />
+                <Enum name="DXT5" CStyleName="dxt5" pascalStyleName="DXT5" description="8 bpp; BC3 compression (effectively BC1 + interpolated alpha)" />
+                <Enum name="P8" CStyleName="p8" pascalStyleName="P8" description="8 bpp; 8-bit palette optimized for height maps" />
+                <Enum name="BC7" CStyleName="bc7" pascalStyleName="Bc7" description="8 bpp; BC7 compression" />
+              </Options>
+            </ShortEnum>
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="power of two dimensions" CStyleName="power_of_two_dimensions_bit" pascalStyleName="PowerOfTwoDimensionsBit" />
+                <Bit name="compressed" CStyleName="compressed_bit" pascalStyleName="CompressedBit" />
+                <Bit name="palettized" CStyleName="palettized_bit" pascalStyleName="PalettizedBit" />
+                <Bit name="swizzled" CStyleName="swizzled_bit" pascalStyleName="SwizzledBit" />
+                <Bit name="linear" CStyleName="linear_bit" pascalStyleName="LinearBit" />
+                <Bit name="v16u16" CStyleName="v16u16_bit" pascalStyleName="V16u16Bit" />
+                <Bit name="runtime created" CStyleName="runtime_created_bit" pascalStyleName="RuntimeCreatedBit" />
+                <Bit name="make it actually work" CStyleName="make_it_actually_work_bit" pascalStyleName="MakeItActuallyWorkBit" />
+                <Bit name="external" CStyleName="external_bit" pascalStyleName="ExternalBit" description="Set when the data is in an external bitmaps.map file." />
+                <Bit name="environment" CStyleName="environment_bit" pascalStyleName="EnvironmentBit" description="Added in CEA. This is set for lightmaps and environment shader base maps, and if it isnt set, it causes lightmaps to have issues." />
+              </Options>
+            </WordFlags>
+            <Point2D CStyleName="registration_point" pascalStyleName="RegistrationPoint" name="registration point" />
+            <ShortInteger CStyleName="mipmap_count" pascalStyleName="MipmapCount" name="mipmap count" unsigned="true" description="Number of texture levels, EXCLUDING the base map." />
+            <Pad name="pad" length="2" />
+            <LongInteger CStyleName="pixel_data_offset" pascalStyleName="PixelDataOffset" name="pixel data offset" unsigned="true" />
+            <LongInteger CStyleName="pixel_data_size" pascalStyleName="PixelDataSize" name="pixel data size" cacheOnly="true" unsigned="true" />
+            <LongInteger CStyleName="bitmap_tag_id" pascalStyleName="BitmapTagId" name="bitmap tag id" cacheOnly="true" />
+            <LongInteger CStyleName="pointer" pascalStyleName="Pointer" name="pointer" cacheOnly="true" />
+            <LongInteger CStyleName="hardware_format" pascalStyleName="HardwareFormat" name="hardware format" cacheOnly="true" description="Direct3D resource" />
+            <LongInteger CStyleName="base_address" pascalStyleName="BaseAddress" name="base address" cacheOnly="true" description="this appears to be a pointer specific to the tool editing it; it gets changed whenever the tag is opened in any of the HEK tools (guerilla.exe, tool.exe, etc.)" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

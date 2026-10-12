@@ -116,7 +116,7 @@ def write_file(context, report, directory, jma_version, game_version):
             JMA = process_file_retail(imported_jma_file, extension, game_version, retail_version_list, report)
             if not JMA.broken_skeleton:
                 exported_jma_file = generate_jma_data(context, jma_version, game_version, JMA)
-                build_asset(context, file_path.rsplit('.', 1)[0], report, ".%s" % extension.upper(), exported_jma_file.version, game_version, True, False, False, False, exported_jma_file.frame_rate, 1.0, exported_jma_file)
+                build_asset(context, file_path.rsplit('.', 1)[0], report, ".%s" % extension.upper(), exported_jma_file.version, game_version, True, 0, False, False, False, exported_jma_file.frame_rate, 1.0, exported_jma_file)
 
     report({'INFO'}, "Conversion completed successfully")
     return {'FINISHED'}

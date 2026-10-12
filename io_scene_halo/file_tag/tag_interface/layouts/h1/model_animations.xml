@@ -1,0 +1,287 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="antr" name="model_animations" version="4">
+  <Layout regolithID="block:model_animations" internalName="model_animations_block" name="model_animations">
+    <FieldSet version="0" sizeofValue="128" sizeofSource="sizeof(struct model_animations_group)" isLatest="true">
+      <Block CStyleName="objects" pascalStyleName="Objects" name="objects" maxElementCount="4">
+        <Layout regolithID="block:objects" internalName="objects_block" name="objects_block">
+          <FieldSet version="0" sizeofValue="20" isLatest="true">
+            <ShortInteger CStyleName="animation" pascalStyleName="Animation" name="animation" />
+            <ShortEnum CStyleName="function" pascalStyleName="Function" name="function">
+              <Options regolithID="enum:function" CStyleName="function" pascalStyleName="Function">
+                <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+                <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+                <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+                <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="function_controls" pascalStyleName="FunctionControls" name="function controls">
+              <Options regolithID="enum:function_controls" CStyleName="function_controls" pascalStyleName="FunctionControls">
+                <Enum name="frame" CStyleName="frame" pascalStyleName="Frame" />
+                <Enum name="scale" CStyleName="scale" pascalStyleName="Scale" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Pad name="pad" length="12" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="units" pascalStyleName="Units" name="units" maxElementCount="2048">
+        <Layout regolithID="block:units" internalName="units_block" name="units_block">
+          <FieldSet version="0" sizeofValue="100" isLatest="true">
+            <String CStyleName="label" pascalStyleName="Label" name="label" />
+            <Angle CStyleName="right_yaw_per_frame" pascalStyleName="RightYawPerFrame" name="right yaw per frame" />
+            <Angle CStyleName="left_yaw_per_frame" pascalStyleName="LeftYawPerFrame" name="left yaw per frame" />
+            <ShortInteger CStyleName="right_frame_count" pascalStyleName="RightFrameCount" name="right frame count" unsigned="true" />
+            <ShortInteger CStyleName="left_frame_count" pascalStyleName="LeftFrameCount" name="left frame count" unsigned="true" />
+            <Angle CStyleName="down_pitch_per_frame" pascalStyleName="DownPitchPerFrame" name="down pitch per frame" />
+            <Angle CStyleName="up_pitch_per_frame" pascalStyleName="UpPitchPerFrame" name="up pitch per frame" />
+            <ShortInteger CStyleName="down_pitch_frame_count" pascalStyleName="DownPitchFrameCount" name="down pitch frame count" unsigned="true" />
+            <ShortInteger CStyleName="up_pitch_frame_count" pascalStyleName="UpPitchFrameCount" name="up pitch frame count" unsigned="true" />
+            <Pad name="pad" length="8" />
+            <Block CStyleName="animations" pascalStyleName="Animations" name="animations" maxElementCount="30">
+              <Layout regolithID="block:animations" internalName="animations_block" name="animations_block">
+                <FieldSet version="0" sizeofValue="2" isLatest="true">
+                  <ShortInteger CStyleName="animation" pascalStyleName="Animation" name="animation" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="ik_points" pascalStyleName="IkPoints" name="ik points" maxElementCount="8">
+              <Layout regolithID="block:ik points" internalName="ik points_block" name="ik points_block">
+                <FieldSet version="0" sizeofValue="64" isLatest="true">
+                  <String CStyleName="marker" pascalStyleName="Marker" name="marker" />
+                  <String CStyleName="attach_to_marker" pascalStyleName="AttachToMarker" name="attach to marker" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="weapons" pascalStyleName="Weapons" name="weapons" maxElementCount="64">
+              <Layout regolithID="block:weapons" internalName="weapons_block" name="weapons_block">
+                <FieldSet version="0" sizeofValue="188" isLatest="true">
+                  <String CStyleName="name" pascalStyleName="Name" name="name" />
+                  <String CStyleName="grip_marker" pascalStyleName="GripMarker" name="grip marker" />
+                  <String CStyleName="hand_marker" pascalStyleName="HandMarker" name="hand marker" />
+                  <Angle CStyleName="right_yaw_per_frame" pascalStyleName="RightYawPerFrame" name="right yaw per frame" />
+                  <Angle CStyleName="left_yaw_per_frame" pascalStyleName="LeftYawPerFrame" name="left yaw per frame" />
+                  <ShortInteger CStyleName="right_frame_count" pascalStyleName="RightFrameCount" name="right frame count" unsigned="true" />
+                  <ShortInteger CStyleName="left_frame_count" pascalStyleName="LeftFrameCount" name="left frame count" unsigned="true" />
+                  <Angle CStyleName="down_pitch_per_frame" pascalStyleName="DownPitchPerFrame" name="down pitch per frame" />
+                  <Angle CStyleName="up_pitch_per_frame" pascalStyleName="UpPitchPerFrame" name="up pitch per frame" />
+                  <ShortInteger CStyleName="down_pitch_frame_count" pascalStyleName="DownPitchFrameCount" name="down pitch frame count" unsigned="true" />
+                  <ShortInteger CStyleName="up_pitch_frame_count" pascalStyleName="UpPitchFrameCount" name="up pitch frame count" unsigned="true" />
+                  <Pad name="pad" length="32" />
+                  <Block CStyleName="animations" pascalStyleName="Animations" name="animations" maxElementCount="55">
+                    <Layout regolithID="block:animations" internalName="animations_block" name="animations_block">
+                      <FieldSet version="0" sizeofValue="2" isLatest="true">
+                        <ShortInteger CStyleName="animation" pascalStyleName="Animation" name="animation" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="ik_point" pascalStyleName="IkPoint" name="ik point" maxElementCount="4">
+                    <Layout regolithID="block:ik point" internalName="ik point_block" name="ik point_block">
+                      <FieldSet version="0" sizeofValue="64" isLatest="true">
+                        <String CStyleName="marker" pascalStyleName="Marker" name="marker" />
+                        <String CStyleName="attach_to_marker" pascalStyleName="AttachToMarker" name="attach to marker" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="weapon_types" pascalStyleName="WeaponTypes" name="weapon types" maxElementCount="16">
+                    <Layout regolithID="block:weapon types" internalName="weapon types_block" name="weapon types_block">
+                      <FieldSet version="0" sizeofValue="60" isLatest="true">
+                        <String CStyleName="label" pascalStyleName="Label" name="label" />
+                        <Pad name="pad" length="16" />
+                        <Block CStyleName="animations" pascalStyleName="Animations" name="animations" maxElementCount="10">
+                          <Layout regolithID="block:animations" internalName="animations_block" name="animations_block">
+                            <FieldSet version="0" sizeofValue="2" isLatest="true">
+                              <ShortInteger CStyleName="animation" pascalStyleName="Animation" name="animation" />
+                            </FieldSet>
+                          </Layout>
+                        </Block>
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="weapons" pascalStyleName="Weapons" name="weapons" maxElementCount="1">
+        <Layout regolithID="block:weapons" internalName="weapons_block" name="weapons_block">
+          <FieldSet version="0" sizeofValue="28" isLatest="true">
+            <Pad name="pad" length="16" />
+            <Block CStyleName="animations" pascalStyleName="Animations" name="animations" maxElementCount="11">
+              <Layout regolithID="block:animations" internalName="animations_block" name="animations_block">
+                <FieldSet version="0" sizeofValue="2" isLatest="true">
+                  <ShortInteger CStyleName="animation" pascalStyleName="Animation" name="animation" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="vehicles" pascalStyleName="Vehicles" name="vehicles" maxElementCount="1">
+        <Layout regolithID="block:vehicles" internalName="vehicles_block" name="vehicles_block">
+          <FieldSet version="0" sizeofValue="116" isLatest="true">
+            <Angle CStyleName="right_yaw_per_frame" pascalStyleName="RightYawPerFrame" name="right yaw per frame" />
+            <Angle CStyleName="left_yaw_per_frame" pascalStyleName="LeftYawPerFrame" name="left yaw per frame" />
+            <ShortInteger CStyleName="right_frame_count" pascalStyleName="RightFrameCount" name="right frame count" unsigned="true" />
+            <ShortInteger CStyleName="left_frame_count" pascalStyleName="LeftFrameCount" name="left frame count" unsigned="true" />
+            <Angle CStyleName="down_pitch_per_frame" pascalStyleName="DownPitchPerFrame" name="down pitch per frame" />
+            <Angle CStyleName="up_pitch_per_frame" pascalStyleName="UpPitchPerFrame" name="up pitch per frame" />
+            <ShortInteger CStyleName="down_pitch_frame_count" pascalStyleName="DownPitchFrameCount" name="down pitch frame count" unsigned="true" />
+            <ShortInteger CStyleName="up_pitch_frame_count" pascalStyleName="UpPitchFrameCount" name="up pitch frame count" unsigned="true" />
+            <Pad name="pad" length="68" />
+            <Block CStyleName="animations" pascalStyleName="Animations" name="animations" maxElementCount="8">
+              <Layout regolithID="block:animations" internalName="animations_block" name="animations_block">
+                <FieldSet version="0" sizeofValue="2" isLatest="true">
+                  <ShortInteger CStyleName="animation" pascalStyleName="Animation" name="animation" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="suspension_animations" pascalStyleName="SuspensionAnimations" name="suspension animations" maxElementCount="32">
+              <Layout regolithID="block:suspension animations" internalName="suspension animations_block" name="suspension animations_block">
+                <FieldSet version="0" sizeofValue="20" isLatest="true">
+                  <ShortInteger CStyleName="mass_point_index" pascalStyleName="MassPointIndex" name="mass point index" />
+                  <ShortInteger CStyleName="animation" pascalStyleName="Animation" name="animation" />
+                  <Real CStyleName="full_extension_ground_depth" pascalStyleName="FullExtensionGroundDepth" name="full extension ground depth" />
+                  <Real CStyleName="full_compression_ground_depth" pascalStyleName="FullCompressionGroundDepth" name="full compression ground depth" />
+                  <Pad name="pad" length="8" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="devices" pascalStyleName="Devices" name="devices" maxElementCount="1">
+        <Layout regolithID="block:devices" internalName="devices_block" name="devices_block">
+          <FieldSet version="0" sizeofValue="96" isLatest="true">
+            <Pad name="pad" length="84" />
+            <Block CStyleName="animations" pascalStyleName="Animations" name="animations" maxElementCount="2">
+              <Layout regolithID="block:animations" internalName="animations_block" name="animations_block">
+                <FieldSet version="0" sizeofValue="2" isLatest="true">
+                  <ShortInteger CStyleName="animation" pascalStyleName="Animation" name="animation" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="unit_damage" pascalStyleName="UnitDamage" name="unit damage" maxElementCount="176">
+        <Layout regolithID="block:unit damage" internalName="unit damage_block" name="unit damage_block">
+          <FieldSet version="0" sizeofValue="2" isLatest="true">
+            <ShortInteger CStyleName="animation" pascalStyleName="Animation" name="animation" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="first_person_weapons" pascalStyleName="FirstPersonWeapons" name="first person weapons" maxElementCount="1">
+        <Layout regolithID="block:first person weapons" internalName="first person weapons_block" name="first person weapons_block">
+          <FieldSet version="0" sizeofValue="28" isLatest="true">
+            <Pad name="pad" length="16" />
+            <Block CStyleName="animations" pascalStyleName="Animations" name="animations" maxElementCount="30">
+              <Layout regolithID="block:animations" internalName="animations_block" name="animations_block">
+                <FieldSet version="0" sizeofValue="2" isLatest="true">
+                  <ShortInteger CStyleName="animation" pascalStyleName="Animation" name="animation" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="sound_references" pascalStyleName="SoundReferences" name="sound references" maxElementCount="2048">
+        <Layout regolithID="block:sound references" internalName="sound references_block" name="sound references_block">
+          <FieldSet version="0" sizeofValue="20" isLatest="true">
+            <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound">
+              <tag>sound</tag>
+            </TagReference>
+            <Pad name="pad" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Real CStyleName="limp_body_node_radius" pascalStyleName="LimpBodyNodeRadius" name="limp body node radius" />
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="compress all animations" CStyleName="compress_all_animations_bit" pascalStyleName="CompressAllAnimationsBit" />
+          <Bit name="force idle compression" CStyleName="force_idle_compression_bit" pascalStyleName="ForceIdleCompressionBit" />
+        </Options>
+      </WordFlags>
+      <Pad name="pad" length="2" />
+      <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes" maxElementCount="64">
+        <Layout regolithID="block:nodes" internalName="nodes_block" name="nodes_block">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <ShortInteger CStyleName="next_sibling_node" pascalStyleName="NextSiblingNode" name="next sibling node" />
+            <ShortInteger CStyleName="first_child_node" pascalStyleName="FirstChildNode" name="first child node" />
+            <ShortInteger CStyleName="parent_node" pascalStyleName="ParentNode" name="parent node" />
+            <Pad name="pad" length="2" />
+            <LongFlags CStyleName="node_joint_flags" pascalStyleName="NodeJointFlags" name="node joint flags">
+              <Options regolithID="enum:node_joint_flags" CStyleName="node_joint_flags" pascalStyleName="NodeJointFlags">
+                <Bit name="ball socket" CStyleName="ball_socket_bit" pascalStyleName="BallSocketBit" />
+                <Bit name="hinge" CStyleName="hinge_bit" pascalStyleName="HingeBit" />
+                <Bit name="no movement" CStyleName="no_movement_bit" pascalStyleName="NoMovementBit" />
+              </Options>
+            </LongFlags>
+            <RealVector3D CStyleName="base_vector" pascalStyleName="BaseVector" name="base vector" />
+            <Real CStyleName="vector_range" pascalStyleName="VectorRange" name="vector range" />
+            <Pad name="pad" length="4" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="animations" pascalStyleName="Animations" name="animations" maxElementCount="2048">
+        <Layout regolithID="block:animations" internalName="animations_block" name="animations_block">
+          <FieldSet version="0" sizeofValue="180" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <Options regolithID="enum:type" CStyleName="type" pascalStyleName="Type">
+                <Enum name="base" CStyleName="base" pascalStyleName="Base" />
+                <Enum name="overlay" CStyleName="overlay" pascalStyleName="Overlay" />
+                <Enum name="replacement" CStyleName="replacement" pascalStyleName="Replacement" />
+              </Options>
+            </ShortEnum>
+            <ShortInteger CStyleName="frame_count" pascalStyleName="FrameCount" name="frame count" unsigned="true" />
+            <ShortInteger CStyleName="frame_size" pascalStyleName="FrameSize" name="frame size" unsigned="true" />
+            <ShortEnum CStyleName="frame_info_type" pascalStyleName="FrameInfoType" name="frame info type">
+              <Options regolithID="enum:frame_info_type" CStyleName="frame_info_type" pascalStyleName="FrameInfoType">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="dx dy" CStyleName="dx_dy" pascalStyleName="DxDy" />
+                <Enum name="dx dy dyaw" CStyleName="dx_dy_dyaw" pascalStyleName="DxDyDyaw" />
+                <Enum name="dx dy dz dyaw" CStyleName="dx_dy_dz_dyaw" pascalStyleName="DxDyDzDyaw" />
+              </Options>
+            </ShortEnum>
+            <LongInteger CStyleName="node_list_checksum" pascalStyleName="NodeListChecksum" name="node list checksum" />
+            <ShortInteger CStyleName="node_count" pascalStyleName="NodeCount" name="node count" unsigned="true" />
+            <ShortInteger CStyleName="loop_frame_index" pascalStyleName="LoopFrameIndex" name="loop frame index" />
+            <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+            <ShortInteger CStyleName="key_frame_index" pascalStyleName="KeyFrameIndex" name="key frame index" />
+            <ShortInteger CStyleName="second_key_frame_index" pascalStyleName="SecondKeyFrameIndex" name="second key frame index" />
+            <ShortInteger CStyleName="next_animation" pascalStyleName="NextAnimation" name="next animation" />
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="compressed data" CStyleName="compressed_data_bit" pascalStyleName="CompressedDataBit" />
+                <Bit name="world relative" CStyleName="world_relative_bit" pascalStyleName="WorldRelativeBit" />
+                <Bit name="25hz pal" CStyleName="_25hz_pal_bit" pascalStyleName="25hzPalBit" />
+              </Options>
+            </WordFlags>
+            <ShortInteger CStyleName="sound" pascalStyleName="Sound" name="sound" />
+            <ShortInteger CStyleName="sound_frame_index" pascalStyleName="SoundFrameIndex" name="sound frame index" />
+            <CharInteger CStyleName="left_foot_frame_index" pascalStyleName="LeftFootFrameIndex" name="left foot frame index" />
+            <CharInteger CStyleName="right_foot_frame_index" pascalStyleName="RightFootFrameIndex" name="right foot frame index" />
+            <ShortInteger CStyleName="main_animation_index" pascalStyleName="MainAnimationIndex" name="main animation index" cacheOnly="true" unsigned="true" />
+            <Real CStyleName="relative_weight" pascalStyleName="RelativeWeight" name="relative weight" cacheOnly="true" />
+            <Data CStyleName="frame_info" pascalStyleName="FrameInfo" name="frame info" />
+            <LongInteger CStyleName="node_transform_flag_data" pascalStyleName="NodeTransformFlagData" name="node transform flag data" unsigned="true" description="These are two bitfields. Each bits refer to a node to which the transformation applies. The first field refers to the first 32 nodes and the second field is the second 32 nodes." />
+            <LongInteger CStyleName="node_transform_flag_data" pascalStyleName="NodeTransformFlagData" name="node transform flag data" unsigned="true" description="These are two bitfields. Each bits refer to a node to which the transformation applies. The first field refers to the first 32 nodes and the second field is the second 32 nodes." />
+            <Pad name="pad" length="8" />
+            <LongInteger CStyleName="node_rotation_flag_data" pascalStyleName="NodeRotationFlagData" name="node rotation flag data" unsigned="true" description="These are two bitfields. Each bits refer to a node to which the transformation applies. The first field refers to the first 32 nodes and the second field is the second 32 nodes." />
+            <LongInteger CStyleName="node_rotation_flag_data" pascalStyleName="NodeRotationFlagData" name="node rotation flag data" unsigned="true" description="These are two bitfields. Each bits refer to a node to which the transformation applies. The first field refers to the first 32 nodes and the second field is the second 32 nodes." />
+            <Pad name="pad" length="8" />
+            <LongInteger CStyleName="node_scale_flag_data" pascalStyleName="NodeScaleFlagData" name="node scale flag data" unsigned="true" description="These are two bitfields. Each bits refer to a node to which the transformation applies. The first field refers to the first 32 nodes and the second field is the second 32 nodes." />
+            <LongInteger CStyleName="node_scale_flag_data" pascalStyleName="NodeScaleFlagData" name="node scale flag data" unsigned="true" description="These are two bitfields. Each bits refer to a node to which the transformation applies. The first field refers to the first 32 nodes and the second field is the second 32 nodes." />
+            <Pad name="pad" length="4" />
+            <LongInteger CStyleName="offset_to_compressed_data" pascalStyleName="OffsetToCompressedData" name="offset to compressed data" unsigned="true" />
+            <Data CStyleName="default_data" pascalStyleName="DefaultData" name="default data" />
+            <Data CStyleName="frame_data" pascalStyleName="FrameData" name="frame data" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

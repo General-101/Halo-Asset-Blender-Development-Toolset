@@ -28,8 +28,8 @@ import bpy
 
 from .build_scene import build_scene
 
-def load_file(context, filepath, report):
-    build_scene(context, filepath, report)
+def load_file(context, filepath, shader_gen_override, report):
+    build_scene(context, filepath, shader_gen_override, report)
 
     return {'FINISHED'}
 

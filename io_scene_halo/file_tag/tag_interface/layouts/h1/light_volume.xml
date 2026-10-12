@@ -1,0 +1,70 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="mgs2" name="light_volume" version="1">
+  <Layout regolithID="block:light_volume" internalName="light_volume_block" name="light_volume">
+    <FieldSet version="0" sizeofValue="332" sizeofSource="sizeof(struct light_volume_group)" isLatest="true">
+      <String CStyleName="attachment_marker" pascalStyleName="AttachmentMarker" name="attachment marker" />
+      <Pad name="pad" length="2" />
+      <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="interpolate color in hsv" CStyleName="interpolate_color_in_hsv_bit" pascalStyleName="InterpolateColorInHsvBit" />
+          <Bit name="more colors" CStyleName="more_colors_bit" pascalStyleName="MoreColorsBit" />
+        </Options>
+      </WordFlags>
+      <Pad name="pad" length="16" />
+      <Real CStyleName="near_fade_distance" pascalStyleName="NearFadeDistance" name="near fade distance" />
+      <Real CStyleName="far_fade_distance" pascalStyleName="FarFadeDistance" name="far fade distance" />
+      <Real CStyleName="perpendicular_brightness_scale" pascalStyleName="PerpendicularBrightnessScale" name="perpendicular brightness scale" />
+      <Real CStyleName="parallel_brightness_scale" pascalStyleName="ParallelBrightnessScale" name="parallel brightness scale" />
+      <ShortEnum CStyleName="brightness_scale_source" pascalStyleName="BrightnessScaleSource" name="brightness scale source">
+        <Options regolithID="enum:brightness_scale_source" CStyleName="brightness_scale_source" pascalStyleName="BrightnessScaleSource">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+          <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+          <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+          <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="2" />
+      <Pad name="pad" length="20" />
+      <TagReference CStyleName="map" pascalStyleName="Map" name="map">
+        <tag>bitmap</tag>
+      </TagReference>
+      <ShortInteger CStyleName="sequence_index" pascalStyleName="SequenceIndex" name="sequence index" />
+      <ShortInteger CStyleName="count" pascalStyleName="Count" name="count" />
+      <Pad name="pad" length="72" />
+      <ShortEnum CStyleName="frame_animation_source" pascalStyleName="FrameAnimationSource" name="frame animation source">
+        <Options regolithID="enum:frame_animation_source" CStyleName="frame_animation_source" pascalStyleName="FrameAnimationSource">
+          <Enum name="none" CStyleName="none" pascalStyleName="None" />
+          <Enum name="a out" CStyleName="a_out" pascalStyleName="AOut" />
+          <Enum name="b out" CStyleName="b_out" pascalStyleName="BOut" />
+          <Enum name="c out" CStyleName="c_out" pascalStyleName="COut" />
+          <Enum name="d out" CStyleName="d_out" pascalStyleName="DOut" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="2" />
+      <Pad name="pad" length="36" />
+      <Pad name="pad" length="64" />
+      <Block CStyleName="frames" pascalStyleName="Frames" name="frames" maxElementCount="2">
+        <Layout regolithID="block:frames" internalName="frames_block" name="frames_block">
+          <FieldSet version="0" sizeofValue="176" isLatest="true">
+            <Pad name="pad" length="16" />
+            <Real CStyleName="offset_from_marker" pascalStyleName="OffsetFromMarker" name="offset from marker" />
+            <Real CStyleName="offset_exponent" pascalStyleName="OffsetExponent" name="offset exponent" />
+            <Real CStyleName="length" pascalStyleName="Length" name="length" />
+            <Pad name="pad" length="32" />
+            <Real CStyleName="radius_hither" pascalStyleName="RadiusHither" name="radius hither" />
+            <Real CStyleName="radius_yon" pascalStyleName="RadiusYon" name="radius yon" />
+            <Real CStyleName="radius_exponent" pascalStyleName="RadiusExponent" name="radius exponent" />
+            <Pad name="pad" length="32" />
+            <RealArgbColor CStyleName="tint_color_hither" pascalStyleName="TintColorHither" name="tint color hither" />
+            <RealArgbColor CStyleName="tint_color_yon" pascalStyleName="TintColorYon" name="tint color yon" />
+            <Real CStyleName="tint_color_exponent" pascalStyleName="TintColorExponent" name="tint color exponent" />
+            <Real CStyleName="brightness_exponent" pascalStyleName="BrightnessExponent" name="brightness exponent" />
+            <Pad name="pad" length="32" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="32" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

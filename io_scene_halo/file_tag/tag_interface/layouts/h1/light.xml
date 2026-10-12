@@ -1,0 +1,172 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="ligh" name="light" version="3">
+  <Layout regolithID="block:light" internalName="light_block" name="light">
+    <FieldSet version="0" sizeofValue="352" sizeofSource="sizeof(struct light_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="dynamic" CStyleName="dynamic_bit" pascalStyleName="DynamicBit" />
+          <Bit name="no specular" CStyleName="no_specular_bit" pascalStyleName="NoSpecularBit" />
+          <Bit name="dont light own object" CStyleName="dont_light_own_object_bit" pascalStyleName="DontLightOwnObjectBit" />
+          <Bit name="supersize in first person" CStyleName="supersize_in_first_person_bit" pascalStyleName="SupersizeInFirstPersonBit" />
+          <Bit name="first person flashlight" CStyleName="first_person_flashlight_bit" pascalStyleName="FirstPersonFlashlightBit" />
+          <Bit name="dont fade active camouflage" CStyleName="dont_fade_active_camouflage_bit" pascalStyleName="DontFadeActiveCamouflageBit" />
+        </Options>
+      </LongFlags>
+      <Struct CStyleName="shape" pascalStyleName="Shape" name="shape">
+        <Layout regolithID="structure:light_shape" internalName="light_shape_struct" backingBlockInternalName="light_shape_struct_block" name="light shape">
+          <FieldSet version="0" sizeofValue="48" isLatest="true">
+            <Real CStyleName="radius" pascalStyleName="Radius" name="radius" />
+            <RealBounds CStyleName="radius_modifer" pascalStyleName="RadiusModifer" name="radius modifer" />
+            <Angle CStyleName="falloff_angle" pascalStyleName="FalloffAngle" name="falloff angle" />
+            <Angle CStyleName="cutoff_angle" pascalStyleName="CutoffAngle" name="cutoff angle" />
+            <Real CStyleName="lens_flare_only_radius" pascalStyleName="LensFlareOnlyRadius" name="lens flare only radius" />
+            <Real CStyleName="cos_falloff_angle" pascalStyleName="CosFalloffAngle" name="cos falloff angle" cacheOnly="true" />
+            <Real CStyleName="cos_cutoff_angle" pascalStyleName="CosCutoffAngle" name="cos cutoff angle" cacheOnly="true" />
+            <Real CStyleName="specular_radius_multiplier" pascalStyleName="SpecularRadiusMultiplier" name="specular radius multiplier" cacheOnly="true" description="Not setting this to 2 breaks the first person flashlight." />
+            <Real CStyleName="sin_cutoff_angle" pascalStyleName="SinCutoffAngle" name="sin cutoff angle" cacheOnly="true" />
+            <Pad name="pad" length="8" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Struct CStyleName="color" pascalStyleName="Color" name="color">
+        <Layout regolithID="structure:light_color" internalName="light_color_struct" backingBlockInternalName="light_color_struct_block" name="light color">
+          <FieldSet version="0" sizeofValue="48" isLatest="true">
+            <LongFlags CStyleName="interpolation_flags" pascalStyleName="InterpolationFlags" name="interpolation flags">
+              <Options regolithID="enum:interpolation_flags" CStyleName="interpolation_flags" pascalStyleName="InterpolationFlags">
+                <Bit name="blend in hsv" CStyleName="blend_in_hsv_bit" pascalStyleName="BlendInHsvBit" />
+                <Bit name="more colors" CStyleName="more_colors_bit" pascalStyleName="MoreColorsBit" />
+              </Options>
+            </LongFlags>
+            <RealArgbColor CStyleName="color" pascalStyleName="Color" name="color lower bound" />
+            <RealArgbColor CStyleName="color" pascalStyleName="Color" name="color upper bound" />
+            <Pad name="pad" length="12" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Struct CStyleName="gel" pascalStyleName="Gel" name="gel">
+        <Layout regolithID="structure:light_gel" internalName="light_gel_struct" backingBlockInternalName="light_gel_struct_block" name="light gel">
+          <FieldSet version="0" sizeofValue="72" isLatest="true">
+            <TagReference CStyleName="primary_cube_map" pascalStyleName="PrimaryCubeMap" name="primary cube map">
+              <tag>bitmap</tag>
+            </TagReference>
+            <Pad name="pad" length="2" />
+            <ShortEnum CStyleName="texture_animation_function" pascalStyleName="TextureAnimationFunction" name="texture animation function">
+              <Options regolithID="enum:texture_animation_function" CStyleName="texture_animation_function" pascalStyleName="TextureAnimationFunction">
+                <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                <Enum name="cosine variable period" CStyleName="cosine_variable_period" pascalStyleName="CosineVariablePeriod" />
+                <Enum name="diagonal wave" CStyleName="diagonal_wave" pascalStyleName="DiagonalWave" />
+                <Enum name="diagonal wave variable period" CStyleName="diagonal_wave_variable_period" pascalStyleName="DiagonalWaveVariablePeriod" />
+                <Enum name="slide" CStyleName="slide" pascalStyleName="Slide" />
+                <Enum name="slide variable period" CStyleName="slide_variable_period" pascalStyleName="SlideVariablePeriod" />
+                <Enum name="noise" CStyleName="noise" pascalStyleName="Noise" />
+                <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+                <Enum name="wander" CStyleName="wander" pascalStyleName="Wander" />
+                <Enum name="spark" CStyleName="spark" pascalStyleName="Spark" />
+              </Options>
+            </ShortEnum>
+            <Real CStyleName="texture_animation_period" pascalStyleName="TextureAnimationPeriod" name="texture animation period" />
+            <TagReference CStyleName="secondary_cube_map" pascalStyleName="SecondaryCubeMap" name="secondary cube map">
+              <tag>bitmap</tag>
+            </TagReference>
+            <Pad name="pad" length="2" />
+            <ShortEnum CStyleName="yaw_function" pascalStyleName="YawFunction" name="yaw function">
+              <Options regolithID="enum:yaw_function" CStyleName="yaw_function" pascalStyleName="YawFunction">
+                <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                <Enum name="cosine variable period" CStyleName="cosine_variable_period" pascalStyleName="CosineVariablePeriod" />
+                <Enum name="diagonal wave" CStyleName="diagonal_wave" pascalStyleName="DiagonalWave" />
+                <Enum name="diagonal wave variable period" CStyleName="diagonal_wave_variable_period" pascalStyleName="DiagonalWaveVariablePeriod" />
+                <Enum name="slide" CStyleName="slide" pascalStyleName="Slide" />
+                <Enum name="slide variable period" CStyleName="slide_variable_period" pascalStyleName="SlideVariablePeriod" />
+                <Enum name="noise" CStyleName="noise" pascalStyleName="Noise" />
+                <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+                <Enum name="wander" CStyleName="wander" pascalStyleName="Wander" />
+                <Enum name="spark" CStyleName="spark" pascalStyleName="Spark" />
+              </Options>
+            </ShortEnum>
+            <Real CStyleName="yaw_period" pascalStyleName="YawPeriod" name="yaw period" />
+            <Pad name="pad" length="2" />
+            <ShortEnum CStyleName="roll_function" pascalStyleName="RollFunction" name="roll function">
+              <Options regolithID="enum:roll_function" CStyleName="roll_function" pascalStyleName="RollFunction">
+                <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                <Enum name="cosine variable period" CStyleName="cosine_variable_period" pascalStyleName="CosineVariablePeriod" />
+                <Enum name="diagonal wave" CStyleName="diagonal_wave" pascalStyleName="DiagonalWave" />
+                <Enum name="diagonal wave variable period" CStyleName="diagonal_wave_variable_period" pascalStyleName="DiagonalWaveVariablePeriod" />
+                <Enum name="slide" CStyleName="slide" pascalStyleName="Slide" />
+                <Enum name="slide variable period" CStyleName="slide_variable_period" pascalStyleName="SlideVariablePeriod" />
+                <Enum name="noise" CStyleName="noise" pascalStyleName="Noise" />
+                <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+                <Enum name="wander" CStyleName="wander" pascalStyleName="Wander" />
+                <Enum name="spark" CStyleName="spark" pascalStyleName="Spark" />
+              </Options>
+            </ShortEnum>
+            <Real CStyleName="roll_period" pascalStyleName="RollPeriod" name="roll period" />
+            <Pad name="pad" length="2" />
+            <ShortEnum CStyleName="pitch_function" pascalStyleName="PitchFunction" name="pitch function">
+              <Options regolithID="enum:pitch_function" CStyleName="pitch_function" pascalStyleName="PitchFunction">
+                <Enum name="one" CStyleName="one" pascalStyleName="One" />
+                <Enum name="zero" CStyleName="zero" pascalStyleName="Zero" />
+                <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+                <Enum name="cosine variable period" CStyleName="cosine_variable_period" pascalStyleName="CosineVariablePeriod" />
+                <Enum name="diagonal wave" CStyleName="diagonal_wave" pascalStyleName="DiagonalWave" />
+                <Enum name="diagonal wave variable period" CStyleName="diagonal_wave_variable_period" pascalStyleName="DiagonalWaveVariablePeriod" />
+                <Enum name="slide" CStyleName="slide" pascalStyleName="Slide" />
+                <Enum name="slide variable period" CStyleName="slide_variable_period" pascalStyleName="SlideVariablePeriod" />
+                <Enum name="noise" CStyleName="noise" pascalStyleName="Noise" />
+                <Enum name="jitter" CStyleName="jitter" pascalStyleName="Jitter" />
+                <Enum name="wander" CStyleName="wander" pascalStyleName="Wander" />
+                <Enum name="spark" CStyleName="spark" pascalStyleName="Spark" />
+              </Options>
+            </ShortEnum>
+            <Real CStyleName="pitch_period" pascalStyleName="PitchPeriod" name="pitch period" />
+            <Pad name="pad" length="8" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Struct CStyleName="lens_flare" pascalStyleName="LensFlare" name="lens flare">
+        <Layout regolithID="structure:light_lens_flare" internalName="light_lens_flare_struct" backingBlockInternalName="light_lens_flare_struct_block" name="light lens flare">
+          <FieldSet version="0" sizeofValue="40" isLatest="true">
+            <TagReference CStyleName="lens_flare" pascalStyleName="LensFlare" name="lens flare">
+              <tag>lens_flare</tag>
+            </TagReference>
+            <Pad name="pad" length="24" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Struct CStyleName="radiosity" pascalStyleName="Radiosity" name="radiosity">
+        <Layout regolithID="structure:light_radiosity" internalName="light_radiosity_struct" backingBlockInternalName="light_radiosity_struct_block" name="light radiosity">
+          <FieldSet version="0" sizeofValue="32" isLatest="true">
+            <Real CStyleName="intensity" pascalStyleName="Intensity" name="intensity" />
+            <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+            <Pad name="pad" length="16" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Struct CStyleName="effect_parameters" pascalStyleName="EffectParameters" name="effect parameters">
+        <Layout regolithID="structure:light_effect_parameters" internalName="light_effect_parameters_struct" backingBlockInternalName="light_effect_parameters_struct_block" name="light effect parameters">
+          <FieldSet version="0" sizeofValue="16" isLatest="true">
+            <Real CStyleName="duration" pascalStyleName="Duration" name="duration" />
+            <Pad name="pad" length="2" />
+            <ShortEnum CStyleName="falloff_function" pascalStyleName="FalloffFunction" name="falloff function">
+              <Options regolithID="enum:falloff_function" CStyleName="falloff_function" pascalStyleName="FalloffFunction">
+                <Enum name="linear" CStyleName="linear" pascalStyleName="Linear" />
+                <Enum name="early" CStyleName="early" pascalStyleName="Early" />
+                <Enum name="very early" CStyleName="very_early" pascalStyleName="VeryEarly" />
+                <Enum name="late" CStyleName="late" pascalStyleName="Late" />
+                <Enum name="very late" CStyleName="very_late" pascalStyleName="VeryLate" />
+                <Enum name="cosine" CStyleName="cosine" pascalStyleName="Cosine" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="8" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Pad name="pad" length="92" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,198 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="effe" name="effect" version="4">
+  <Layout regolithID="block:effect" internalName="effect_block" name="effect">
+    <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(struct effect_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="deleted when attachment deactivates" CStyleName="deleted_when_attachment_deactivates_bit" pascalStyleName="DeletedWhenAttachmentDeactivatesBit" />
+          <Bit name="must be deterministic xbox" CStyleName="must_be_deterministic_xbox_bit" pascalStyleName="MustBeDeterministicXboxBit" />
+          <Bit name="must be deterministic pc" CStyleName="must_be_deterministic_pc_bit" pascalStyleName="MustBeDeterministicPcBit" />
+          <Bit name="disabled in anniversary by blood setting" CStyleName="disabled_in_anniversary_by_blood_setting_bit" pascalStyleName="DisabledInAnniversaryByBloodSettingBit" />
+        </Options>
+      </LongFlags>
+      <ShortInteger CStyleName="loop_start_event" pascalStyleName="LoopStartEvent" name="loop start event" />
+      <ShortInteger CStyleName="loop_stop_event" pascalStyleName="LoopStopEvent" name="loop stop event" />
+      <Real CStyleName="maximum_damage_radius" pascalStyleName="MaximumDamageRadius" name="maximum damage radius" cacheOnly="true" />
+      <Pad name="pad" length="28" />
+      <Block CStyleName="locations" pascalStyleName="Locations" name="locations" maxElementCount="32">
+        <Layout regolithID="block:locations" internalName="locations_block" name="locations_block">
+          <FieldSet version="0" sizeofValue="32" isLatest="true">
+            <String CStyleName="marker_name" pascalStyleName="MarkerName" name="marker name" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="events" pascalStyleName="Events" name="events" maxElementCount="32">
+        <Layout regolithID="block:events" internalName="events_block" name="events_block">
+          <FieldSet version="0" sizeofValue="68" isLatest="true">
+            <Pad name="pad" length="4" />
+            <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+            <RealBounds CStyleName="delay_bounds" pascalStyleName="DelayBounds" name="delay bounds" />
+            <RealBounds CStyleName="duration_bounds" pascalStyleName="DurationBounds" name="duration bounds" />
+            <Pad name="pad" length="20" />
+            <Block CStyleName="parts" pascalStyleName="Parts" name="parts" maxElementCount="32">
+              <Layout regolithID="block:parts" internalName="parts_block" name="parts_block">
+                <FieldSet version="0" sizeofValue="104" isLatest="true">
+                  <ShortEnum CStyleName="create_in" pascalStyleName="CreateIn" name="create in">
+                    <Options regolithID="enum:create_in" CStyleName="create_in" pascalStyleName="CreateIn">
+                      <Enum name="any environment" CStyleName="any_environment" pascalStyleName="AnyEnvironment" />
+                      <Enum name="air only" CStyleName="air_only" pascalStyleName="AirOnly" />
+                      <Enum name="water only" CStyleName="water_only" pascalStyleName="WaterOnly" />
+                      <Enum name="space only" CStyleName="space_only" pascalStyleName="SpaceOnly" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="violence_mode" pascalStyleName="ViolenceMode" name="violence mode">
+                    <Options regolithID="enum:violence_mode" CStyleName="violence_mode" pascalStyleName="ViolenceMode">
+                      <Enum name="either mode" CStyleName="either_mode" pascalStyleName="EitherMode" />
+                      <Enum name="violent mode only" CStyleName="violent_mode_only" pascalStyleName="ViolentModeOnly" />
+                      <Enum name="nonviolent mode only" CStyleName="nonviolent_mode_only" pascalStyleName="NonviolentModeOnly" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortInteger CStyleName="location" pascalStyleName="Location" name="location" />
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                      <Bit name="face down regardless of location decals" CStyleName="face_down_regardless_of_location_decals_bit" pascalStyleName="FaceDownRegardlessOfLocationDecalsBit" />
+                      <Bit name="unused" CStyleName="unused_bit" pascalStyleName="UnusedBit" />
+                      <Bit name="make effect work" CStyleName="make_effect_work_bit" pascalStyleName="MakeEffectWorkBit" />
+                    </Options>
+                  </WordFlags>
+                  <Pad name="pad" length="12" />
+                  <Tag CStyleName="type_identifier" pascalStyleName="TypeIdentifier" name="type identifier" cacheOnly="true" description="Must be the same or a supergroup of type. Can be damage_effect, decal, light, object, particle_system, or sound" />
+                  <TagReference CStyleName="type" pascalStyleName="Type" name="type" />
+                  <Pad name="pad" length="24" />
+                  <RealBounds CStyleName="velocity_bounds" pascalStyleName="VelocityBounds" name="velocity bounds" />
+                  <Angle CStyleName="velocity_cone_angle" pascalStyleName="VelocityConeAngle" name="velocity cone angle" />
+                  <AngleBounds CStyleName="angular_velocity_bounds" pascalStyleName="AngularVelocityBounds" name="angular velocity bounds" />
+                  <RealBounds CStyleName="radius_modifier_bounds" pascalStyleName="RadiusModifierBounds" name="radius modifier bounds" />
+                  <Pad name="pad" length="4" />
+                  <LongFlags CStyleName="a_scales_values" pascalStyleName="AScalesValues" name="a scales values">
+                    <Options regolithID="enum:a_scales_values" CStyleName="a_scales_values" pascalStyleName="AScalesValues">
+                      <Bit name="velocity" CStyleName="velocity_bit" pascalStyleName="VelocityBit" />
+                      <Bit name="velocity delta" CStyleName="velocity_delta_bit" pascalStyleName="VelocityDeltaBit" />
+                      <Bit name="velocity cone angle" CStyleName="velocity_cone_angle_bit" pascalStyleName="VelocityConeAngleBit" />
+                      <Bit name="angular velocity" CStyleName="angular_velocity_bit" pascalStyleName="AngularVelocityBit" />
+                      <Bit name="angular velocity delta" CStyleName="angular_velocity_delta_bit" pascalStyleName="AngularVelocityDeltaBit" />
+                      <Bit name="type specific scale" CStyleName="type_specific_scale_bit" pascalStyleName="TypeSpecificScaleBit" />
+                    </Options>
+                  </LongFlags>
+                  <LongFlags CStyleName="b_scales_values" pascalStyleName="BScalesValues" name="b scales values">
+                    <Options regolithID="enum:b_scales_values" CStyleName="b_scales_values" pascalStyleName="BScalesValues">
+                      <Bit name="velocity" CStyleName="velocity_bit" pascalStyleName="VelocityBit" />
+                      <Bit name="velocity delta" CStyleName="velocity_delta_bit" pascalStyleName="VelocityDeltaBit" />
+                      <Bit name="velocity cone angle" CStyleName="velocity_cone_angle_bit" pascalStyleName="VelocityConeAngleBit" />
+                      <Bit name="angular velocity" CStyleName="angular_velocity_bit" pascalStyleName="AngularVelocityBit" />
+                      <Bit name="angular velocity delta" CStyleName="angular_velocity_delta_bit" pascalStyleName="AngularVelocityDeltaBit" />
+                      <Bit name="type specific scale" CStyleName="type_specific_scale_bit" pascalStyleName="TypeSpecificScaleBit" />
+                    </Options>
+                  </LongFlags>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="particles" pascalStyleName="Particles" name="particles" maxElementCount="32">
+              <Layout regolithID="block:particles" internalName="particles_block" name="particles_block">
+                <FieldSet version="0" sizeofValue="232" isLatest="true">
+                  <ShortEnum CStyleName="create_in" pascalStyleName="CreateIn" name="create in">
+                    <Options regolithID="enum:create_in" CStyleName="create_in" pascalStyleName="CreateIn">
+                      <Enum name="any environment" CStyleName="any_environment" pascalStyleName="AnyEnvironment" />
+                      <Enum name="air only" CStyleName="air_only" pascalStyleName="AirOnly" />
+                      <Enum name="water only" CStyleName="water_only" pascalStyleName="WaterOnly" />
+                      <Enum name="space only" CStyleName="space_only" pascalStyleName="SpaceOnly" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="violence_mode" pascalStyleName="ViolenceMode" name="violence mode">
+                    <Options regolithID="enum:violence_mode" CStyleName="violence_mode" pascalStyleName="ViolenceMode">
+                      <Enum name="either mode" CStyleName="either_mode" pascalStyleName="EitherMode" />
+                      <Enum name="violent mode only" CStyleName="violent_mode_only" pascalStyleName="ViolentModeOnly" />
+                      <Enum name="nonviolent mode only" CStyleName="nonviolent_mode_only" pascalStyleName="NonviolentModeOnly" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="create" pascalStyleName="Create" name="create">
+                    <Options regolithID="enum:create" CStyleName="create" pascalStyleName="Create">
+                      <Enum name="independent of camera mode" CStyleName="independent_of_camera_mode" pascalStyleName="IndependentOfCameraMode" />
+                      <Enum name="only in first person" CStyleName="only_in_first_person" pascalStyleName="OnlyInFirstPerson" />
+                      <Enum name="only in third person" CStyleName="only_in_third_person" pascalStyleName="OnlyInThirdPerson" />
+                      <Enum name="in first person if possible" CStyleName="in_first_person_if_possible" pascalStyleName="InFirstPersonIfPossible" />
+                    </Options>
+                  </ShortEnum>
+                  <Pad name="pad" length="2" />
+                  <ShortInteger CStyleName="location" pascalStyleName="Location" name="location" />
+                  <Pad name="pad" length="2" />
+                  <RealEulerAngles2D CStyleName="relative_direction" pascalStyleName="RelativeDirection" name="relative direction" />
+                  <RealVector3D CStyleName="relative_offset" pascalStyleName="RelativeOffset" name="relative offset" />
+                  <RealVector3D CStyleName="relative_direction_vector" pascalStyleName="RelativeDirectionVector" name="relative direction vector" cacheOnly="true" />
+                  <Pad name="pad" length="40" />
+                  <TagReference CStyleName="particle_type" pascalStyleName="ParticleType" name="particle type">
+                    <tag>particle</tag>
+                  </TagReference>
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                      <Bit name="stay attached to marker" CStyleName="stay_attached_to_marker_bit" pascalStyleName="StayAttachedToMarkerBit" />
+                      <Bit name="random initial angle" CStyleName="random_initial_angle_bit" pascalStyleName="RandomInitialAngleBit" />
+                      <Bit name="tint from object color" CStyleName="tint_from_object_color_bit" pascalStyleName="TintFromObjectColorBit" />
+                      <Bit name="interpolate tint as hsv" CStyleName="interpolate_tint_as_hsv_bit" pascalStyleName="InterpolateTintAsHsvBit" />
+                      <Bit name="across the long hue path" CStyleName="across_the_long_hue_path_bit" pascalStyleName="AcrossTheLongHuePathBit" />
+                    </Options>
+                  </LongFlags>
+                  <ShortEnum CStyleName="distribution_function" pascalStyleName="DistributionFunction" name="distribution function">
+                    <Options regolithID="enum:distribution_function" CStyleName="distribution_function" pascalStyleName="DistributionFunction">
+                      <Enum name="start" CStyleName="start" pascalStyleName="Start" />
+                      <Enum name="end" CStyleName="end" pascalStyleName="End" />
+                      <Enum name="constant" CStyleName="constant" pascalStyleName="Constant" />
+                      <Enum name="buildup" CStyleName="buildup" pascalStyleName="Buildup" />
+                      <Enum name="falloff" CStyleName="falloff" pascalStyleName="Falloff" />
+                      <Enum name="buildup and falloff" CStyleName="buildup_and_falloff" pascalStyleName="BuildupAndFalloff" />
+                    </Options>
+                  </ShortEnum>
+                  <Pad name="pad" length="2" />
+                  <ShortBounds CStyleName="count" pascalStyleName="Count" name="count" />
+                  <RealBounds CStyleName="distribution_radius" pascalStyleName="DistributionRadius" name="distribution radius" />
+                  <Pad name="pad" length="12" />
+                  <RealBounds CStyleName="velocity" pascalStyleName="Velocity" name="velocity" />
+                  <Angle CStyleName="velocity_cone_angle" pascalStyleName="VelocityConeAngle" name="velocity cone angle" />
+                  <AngleBounds CStyleName="angular_velocity" pascalStyleName="AngularVelocity" name="angular velocity" />
+                  <Pad name="pad" length="8" />
+                  <RealBounds CStyleName="radius" pascalStyleName="Radius" name="radius" />
+                  <Pad name="pad" length="8" />
+                  <RealArgbColor CStyleName="tint" pascalStyleName="Tint" name="tint lower bound" />
+                  <RealArgbColor CStyleName="tint" pascalStyleName="Tint" name="tint upper bound" />
+                  <Pad name="pad" length="16" />
+                  <LongFlags CStyleName="a_scales_values" pascalStyleName="AScalesValues" name="a scales values">
+                    <Options regolithID="enum:a_scales_values" CStyleName="a_scales_values" pascalStyleName="AScalesValues">
+                      <Bit name="velocity" CStyleName="velocity_bit" pascalStyleName="VelocityBit" />
+                      <Bit name="velocity delta" CStyleName="velocity_delta_bit" pascalStyleName="VelocityDeltaBit" />
+                      <Bit name="velocity cone angle" CStyleName="velocity_cone_angle_bit" pascalStyleName="VelocityConeAngleBit" />
+                      <Bit name="angular velocity" CStyleName="angular_velocity_bit" pascalStyleName="AngularVelocityBit" />
+                      <Bit name="angular velocity delta" CStyleName="angular_velocity_delta_bit" pascalStyleName="AngularVelocityDeltaBit" />
+                      <Bit name="count" CStyleName="count_bit" pascalStyleName="CountBit" />
+                      <Bit name="count delta" CStyleName="count_delta_bit" pascalStyleName="CountDeltaBit" />
+                      <Bit name="distribution radius" CStyleName="distribution_radius_bit" pascalStyleName="DistributionRadiusBit" />
+                      <Bit name="distribution radius delta" CStyleName="distribution_radius_delta_bit" pascalStyleName="DistributionRadiusDeltaBit" />
+                      <Bit name="particle radius" CStyleName="particle_radius_bit" pascalStyleName="ParticleRadiusBit" />
+                      <Bit name="particle radius delta" CStyleName="particle_radius_delta_bit" pascalStyleName="ParticleRadiusDeltaBit" />
+                      <Bit name="tint" CStyleName="tint_bit" pascalStyleName="TintBit" />
+                    </Options>
+                  </LongFlags>
+                  <LongFlags CStyleName="b_scales_values" pascalStyleName="BScalesValues" name="b scales values">
+                    <Options regolithID="enum:b_scales_values" CStyleName="b_scales_values" pascalStyleName="BScalesValues">
+                      <Bit name="velocity" CStyleName="velocity_bit" pascalStyleName="VelocityBit" />
+                      <Bit name="velocity delta" CStyleName="velocity_delta_bit" pascalStyleName="VelocityDeltaBit" />
+                      <Bit name="velocity cone angle" CStyleName="velocity_cone_angle_bit" pascalStyleName="VelocityConeAngleBit" />
+                      <Bit name="angular velocity" CStyleName="angular_velocity_bit" pascalStyleName="AngularVelocityBit" />
+                      <Bit name="angular velocity delta" CStyleName="angular_velocity_delta_bit" pascalStyleName="AngularVelocityDeltaBit" />
+                      <Bit name="count" CStyleName="count_bit" pascalStyleName="CountBit" />
+                      <Bit name="count delta" CStyleName="count_delta_bit" pascalStyleName="CountDeltaBit" />
+                      <Bit name="distribution radius" CStyleName="distribution_radius_bit" pascalStyleName="DistributionRadiusBit" />
+                      <Bit name="distribution radius delta" CStyleName="distribution_radius_delta_bit" pascalStyleName="DistributionRadiusDeltaBit" />
+                      <Bit name="particle radius" CStyleName="particle_radius_bit" pascalStyleName="ParticleRadiusBit" />
+                      <Bit name="particle radius delta" CStyleName="particle_radius_delta_bit" pascalStyleName="ParticleRadiusDeltaBit" />
+                      <Bit name="tint" CStyleName="tint_bit" pascalStyleName="TintBit" />
+                    </Options>
+                  </LongFlags>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

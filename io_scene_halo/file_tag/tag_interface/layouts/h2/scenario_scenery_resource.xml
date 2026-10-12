@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="*cen" name="scenario_scenery_resource" version="1">
+  <Layout regolithID="block:scenario_scenery_resource" internalName="scenario_scenery_resource_block" name="scenario_scenery_resource">
+    <FieldSet version="0" sizeofValue="104" sizeofSource="sizeof(struct scenario_scenery_resource_definition)" isLatest="true">
+      <Block CStyleName="names" pascalStyleName="Names" name="names" maxElementCount="640" maxElementCountSource="MAXIMUM_OBJECT_NAMES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_object_names</LayoutXRef>
+      </Block>
+      <Block CStyleName="going_away" pascalStyleName="GoingAway" name="going away" readOnly="true" expertOnly="true" maxElementCount="4096" maxElementCountSource="MAXIMUM_ENVIRONMENT_OBJECTS_PER_SCENARIO">
+        <LayoutXRef>block:dont_use_me_scenario_environment_object</LayoutXRef>
+      </Block>
+      <Block CStyleName="structure_references" pascalStyleName="StructureReferences" name="structure references" maxElementCount="16" maxElementCountSource="MAXIMUM_STRUCTURE_BSPS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_structure_bsp_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="scenery_palette" pascalStyleName="SceneryPalette" name="scenery palette" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_scenery_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="scenerys" pascalStyleName="Scenerys" name="scenerys" maxElementCount="2000" maxElementCountSource="MAXIMUM_SCENERY_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_scenery</LayoutXRef>
+      </Block>
+      <LongInteger CStyleName="next_scenery_object_id_salt" pascalStyleName="NextSceneryObjectIdSalt" name="next scenery object id salt" readOnly="true" />
+      <Block CStyleName="crate_palette" pascalStyleName="CratePalette" name="crate palette" maxElementCount="256" maxElementCountSource="MAXIMUM_SCENARIO_OBJECT_PALETTE_ENTRIES_PER_BLOCK">
+        <LayoutXRef>block:scenario_crate_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="crates" pascalStyleName="Crates" name="crates" maxElementCount="1024" maxElementCountSource="MAXIMUM_CRATE_DATUMS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_crate</LayoutXRef>
+      </Block>
+      <LongInteger CStyleName="next_block_object_id_salt" pascalStyleName="NextBlockObjectIdSalt" name="next block object id salt" readOnly="true" />
+      <Block CStyleName="editor_folders" pascalStyleName="EditorFolders" name="editor folders" readOnly="true" maxElementCount="32767" maxElementCountSource="k_maximum_scenario_editor_folders">
+        <LayoutXRef>block:g_scenario_editor_folder</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

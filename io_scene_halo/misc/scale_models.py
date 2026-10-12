@@ -254,6 +254,7 @@ def generate_object(context, array_item, game_version):
     object_dimensions = array_item[1]
 
     object_mesh = bpy.data.objects.new(object_name, mesh)
+    object_mesh.color = (1, 1, 1, 0)
     context.collection.objects.link(object_mesh)
 
     if is_box:

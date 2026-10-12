@@ -1,0 +1,58 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="isla" name="islands" version="1">
+  <Layout regolithID="block:islands" internalName="islands_block" name="islands">
+    <FieldSet version="0" sizeofValue="636" sizeofSource="sizeof(struct islands_group)" isLatest="true">
+      <Pad name="pad" length="4" />
+      <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+        <Options regolithID="enum:type" CStyleName="type" pascalStyleName="Type">
+          <Enum name="single player entry point" CStyleName="single_player_entry_point" pascalStyleName="SinglePlayerEntryPoint" />
+          <Enum name="single player" CStyleName="single_player" pascalStyleName="SinglePlayer" />
+          <Enum name="network" CStyleName="network" pascalStyleName="Network" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="2" />
+      <ShortInteger CStyleName="page_width" pascalStyleName="PageWidth" name="page width" />
+      <ShortInteger CStyleName="page_height" pascalStyleName="PageHeight" name="page height" />
+      <ShortInteger CStyleName="submesh_width" pascalStyleName="SubmeshWidth" name="submesh width" />
+      <ShortInteger CStyleName="submesh_height" pascalStyleName="SubmeshHeight" name="submesh height" />
+      <ShortInteger CStyleName="cell_width" pascalStyleName="CellWidth" name="cell width" />
+      <ShortInteger CStyleName="cell_height" pascalStyleName="CellHeight" name="cell height" />
+      <Real CStyleName="minimum_height" pascalStyleName="MinimumHeight" name="minimum height" />
+      <Real CStyleName="maximum_height" pascalStyleName="MaximumHeight" name="maximum height" />
+      <Pad name="pad" length="80" />
+      <TagReference CStyleName="detail_maps" pascalStyleName="DetailMaps" name="detail maps" />
+      <TagReference CStyleName="detail_objects_ref" pascalStyleName="DetailObjectsRef" name="detail objects ref" />
+      <TagReference CStyleName="weather_system" pascalStyleName="WeatherSystem" name="weather system" />
+      <Pad name="pad" length="40" />
+      <Rectangle2D CStyleName="overhead_map_bounds" pascalStyleName="OverheadMapBounds" name="overhead map bounds" />
+      <TagReference CStyleName="overhead_map_bitmaps" pascalStyleName="OverheadMapBitmaps" name="overhead map bitmaps" />
+      <Pad name="pad" length="160" />
+      <RealArgbColor CStyleName="overlay_color" pascalStyleName="OverlayColor" name="overlay color" />
+      <Pad name="pad" length="4" />
+      <Data CStyleName="overlay" pascalStyleName="Overlay" name="overlay" />
+      <Data CStyleName="cells" pascalStyleName="Cells" name="cells" />
+      <Data CStyleName="submesh_cells" pascalStyleName="SubmeshCells" name="submesh cells" />
+      <Data CStyleName="editor_preferences" pascalStyleName="EditorPreferences" name="editor preferences" />
+      <Block CStyleName="detail_objects" pascalStyleName="DetailObjects" name="detail objects">
+        <Layout regolithID="block:detail objects" internalName="detail objects_block" name="detail objects_block">
+          <FieldSet version="0" sizeofValue="8" isLatest="true">
+            <CharInteger CStyleName="type" pascalStyleName="Type" name="type" />
+            <CharInteger CStyleName="submesh_x" pascalStyleName="SubmeshX" name="submesh x" />
+            <CharInteger CStyleName="submesh_y" pascalStyleName="SubmeshY" name="submesh y" />
+            <Pad name="pad" length="3" />
+            <CharInteger CStyleName="x" pascalStyleName="X" name="x" />
+            <CharInteger CStyleName="y" pascalStyleName="Y" name="y" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="invisible_cells" pascalStyleName="InvisibleCells" name="invisible cells">
+        <Layout regolithID="block:invisible cells" internalName="invisible cells_block" name="invisible cells_block">
+          <FieldSet version="0" sizeofValue="4" isLatest="true">
+            <Point2D CStyleName="point" pascalStyleName="Point" name="point" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="36" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

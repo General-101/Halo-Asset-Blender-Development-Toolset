@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="ant!" name="antenna" version="1">
+  <Layout regolithID="block:antenna" internalName="antenna_block" name="antenna">
+    <FieldSet version="0" sizeofValue="180" sizeofSource="sizeof(struct antenna_definition)" isLatest="true">
+      <OldStringId CStyleName="attachment_marker_name" pascalStyleName="AttachmentMarkerName" name="attachment marker name" description="the marker name where the antenna should be attached" />
+      <TagReference CStyleName="bitmaps" pascalStyleName="Bitmaps" name="bitmaps">
+        <tag>bitm</tag>
+      </TagReference>
+      <TagReference CStyleName="physics" pascalStyleName="Physics" name="physics">
+        <tag>pphy</tag>
+      </TagReference>
+      <Pad sizeOfSource="20*sizeof(long)" length="80" />
+      <RealFraction CStyleName="spring_strength_coefficient" pascalStyleName="SpringStrengthCoefficient" name="spring strength coefficient" description="strength of the spring (larger values make the spring stronger)" />
+      <Real CStyleName="falloff_pixels" pascalStyleName="FalloffPixels" name="falloff pixels" />
+      <Real CStyleName="cutoff_pixels" pascalStyleName="CutoffPixels" name="cutoff pixels" />
+      <Pad sizeOfSource="10*sizeof(long)" length="40" />
+      <Block CStyleName="vertices" pascalStyleName="Vertices" name="vertices" maxElementCount="20" maxElementCountSource="MAXIMUM_NUMBER_OF_ANTENNA_VERTICES">
+        <Layout regolithID="block:antenna_vertex" internalName="antenna_vertex_block" name="antenna_vertex_block">
+          <FieldSet version="0" sizeofValue="128" sizeofSource="sizeof(struct antenna_vertex)" isLatest="true">
+            <RealFraction CStyleName="spring_strength_coefficient" pascalStyleName="SpringStrengthCoefficient" name="spring strength coefficient" description="strength of the spring (larger values make the spring stronger)" />
+            <Pad sizeOfSource="6*sizeof(long)" length="24" />
+            <RealEulerAngles2D CStyleName="angles" pascalStyleName="Angles" name="angles" description="direction toward next vertex" />
+            <Real CStyleName="length" pascalStyleName="Length" name="length" units="world units" description="distance between this vertex and the next" />
+            <ShortInteger CStyleName="sequence_index" pascalStyleName="SequenceIndex" name="sequence index" description="bitmap group sequence index for this vertex's texture" />
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <RealArgbColor CStyleName="color" pascalStyleName="Color" name="color" description="color at this vertex" />
+            <RealArgbColor CStyleName="lod_color" pascalStyleName="LodColor" name="LOD color" description="color at this vertex for the low-LOD line primitives" />
+            <Pad sizeOfSource="10*sizeof(long)" length="40" />
+            <Pad sizeOfSource="sizeof(real_vector3d)" length="12" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

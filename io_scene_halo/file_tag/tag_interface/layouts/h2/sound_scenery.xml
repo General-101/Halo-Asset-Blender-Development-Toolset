@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="ssce" parent="obje" name="sound_scenery" version="1">
+  <Layout regolithID="block:sound_scenery" internalName="sound_scenery_block" name="sound_scenery">
+    <FieldSet version="0" sizeofValue="272" sizeofSource="sizeof(struct _sound_scenery_definition)" parentVersion="0" isLatest="true">
+      <Pad sizeOfSource="4*sizeof(long)" length="16" />
+      <UselessPad length="112" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

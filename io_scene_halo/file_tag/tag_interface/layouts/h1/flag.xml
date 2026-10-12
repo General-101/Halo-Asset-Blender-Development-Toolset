@@ -1,0 +1,54 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="flag" name="flag" version="1">
+  <Layout regolithID="block:flag" internalName="flag_block" name="flag">
+    <FieldSet version="0" sizeofValue="96" sizeofSource="sizeof(struct flag_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="unused" CStyleName="unused_bit" pascalStyleName="UnusedBit" />
+        </Options>
+      </LongFlags>
+      <ShortEnum CStyleName="trailing_edge_shape" pascalStyleName="TrailingEdgeShape" name="trailing edge shape">
+        <Options regolithID="enum:trailing_edge_shape" CStyleName="trailing_edge_shape" pascalStyleName="TrailingEdgeShape">
+          <Enum name="flat" CStyleName="flat" pascalStyleName="Flat" />
+          <Enum name="concave triangular" CStyleName="concave_triangular" pascalStyleName="ConcaveTriangular" />
+          <Enum name="convex triangular" CStyleName="convex_triangular" pascalStyleName="ConvexTriangular" />
+          <Enum name="trapezoid short top" CStyleName="trapezoid_short_top" pascalStyleName="TrapezoidShortTop" />
+          <Enum name="trapezoid short bottom" CStyleName="trapezoid_short_bottom" pascalStyleName="TrapezoidShortBottom" />
+        </Options>
+      </ShortEnum>
+      <ShortInteger CStyleName="trailing_edge_shape_offset" pascalStyleName="TrailingEdgeShapeOffset" name="trailing edge shape offset" />
+      <ShortEnum CStyleName="attached_edge_shape" pascalStyleName="AttachedEdgeShape" name="attached edge shape">
+        <Options regolithID="enum:attached_edge_shape" CStyleName="attached_edge_shape" pascalStyleName="AttachedEdgeShape">
+          <Enum name="flat" CStyleName="flat" pascalStyleName="Flat" />
+          <Enum name="concave triangular" CStyleName="concave_triangular" pascalStyleName="ConcaveTriangular" />
+        </Options>
+      </ShortEnum>
+      <Pad name="pad" length="2" />
+      <ShortInteger CStyleName="width" pascalStyleName="Width" name="width" />
+      <ShortInteger CStyleName="height" pascalStyleName="Height" name="height" />
+      <Real CStyleName="cell_width" pascalStyleName="CellWidth" name="cell width" />
+      <Real CStyleName="cell_height" pascalStyleName="CellHeight" name="cell height" />
+      <TagReference CStyleName="red_flag_shader" pascalStyleName="RedFlagShader" name="red flag shader">
+        <tag>shader</tag>
+      </TagReference>
+      <TagReference CStyleName="physics" pascalStyleName="Physics" name="physics">
+        <tag>point_physics</tag>
+      </TagReference>
+      <Real CStyleName="wind_noise" pascalStyleName="WindNoise" name="wind noise" />
+      <Pad name="pad" length="8" />
+      <TagReference CStyleName="blue_flag_shader" pascalStyleName="BlueFlagShader" name="blue flag shader">
+        <tag>shader</tag>
+      </TagReference>
+      <Block CStyleName="attachment_points" pascalStyleName="AttachmentPoints" name="attachment points" maxElementCount="5">
+        <Layout regolithID="block:attachment points" internalName="attachment points_block" name="attachment points_block">
+          <FieldSet version="0" sizeofValue="52" isLatest="true">
+            <ShortInteger CStyleName="height_to_next_attachment" pascalStyleName="HeightToNextAttachment" name="height to next attachment" />
+            <Pad name="pad" length="2" />
+            <Pad name="pad" length="16" />
+            <String CStyleName="marker_name" pascalStyleName="MarkerName" name="marker name" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

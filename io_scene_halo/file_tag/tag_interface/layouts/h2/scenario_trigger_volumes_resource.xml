@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="trg*" name="scenario_trigger_volumes_resource" version="1">
+  <Layout regolithID="block:scenario_trigger_volumes_resource" internalName="scenario_trigger_volumes_resource_block" name="scenario_trigger_volumes_resource">
+    <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(struct scenario_trigger_volumes_resource_definition)" isLatest="true">
+      <Block CStyleName="trigger_volumes" pascalStyleName="TriggerVolumes" name="trigger volumes" maxElementCount="256" maxElementCountSource="MAXIMUM_TRIGGER_VOLUMES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_trigger_volume</LayoutXRef>
+      </Block>
+      <Block CStyleName="object_names" pascalStyleName="ObjectNames" name="object names" maxElementCount="640" maxElementCountSource="MAXIMUM_OBJECT_NAMES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_object_names</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

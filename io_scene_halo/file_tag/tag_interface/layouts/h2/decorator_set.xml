@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="DECR" name="decorator_set" version="1">
+  <Layout regolithID="block:decorator_set" internalName="decorator_set_block" name="decorator_set">
+    <FieldSet version="0" sizeofValue="128" sizeofSource="sizeof(c_decorator_set_definition_v1)">
+      <Block CStyleName="shaders" pascalStyleName="Shaders" name="shaders" maxElementCount="8" maxElementCountSource="c_decorator_set_definition::k_maximum_shader_count">
+        <Layout regolithID="block:decorator_shader_reference" internalName="decorator_shader_reference_block" name="decorator_shader_reference_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_decorator_shader_reference)" isLatest="true">
+            <TagReference CStyleName="shader" pascalStyleName="Shader" name="shader">
+              <tag>shad</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="classes" pascalStyleName="Classes" name="classes" maxElementCount="8" maxElementCountSource="c_decorator_class_definition::k_maximum_count">
+        <Layout regolithID="block:decorator_classes" internalName="decorator_classes_block" name="decorator_classes_block">
+          <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(c_decorator_class_definition)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" />
+            <CharEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <OptionsXRef>enum:decorator_type</OptionsXRef>
+            </CharEnum>
+            <Pad sizeOfSource="sizeof(byte)*3" length="3" />
+            <Real CStyleName="scale" pascalStyleName="Scale" name="scale" />
+            <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations" maxElementCount="64" maxElementCountSource="c_decorator_permutation_definition::k_maximum_count">
+              <Layout regolithID="block:decorator_permutations" internalName="decorator_permutations_block" name="decorator_permutations_block">
+                <FieldSet version="0" sizeofValue="40" sizeofSource="sizeof(c_decorator_permutation_definition)" isLatest="true">
+                  <StringId CStyleName="name" pascalStyleName="Name" name="name" />
+                  <CharBlockIndex CStyleName="shader" pascalStyleName="Shader" name="shader" blockReference="block:decorator_shader_reference" />
+                  <Pad sizeOfSource="sizeof(byte)*3" length="3" />
+                  <ByteFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:decorator_flags" CStyleName="decorator_flags" pascalStyleName="DecoratorFlags">
+                      <Bit name="align to normal" CStyleName="align_to_normal_bit" pascalStyleName="AlignToNormalBit" />
+                      <Bit name="only on ground" CStyleName="only_on_ground_bit" pascalStyleName="OnlyOnGroundBit" />
+                      <Bit name="upright" CStyleName="upright_bit" pascalStyleName="UprightBit" />
+                    </Options>
+                  </ByteFlags>
+                  <CharEnum CStyleName="fade_distance" pascalStyleName="FadeDistance" name="fade distance">
+                    <Options regolithID="enum:fade_distance" CStyleName="fade_distance" pascalStyleName="FadeDistance">
+                      <Enum name="close" CStyleName="close" pascalStyleName="Close" />
+                      <Enum name="medium" CStyleName="medium" pascalStyleName="Medium" />
+                      <Enum name="far" CStyleName="far" pascalStyleName="Far" />
+                    </Options>
+                  </CharEnum>
+                  <CharInteger CStyleName="index" pascalStyleName="Index" name="index" />
+                  <CharInteger CStyleName="distribution_weight" pascalStyleName="DistributionWeight" name="distribution weight" />
+                  <RealBounds CStyleName="scale" pascalStyleName="Scale" name="scale" />
+                  <RgbColor CStyleName="tint_1" pascalStyleName="Tint1" name="tint 1" />
+                  <RgbColor CStyleName="tint_2" pascalStyleName="Tint2" name="tint 2" />
+                  <Real CStyleName="base_map_tint_percentage" pascalStyleName="BaseMapTintPercentage" name="base map tint percentage" />
+                  <Real CStyleName="lightmap_tint_percentage" pascalStyleName="LightmapTintPercentage" name="lightmap tint percentage" />
+                  <Real CStyleName="wind_scale" pascalStyleName="WindScale" name="wind scale" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="models" pascalStyleName="Models" name="models" readOnly="true" maxElementCount="256" maxElementCountSource="c_decorator_model_definition::k_maximum_count">
+        <Layout regolithID="block:decorator_models" internalName="decorator_models_block" name="decorator_models_block">
+          <FieldSet version="0" sizeofValue="8" sizeofSource="sizeof(c_decorator_model_definition)" isLatest="true">
+            <StringId CStyleName="model_name" pascalStyleName="ModelName" name="model name" readOnly="true" />
+            <ShortInteger CStyleName="index_start" pascalStyleName="IndexStart" name="index start" readOnly="true" />
+            <ShortInteger CStyleName="index_count" pascalStyleName="IndexCount" name="index count" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="raw_vertices" pascalStyleName="RawVertices" name="raw vertices" readOnly="true" maxElementCount="32768" maxElementCountSource="c_decorator_set_definition::k_maximum_model_vertices">
+        <Layout regolithID="block:decorator_model_vertices" internalName="decorator_model_vertices_block" name="decorator_model_vertices_block">
+          <FieldSet version="0" sizeofValue="56" sizeofSource="sizeof(s_decorator_model_vertex)" isLatest="true">
+            <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" readOnly="true" />
+            <RealVector3D CStyleName="normal" pascalStyleName="Normal" name="normal" readOnly="true" />
+            <RealVector3D CStyleName="tangent" pascalStyleName="Tangent" name="tangent" readOnly="true" />
+            <RealVector3D CStyleName="binormal" pascalStyleName="Binormal" name="binormal" readOnly="true" />
+            <RealPoint2D CStyleName="texcoord" pascalStyleName="Texcoord" name="texcoord" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="indices" pascalStyleName="Indices" name="indices" readOnly="true" maxElementCount="32768" maxElementCountSource="c_decorator_set_definition::k_maximum_model_indices">
+        <Layout regolithID="block:decorator_model_indices" internalName="decorator_model_indices_block" name="decorator_model_indices_block">
+          <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(word)" isLatest="true">
+            <ShortInteger CStyleName="index" pascalStyleName="Index" name="index" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="cached_data" pascalStyleName="CachedData" name="cached data" maxElementCount="1">
+        <Layout regolithID="block:decorator_set::cached_data" internalName="cached_data_block" name="cached_data_block">
+          <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(c_decorator_set_definition::s_cached_data)" isLatest="true">
+            <VertexBuffer CStyleName="vertex_buffer" pascalStyleName="VertexBuffer" name="vertex buffer" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Struct CStyleName="geometry_section_info" pascalStyleName="GeometrySectionInfo" name="geometry section info">
+        <LayoutXRef>structure:global_geometry_block_info</LayoutXRef>
+      </Struct>
+      <Pad sizeOfSource="sizeof(triangle_buffer)" length="16" />
+    </FieldSet>
+    <FieldSet version="1" sizeofValue="140" sizeofSource="sizeof(c_decorator_set_definition)" isLatest="true">
+      <Block CStyleName="shaders" pascalStyleName="Shaders" name="shaders" maxElementCount="8" maxElementCountSource="c_decorator_set_definition::k_maximum_shader_count">
+        <LayoutXRef>block:decorator_shader_reference</LayoutXRef>
+      </Block>
+      <Real CStyleName="lighting_min_scale" pascalStyleName="LightingMinScale" name="lighting min scale" description="0.0 defaults to 0.4" />
+      <Real CStyleName="lighting_max_scale" pascalStyleName="LightingMaxScale" name="lighting max scale" description="0.0 defaults to 2.0" />
+      <Block CStyleName="classes" pascalStyleName="Classes" name="classes" maxElementCount="8" maxElementCountSource="c_decorator_class_definition::k_maximum_count">
+        <LayoutXRef>block:decorator_classes</LayoutXRef>
+      </Block>
+      <Block CStyleName="models" pascalStyleName="Models" name="models" readOnly="true" maxElementCount="256" maxElementCountSource="c_decorator_model_definition::k_maximum_count">
+        <LayoutXRef>block:decorator_models</LayoutXRef>
+      </Block>
+      <Block CStyleName="raw_vertices" pascalStyleName="RawVertices" name="raw vertices" readOnly="true" maxElementCount="32768" maxElementCountSource="c_decorator_set_definition::k_maximum_model_vertices">
+        <LayoutXRef>block:decorator_model_vertices</LayoutXRef>
+      </Block>
+      <Block CStyleName="indices" pascalStyleName="Indices" name="indices" readOnly="true" maxElementCount="32768" maxElementCountSource="c_decorator_set_definition::k_maximum_model_indices">
+        <LayoutXRef>block:decorator_model_indices</LayoutXRef>
+      </Block>
+      <Block CStyleName="cached_data" pascalStyleName="CachedData" name="cached data" maxElementCount="1">
+        <LayoutXRef>block:decorator_set::cached_data</LayoutXRef>
+      </Block>
+      <Struct CStyleName="geometry_section_info" pascalStyleName="GeometrySectionInfo" name="geometry section info">
+        <LayoutXRef>structure:global_geometry_block_info</LayoutXRef>
+      </Struct>
+      <Pad sizeOfSource="sizeof(triangle_buffer)" length="16" />
+      <Pad sizeOfSource="sizeof(long)" length="4" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

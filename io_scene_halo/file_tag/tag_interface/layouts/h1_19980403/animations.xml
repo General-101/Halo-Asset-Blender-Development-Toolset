@@ -1,0 +1,57 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="moan" name="animations" version="1">
+  <Layout regolithID="block:animations" internalName="animations_block" name="animations">
+    <FieldSet version="0" sizeofValue="68" sizeofSource="sizeof(struct animations_group)" isLatest="true">
+      <ShortInteger CStyleName="node_count" pascalStyleName="NodeCount" name="node count" />
+      <Pad name="pad" length="42" />
+      <Block CStyleName="transitions" pascalStyleName="Transitions" name="transitions">
+        <Layout regolithID="block:transitions" internalName="transitions_block" name="transitions_block">
+          <FieldSet version="0" sizeofValue="20" isLatest="true">
+            <ShortEnum CStyleName="verb" pascalStyleName="Verb" name="verb">
+              <Options regolithID="enum:verb" CStyleName="verb" pascalStyleName="Verb">
+                <Enum name="to" CStyleName="to" pascalStyleName="To" />
+                <Enum name="turnleft" CStyleName="turnleft" pascalStyleName="Turnleft" />
+                <Enum name="turnright" CStyleName="turnright" pascalStyleName="Turnright" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="previous_state" pascalStyleName="PreviousState" name="previous state">
+              <Options regolithID="enum:previous_state" CStyleName="previous_state" pascalStyleName="PreviousState">
+                <Enum name="idle" CStyleName="idle" pascalStyleName="Idle" />
+                <Enum name="run" CStyleName="run" pascalStyleName="Run" />
+                <Enum name="crouch" CStyleName="crouch" pascalStyleName="Crouch" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="next_state" pascalStyleName="NextState" name="next state">
+              <Options regolithID="enum:next_state" CStyleName="next_state" pascalStyleName="NextState">
+                <Enum name="idle" CStyleName="idle" pascalStyleName="Idle" />
+                <Enum name="run" CStyleName="run" pascalStyleName="Run" />
+                <Enum name="crouch" CStyleName="crouch" pascalStyleName="Crouch" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations">
+              <Layout regolithID="block:permutations" internalName="permutations_block" name="permutations_block">
+                <FieldSet version="0" sizeofValue="8" isLatest="true">
+                  <ShortInteger CStyleName="animation_index" pascalStyleName="AnimationIndex" name="animation index" />
+                  <Pad name="pad" length="2" />
+                  <Real CStyleName="weight" pascalStyleName="Weight" name="weight" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="animations" pascalStyleName="Animations" name="animations">
+        <Layout regolithID="block:animations" internalName="animations_block" name="animations_block">
+          <FieldSet version="0" sizeofValue="96" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <ShortInteger CStyleName="frame_count" pascalStyleName="FrameCount" name="frame count" />
+            <ShortInteger CStyleName="node_count" pascalStyleName="NodeCount" name="node count" />
+            <Pad name="pad" length="40" />
+            <Data CStyleName="data" pascalStyleName="Data" name="data" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

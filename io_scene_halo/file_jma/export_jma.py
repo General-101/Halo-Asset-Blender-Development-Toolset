@@ -28,8 +28,8 @@ import bpy
 
 from .build_asset import build_asset
 
-def write_file(context, filepath, report, extension, jma_version, game_title, generate_checksum, folder_structure, fix_rotations, use_maya_sorting, frame_rate_value, scale_value):
-    build_asset(context, filepath, report, extension, jma_version, game_title, generate_checksum, folder_structure, fix_rotations, use_maya_sorting, frame_rate_value, scale_value)
+def write_file(context, filepath, report, extension, jma_version, game_title, generate_checksum, file_checksum, folder_structure, fix_rotations, use_maya_sorting, frame_rate_value, scale_value):
+    build_asset(context, filepath, report, extension, jma_version, game_title, generate_checksum, file_checksum, folder_structure, fix_rotations, use_maya_sorting, frame_rate_value, scale_value)
 
     report({'INFO'}, "Export completed successfully")
 

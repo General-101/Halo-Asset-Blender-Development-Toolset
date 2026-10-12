@@ -1,0 +1,158 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="snd!" name="sound" version="4">
+  <Layout regolithID="block:sound" internalName="sound_block" name="sound">
+    <FieldSet version="0" sizeofValue="164" sizeofSource="sizeof(struct sound_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+          <Bit name="fit to adpcm blocksize" CStyleName="fit_to_adpcm_blocksize_bit" pascalStyleName="FitToAdpcmBlocksizeBit" />
+          <Bit name="split long sound into permutations" CStyleName="split_long_sound_into_permutations_bit" pascalStyleName="SplitLongSoundIntoPermutationsBit" />
+          <Bit name="thirsty grunt" CStyleName="thirsty_grunt_bit" pascalStyleName="ThirstyGruntBit" />
+        </Options>
+      </LongFlags>
+      <ShortEnum CStyleName="sound_class" pascalStyleName="SoundClass" name="sound class">
+        <Options regolithID="enum:sound_class" CStyleName="sound_class" pascalStyleName="SoundClass">
+          <Enum name="projectile impact" CStyleName="projectile_impact" pascalStyleName="ProjectileImpact" />
+          <Enum name="projectile detonation" CStyleName="projectile_detonation" pascalStyleName="ProjectileDetonation" />
+          <Enum name="unused" CStyleName="unused" pascalStyleName="Unused" />
+          <Enum name="unused1" CStyleName="unused1" pascalStyleName="Unused1" />
+          <Enum name="weapon fire" CStyleName="weapon_fire" pascalStyleName="WeaponFire" />
+          <Enum name="weapon ready" CStyleName="weapon_ready" pascalStyleName="WeaponReady" />
+          <Enum name="weapon reload" CStyleName="weapon_reload" pascalStyleName="WeaponReload" />
+          <Enum name="weapon empty" CStyleName="weapon_empty" pascalStyleName="WeaponEmpty" />
+          <Enum name="weapon charge" CStyleName="weapon_charge" pascalStyleName="WeaponCharge" />
+          <Enum name="weapon overheat" CStyleName="weapon_overheat" pascalStyleName="WeaponOverheat" />
+          <Enum name="weapon idle" CStyleName="weapon_idle" pascalStyleName="WeaponIdle" />
+          <Enum name="unused2" CStyleName="unused2" pascalStyleName="Unused2" />
+          <Enum name="unused3" CStyleName="unused3" pascalStyleName="Unused3" />
+          <Enum name="object impacts" CStyleName="object_impacts" pascalStyleName="ObjectImpacts" />
+          <Enum name="particle impacts" CStyleName="particle_impacts" pascalStyleName="ParticleImpacts" />
+          <Enum name="slow particle impacts" CStyleName="slow_particle_impacts" pascalStyleName="SlowParticleImpacts" />
+          <Enum name="unused4" CStyleName="unused4" pascalStyleName="Unused4" />
+          <Enum name="unused5" CStyleName="unused5" pascalStyleName="Unused5" />
+          <Enum name="unit footsteps" CStyleName="unit_footsteps" pascalStyleName="UnitFootsteps" />
+          <Enum name="unit dialog" CStyleName="unit_dialog" pascalStyleName="UnitDialog" />
+          <Enum name="unused6" CStyleName="unused6" pascalStyleName="Unused6" />
+          <Enum name="unused7" CStyleName="unused7" pascalStyleName="Unused7" />
+          <Enum name="vehicle collision" CStyleName="vehicle_collision" pascalStyleName="VehicleCollision" />
+          <Enum name="vehicle engine" CStyleName="vehicle_engine" pascalStyleName="VehicleEngine" />
+          <Enum name="unused8" CStyleName="unused8" pascalStyleName="Unused8" />
+          <Enum name="unused9" CStyleName="unused9" pascalStyleName="Unused9" />
+          <Enum name="device door" CStyleName="device_door" pascalStyleName="DeviceDoor" />
+          <Enum name="device force field" CStyleName="device_force_field" pascalStyleName="DeviceForceField" />
+          <Enum name="device machinery" CStyleName="device_machinery" pascalStyleName="DeviceMachinery" />
+          <Enum name="device nature" CStyleName="device_nature" pascalStyleName="DeviceNature" />
+          <Enum name="device computers" CStyleName="device_computers" pascalStyleName="DeviceComputers" />
+          <Enum name="unused10" CStyleName="unused10" pascalStyleName="Unused10" />
+          <Enum name="music" CStyleName="music" pascalStyleName="Music" />
+          <Enum name="ambient nature" CStyleName="ambient_nature" pascalStyleName="AmbientNature" />
+          <Enum name="ambient machinery" CStyleName="ambient_machinery" pascalStyleName="AmbientMachinery" />
+          <Enum name="ambient computers" CStyleName="ambient_computers" pascalStyleName="AmbientComputers" />
+          <Enum name="unused11" CStyleName="unused11" pascalStyleName="Unused11" />
+          <Enum name="unused12" CStyleName="unused12" pascalStyleName="Unused12" />
+          <Enum name="unused13" CStyleName="unused13" pascalStyleName="Unused13" />
+          <Enum name="first person damage" CStyleName="first_person_damage" pascalStyleName="FirstPersonDamage" />
+          <Enum name="unused14" CStyleName="unused14" pascalStyleName="Unused14" />
+          <Enum name="unused15" CStyleName="unused15" pascalStyleName="Unused15" />
+          <Enum name="unused16" CStyleName="unused16" pascalStyleName="Unused16" />
+          <Enum name="unused17" CStyleName="unused17" pascalStyleName="Unused17" />
+          <Enum name="scripted dialog player" CStyleName="scripted_dialog_player" pascalStyleName="ScriptedDialogPlayer" />
+          <Enum name="scripted effect" CStyleName="scripted_effect" pascalStyleName="ScriptedEffect" />
+          <Enum name="scripted dialog other" CStyleName="scripted_dialog_other" pascalStyleName="ScriptedDialogOther" />
+          <Enum name="scripted dialog force unspatialized" CStyleName="scripted_dialog_force_unspatialized" pascalStyleName="ScriptedDialogForceUnspatialized" />
+          <Enum name="unused18" CStyleName="unused18" pascalStyleName="Unused18" />
+          <Enum name="unused19" CStyleName="unused19" pascalStyleName="Unused19" />
+          <Enum name="game event" CStyleName="game_event" pascalStyleName="GameEvent" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="sample_rate" pascalStyleName="SampleRate" name="sample rate">
+        <Options regolithID="enum:sample_rate" CStyleName="sample_rate" pascalStyleName="SampleRate">
+          <Enum name="22050 Hz" CStyleName="_22050_hz" pascalStyleName="22050Hz" />
+          <Enum name="44100 Hz" CStyleName="_44100_hz" pascalStyleName="44100Hz" />
+        </Options>
+      </ShortEnum>
+      <RealBounds CStyleName="distance_bounds" pascalStyleName="DistanceBounds" name="distance bounds" />
+      <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+      <RealBounds CStyleName="random_pitch_bounds" pascalStyleName="RandomPitchBounds" name="random pitch bounds" description="This is the base playback rate of the sound, affecting tempo and pitch." />
+      <Angle CStyleName="inner_cone_angle" pascalStyleName="InnerConeAngle" name="inner cone angle" />
+      <Angle CStyleName="outer_cone_angle" pascalStyleName="OuterConeAngle" name="outer cone angle" />
+      <Real CStyleName="outer_cone_gain" pascalStyleName="OuterConeGain" name="outer cone gain" />
+      <Real CStyleName="random_gain_modifier" pascalStyleName="RandomGainModifier" name="random gain modifier" />
+      <Real CStyleName="maximum_bend_rate" pascalStyleName="MaximumBendRate" name="maximum bend rate" />
+      <Pad name="pad" length="12" />
+      <Real CStyleName="zero_skip_fraction_modifier" pascalStyleName="ZeroSkipFractionModifier" name="zero skip fraction modifier" />
+      <Real CStyleName="zero_gain_modifier" pascalStyleName="ZeroGainModifier" name="zero gain modifier" />
+      <Real CStyleName="zero_pitch_modifier" pascalStyleName="ZeroPitchModifier" name="zero pitch modifier" />
+      <Pad name="pad" length="12" />
+      <Real CStyleName="one_skip_fraction_modifier" pascalStyleName="OneSkipFractionModifier" name="one skip fraction modifier" />
+      <Real CStyleName="one_gain_modifier" pascalStyleName="OneGainModifier" name="one gain modifier" />
+      <Real CStyleName="one_pitch_modifier" pascalStyleName="OnePitchModifier" name="one pitch modifier" />
+      <Pad name="pad" length="12" />
+      <ShortEnum CStyleName="channel_count" pascalStyleName="ChannelCount" name="channel count">
+        <Options regolithID="enum:channel_count" CStyleName="channel_count" pascalStyleName="ChannelCount">
+          <Enum name="mono" CStyleName="mono" pascalStyleName="Mono" />
+          <Enum name="stereo" CStyleName="stereo" pascalStyleName="Stereo" />
+        </Options>
+      </ShortEnum>
+      <ShortEnum CStyleName="format" pascalStyleName="Format" name="format">
+        <Options regolithID="enum:format" CStyleName="format" pascalStyleName="Format">
+          <Enum name="pcm" CStyleName="pcm" pascalStyleName="Pcm" />
+          <Enum name="xbox adpcm" CStyleName="xbox_adpcm" pascalStyleName="XboxAdpcm" />
+          <Enum name="ima adpcm" CStyleName="ima_adpcm" pascalStyleName="ImaAdpcm" />
+          <Enum name="ogg vorbis" CStyleName="ogg_vorbis" pascalStyleName="OggVorbis" />
+        </Options>
+      </ShortEnum>
+      <TagReference CStyleName="promotion_sound" pascalStyleName="PromotionSound" name="promotion sound">
+        <tag>sound</tag>
+      </TagReference>
+      <ShortInteger CStyleName="promotion_count" pascalStyleName="PromotionCount" name="promotion count" unsigned="true" />
+      <Pad name="pad" length="2" />
+      <LongInteger CStyleName="longest_permutation_length" pascalStyleName="LongestPermutationLength" name="longest permutation length" cacheOnly="true" unsigned="true" description="natural pitch * seconds * 1100; not set if pitch modifier is set to anything besides 1; not accurate since increasing natural pitch decreases the length&#10;uses the buffer size value for 16-bit PCM and Ogg Vorbis (divide by 2 * channel count to get sample count);&#10;uses entire size of samples for ADPCM (multiply by 130 / 36 * channel count to get sample count)" />
+      <LongInteger CStyleName="cumulative_promotion_length" pascalStyleName="CumulativePromotionLength" name="cumulative promotion length" cacheOnly="true" unsigned="true" />
+      <LongInteger CStyleName="last_promotion_time" pascalStyleName="LastPromotionTime" name="last promotion time" cacheOnly="true" unsigned="true" />
+      <LongInteger CStyleName="scripted_sound_remaining_time" pascalStyleName="ScriptedSoundRemainingTime" name="scripted sound remaining time" cacheOnly="true" unsigned="true" description="set to 0xFFFFFFFF on cache build" />
+      <LongInteger CStyleName="scripted_sound_index" pascalStyleName="ScriptedSoundIndex" name="scripted sound index" cacheOnly="true" description="set to null id on cache build" />
+      <Block CStyleName="pitch_ranges" pascalStyleName="PitchRanges" name="pitch ranges" maxElementCount="8">
+        <Layout regolithID="block:pitch ranges" internalName="pitch ranges_block" name="pitch ranges_block">
+          <FieldSet version="0" sizeofValue="72" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <Explanation name="Pitch Range Settings" description="The bend bounds field determines the bend range in which a given pitch range is used (bent), and natural pitch determines the pitch in which the sound is played normally (note that if natural pitch is left as 0, it will default to 1). This feature is used for sounds that are played at varying pitches, such as vehicle engines.&#10;&#10;When creating your sound tag, you can create multiple pitch ranges using sounds recorded at different pitches. So, for a sound that is at natural pitch 2, you would supply a sound that, when played back normally, is twice as high as a sound at natural pitch 1 (effectively one octave higher).&#10;&#10;If you dont expect your sound to be played at multiple pitches, then having a single pitch range is valid, too; this is typical of most sound tags. In this case, natural pitch will merely change the pitch of the sound." />
+            <Real CStyleName="natural_pitch" pascalStyleName="NaturalPitch" name="natural pitch" description="This is the base pitch for this pitch range.&#10;When the pitch bend is equal to this, then the audio is played at normal pitch and speed.&#10;Note that 0 defaults to 1." />
+            <RealBounds CStyleName="bend_bounds" pascalStyleName="BendBounds" name="bend bounds" description="This is the minimum and maximum bend in which this pitch range will be used.&#10;If the lower bound is higher than natural pitch, then it will be set to natural pitch. Also, if the higher bound is lower than natural pitch, then it will be set to natural pitch." />
+            <ShortInteger CStyleName="actual_permutation_count" pascalStyleName="ActualPermutationCount" name="actual permutation count" unsigned="true" description="This is the number of actual permutations in the pitch range, not including chunks due to splitting." />
+            <Pad name="pad" length="2" />
+            <Real CStyleName="playback_rate" pascalStyleName="PlaybackRate" name="playback rate" cacheOnly="true" />
+            <LongInteger CStyleName="used_permutations" pascalStyleName="UsedPermutations" name="used permutations" cacheOnly="true" unsigned="true" description="engine internal bitfield, set to 0xFFFFFFFF on cache build" />
+            <ShortInteger CStyleName="last_permutation_index" pascalStyleName="LastPermutationIndex" name="last permutation index" cacheOnly="true" description="set to null index on cache build" />
+            <ShortInteger CStyleName="next_permutation_index" pascalStyleName="NextPermutationIndex" name="next permutation index" cacheOnly="true" description="set to null index on cache build" />
+            <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations" maxElementCount="32767">
+              <Layout regolithID="block:permutations" internalName="permutations_block" name="permutations_block">
+                <FieldSet version="0" sizeofValue="124" isLatest="true">
+                  <String CStyleName="name" pascalStyleName="Name" name="name" />
+                  <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+                  <Real CStyleName="gain" pascalStyleName="Gain" name="gain" />
+                  <ShortEnum CStyleName="format" pascalStyleName="Format" name="format">
+                    <Options regolithID="enum:format" CStyleName="format" pascalStyleName="Format">
+                      <Enum name="pcm" CStyleName="pcm" pascalStyleName="Pcm" />
+                      <Enum name="xbox adpcm" CStyleName="xbox_adpcm" pascalStyleName="XboxAdpcm" />
+                      <Enum name="ima adpcm" CStyleName="ima_adpcm" pascalStyleName="ImaAdpcm" />
+                      <Enum name="ogg vorbis" CStyleName="ogg_vorbis" pascalStyleName="OggVorbis" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortInteger CStyleName="next_permutation_index" pascalStyleName="NextPermutationIndex" name="next permutation index" />
+                  <LongInteger CStyleName="samples_pointer" pascalStyleName="SamplesPointer" name="samples pointer" cacheOnly="true" unsigned="true" />
+                  <Pad name="pad" length="4" />
+                  <LongInteger CStyleName="tag_id_0" pascalStyleName="TagId0" name="tag id 0" cacheOnly="true" description="Set to the sound tags tag ID" />
+                  <LongInteger CStyleName="buffer_size" pascalStyleName="BufferSize" name="buffer size" unsigned="true" description="this is the buffer size used to hold (and, for Vorbis, decompress) the 16-bit PCM data (unused in Xbox ADPCM)" />
+                  <LongInteger CStyleName="tag_id_1" pascalStyleName="TagId1" name="tag id 1" cacheOnly="true" description="Set to the sound tags tag ID" />
+                  <Data CStyleName="samples" pascalStyleName="Samples" name="samples" />
+                  <Data CStyleName="mouth_data" pascalStyleName="MouthData" name="mouth data" />
+                  <Data CStyleName="subtitle_data" pascalStyleName="SubtitleData" name="subtitle data" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,129 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="mode" name="models" version="3">
+  <Layout regolithID="block:models" internalName="models_block" name="models">
+    <FieldSet version="0" sizeofValue="232" sizeofSource="sizeof(struct models_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags" />
+      <LongInteger CStyleName="node_list_checksum" pascalStyleName="NodeListChecksum" name="node list checksum" />
+      <Real CStyleName="super-high_detail_cutoff" pascalStyleName="Super-highDetailCutoff" name="super-high detail cutoff" />
+      <Real CStyleName="high_detail_cutoff" pascalStyleName="HighDetailCutoff" name="high detail cutoff" />
+      <Real CStyleName="medium_detail_cutoff" pascalStyleName="MediumDetailCutoff" name="medium detail cutoff" />
+      <Real CStyleName="low_detail_cutoff" pascalStyleName="LowDetailCutoff" name="low detail cutoff" />
+      <Pad name="pad" length="160" />
+      <Block CStyleName="nodes" pascalStyleName="Nodes" name="nodes">
+        <Layout regolithID="block:nodes" internalName="nodes_block" name="nodes_block">
+          <FieldSet version="0" sizeofValue="156" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <ShortInteger CStyleName="next_sibling_node_index" pascalStyleName="NextSiblingNodeIndex" name="next sibling node index" />
+            <ShortInteger CStyleName="first_child_node_index" pascalStyleName="FirstChildNodeIndex" name="first child node index" />
+            <ShortInteger CStyleName="parent_node_index" pascalStyleName="ParentNodeIndex" name="parent node index" />
+            <Pad name="pad" length="2" />
+            <RealPoint3D CStyleName="default_translation" pascalStyleName="DefaultTranslation" name="default translation" />
+            <RealQuaternion CStyleName="default_rotation" pascalStyleName="DefaultRotation" name="default rotation" />
+            <Pad name="pad" length="36" />
+            <Pad name="pad" length="52" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="regions" pascalStyleName="Regions" name="regions">
+        <Layout regolithID="block:regions" internalName="regions_block" name="regions_block">
+          <FieldSet version="0" sizeofValue="76" isLatest="true">
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
+            <Pad name="pad" length="32" />
+            <Block CStyleName="permutation" pascalStyleName="Permutation" name="permutations">
+              <Layout regolithID="block:permutations" internalName="permutations_block" name="permutations_block">
+                <FieldSet version="0" sizeofValue="88" isLatest="true">
+                  <String CStyleName="name" pascalStyleName="Name" name="name" />
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags" />
+                  <Pad name="pad" length="28" />
+                  <ShortBlockIndex CStyleName="super_low" pascalStyleName="SuperLow" name="super low" blockReference="model_geometry_block" />
+                  <ShortBlockIndex CStyleName="low" pascalStyleName="Low" name="low" blockReference="model_geometry_block" />
+                  <ShortBlockIndex CStyleName="medium" pascalStyleName="Medium" name="medium" blockReference="model_geometry_block" />
+                  <ShortBlockIndex CStyleName="high" pascalStyleName="High" name="high" blockReference="model_geometry_block" />
+                  <ShortBlockIndex CStyleName="super_high" pascalStyleName="SuperHigh" name="super high" blockReference="model_geometry_block" />
+                  <Pad name="pad" length="2" />
+                  <Block CStyleName="marker" pascalStyleName="Marker" name="markers">
+                    <Layout regolithID="block:markers" internalName="markers_block" name="markers_block">
+                      <FieldSet version="0" sizeofValue="80" isLatest="true">
+                        <String CStyleName="name" pascalStyleName="Name" name="name" />
+                        <ShortBlockIndex CStyleName="node_index" pascalStyleName="NodeIndex" name="node index" blockReference="model_node_block" />
+                        <Pad name="pad" length="2" />
+                        <RealQuaternion CStyleName="rotation" pascalStyleName="Rotation" name="rotation" />
+                        <RealPoint3D CStyleName="translation" pascalStyleName="Translation" name="translation" />
+                        <Pad name="pad" length="16" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="geometries" pascalStyleName="Geometries" name="geometries">
+        <Layout regolithID="block:geometries" internalName="geometries_block" name="geometries_block">
+          <FieldSet version="0" sizeofValue="48" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags" />
+            <Pad name="pad" length="32" />
+            <Block CStyleName="parts" pascalStyleName="Parts" name="parts">
+              <Layout regolithID="block:parts" internalName="parts_block" name="parts_block">
+                <FieldSet version="0" sizeofValue="104" isLatest="true">
+                  <ShortEnum CStyleName="flags" pascalStyleName="Flags" name="flags" />
+                  <LongBlockIndex CStyleName="shader_index" pascalStyleName="ShaderIndex" name="shader index" />
+                  <Pad name="pad" length="26" />
+                  <Block CStyleName="uncompressed_vertices" pascalStyleName="UncompressedVertices" name="uncompressed vertices">
+                    <Layout regolithID="block:uncompressed vertices" internalName="uncompressed vertices_block" name="uncompressed vertices_block">
+                      <FieldSet version="0" sizeofValue="68" isLatest="true">
+                        <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" />
+                        <RealVector3D CStyleName="normal" pascalStyleName="Normal" name="normal" />
+                        <RealVector3D CStyleName="binormal" pascalStyleName="Binormal" name="binormal" />
+                        <RealVector3D CStyleName="tangent" pascalStyleName="Tangent" name="tangent" />
+                        <RealPoint2D CStyleName="texture_coords" pascalStyleName="TextureCoords" name="texture coords" />
+                        <ShortInteger CStyleName="node0_index" pascalStyleName="Node0Index" name="node0 index" />
+                        <ShortInteger CStyleName="node1_index" pascalStyleName="Node1Index" name="node1 index" />
+                        <Real CStyleName="node0_weight" pascalStyleName="Node0Weight" name="node0 weight" />
+                        <Real CStyleName="node1_weight" pascalStyleName="Node1Weight" name="node1 weight" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="compressed_vertices" pascalStyleName="CompressedVertices" name="compressed vertices">
+                    <Layout regolithID="block:compressed vertices" internalName="compressed vertices_block" name="compressed vertices_block">
+                      <FieldSet version="0" sizeofValue="32" isLatest="true">
+                        <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" />
+                        <LongInteger CStyleName="normal[11.11.10-bit]" pascalStyleName="Normal[11.11.10-bit]" name="normal[11.11.10-bit]" />
+                        <LongInteger CStyleName="binormal[11.11.10-bit]" pascalStyleName="Binormal[11.11.10-bit]" name="binormal[11.11.10-bit]" />
+                        <LongInteger CStyleName="tangent[11.11.10-bit]" pascalStyleName="Tangent[11.11.10-bit]" name="tangent[11.11.10-bit]" />
+                        <ShortInteger CStyleName="texture_coordinate_u[16-bit]" pascalStyleName="TextureCoordinateU[16-bit]" name="texture coordinate u[16-bit]" />
+                        <ShortInteger CStyleName="texture_coordinate_v[16-bit]" pascalStyleName="TextureCoordinateV[16-bit]" name="texture coordinate v[16-bit]" />
+                        <CharInteger CStyleName="node0_index(x3)" pascalStyleName="Node0Index(x3)" name="node0 index(x3)" />
+                        <CharInteger CStyleName="node1_index(x3)" pascalStyleName="Node1Index(x3)" name="node1 index(x3)" />
+                        <CharInteger CStyleName="node0_weight[8-bit]" pascalStyleName="Node0Weight[8-bit]" name="node0 weight[8-bit]" />
+                        <CharInteger CStyleName="node1_weight[8-bit]" pascalStyleName="Node1Weight[8-bit]" name="node1 weight[8-bit]" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Block CStyleName="triangles" pascalStyleName="Triangles" name="triangles">
+                    <Layout regolithID="block:triangles" internalName="triangles_block" name="triangles_block">
+                      <FieldSet version="0" sizeofValue="6" isLatest="true">
+                        <ShortInteger CStyleName="vertex0_index" pascalStyleName="Vertex0Index" name="vertex0 index" />
+                        <ShortInteger CStyleName="vertex1_index" pascalStyleName="Vertex1Index" name="vertex1 index" />
+                        <ShortInteger CStyleName="vertex2_index" pascalStyleName="Vertex2Index" name="vertex2 index" />
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                  <Pad name="pad" length="36" />
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="shaders" pascalStyleName="Shaders" name="shaders">
+        <Layout regolithID="block:shaders" internalName="shaders_block" name="shaders_block">
+          <FieldSet version="0" sizeofValue="40" isLatest="true">
+            <TagReference CStyleName="shader" pascalStyleName="Shader" name="shader" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="prt3" name="particle" version="1">
+  <Layout regolithID="block:particle" internalName="particle_block" name="particle">
+    <FieldSet version="0" sizeofValue="248" sizeofSource="sizeof(c_particle_definition)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+        <OptionsXRef>enum:particle_flags</OptionsXRef>
+      </LongFlags>
+      <ShortEnum CStyleName="particle_billboard_style" pascalStyleName="ParticleBillboardStyle" name="particle billboard style">
+        <OptionsXRef>enum:particle_billboard_orientation</OptionsXRef>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <ShortInteger CStyleName="first_sequence_index" pascalStyleName="FirstSequenceIndex" name="first sequence index" />
+      <ShortInteger CStyleName="sequence_count" pascalStyleName="SequenceCount" name="sequence count" />
+      <Explanation name="Shader Parameters" />
+      <Custom name="shader" tag="tmpl" />
+      <Custom name="HIDE_GROUP_ID" tag="hide" />
+      <TagReference CStyleName="shader_template" pascalStyleName="ShaderTemplate" name="shader template">
+        <tag>stem</tag>
+      </TagReference>
+      <Block CStyleName="shader_parameters" pascalStyleName="ShaderParameters" name="shader parameters" maxElementCount="64" maxElementCountSource="k_maximum_parameters_per_shader">
+        <LayoutXRef>block:global_shader_parameter</LayoutXRef>
+      </Block>
+      <Custom name="END_HIDE_GROUP_ID" tag="edih" />
+      <Explanation name="Color" description="controls how the color of the particle changes as&#xA;a function of its input" />
+      <Struct CStyleName="color" pascalStyleName="Color" name="color">
+        <LayoutXRef>structure:particle_property_color_struct_new</LayoutXRef>
+      </Struct>
+      <Explanation name="Alpha" description="seperate from color, controls how the particle fades&#xA;as a function of its input" />
+      <Struct CStyleName="alpha" pascalStyleName="Alpha" name="alpha">
+        <LayoutXRef>structure:particle_property_scalar_struct_new</LayoutXRef>
+      </Struct>
+      <Explanation name="Scale" description="controls how the size of a particle changes as&#xA;a function of its input" />
+      <Struct CStyleName="scale" pascalStyleName="Scale" name="scale">
+        <LayoutXRef>structure:particle_property_scalar_struct_new</LayoutXRef>
+      </Struct>
+      <Explanation name="Rotation" description="controls how the particle rotates. 0= 0 degrees, .5= 180 degrees, 1.0= 360 degrees" />
+      <Struct CStyleName="rotation" pascalStyleName="Rotation" name="rotation">
+        <LayoutXRef>structure:particle_property_scalar_struct_new</LayoutXRef>
+      </Struct>
+      <Explanation name="Frame index" description="provides finer grain control over how the animation&#xA;happens.  a output of 0.25 means that when that input&#xA;is fed in, the particle will be 25% of the way through&#xA;its animation." />
+      <Struct CStyleName="frame_index" pascalStyleName="FrameIndex" name="frame index">
+        <LayoutXRef>structure:particle_property_scalar_struct_new</LayoutXRef>
+      </Struct>
+      <Explanation name="Spawned Effects" description="collision occurs when particle physics has collision, death spawned when particle dies" />
+      <TagReference CStyleName="collision_effect" pascalStyleName="CollisionEffect" name="collision effect" description="effect, material effect or sound spawned when this particle collides with something">
+        <tag />
+      </TagReference>
+      <TagReference CStyleName="death_effect" pascalStyleName="DeathEffect" name="death effect" description="effect, material effect or sound spawned when this particle dies">
+        <tag />
+      </TagReference>
+      <Explanation name="Attached Particle Systems" description="Locations:&#xA;up - particles shoot straight up&#xA;gravity - particles shoot straight down&#xA;NONE - opposite of particle direction" />
+      <Block CStyleName="locations" pascalStyleName="Locations" name="locations" maxElementCount="32" maxElementCountSource="k_maximum_effect_locations_count">
+        <LayoutXRef>block:effect_locations</LayoutXRef>
+      </Block>
+      <Block CStyleName="attached_particle_systems" pascalStyleName="AttachedParticleSystems" name="attached particle systems" maxElementCount="32" maxElementCountSource="c_particle_system_definition::k_maximum_particle_systems_per_block">
+        <LayoutXRef>block:particle_system_definition_block_new</LayoutXRef>
+      </Block>
+      <Block maxElementCount="3" maxElementCountSource="k_render_shader_platform_count">
+        <LayoutXRef>block:shader_postprocess_definition_new</LayoutXRef>
+      </Block>
+      <Pad sizeOfSource="sizeof(dword)*2" length="8" />
+      <Pad sizeOfSource="sizeof(real_vector4d)" length="16" />
+      <Pad sizeOfSource="sizeof(real_rectangle2d)" length="16" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

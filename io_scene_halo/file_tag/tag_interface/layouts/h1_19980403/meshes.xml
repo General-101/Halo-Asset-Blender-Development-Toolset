@@ -1,0 +1,69 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="mesh" name="meshes" version="1">
+  <Layout regolithID="block:meshes" internalName="meshes_block" name="meshes">
+    <FieldSet version="0" sizeofValue="916" sizeofSource="sizeof(struct meshes_group)" isLatest="true">
+      <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags" />
+      <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+        <Options regolithID="enum:type" CStyleName="type" pascalStyleName="Type">
+          <Enum name="single player training" CStyleName="single_player_training" pascalStyleName="SinglePlayerTraining" />
+          <Enum name="single player entry point" CStyleName="single_player_entry_point" pascalStyleName="SinglePlayerEntryPoint" />
+          <Enum name="single player" CStyleName="single_player" pascalStyleName="SinglePlayer" />
+          <Enum name="network" CStyleName="network" pascalStyleName="Network" />
+        </Options>
+      </ShortEnum>
+      <ShortInteger CStyleName="width" pascalStyleName="Width" name="width" />
+      <ShortInteger CStyleName="height" pascalStyleName="Height" name="height" />
+      <Pad name="pad" length="802" />
+      <TagReference CStyleName="color_map_bitmaps" pascalStyleName="ColorMapBitmaps" name="color map bitmaps" />
+      <Block CStyleName="marker_palette" pascalStyleName="MarkerPalette" name="marker palette">
+        <Layout regolithID="block:marker palette" internalName="marker palette_block" name="marker palette_block">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <Options regolithID="enum:type" CStyleName="type" pascalStyleName="Type">
+                <Enum name="unit" CStyleName="unit" pascalStyleName="Unit" />
+                <Enum name="object" CStyleName="object" pascalStyleName="Object" />
+                <Enum name="scenery" CStyleName="scenery" pascalStyleName="Scenery" />
+                <Enum name="sound source" CStyleName="sound_source" pascalStyleName="SoundSource" />
+                <Enum name="projectile generator" CStyleName="projectile_generator" pascalStyleName="ProjectileGenerator" />
+              </Options>
+            </ShortEnum>
+            <ShortInteger CStyleName="team_index" pascalStyleName="TeamIndex" name="team index" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags" />
+            <Pad name="pad" length="16" />
+            <TagReference CStyleName="reference" pascalStyleName="Reference" name="reference" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="markers" pascalStyleName="Markers" name="markers">
+        <Layout regolithID="block:markers" internalName="markers_block" name="markers_block">
+          <FieldSet version="0" sizeofValue="56" isLatest="true">
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <Options regolithID="enum:type" CStyleName="type" pascalStyleName="Type">
+                <Enum name="unit" CStyleName="unit" pascalStyleName="Unit" />
+                <Enum name="object" CStyleName="object" pascalStyleName="Object" />
+                <Enum name="scenery" CStyleName="scenery" pascalStyleName="Scenery" />
+                <Enum name="sound source" CStyleName="sound_source" pascalStyleName="SoundSource" />
+                <Enum name="projectile generator" CStyleName="projectile_generator" pascalStyleName="ProjectileGenerator" />
+              </Options>
+            </ShortEnum>
+            <ShortInteger CStyleName="identifier" pascalStyleName="Identifier" name="identifier" />
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="invisible" CStyleName="invisible" pascalStyleName="Invisible" />
+              </Options>
+            </LongFlags>
+            <ShortInteger CStyleName="palette_index" pascalStyleName="PaletteIndex" name="palette index" />
+            <ShortInteger CStyleName="minimum_difficulty_level" pascalStyleName="MinimumDifficultyLevel" name="minimum difficulty level" />
+            <RealPoint3D CStyleName="position" pascalStyleName="Position" name="position" />
+            <Angle CStyleName="yaw" pascalStyleName="Yaw" name="yaw" />
+            <Angle CStyleName="pitch" pascalStyleName="Pitch" name="pitch" />
+            <Real CStyleName="scale" pascalStyleName="Scale" name="scale" />
+            <Pad name="pad" length="20" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Data CStyleName="editor_preferences" pascalStyleName="EditorPreferences" name="editor preferences" />
+      <Data CStyleName="cells" pascalStyleName="Cells" name="cells" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

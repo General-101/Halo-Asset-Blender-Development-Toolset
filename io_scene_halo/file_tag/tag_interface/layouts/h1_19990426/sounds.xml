@@ -1,0 +1,40 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="snd!" name="sounds" version="1">
+  <Layout regolithID="block:sounds" internalName="sounds_block" name="sounds">
+    <FieldSet version="0" sizeofValue="180" sizeofSource="sizeof(struct sounds_group)" isLatest="true">
+      <LongFlags CStyleName="sound_definition_flags" pascalStyleName="SoundDefinitionFlags" name="sound_definition_flags">
+        <Options regolithID="enum:sound_definition_flags" CStyleName="sound_definition_flags" pascalStyleName="SoundDefinitionFlags">
+          <Bit name="cannot be restarted" CStyleName="cannot_be_restarted" pascalStyleName="CannotBeRestarted" />
+          <Bit name="cannot be obstructed" CStyleName="cannot_be_obstructed" pascalStyleName="CannotBeObstructed" />
+          <Bit name="cannot be media obstructed" CStyleName="cannot_be_media_obstructed" pascalStyleName="CannotBeMediaObstructed" />
+          <Bit name="high priority" CStyleName="high_priority" pascalStyleName="HighPriority" />
+          <Bit name="narration priority" CStyleName="narration_priority" pascalStyleName="NarrationPriority" />
+        </Options>
+      </LongFlags>
+      <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+      <Real CStyleName="minimum_distance" pascalStyleName="MinimumDistance" name="minimum distance" />
+      <Real CStyleName="maximum_distance" pascalStyleName="MaximumDistance" name="maximum distance" />
+      <Real CStyleName="outer_cone_volume" pascalStyleName="OuterConeVolume" name="outer cone volume" />
+      <Real CStyleName="inner_cone_angle" pascalStyleName="InnerConeAngle" name="inner cone angle" />
+      <Real CStyleName="outer_cone_angle" pascalStyleName="OuterConeAngle" name="outer cone angle" />
+      <Real CStyleName="random_pitch_lower_bound" pascalStyleName="RandomPitchLowerBound" name="random pitch lower bound" />
+      <Real CStyleName="random_pitch_upper_bound" pascalStyleName="RandomPitchUpperBound" name="random pitch upper bound" />
+      <Pad name="pad" length="64" />
+      <Block CStyleName="permutations" pascalStyleName="Permutations" name="permutations">
+        <Layout regolithID="block:permutations" internalName="permutations_block" name="permutations_block">
+          <FieldSet version="0" sizeofValue="96" isLatest="true">
+            <String CStyleName="permutation_name" pascalStyleName="PermutationName" name="permutation name" />
+            <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+            <Pad name="pad" length="32" />
+            <ShortInteger CStyleName="compression_type" pascalStyleName="CompressionType" name="compression type" />
+            <ShortInteger CStyleName="channel_count" pascalStyleName="ChannelCount" name="channel count" />
+            <ShortInteger CStyleName="sample_rate" pascalStyleName="SampleRate" name="sample rate" />
+            <Pad name="pad" length="2" />
+            <Data CStyleName="sound_samples" pascalStyleName="SoundSamples" name="sound samples" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad name="pad" length="68" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="skin" name="user_interface_list_skin_definition" version="1">
+  <Layout regolithID="block:user_interface_list_skin_definition" internalName="user_interface_list_skin_definition_block" name="user_interface_list_skin_definition">
+    <FieldSet version="0" sizeofValue="88" sizeofSource="sizeof(s_list_item_skin_definition)" isLatest="true">
+      <LongFlags CStyleName="list_flags" pascalStyleName="ListFlags" name="list flags">
+        <Options regolithID="enum:list_flags" CStyleName="list_flags" pascalStyleName="ListFlags">
+          <Bit name="unused" CStyleName="unused0_bit" pascalStyleName="Unused0Bit" />
+        </Options>
+      </LongFlags>
+      <UselessPad length="8" />
+      <TagReference CStyleName="arrows_bitmap" pascalStyleName="ArrowsBitmap" name="arrows bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <Point2D CStyleName="up_arrows_offset" pascalStyleName="UpArrowsOffset" name="up-arrows offset" units="from bot-left of 1st item" />
+      <Point2D CStyleName="down_arrows_offset" pascalStyleName="DownArrowsOffset" name="down-arrows offset" units="from bot-left of 1st item" />
+      <UselessPad length="32" />
+      <Explanation name="Item Animations" description="Animations ordered as follows:&#xA;0) list item focused&#xA;1) list item unfocused&#xA;2) list item ambient&#xA;3) list item hovered&#xA;4) list item unhovered&#xA;5) list item clicked (hovered-&gt;focused)&#xA;6) list item unfocused back to hovered state (focused-&gt;hovered)&#xA;" />
+      <Block CStyleName="item_animations" pascalStyleName="ItemAnimations" name="item animations" maxElementCount="7" maxElementCountSource="k_maximum_number_of_single_animations">
+        <Layout regolithID="block:single_animation_reference" internalName="single_animation_reference_block" name="single_animation_reference_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(s_single_animation_reference)" isLatest="true">
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:single_animation_reference_flags" CStyleName="single_animation_reference_flags" pascalStyleName="SingleAnimationReferenceFlags">
+                <Bit name="unused" CStyleName="unused0_bit" pascalStyleName="Unused0Bit" />
+              </Options>
+            </LongFlags>
+            <LongInteger CStyleName="animation_period" pascalStyleName="AnimationPeriod" name="animation period" units="milliseconds" />
+            <Block CStyleName="keyframes" pascalStyleName="Keyframes" name="keyframes" maxElementCount="64" maxElementCountSource="k_maximum_number_of_animation_keyframe_blocks">
+              <LayoutXRef>block:screen_animation_keyframe_reference</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="text_blocks" pascalStyleName="TextBlocks" name="text blocks" maxElementCount="64" maxElementCountSource="k_maximum_number_of_text_blocks">
+        <LayoutXRef>block:text_block_reference</LayoutXRef>
+      </Block>
+      <Explanation name="NOTE" description="the bitmap block top-left is actually bottom-left here in list skin land!" />
+      <Block CStyleName="bitmap_blocks" pascalStyleName="BitmapBlocks" name="bitmap blocks" maxElementCount="64" maxElementCountSource="k_maximum_number_of_bitmap_blocks">
+        <LayoutXRef>block:bitmap_block_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="hud_blocks" pascalStyleName="HudBlocks" name="hud blocks" maxElementCount="64" maxElementCountSource="k_maximum_number_of_hud_blocks">
+        <LayoutXRef>block:hud_block_reference</LayoutXRef>
+      </Block>
+      <Block CStyleName="player_blocks" pascalStyleName="PlayerBlocks" name="player blocks" maxElementCount="64" maxElementCountSource="k_maximum_number_of_player_blocks">
+        <LayoutXRef>block:player_block_reference</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

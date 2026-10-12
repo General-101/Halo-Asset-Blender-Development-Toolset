@@ -1,0 +1,106 @@
+﻿<?xml version='1.0' encoding='utf-8-sig'?>
+<TagGroup group="deca" name="decal" version="1">
+  <Layout regolithID="block:decal" internalName="decal_block" name="decal">
+    <FieldSet version="0" sizeofValue="268" sizeofSource="sizeof(struct decal_group)" isLatest="true">
+      <Explanation name="Properties" />
+      <Struct CStyleName="properties" pascalStyleName="Properties" name="properties">
+        <Layout regolithID="structure:decal_properties" internalName="decal_properties_struct" backingBlockInternalName="decal_properties_struct_block" name="decal properties">
+          <FieldSet version="0" sizeofValue="24" isLatest="true">
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:flags" CStyleName="flags" pascalStyleName="Flags">
+                <Bit name="geometry inherited by next decal in chain" CStyleName="geometry_inherited_by_next_decal_in_chain_bit" pascalStyleName="GeometryInheritedByNextDecalInChainBit" />
+                <Bit name="interpolate color in hsv" CStyleName="interpolate_color_in_hsv_bit" pascalStyleName="InterpolateColorInHsvBit" />
+                <Bit name="more colors" CStyleName="more_colors_bit" pascalStyleName="MoreColorsBit" />
+                <Bit name="no random rotation" CStyleName="no_random_rotation_bit" pascalStyleName="NoRandomRotationBit" />
+                <Bit name="water effect" CStyleName="water_effect_bit" pascalStyleName="WaterEffectBit" />
+                <Bit name="editor snap to axis" CStyleName="editor_snap_to_axis_bit" pascalStyleName="EditorSnapToAxisBit" />
+                <Bit name="editor incremental counter" CStyleName="editor_incremental_counter_bit" pascalStyleName="EditorIncrementalCounterBit" />
+                <Bit name="animation loop" CStyleName="animation_loop_bit" pascalStyleName="AnimationLoopBit" />
+                <Bit name="preserve aspect" CStyleName="preserve_aspect_bit" pascalStyleName="PreserveAspectBit" />
+                <Bit name="disabled by blood setting" CStyleName="disabled_by_blood_setting_bit" pascalStyleName="DisabledByBloodSettingBit" />
+              </Options>
+            </WordFlags>
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <Options regolithID="enum:type" CStyleName="type" pascalStyleName="Type">
+                <Enum name="scratch" CStyleName="scratch" pascalStyleName="Scratch" />
+                <Enum name="splatter" CStyleName="splatter" pascalStyleName="Splatter" />
+                <Enum name="burn" CStyleName="burn" pascalStyleName="Burn" />
+                <Enum name="painted sign" CStyleName="painted_sign" pascalStyleName="PaintedSign" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="layer" pascalStyleName="Layer" name="layer">
+              <Options regolithID="enum:layer" CStyleName="layer" pascalStyleName="Layer">
+                <Enum name="primary" CStyleName="primary" pascalStyleName="Primary" />
+                <Enum name="secondary" CStyleName="secondary" pascalStyleName="Secondary" />
+                <Enum name="light" CStyleName="light" pascalStyleName="Light" />
+                <Enum name="alpha tested" CStyleName="alpha_tested" pascalStyleName="AlphaTested" />
+                <Enum name="water" CStyleName="water" pascalStyleName="Water" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <TagReference CStyleName="next_decal_in_chain" pascalStyleName="NextDecalInChain" name="next decal in chain">
+              <tag>decal</tag>
+            </TagReference>
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Appearance" />
+      <Struct CStyleName="appearance" pascalStyleName="Appearance" name="appearance">
+        <Layout regolithID="structure:decal_appearance" internalName="decal_appearance_struct" backingBlockInternalName="decal_appearance_struct_block" name="decal appearance">
+          <FieldSet version="0" sizeofValue="64" isLatest="true">
+            <RealBounds CStyleName="radius" pascalStyleName="Radius" name="radius" />
+            <Pad name="pad" length="12" />
+            <RealBounds CStyleName="intensity" pascalStyleName="Intensity" name="intensity" />
+            <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color lower bound" />
+            <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color upper bound" />
+            <Pad name="pad" length="12" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Animation" />
+      <Struct CStyleName="animation" pascalStyleName="Animation" name="animation">
+        <Layout regolithID="structure:decal_animation" internalName="decal_animation_struct" backingBlockInternalName="decal_animation_struct_block" name="decal animation">
+          <FieldSet version="0" sizeofValue="104" isLatest="true">
+            <ShortInteger CStyleName="animation_loop_frame" pascalStyleName="AnimationLoopFrame" name="animation loop frame" />
+            <ShortInteger CStyleName="animation_speed" pascalStyleName="AnimationSpeed" name="animation speed" />
+            <Pad name="pad" length="28" />
+            <RealBounds CStyleName="lifetime" pascalStyleName="Lifetime" name="lifetime" />
+            <RealBounds CStyleName="decay_time" pascalStyleName="DecayTime" name="decay time" />
+            <Pad name="pad" length="12" />
+            <Pad name="pad" length="40" />
+            <Pad name="pad" length="2" />
+            <Pad name="pad" length="2" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Explanation name="Shader" />
+      <Struct CStyleName="shader" pascalStyleName="Shader" name="shader">
+        <Layout regolithID="structure:decal_shader" internalName="decal_shader_struct" backingBlockInternalName="decal_shader_struct_block" name="decal shader">
+          <FieldSet version="0" sizeofValue="60" isLatest="true">
+            <ShortEnum CStyleName="framebuffer_blend_function" pascalStyleName="FramebufferBlendFunction" name="framebuffer blend function">
+              <Options regolithID="enum:framebuffer_blend_function" CStyleName="framebuffer_blend_function" pascalStyleName="FramebufferBlendFunction">
+                <Enum name="alpha blend" CStyleName="alpha_blend" pascalStyleName="AlphaBlend" />
+                <Enum name="multiply" CStyleName="multiply" pascalStyleName="Multiply" />
+                <Enum name="double multiply" CStyleName="double_multiply" pascalStyleName="DoubleMultiply" />
+                <Enum name="add" CStyleName="add" pascalStyleName="Add" />
+                <Enum name="subtract" CStyleName="subtract" pascalStyleName="Subtract" />
+                <Enum name="component min" CStyleName="component_min" pascalStyleName="ComponentMin" />
+                <Enum name="component max" CStyleName="component_max" pascalStyleName="ComponentMax" />
+                <Enum name="alpha multiply add" CStyleName="alpha_multiply_add" pascalStyleName="AlphaMultiplyAdd" />
+              </Options>
+            </ShortEnum>
+            <Pad name="pad" length="2" />
+            <Pad name="pad" length="20" />
+            <TagReference CStyleName="map" pascalStyleName="Map" name="map">
+              <tag>bitmap</tag>
+            </TagReference>
+            <Pad name="pad" length="20" />
+          </FieldSet>
+        </Layout>
+      </Struct>
+      <Real CStyleName="maximum_sprite_extent" pascalStyleName="MaximumSpriteExtent" name="maximum sprite extent" cacheOnly="true" />
+      <Pad name="pad" length="4" />
+      <Pad name="pad" length="8" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

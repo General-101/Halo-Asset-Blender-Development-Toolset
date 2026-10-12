@@ -1,0 +1,510 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedLayouts>
+  <Layout regolithID="structure:shader_gpu_state_reference" tag="GPUR" internalName="shader_gpu_state_reference_struct" backingBlockInternalName="shader_gpu_state_reference_struct_block" name="shader_gpu_state_reference_struct">
+    <FieldSet version="0" sizeofValue="14" sizeofSource="sizeof(s_shader_gpu_state_reference)" isLatest="true">
+      <Struct CStyleName="render_states" pascalStyleName="RenderStates" name="render states">
+        <LayoutXRef>structure:tag_block_index</LayoutXRef>
+      </Struct>
+      <Struct CStyleName="texture_stage_states" pascalStyleName="TextureStageStates" name="texture stage states">
+        <LayoutXRef>structure:tag_block_index</LayoutXRef>
+      </Struct>
+      <Struct CStyleName="render_state_parameters" pascalStyleName="RenderStateParameters" name="render state parameters">
+        <LayoutXRef>structure:tag_block_index</LayoutXRef>
+      </Struct>
+      <Struct CStyleName="texture_stage_parameters" pascalStyleName="TextureStageParameters" name="texture stage parameters">
+        <LayoutXRef>structure:tag_block_index</LayoutXRef>
+      </Struct>
+      <Struct CStyleName="textures" pascalStyleName="Textures" name="textures">
+        <LayoutXRef>structure:tag_block_index</LayoutXRef>
+      </Struct>
+      <Struct CStyleName="vn_constants" pascalStyleName="VnConstants" name="Vn constants">
+        <LayoutXRef>structure:tag_block_index</LayoutXRef>
+      </Struct>
+      <Struct CStyleName="cn_constants" pascalStyleName="CnConstants" name="Cn constants">
+        <LayoutXRef>structure:tag_block_index</LayoutXRef>
+      </Struct>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:render_state" internalName="render_state_block" name="render_state_block">
+    <FieldSet version="0" sizeofValue="5" sizeofSource="sizeof(s_render_state)" isLatest="true">
+      <CharInteger CStyleName="state_index" pascalStyleName="StateIndex" name="state index" />
+      <LongInteger CStyleName="state_value" pascalStyleName="StateValue" name="state value" />
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="structure:shader_gpu_state" tag="GPUS" internalName="shader_gpu_state_struct" backingBlockInternalName="shader_gpu_state_struct_block" name="shader_gpu_state_struct">
+    <FieldSet version="0" sizeofValue="84" sizeofSource="sizeof(s_shader_gpu_state)" isLatest="true">
+      <Block CStyleName="render_states" pascalStyleName="RenderStates" name="render states" maxElementCount="1024" maxElementCountSource="k_number_of_render_states">
+        <LayoutXRef>block:render_state</LayoutXRef>
+      </Block>
+      <Block CStyleName="texture_stage_states" pascalStyleName="TextureStageStates" name="texture stage states" maxElementCount="1024" maxElementCountSource="k_number_of_texture_stage_states">
+        <Layout regolithID="block:texture_stage_state" internalName="texture_stage_state_block" name="texture_stage_state_block">
+          <FieldSet version="0" sizeofValue="6" sizeofSource="sizeof(s_texture_stage_state)" isLatest="true">
+            <CharInteger CStyleName="state_index" pascalStyleName="StateIndex" name="state index" />
+            <CharInteger CStyleName="stage_index" pascalStyleName="StageIndex" name="stage index" />
+            <LongInteger CStyleName="state_value" pascalStyleName="StateValue" name="state value" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="render_state_parameters" pascalStyleName="RenderStateParameters" name="render state parameters" maxElementCount="1024" maxElementCountSource="k_number_of_render_state_parameters">
+        <Layout regolithID="block:render_state_parameter" internalName="render_state_parameter_block" name="render_state_parameter_block">
+          <FieldSet version="0" sizeofValue="3" sizeofSource="sizeof(s_render_state_parameter)" isLatest="true">
+            <CharInteger CStyleName="parameter_index" pascalStyleName="ParameterIndex" name="parameter index" />
+            <CharInteger CStyleName="parameter_type" pascalStyleName="ParameterType" name="parameter type" />
+            <CharInteger CStyleName="state_index" pascalStyleName="StateIndex" name="state index" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="texture_stage_parameters" pascalStyleName="TextureStageParameters" name="texture stage parameters" maxElementCount="1024" maxElementCountSource="k_number_of_texture_stage_state_parameters">
+        <Layout regolithID="block:texture_stage_state_parameter" internalName="texture_stage_state_parameter_block" name="texture_stage_state_parameter_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(s_texture_stage_state_parameter)" isLatest="true">
+            <CharInteger CStyleName="parameter_index" pascalStyleName="ParameterIndex" name="parameter index" />
+            <CharInteger CStyleName="parameter_type" pascalStyleName="ParameterType" name="parameter type" />
+            <CharInteger CStyleName="state_index" pascalStyleName="StateIndex" name="state index" />
+            <CharInteger CStyleName="stage_index" pascalStyleName="StageIndex" name="stage index" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="textures" pascalStyleName="Textures" name="textures" maxElementCount="1024" maxElementCountSource="k_number_of_textures">
+        <Layout regolithID="block:texture" internalName="texture_block" name="texture_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(s_texture)" isLatest="true">
+            <CharInteger CStyleName="stage_index" pascalStyleName="StageIndex" name="stage index" />
+            <CharInteger CStyleName="parameter_index" pascalStyleName="ParameterIndex" name="parameter index" />
+            <CharInteger CStyleName="global_texture_index" pascalStyleName="GlobalTextureIndex" name="global texture index" />
+            <CharInteger CStyleName="flags" pascalStyleName="Flags" name="flags" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="vn_constants" pascalStyleName="VnConstants" name="Vn constants" maxElementCount="1024" maxElementCountSource="k_number_of_vertex_shader_constants">
+        <Layout regolithID="block:vertex_shader_constant" internalName="vertex_shader_constant_block" name="vertex_shader_constant_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(s_vertex_shader_constant)" isLatest="true">
+            <CharInteger CStyleName="register_index" pascalStyleName="RegisterIndex" name="register index" />
+            <CharInteger CStyleName="parameter_index" pascalStyleName="ParameterIndex" name="parameter index" />
+            <CharInteger CStyleName="destination_mask" pascalStyleName="DestinationMask" name="destination mask" />
+            <CharInteger CStyleName="scale_by_texture_stage" pascalStyleName="ScaleByTextureStage" name="scale by texture stage" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="cn_constants" pascalStyleName="CnConstants" name="Cn constants" maxElementCount="1024" maxElementCountSource="k_number_of_vertex_shader_constants">
+        <LayoutXRef>block:vertex_shader_constant</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:global_shader_parameter" internalName="global_shader_parameter_block" name="parameter">
+    <FieldSet version="0" sizeofValue="52" sizeofSource="sizeof(s_shader_parameter)" isLatest="true">
+      <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+      <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+        <Options regolithID="enum:global_shader_parameter_type" CStyleName="global_shader_parameter_type" pascalStyleName="GlobalShaderParameterType">
+          <Enum name="bitmap" CStyleName="bitmap" pascalStyleName="Bitmap" />
+          <Enum name="value" CStyleName="value" pascalStyleName="Value" />
+          <Enum name="color" CStyleName="color" pascalStyleName="Color" />
+          <Enum name="switch" CStyleName="_switch" pascalStyleName="Switch" />
+        </Options>
+      </ShortEnum>
+      <Pad sizeOfSource="sizeof(word)" length="2" />
+      <TagReference CStyleName="bitmap" pascalStyleName="Bitmap" name="bitmap">
+        <tag>bitm</tag>
+      </TagReference>
+      <Real CStyleName="const_value" pascalStyleName="ConstValue" name="const value" />
+      <RealRgbColor CStyleName="const_color" pascalStyleName="ConstColor" name="const color" />
+      <Block CStyleName="animation_properties" pascalStyleName="AnimationProperties" name="animation properties" maxElementCount="14" maxElementCountSource="k_number_of_shader_animation_property_types">
+        <Layout regolithID="block:shader_animation_property" internalName="shader_animation_property_block" name="animation property">
+          <FieldSet version="0" sizeofValue="28" sizeofSource="sizeof(s_shader_animation_property)" isLatest="true">
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type" blockNameSource="true">
+              <Options regolithID="enum:shader_animation_property_type" CStyleName="shader_animation_property_type" pascalStyleName="ShaderAnimationPropertyType">
+                <Enum name="bitmap scale uniform" CStyleName="bitmap_scale_uniform" pascalStyleName="BitmapScaleUniform" />
+                <Enum name="bitmap scale x" CStyleName="bitmap_scale_x" pascalStyleName="BitmapScaleX" />
+                <Enum name="bitmap scale y" CStyleName="bitmap_scale_y" pascalStyleName="BitmapScaleY" />
+                <Enum name="bitmap scale z" CStyleName="bitmap_scale_z" pascalStyleName="BitmapScaleZ" />
+                <Enum name="bitmap translation x" CStyleName="bitmap_translation_x" pascalStyleName="BitmapTranslationX" />
+                <Enum name="bitmap translation y" CStyleName="bitmap_translation_y" pascalStyleName="BitmapTranslationY" />
+                <Enum name="bitmap translation z" CStyleName="bitmap_translation_z" pascalStyleName="BitmapTranslationZ" />
+                <Enum name="bitmap rotation angle" CStyleName="bitmap_rotation_angle" pascalStyleName="BitmapRotationAngle" />
+                <Enum name="bitmap rotation axis x" CStyleName="bitmap_rotation_axis_x" pascalStyleName="BitmapRotationAxisX" />
+                <Enum name="bitmap rotation axis y" CStyleName="bitmap_rotation_axis_y" pascalStyleName="BitmapRotationAxisY" />
+                <Enum name="bitmap rotation axis z" CStyleName="bitmap_rotation_axis_z" pascalStyleName="BitmapRotationAxisZ" />
+                <Enum name="value" CStyleName="value" pascalStyleName="Value" />
+                <Enum name="color" CStyleName="color" pascalStyleName="Color" />
+                <Enum name="bitmap index" CStyleName="bitmap_index" pascalStyleName="BitmapIndex" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <StringId CStyleName="input_name" pascalStyleName="InputName" name="input name" tag="fnin" />
+            <StringId CStyleName="range_name" pascalStyleName="RangeName" name="range name" tag="fnir" />
+            <Real CStyleName="time_period" pascalStyleName="TimePeriod" name="time period" units="seconds" tag="fn**" />
+            <Explanation name="FUNCTION" />
+            <Custom name="animation function" tag="fned" />
+            <Struct CStyleName="function" pascalStyleName="Function" name="function">
+              <LayoutXRef>structure:mapping_function</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:shader_postprocess_definition_new" internalName="shader_postprocess_definition_new_block" name="shader_postprocess_definition_new_block">
+    <FieldSet version="0" sizeofValue="184" sizeofSource="sizeof(s_shader_postprocess_definition_new)" isLatest="true">
+      <LongInteger CStyleName="shader_template_index" pascalStyleName="ShaderTemplateIndex" name="shader template index" />
+      <Block CStyleName="bitmaps" pascalStyleName="Bitmaps" name="bitmaps" maxElementCount="1024" maxElementCountSource="k_kilo">
+        <Layout regolithID="block:shader_postprocess_bitmap_new" internalName="shader_postprocess_bitmap_new_block" name="shader_postprocess_bitmap_new_block">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_shader_postprocess_bitmap_new)" isLatest="true">
+            <LongInteger CStyleName="bitmap_group" pascalStyleName="BitmapGroup" name="bitmap group" />
+            <LongInteger CStyleName="bitmap_index" pascalStyleName="BitmapIndex" name="bitmap index" />
+            <Real CStyleName="log_bitmap_dimension" pascalStyleName="LogBitmapDimension" name="log bitmap dimension" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="pixel_constants" pascalStyleName="PixelConstants" name="pixel constants" maxElementCount="1024" maxElementCountSource="k_kilo">
+        <Layout regolithID="block:pixel32" internalName="pixel32_block" name="pixel32_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(pixel32)" isLatest="true">
+            <ArgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="vertex_constants" pascalStyleName="VertexConstants" name="vertex constants" maxElementCount="1024" maxElementCountSource="k_kilo">
+        <Layout regolithID="block:real_vector4d" internalName="real_vector4d_block" name="real_vector4d_block">
+          <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(real_vector4d)" isLatest="true">
+            <RealVector3D CStyleName="vector3" pascalStyleName="Vector3" name="vector3" />
+            <Real CStyleName="w" pascalStyleName="W" name="w" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="levels_of_detail" pascalStyleName="LevelsOfDetail" name="levels of detail" maxElementCount="1024" maxElementCountSource="k_kilo">
+        <Layout regolithID="block:shader_postprocess_level_of_detail_new" internalName="shader_postprocess_level_of_detail_new_block" name="shader_postprocess_level_of_detail_new_block">
+          <FieldSet version="0" sizeofValue="6" sizeofSource="sizeof(s_shader_postprocess_level_of_detail_new)" isLatest="true">
+            <LongInteger CStyleName="available_layer_flags" pascalStyleName="AvailableLayerFlags" name="available layer flags" />
+            <Struct CStyleName="layers" pascalStyleName="Layers" name="layers">
+              <LayoutXRef>structure:tag_block_index</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="layers" pascalStyleName="Layers" name="layers" maxElementCount="1024" maxElementCountSource="k_kilo">
+        <LayoutXRef>block:tag_block_index</LayoutXRef>
+      </Block>
+      <Block CStyleName="passes" pascalStyleName="Passes" name="passes" maxElementCount="1024" maxElementCountSource="k_kilo">
+        <LayoutXRef>block:tag_block_index</LayoutXRef>
+      </Block>
+      <Block CStyleName="implementations" pascalStyleName="Implementations" name="implementations" maxElementCount="1024" maxElementCountSource="k_kilo">
+        <Layout regolithID="block:shader_postprocess_implementation_new" internalName="shader_postprocess_implementation_new_block" name="shader_postprocess_implementation_new_block">
+          <FieldSet version="0" sizeofValue="10" sizeofSource="sizeof(s_shader_postprocess_implementation_new)" isLatest="true">
+            <Struct CStyleName="bitmap_transforms" pascalStyleName="BitmapTransforms" name="bitmap transforms">
+              <LayoutXRef>structure:tag_block_index</LayoutXRef>
+            </Struct>
+            <Struct CStyleName="render_states" pascalStyleName="RenderStates" name="render states">
+              <LayoutXRef>structure:tag_block_index</LayoutXRef>
+            </Struct>
+            <Struct CStyleName="texture_states" pascalStyleName="TextureStates" name="texture states">
+              <LayoutXRef>structure:tag_block_index</LayoutXRef>
+            </Struct>
+            <Struct CStyleName="pixel_constants" pascalStyleName="PixelConstants" name="pixel constants">
+              <LayoutXRef>structure:tag_block_index</LayoutXRef>
+            </Struct>
+            <Struct CStyleName="vertex_constants" pascalStyleName="VertexConstants" name="vertex constants">
+              <LayoutXRef>structure:tag_block_index</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="overlays" pascalStyleName="Overlays" name="overlays" maxElementCount="1024" maxElementCountSource="k_kilo">
+        <Layout regolithID="block:shader_postprocess_overlay_new" internalName="shader_postprocess_overlay_new_block" name="shader_postprocess_overlay_new_block">
+          <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(s_shader_postprocess_overlay_new)" isLatest="true">
+            <StringId CStyleName="input_name" pascalStyleName="InputName" name="input name" />
+            <StringId CStyleName="range_name" pascalStyleName="RangeName" name="range name" />
+            <Real CStyleName="time_period_in_seconds" pascalStyleName="TimePeriodInSeconds" name="time period in seconds" />
+            <Struct CStyleName="function" pascalStyleName="Function" name="function">
+              <LayoutXRef>structure:scalar_function</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="overlay_references" pascalStyleName="OverlayReferences" name="overlay references" maxElementCount="1024" maxElementCountSource="k_kilo">
+        <Layout regolithID="block:shader_postprocess_overlay_reference_new" internalName="shader_postprocess_overlay_reference_new_block" name="shader_postprocess_overlay_reference_new_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(s_shader_postprocess_overlay_reference)" isLatest="true">
+            <ShortInteger CStyleName="overlay_index" pascalStyleName="OverlayIndex" name="overlay index" />
+            <ShortInteger CStyleName="transform_index" pascalStyleName="TransformIndex" name="transform index" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="animated_parameters" pascalStyleName="AnimatedParameters" name="animated parameters" maxElementCount="1024" maxElementCountSource="k_kilo">
+        <Layout regolithID="block:shader_postprocess_animated_parameter_new" internalName="shader_postprocess_animated_parameter_new_block" name="shader_postprocess_animated_parameter_new_block">
+          <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(s_shader_postprocess_animated_parameter)" isLatest="true">
+            <Struct CStyleName="overlay_references" pascalStyleName="OverlayReferences" name="overlay references">
+              <LayoutXRef>structure:tag_block_index</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="animated_parameter_references" pascalStyleName="AnimatedParameterReferences" name="animated parameter references" maxElementCount="1024" maxElementCountSource="k_kilo">
+        <Layout regolithID="block:shader_postprocess_animated_parameter_reference_new" internalName="shader_postprocess_animated_parameter_reference_new_block" name="shader_postprocess_animated_parameter_reference_new_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(s_shader_postprocess_animated_parameter_reference)" isLatest="true">
+            <Skip sizeOfSource="sizeof(byte)*3" length="3" />
+            <CharInteger CStyleName="parameter_index" pascalStyleName="ParameterIndex" name="parameter index" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="bitmap_properties" pascalStyleName="BitmapProperties" name="bitmap properties" maxElementCount="5" maxElementCountSource="k_shader_bitmap_property_count">
+        <Layout regolithID="block:shader_postprocess_bitmap_property" internalName="shader_postprocess_bitmap_property_block" name="shader_postprocess_bitmap_property_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(s_shader_postprocess_bitmap_property)" isLatest="true">
+            <ShortInteger CStyleName="bitmap_index" pascalStyleName="BitmapIndex" name="bitmap index" />
+            <ShortInteger CStyleName="animated_parameter_index" pascalStyleName="AnimatedParameterIndex" name="animated parameter index" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="color_properties" pascalStyleName="ColorProperties" name="color properties" maxElementCount="2" maxElementCountSource="k_shader_color_property_count">
+        <Layout regolithID="block:shader_postprocess_color_property" internalName="shader_postprocess_color_property_block" name="shader_postprocess_color_property_block">
+          <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(s_shader_postprocess_color_property)" isLatest="true">
+            <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="value_properties" pascalStyleName="ValueProperties" name="value properties" maxElementCount="6" maxElementCountSource="k_shader_value_property_count">
+        <Layout regolithID="block:shader_postprocess_value_property" internalName="shader_postprocess_value_property_block" name="shader_postprocess_value_property_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(s_shader_postprocess_value_property)" isLatest="true">
+            <Real CStyleName="value" pascalStyleName="Value" name="value" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="old_levels_of_detail" pascalStyleName="OldLevelsOfDetail" name="old levels of detail" maxElementCount="1024" maxElementCountSource="k_number_of_shader_levels_of_detail">
+        <Layout regolithID="block:shader_postprocess_level_of_detail" internalName="shader_postprocess_level_of_detail_block" name="shader_postprocess_level_of_detail_block">
+          <FieldSet version="0" sizeofValue="224" sizeofSource="sizeof(s_shader_postprocess_level_of_detail)" isLatest="true">
+            <Real CStyleName="projected_height_percentage" pascalStyleName="ProjectedHeightPercentage" name="projected height percentage" />
+            <LongInteger CStyleName="available_layers" pascalStyleName="AvailableLayers" name="available layers" />
+            <Block CStyleName="layers" pascalStyleName="Layers" name="layers" maxElementCount="25" maxElementCountSource="k_number_of_render_layers">
+              <Layout regolithID="block:shader_postprocess_layer" internalName="shader_postprocess_layer_block" name="shader_postprocess_layer_block">
+                <FieldSet version="0" sizeofValue="2" sizeofSource="sizeof(s_shader_postprocess_layer)" isLatest="true">
+                  <Struct CStyleName="passes" pascalStyleName="Passes" name="passes">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="passes" pascalStyleName="Passes" name="passes" maxElementCount="1024" maxElementCountSource="k_number_of_shader_passes">
+              <Layout regolithID="block:shader_postprocess_pass" internalName="shader_postprocess_pass_block" name="shader_postprocess_pass_block">
+                <FieldSet version="0" sizeofValue="18" sizeofSource="sizeof(s_shader_postprocess_pass)" isLatest="true">
+                  <TagReference CStyleName="shader_pass" pascalStyleName="ShaderPass" name="shader pass">
+                    <tag>spas</tag>
+                  </TagReference>
+                  <Struct CStyleName="implementations" pascalStyleName="Implementations" name="implementations">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="implementations" pascalStyleName="Implementations" name="implementations" maxElementCount="1024" maxElementCountSource="k_number_of_shader_implementations">
+              <Layout regolithID="block:shader_postprocess_implementation" internalName="shader_postprocess_implementation_block" name="shader_postprocess_implementation_block">
+                <FieldSet version="0" sizeofValue="44" sizeofSource="sizeof(s_shader_postprocess_implementation)" isLatest="true">
+                  <Struct CStyleName="gpu_constant_state" pascalStyleName="GpuConstantState" name="GPU constant state">
+                    <LayoutXRef>structure:shader_gpu_state_reference</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="gpu_volatile_state" pascalStyleName="GpuVolatileState" name="GPU volatile state">
+                    <LayoutXRef>structure:shader_gpu_state_reference</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="bitmap_parameters" pascalStyleName="BitmapParameters" name="bitmap parameters">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="bitmap_transforms" pascalStyleName="BitmapTransforms" name="bitmap transforms">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="value_parameters" pascalStyleName="ValueParameters" name="value parameters">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="color_parameters" pascalStyleName="ColorParameters" name="color parameters">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="bitmap_transform_overlays" pascalStyleName="BitmapTransformOverlays" name="bitmap transform overlays">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="value_overlays" pascalStyleName="ValueOverlays" name="value overlays">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="color_overlays" pascalStyleName="ColorOverlays" name="color overlays">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                  <Struct CStyleName="vertex_shader_constants" pascalStyleName="VertexShaderConstants" name="vertex shader constants">
+                    <LayoutXRef>structure:tag_block_index</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="bitmaps" pascalStyleName="Bitmaps" name="bitmaps" maxElementCount="1024" maxElementCountSource="k_number_of_shader_postprocess_bitmaps">
+              <Layout regolithID="block:shader_postprocess_bitmap" internalName="shader_postprocess_bitmap_block" name="shader_postprocess_bitmap_block">
+                <FieldSet version="0" sizeofValue="10" sizeofSource="sizeof(s_shader_postprocess_bitmap)" isLatest="true">
+                  <CharInteger CStyleName="parameter_index" pascalStyleName="ParameterIndex" name="parameter index" />
+                  <CharInteger CStyleName="flags" pascalStyleName="Flags" name="flags" />
+                  <LongInteger CStyleName="bitmap_group_index" pascalStyleName="BitmapGroupIndex" name="bitmap group index" />
+                  <Real CStyleName="log_bitmap_dimension" pascalStyleName="LogBitmapDimension" name="log bitmap dimension" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="bitmap_transforms" pascalStyleName="BitmapTransforms" name="bitmap transforms" maxElementCount="1024" maxElementCountSource="k_number_of_shader_postprocess_bitmap_transforms">
+              <Layout regolithID="block:shader_postprocess_bitmap_transform" internalName="shader_postprocess_bitmap_transform_block" name="shader_postprocess_bitmap_transform_block">
+                <FieldSet version="0" sizeofValue="6" sizeofSource="sizeof(s_shader_postprocess_bitmap_transform)" isLatest="true">
+                  <CharInteger CStyleName="parameter_index" pascalStyleName="ParameterIndex" name="parameter index" />
+                  <CharInteger CStyleName="bitmap_transform_index" pascalStyleName="BitmapTransformIndex" name="bitmap transform index" />
+                  <Real CStyleName="value" pascalStyleName="Value" name="value" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="values" pascalStyleName="Values" name="values" maxElementCount="1024" maxElementCountSource="k_number_of_shader_postprocess_values">
+              <Layout regolithID="block:shader_postprocess_value" internalName="shader_postprocess_value_block" name="shader_postprocess_value_block">
+                <FieldSet version="0" sizeofValue="5" sizeofSource="sizeof(s_shader_postprocess_value)" isLatest="true">
+                  <CharInteger CStyleName="parameter_index" pascalStyleName="ParameterIndex" name="parameter index" />
+                  <Real CStyleName="value" pascalStyleName="Value" name="value" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="colors" pascalStyleName="Colors" name="colors" maxElementCount="1024" maxElementCountSource="k_number_of_shader_postprocess_colors">
+              <Layout regolithID="block:shader_postprocess_color" internalName="shader_postprocess_color_block" name="shader_postprocess_color_block">
+                <FieldSet version="0" sizeofValue="13" sizeofSource="sizeof(s_shader_postprocess_color)" isLatest="true">
+                  <CharInteger CStyleName="parameter_index" pascalStyleName="ParameterIndex" name="parameter index" />
+                  <RealRgbColor CStyleName="color" pascalStyleName="Color" name="color" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="bitmap_transform_overlays" pascalStyleName="BitmapTransformOverlays" name="bitmap transform overlays" maxElementCount="1024" maxElementCountSource="k_number_of_shader_postprocess_bitmap_transform_overlays">
+              <Layout regolithID="block:shader_postprocess_bitmap_transform_overlay" internalName="shader_postprocess_bitmap_transform_overlay_block" name="shader_postprocess_bitmap_transform_overlay_block">
+                <FieldSet version="0" sizeofValue="27" sizeofSource="sizeof(s_shader_postprocess_bitmap_transform_overlay)" isLatest="true">
+                  <CharInteger CStyleName="parameter_index" pascalStyleName="ParameterIndex" name="parameter index" />
+                  <CharInteger CStyleName="transform_index" pascalStyleName="TransformIndex" name="transform index" />
+                  <CharInteger CStyleName="animation_property_type" pascalStyleName="AnimationPropertyType" name="animation property type" />
+                  <StringId CStyleName="input_name" pascalStyleName="InputName" name="input name" />
+                  <StringId CStyleName="range_name" pascalStyleName="RangeName" name="range name" />
+                  <Real CStyleName="time_period_in_seconds" pascalStyleName="TimePeriodInSeconds" name="time period in seconds" />
+                  <Struct CStyleName="function" pascalStyleName="Function" name="function">
+                    <LayoutXRef>structure:scalar_function</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="value_overlays" pascalStyleName="ValueOverlays" name="value overlays" maxElementCount="1024" maxElementCountSource="k_number_of_shader_postprocess_value_overlays">
+              <Layout regolithID="block:shader_postprocess_value_overlay" internalName="shader_postprocess_value_overlay_block" name="shader_postprocess_value_overlay_block">
+                <FieldSet version="0" sizeofValue="25" sizeofSource="sizeof(s_shader_postprocess_value_overlay)" isLatest="true">
+                  <CharInteger CStyleName="parameter_index" pascalStyleName="ParameterIndex" name="parameter index" />
+                  <StringId CStyleName="input_name" pascalStyleName="InputName" name="input name" />
+                  <StringId CStyleName="range_name" pascalStyleName="RangeName" name="range name" />
+                  <Real CStyleName="time_period_in_seconds" pascalStyleName="TimePeriodInSeconds" name="time period in seconds" />
+                  <Struct CStyleName="function" pascalStyleName="Function" name="function">
+                    <LayoutXRef>structure:color_function</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="color_overlays" pascalStyleName="ColorOverlays" name="color overlays" maxElementCount="1024" maxElementCountSource="k_number_of_shader_postprocess_color_overlays">
+              <Layout regolithID="block:shader_postprocess_color_overlay" internalName="shader_postprocess_color_overlay_block" name="shader_postprocess_color_overlay_block">
+                <FieldSet version="0" sizeofValue="25" sizeofSource="sizeof(s_shader_postprocess_color_overlay)" isLatest="true">
+                  <CharInteger CStyleName="parameter_index" pascalStyleName="ParameterIndex" name="parameter index" />
+                  <StringId CStyleName="input_name" pascalStyleName="InputName" name="input name" />
+                  <StringId CStyleName="range_name" pascalStyleName="RangeName" name="range name" />
+                  <Real CStyleName="time_period_in_seconds" pascalStyleName="TimePeriodInSeconds" name="time period in seconds" />
+                  <Struct CStyleName="function" pascalStyleName="Function" name="function">
+                    <LayoutXRef>structure:color_function</LayoutXRef>
+                  </Struct>
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Block CStyleName="vertex_shader_constants" pascalStyleName="VertexShaderConstants" name="vertex shader constants" maxElementCount="1024" maxElementCountSource="k_kilo">
+              <Layout regolithID="block:shader_postprocess_vertex_shader_constant" internalName="shader_postprocess_vertex_shader_constant_block" name="shader_postprocess_vertex_shader_constant_block">
+                <FieldSet version="0" sizeofValue="18" sizeofSource="sizeof(s_shader_vertex_shader_constant)" isLatest="true">
+                  <CharInteger CStyleName="register_index" pascalStyleName="RegisterIndex" name="register index" />
+                  <CharInteger CStyleName="register_bank" pascalStyleName="RegisterBank" name="register bank" />
+                  <Real name="data" />
+                  <Real name="data" />
+                  <Real name="data" />
+                  <Real name="data" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Struct CStyleName="gpu_state" pascalStyleName="GpuState" name="GPU state">
+              <LayoutXRef>structure:shader_gpu_state</LayoutXRef>
+            </Struct>
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:shader_template_category" internalName="shader_template_category_block" name="category">
+    <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_shader_template_category)" isLatest="true">
+      <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+      <Block CStyleName="parameters" pascalStyleName="Parameters" name="parameters" maxElementCount="64" maxElementCountSource="k_maximum_parameters_per_shader_template_category">
+        <Layout regolithID="block:shader_template_parameter" internalName="shader_template_parameter_block" name="parameter">
+          <FieldSet version="0" sizeofValue="72" sizeofSource="sizeof(s_shader_template_parameter)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+            <Data CStyleName="explanation" pascalStyleName="Explanation" name="explanation" />
+            <ShortEnum CStyleName="type" pascalStyleName="Type" name="type">
+              <OptionsXRef>enum:global_shader_parameter_type</OptionsXRef>
+            </ShortEnum>
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:shader_template_parameter_flags" CStyleName="shader_template_parameter_flags" pascalStyleName="ShaderTemplateParameterFlags">
+                <Bit name="animated" CStyleName="animated_bit" pascalStyleName="AnimatedBit" />
+                <Bit name="hide bitmap reference" CStyleName="hide_bitmap_reference_bit" pascalStyleName="HideBitmapReferenceBit" />
+              </Options>
+            </WordFlags>
+            <TagReference CStyleName="default_bitmap" pascalStyleName="DefaultBitmap" name="default bitmap">
+              <tag>bitm</tag>
+            </TagReference>
+            <Real CStyleName="default_const_value" pascalStyleName="DefaultConstValue" name="default const value" />
+            <RealRgbColor CStyleName="default_const_color" pascalStyleName="DefaultConstColor" name="default const color" />
+            <ShortEnum CStyleName="bitmap_type" pascalStyleName="BitmapType" name="bitmap type">
+              <Options regolithID="enum:shader_template_parameter_bitmap_type" CStyleName="shader_template_parameter_bitmap_type" pascalStyleName="ShaderTemplateParameterBitmapType">
+                <Enum name="2D" CStyleName="_2d" pascalStyleName="2d" />
+                <Enum name="3D" CStyleName="_3d" pascalStyleName="3d" />
+                <Enum name="cube map" CStyleName="cube_map" pascalStyleName="CubeMap" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <WordFlags CStyleName="bitmap_animation_flags" pascalStyleName="BitmapAnimationFlags" name="bitmap animation flags">
+              <Options regolithID="enum:bitmap_animation_flags" CStyleName="bitmap_animation_flags" pascalStyleName="BitmapAnimationFlags">
+                <Bit name="scale uniform" CStyleName="scale_uniform_bit" pascalStyleName="ScaleUniformBit" />
+                <Bit name="scale" CStyleName="scale_bit" pascalStyleName="ScaleBit" />
+                <Bit name="translation" CStyleName="translation_bit" pascalStyleName="TranslationBit" />
+                <Bit name="rotation" CStyleName="rotation_bit" pascalStyleName="RotationBit" />
+                <Bit name="index" CStyleName="index_bit" pascalStyleName="IndexBit" />
+              </Options>
+            </WordFlags>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <Real CStyleName="bitmap_scale" pascalStyleName="BitmapScale" name="bitmap scale" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+  <Layout regolithID="block:shader_template_level_of_detail" internalName="shader_template_level_of_detail_block" name="shader_template_level_of_detail_block">
+    <FieldSet version="0" sizeofValue="16" sizeofSource="sizeof(s_shader_template_level_of_detail)" isLatest="true">
+      <Real CStyleName="projected_diameter" pascalStyleName="ProjectedDiameter" name="projected diameter" units="pixels" />
+      <Block CStyleName="_pass" pascalStyleName="Pass" name="pass" maxElementCount="16" maxElementCountSource="k_maximum_pass_references_per_shader_template">
+        <Layout regolithID="block:shader_template_pass_reference" internalName="shader_template_pass_reference_block" name="pass">
+          <FieldSet version="0" sizeofValue="32" sizeofSource="sizeof(s_shader_template_pass_reference)" isLatest="true">
+            <ShortEnum CStyleName="layer" pascalStyleName="Layer" name="layer">
+              <Options regolithID="enum:shader_layer_type" CStyleName="shader_layer_type" pascalStyleName="ShaderLayerType">
+                <Enum name="texaccum" CStyleName="texaccum" pascalStyleName="Texaccum" />
+                <Enum name="environment map" CStyleName="environment_map" pascalStyleName="EnvironmentMap" />
+                <Enum name="self-illumination" CStyleName="self_illumination" pascalStyleName="SelfIllumination" />
+                <Enum name="overlay" CStyleName="overlay" pascalStyleName="Overlay" />
+                <Enum name="transparent" CStyleName="transparent" pascalStyleName="Transparent" />
+                <Enum name="lightmap (indirect)" CStyleName="lightmap_indirect" pascalStyleName="LightmapIndirect" />
+                <Enum name="diffuse" CStyleName="diffuse" pascalStyleName="Diffuse" />
+                <Enum name="specular" CStyleName="specular" pascalStyleName="Specular" />
+                <Enum name="shadow generate" CStyleName="shadow_generate" pascalStyleName="ShadowGenerate" />
+                <Enum name="shadow apply" CStyleName="shadow_apply" pascalStyleName="ShadowApply" />
+                <Enum name="bloom" CStyleName="bloom" pascalStyleName="Bloom" />
+                <Enum name="fog" CStyleName="fog" pascalStyleName="Fog" />
+                <Enum name="sh prt" CStyleName="sh_prt" pascalStyleName="ShPrt" />
+                <Enum name="active camo" CStyleName="active_camo" pascalStyleName="ActiveCamo" />
+                <Enum name="water edge blend" CStyleName="water_edge_blend" pascalStyleName="WaterEdgeBlend" />
+                <Enum name="decal" CStyleName="decal" pascalStyleName="Decal" />
+                <Enum name="active camo stencil modulate" CStyleName="active_camo_stencil_modulate" pascalStyleName="ActiveCamoStencilModulate" />
+                <Enum name="hologram" CStyleName="hologram" pascalStyleName="Hologram" />
+                <Enum name="light albedo" CStyleName="light_albedo" pascalStyleName="LightAlbedo" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(word)" length="2" />
+            <TagReference CStyleName="_pass" pascalStyleName="Pass" name="pass" blockNameSource="true">
+              <tag>spas</tag>
+            </TagReference>
+            <Pad sizeOfSource="3*sizeof(long)" length="12" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</SharedLayouts>

@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="garb" parent="item" name="garbage" version="1">
+  <Layout regolithID="block:garbage" internalName="garbage_block" name="garbage">
+    <FieldSet version="0" sizeofValue="580" sizeofSource="sizeof(struct _garbage_definition)" parentVersion="0" isLatest="true">
+      <Pad sizeOfSource="42*sizeof(long)" length="168" />
+    </FieldSet>
+  </Layout>
+</TagGroup>

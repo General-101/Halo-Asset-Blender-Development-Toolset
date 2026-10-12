@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="mdlg" name="ai_mission_dialogue" version="1">
+  <Layout regolithID="block:ai_mission_dialogue" internalName="ai_mission_dialogue_block" name="ai_mission_dialogue">
+    <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct ai_mission_dialogue)" isLatest="true">
+      <Block CStyleName="lines" pascalStyleName="Lines" name="lines" maxElementCount="500" maxElementCountSource="k_max_lines_per_scenario">
+        <Layout regolithID="block:mission_dialogue_lines" internalName="mission_dialogue_lines_block" name="mission_dialogue_lines_block">
+          <FieldSet version="0" sizeofValue="20" sizeofSource="sizeof(struct mission_dialogue_line)" isLatest="true">
+            <StringId CStyleName="name" pascalStyleName="Name" name="name" blockNameSource="true" />
+            <Block CStyleName="variants" pascalStyleName="Variants" name="variants" maxElementCount="10" maxElementCountSource="k_max_variants_per_line">
+              <Layout regolithID="block:mission_dialogue_variants" internalName="mission_dialogue_variants_block" name="mission_dialogue_variants_block">
+                <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(struct mission_dialogue_variant)" isLatest="true">
+                  <StringId CStyleName="variant_designation" pascalStyleName="VariantDesignation" name="variant designation" description="3-letter designation for the character^" />
+                  <TagReference CStyleName="sound" pascalStyleName="Sound" name="sound">
+                    <tag>snd!</tag>
+                  </TagReference>
+                  <StringId CStyleName="sound_effect" pascalStyleName="SoundEffect" name="sound effect" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <StringId CStyleName="default_sound_effect" pascalStyleName="DefaultSoundEffect" name="default sound effect" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="dec*" name="scenario_decals_resource" version="1">
+  <Layout regolithID="block:scenario_decals_resource" internalName="scenario_decals_resource_block" name="scenario_decals_resource">
+    <FieldSet version="0" sizeofValue="24" sizeofSource="sizeof(struct scenario_decals_resource_definition)" isLatest="true">
+      <Block CStyleName="palette" pascalStyleName="Palette" name="palette" maxElementCount="128" maxElementCountSource="MAXIMUM_DECAL_PALETTES_PER_SCENARIO">
+        <LayoutXRef>block:scenario_decal_palette</LayoutXRef>
+      </Block>
+      <Block CStyleName="decals" pascalStyleName="Decals" name="decals" maxElementCount="65536" maxElementCountSource="MAXIMUM_DECALS_PER_SCENARIO">
+        <LayoutXRef>block:scenario_decals</LayoutXRef>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>

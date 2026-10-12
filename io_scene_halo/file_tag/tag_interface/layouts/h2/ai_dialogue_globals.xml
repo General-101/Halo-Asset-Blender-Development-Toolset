@@ -1,0 +1,1185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TagGroup group="adlg" name="ai_dialogue_globals" version="1">
+  <Layout regolithID="block:ai_dialogue_globals" internalName="ai_dialogue_globals_block" name="ai_dialogue_globals">
+    <FieldSet version="0" sizeofValue="60" sizeofSource="sizeof(struct ai_dialogue_definitions)" isLatest="true">
+      <Block CStyleName="vocalizations" pascalStyleName="Vocalizations" name="vocalizations" maxElementCount="500">
+        <Layout regolithID="block:vocalization_definitions_block_0" internalName="vocalization_definitions_block_0" name="vocalization_definitions_block_0">
+          <FieldSet version="0" sizeofValue="404" sizeofSource="sizeof(struct vocalization_v1)">
+            <StringId CStyleName="vocalization" pascalStyleName="Vocalization" name="vocalization" blockNameSource="true" />
+            <StringId CStyleName="parent_vocalization" pascalStyleName="ParentVocalization" name="parent vocalization" tag="sted" />
+            <ShortInteger CStyleName="parent_index" pascalStyleName="ParentIndex" name="parent index" readOnly="true" />
+            <ShortEnum CStyleName="priority" pascalStyleName="Priority" name="priority">
+              <Options regolithID="enum:vocalization_priority" CStyleName="vocalization_priority" pascalStyleName="VocalizationPriority">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="recall" CStyleName="recall" pascalStyleName="Recall" />
+                <Enum name="idle" CStyleName="idle" pascalStyleName="Idle" />
+                <Enum name="comment" CStyleName="comment" pascalStyleName="Comment" />
+                <Enum name="idle_response" CStyleName="idle_response" pascalStyleName="IdleResponse" />
+                <Enum name="postcombat" CStyleName="postcombat" pascalStyleName="Postcombat" />
+                <Enum name="combat" CStyleName="combat" pascalStyleName="Combat" />
+                <Enum name="status" CStyleName="status" pascalStyleName="Status" />
+                <Enum name="respond" CStyleName="respond" pascalStyleName="Respond" />
+                <Enum name="warn" CStyleName="warn" pascalStyleName="Warn" />
+                <Enum name="act" CStyleName="act" pascalStyleName="Act" />
+                <Enum name="react" CStyleName="react" pascalStyleName="React" />
+                <Enum name="involuntary" CStyleName="involuntary" pascalStyleName="Involuntary" />
+                <Enum name="scream" CStyleName="scream" pascalStyleName="Scream" />
+                <Enum name="scripted" CStyleName="scripted" pascalStyleName="Scripted" />
+                <Enum name="death" CStyleName="death" pascalStyleName="Death" />
+              </Options>
+            </ShortEnum>
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:vocalization_flags" CStyleName="vocalization_flags" pascalStyleName="VocalizationFlags">
+                <Bit name="immediate" CStyleName="immediate_bit" pascalStyleName="ImmediateBit" />
+                <Bit name="interrupt" CStyleName="interrupt_bit" pascalStyleName="InterruptBit" />
+                <Bit name="cancel low priority" CStyleName="cancel_low_priority_bit" pascalStyleName="CancelLowPriorityBit" />
+              </Options>
+            </LongFlags>
+            <Pad sizeOfSource="2*sizeof(long)" length="8" />
+            <ShortEnum CStyleName="glance_behavior" pascalStyleName="GlanceBehavior" name="glance behavior" description="how does the speaker of this vocalization direct his gaze?">
+              <Options regolithID="enum:vocalization_glance_behavior" CStyleName="vocalization_glance_behavior" pascalStyleName="VocalizationGlanceBehavior">
+                <Enum name="NONE" CStyleName="none" pascalStyleName="None" />
+                <Enum name="glance subject short" CStyleName="glance_subject_short" pascalStyleName="GlanceSubjectShort" />
+                <Enum name="glance subject long" CStyleName="glance_subject_long" pascalStyleName="GlanceSubjectLong" />
+                <Enum name="glance cause short" CStyleName="glance_cause_short" pascalStyleName="GlanceCauseShort" />
+                <Enum name="glance cause long" CStyleName="glance_cause_long" pascalStyleName="GlanceCauseLong" />
+                <Enum name="glance friend short" CStyleName="glance_friend_short" pascalStyleName="GlanceFriendShort" />
+                <Enum name="glance friend long" CStyleName="glance_friend_long" pascalStyleName="GlanceFriendLong" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="glance_recipient_behavior" pascalStyleName="GlanceRecipientBehavior" name="glance recipient behavior" description="how does someone who hears me behave?">
+              <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="perception_type" pascalStyleName="PerceptionType" name="perception type">
+              <Options regolithID="enum:vocalization_perception_type" CStyleName="vocalization_perception_type" pascalStyleName="VocalizationPerceptionType">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="speaker" CStyleName="speaker" pascalStyleName="Speaker" />
+                <Enum name="listener" CStyleName="listener" pascalStyleName="Listener" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <ShortEnum CStyleName="animation_impulse" pascalStyleName="AnimationImpulse" name="animation impulse">
+              <Options regolithID="enum:vocalization_animation_impulse" CStyleName="vocalization_animation_impulse" pascalStyleName="VocalizationAnimationImpulse">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="shakefist" CStyleName="shakefist" pascalStyleName="Shakefist" />
+                <Enum name="cheer" CStyleName="cheer" pascalStyleName="Cheer" />
+                <Enum name="surprise-front" CStyleName="surprise_front" pascalStyleName="SurpriseFront" />
+                <Enum name="surprise-back" CStyleName="surprise_back" pascalStyleName="SurpriseBack" />
+                <Enum name="taunt" CStyleName="taunt" pascalStyleName="Taunt" />
+                <Enum name="brace" CStyleName="brace" pascalStyleName="Brace" />
+                <Enum name="point" CStyleName="point" pascalStyleName="Point" />
+                <Enum name="hold" CStyleName="hold" pascalStyleName="Hold" />
+                <Enum name="wave" CStyleName="wave" pascalStyleName="Wave" />
+                <Enum name="advance" CStyleName="advance" pascalStyleName="Advance" />
+                <Enum name="fallback" CStyleName="fallback" pascalStyleName="Fallback" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="overlap_priority" pascalStyleName="OverlapPriority" name="overlap priority">
+              <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+            </ShortEnum>
+            <Real CStyleName="sound_repetition_delay" pascalStyleName="SoundRepetitionDelay" name="sound repetition delay" units="minutes" description="Minimum delay time between playing the same permutation" />
+            <Pad sizeOfSource="3*sizeof(long)" length="12" />
+            <Real CStyleName="allowable_queue_delay" pascalStyleName="AllowableQueueDelay" name="allowable queue delay" units="seconds" description="How long to wait to actually start the vocalization" />
+            <Real CStyleName="pre_voc_delay" pascalStyleName="PreVocDelay" name="pre voc. delay" units="seconds" description="How long to wait to actually start the vocalization" />
+            <Real CStyleName="notification_delay" pascalStyleName="NotificationDelay" name="notification delay" units="seconds" description="How long into the vocalization the AI should be notified" />
+            <Real CStyleName="post_voc_delay" pascalStyleName="PostVocDelay" name="post voc. delay" units="seconds" description="How long speech is suppressed in the speaking unit after vocalizing" />
+            <Real CStyleName="repeat_delay" pascalStyleName="RepeatDelay" name="repeat delay" units="seconds" description="How long before the same vocalization can be repeated" />
+            <Real CStyleName="weight" pascalStyleName="Weight" name="weight" units="[0-1]" description="Inherent weight of this vocalization" />
+            <ShortEnum CStyleName="max_combat_status" pascalStyleName="MaxCombatStatus" name="max combat status">
+              <Options regolithID="enum:vocalization_combat_status_level" CStyleName="vocalization_combat_status_level" pascalStyleName="VocalizationCombatStatusLevel">
+                <Enum name="asleep" CStyleName="asleep" pascalStyleName="Asleep" />
+                <Enum name="idle" CStyleName="idle" pascalStyleName="Idle" />
+                <Enum name="alert" CStyleName="alert" pascalStyleName="Alert" />
+                <Enum name="active" CStyleName="active" pascalStyleName="Active" />
+                <Enum name="uninspected" CStyleName="uninspected" pascalStyleName="Uninspected" />
+                <Enum name="definite" CStyleName="definite" pascalStyleName="Definite" />
+                <Enum name="certain" CStyleName="certain" pascalStyleName="Certain" />
+                <Enum name="visible" CStyleName="visible" pascalStyleName="Visible" />
+                <Enum name="clear_los" CStyleName="clear_los" pascalStyleName="ClearLos" />
+                <Enum name="dangerous" CStyleName="dangerous" pascalStyleName="Dangerous" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Real CStyleName="speaker_freeze_time" pascalStyleName="SpeakerFreezeTime" name="speaker freeze time" description="speaker won't move for the given amount of time" />
+            <Real CStyleName="listener_freeze_time" pascalStyleName="ListenerFreezeTime" name="listener freeze time" description="listener won't move for the given amount of time (from start of vocalization)" />
+            <ShortEnum CStyleName="speaker_emotion" pascalStyleName="SpeakerEmotion" name="speaker emotion">
+              <Options regolithID="enum:vocalization_emotion" CStyleName="vocalization_emotion" pascalStyleName="VocalizationEmotion">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="asleep" CStyleName="asleep" pascalStyleName="Asleep" />
+                <Enum name="amorous" CStyleName="amorous" pascalStyleName="Amorous" />
+                <Enum name="happy" CStyleName="happy" pascalStyleName="Happy" />
+                <Enum name="inquisitive" CStyleName="inquisitive" pascalStyleName="Inquisitive" />
+                <Enum name="repulsed" CStyleName="repulsed" pascalStyleName="Repulsed" />
+                <Enum name="disappointed" CStyleName="disappointed" pascalStyleName="Disappointed" />
+                <Enum name="shocked" CStyleName="shocked" pascalStyleName="Shocked" />
+                <Enum name="scared" CStyleName="scared" pascalStyleName="Scared" />
+                <Enum name="arrogant" CStyleName="arrogant" pascalStyleName="Arrogant" />
+                <Enum name="annoyed" CStyleName="annoyed" pascalStyleName="Annoyed" />
+                <Enum name="angry" CStyleName="angry" pascalStyleName="Angry" />
+                <Enum name="pensive" CStyleName="pensive" pascalStyleName="Pensive" />
+                <Enum name="pain" CStyleName="pain" pascalStyleName="Pain" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="listener_emotion" pascalStyleName="ListenerEmotion" name="listener emotion">
+              <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+            </ShortEnum>
+            <Real CStyleName="player_skip_fraction" pascalStyleName="PlayerSkipFraction" name="player skip fraction" />
+            <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+            <LongString CStyleName="sample_line" pascalStyleName="SampleLine" name="Sample line" />
+            <Pad sizeOfSource="3*sizeof(long)" length="12" />
+            <Block CStyleName="reponses" pascalStyleName="Reponses" name="reponses" maxElementCount="20">
+              <Layout regolithID="block:response" internalName="response_block" name="response_block">
+                <FieldSet version="0" sizeofValue="12" sizeofSource="sizeof(struct response)" isLatest="true">
+                  <StringId CStyleName="vocalization_name" pascalStyleName="VocalizationName" name="vocalization name" tag="sted" />
+                  <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <Options regolithID="enum:response_flags" CStyleName="response_flags" pascalStyleName="ResponseFlags">
+                      <Bit name="nonexclusive" CStyleName="nonexclusive_bit" pascalStyleName="NonexclusiveBit" />
+                      <Bit name="trigger response" CStyleName="trigger_response_bit" pascalStyleName="TriggerResponseBit" />
+                    </Options>
+                  </WordFlags>
+                  <ShortInteger CStyleName="vocalization_index_post_process" pascalStyleName="VocalizationIndexPostProcess" name="vocalization index (post process)" readOnly="true" />
+                  <ShortEnum CStyleName="response_type" pascalStyleName="ResponseType" name="response type">
+                    <Options regolithID="enum:response_type" CStyleName="response_type" pascalStyleName="ResponseType">
+                      <Enum name="friend" CStyleName="_friend" pascalStyleName="Friend" />
+                      <Enum name="enemy" CStyleName="enemy" pascalStyleName="Enemy" />
+                      <Enum name="listener" CStyleName="listener" pascalStyleName="Listener" />
+                      <Enum name="joint" CStyleName="joint" pascalStyleName="Joint" />
+                      <Enum name="peer" CStyleName="peer" pascalStyleName="Peer" />
+                    </Options>
+                  </ShortEnum>
+                  <ShortInteger CStyleName="dialogue_index_import" pascalStyleName="DialogueIndexImport" name="dialogue index (import)" readOnly="true" />
+                </FieldSet>
+              </Layout>
+            </Block>
+            <Pad sizeOfSource="3*sizeof(long)" length="12" />
+            <Block CStyleName="children" pascalStyleName="Children" name="children" maxElementCount="500">
+              <Layout regolithID="block:vocalization_definitions_block_1" internalName="vocalization_definitions_block_1" name="vocalization_definitions_block_1">
+                <FieldSet version="0" sizeofValue="404" sizeofSource="sizeof(struct vocalization_v1)">
+                  <StringId CStyleName="vocalization" pascalStyleName="Vocalization" name="vocalization" blockNameSource="true" />
+                  <StringId CStyleName="parent_vocalization" pascalStyleName="ParentVocalization" name="parent vocalization" tag="sted" />
+                  <ShortInteger CStyleName="parent_index" pascalStyleName="ParentIndex" name="parent index" readOnly="true" />
+                  <ShortEnum CStyleName="priority" pascalStyleName="Priority" name="priority">
+                    <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                  </ShortEnum>
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <OptionsXRef>enum:vocalization_flags</OptionsXRef>
+                  </LongFlags>
+                  <Pad sizeOfSource="2*sizeof(long)" length="8" />
+                  <ShortEnum CStyleName="glance_behavior" pascalStyleName="GlanceBehavior" name="glance behavior" description="how does the speaker of this vocalization direct his gaze?">
+                    <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="glance_recipient_behavior" pascalStyleName="GlanceRecipientBehavior" name="glance recipient behavior" description="how does someone who hears me behave?">
+                    <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="perception_type" pascalStyleName="PerceptionType" name="perception type">
+                    <OptionsXRef>enum:vocalization_perception_type</OptionsXRef>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <ShortEnum CStyleName="animation_impulse" pascalStyleName="AnimationImpulse" name="animation impulse">
+                    <OptionsXRef>enum:vocalization_animation_impulse</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="overlap_priority" pascalStyleName="OverlapPriority" name="overlap priority">
+                    <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                  </ShortEnum>
+                  <Real CStyleName="sound_repetition_delay" pascalStyleName="SoundRepetitionDelay" name="sound repetition delay" units="minutes" description="Minimum delay time between playing the same permutation" />
+                  <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                  <Real CStyleName="allowable_queue_delay" pascalStyleName="AllowableQueueDelay" name="allowable queue delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                  <Real CStyleName="pre_voc_delay" pascalStyleName="PreVocDelay" name="pre voc. delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                  <Real CStyleName="notification_delay" pascalStyleName="NotificationDelay" name="notification delay" units="seconds" description="How long into the vocalization the AI should be notified" />
+                  <Real CStyleName="post_voc_delay" pascalStyleName="PostVocDelay" name="post voc. delay" units="seconds" description="How long speech is suppressed in the speaking unit after vocalizing" />
+                  <Real CStyleName="repeat_delay" pascalStyleName="RepeatDelay" name="repeat delay" units="seconds" description="How long before the same vocalization can be repeated" />
+                  <Real CStyleName="weight" pascalStyleName="Weight" name="weight" units="[0-1]" description="Inherent weight of this vocalization" />
+                  <ShortEnum CStyleName="max_combat_status" pascalStyleName="MaxCombatStatus" name="max combat status">
+                    <OptionsXRef>enum:vocalization_combat_status_level</OptionsXRef>
+                  </ShortEnum>
+                  <Pad sizeOfSource="sizeof(short)" length="2" />
+                  <Real CStyleName="speaker_freeze_time" pascalStyleName="SpeakerFreezeTime" name="speaker freeze time" description="speaker won't move for the given amount of time" />
+                  <Real CStyleName="listener_freeze_time" pascalStyleName="ListenerFreezeTime" name="listener freeze time" description="listener won't move for the given amount of time (from start of vocalization)" />
+                  <ShortEnum CStyleName="speaker_emotion" pascalStyleName="SpeakerEmotion" name="speaker emotion">
+                    <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="listener_emotion" pascalStyleName="ListenerEmotion" name="listener emotion">
+                    <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                  </ShortEnum>
+                  <Real CStyleName="player_skip_fraction" pascalStyleName="PlayerSkipFraction" name="player skip fraction" />
+                  <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+                  <LongString CStyleName="sample_line" pascalStyleName="SampleLine" name="Sample line" />
+                  <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                  <Block CStyleName="reponses" pascalStyleName="Reponses" name="reponses" maxElementCount="20">
+                    <LayoutXRef>block:response</LayoutXRef>
+                  </Block>
+                  <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                  <Block CStyleName="children" pascalStyleName="Children" name="children" maxElementCount="500">
+                    <Layout regolithID="block:vocalization_definitions_block_2" internalName="vocalization_definitions_block_2" name="vocalization_definitions_block_2">
+                      <FieldSet version="0" sizeofValue="404" sizeofSource="sizeof(struct vocalization_v1)">
+                        <StringId CStyleName="vocalization" pascalStyleName="Vocalization" name="vocalization" blockNameSource="true" />
+                        <StringId CStyleName="parent_vocalization" pascalStyleName="ParentVocalization" name="parent vocalization" tag="sted" />
+                        <ShortInteger CStyleName="parent_index" pascalStyleName="ParentIndex" name="parent index" readOnly="true" />
+                        <ShortEnum CStyleName="priority" pascalStyleName="Priority" name="priority">
+                          <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                        </ShortEnum>
+                        <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                          <OptionsXRef>enum:vocalization_flags</OptionsXRef>
+                        </LongFlags>
+                        <Pad sizeOfSource="2*sizeof(long)" length="8" />
+                        <ShortEnum CStyleName="glance_behavior" pascalStyleName="GlanceBehavior" name="glance behavior" description="how does the speaker of this vocalization direct his gaze?">
+                          <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                        </ShortEnum>
+                        <ShortEnum CStyleName="glance_recipient_behavior" pascalStyleName="GlanceRecipientBehavior" name="glance recipient behavior" description="how does someone who hears me behave?">
+                          <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                        </ShortEnum>
+                        <ShortEnum CStyleName="perception_type" pascalStyleName="PerceptionType" name="perception type">
+                          <OptionsXRef>enum:vocalization_perception_type</OptionsXRef>
+                        </ShortEnum>
+                        <Pad sizeOfSource="sizeof(short)" length="2" />
+                        <ShortEnum CStyleName="animation_impulse" pascalStyleName="AnimationImpulse" name="animation impulse">
+                          <OptionsXRef>enum:vocalization_animation_impulse</OptionsXRef>
+                        </ShortEnum>
+                        <ShortEnum CStyleName="overlap_priority" pascalStyleName="OverlapPriority" name="overlap priority">
+                          <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                        </ShortEnum>
+                        <Real CStyleName="sound_repetition_delay" pascalStyleName="SoundRepetitionDelay" name="sound repetition delay" units="minutes" description="Minimum delay time between playing the same permutation" />
+                        <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                        <Real CStyleName="allowable_queue_delay" pascalStyleName="AllowableQueueDelay" name="allowable queue delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                        <Real CStyleName="pre_voc_delay" pascalStyleName="PreVocDelay" name="pre voc. delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                        <Real CStyleName="notification_delay" pascalStyleName="NotificationDelay" name="notification delay" units="seconds" description="How long into the vocalization the AI should be notified" />
+                        <Real CStyleName="post_voc_delay" pascalStyleName="PostVocDelay" name="post voc. delay" units="seconds" description="How long speech is suppressed in the speaking unit after vocalizing" />
+                        <Real CStyleName="repeat_delay" pascalStyleName="RepeatDelay" name="repeat delay" units="seconds" description="How long before the same vocalization can be repeated" />
+                        <Real CStyleName="weight" pascalStyleName="Weight" name="weight" units="[0-1]" description="Inherent weight of this vocalization" />
+                        <ShortEnum CStyleName="max_combat_status" pascalStyleName="MaxCombatStatus" name="max combat status">
+                          <OptionsXRef>enum:vocalization_combat_status_level</OptionsXRef>
+                        </ShortEnum>
+                        <Pad sizeOfSource="sizeof(short)" length="2" />
+                        <Real CStyleName="speaker_freeze_time" pascalStyleName="SpeakerFreezeTime" name="speaker freeze time" description="speaker won't move for the given amount of time" />
+                        <Real CStyleName="listener_freeze_time" pascalStyleName="ListenerFreezeTime" name="listener freeze time" description="listener won't move for the given amount of time (from start of vocalization)" />
+                        <ShortEnum CStyleName="speaker_emotion" pascalStyleName="SpeakerEmotion" name="speaker emotion">
+                          <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                        </ShortEnum>
+                        <ShortEnum CStyleName="listener_emotion" pascalStyleName="ListenerEmotion" name="listener emotion">
+                          <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                        </ShortEnum>
+                        <Real CStyleName="player_skip_fraction" pascalStyleName="PlayerSkipFraction" name="player skip fraction" />
+                        <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+                        <LongString CStyleName="sample_line" pascalStyleName="SampleLine" name="Sample line" />
+                        <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                        <Block CStyleName="reponses" pascalStyleName="Reponses" name="reponses" maxElementCount="20">
+                          <LayoutXRef>block:response</LayoutXRef>
+                        </Block>
+                        <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                        <Block CStyleName="children" pascalStyleName="Children" name="children" maxElementCount="500">
+                          <Layout regolithID="block:vocalization_definitions_block_3" internalName="vocalization_definitions_block_3" name="vocalization_definitions_block_3">
+                            <FieldSet version="0" sizeofValue="404" sizeofSource="sizeof(struct vocalization_v1)">
+                              <StringId CStyleName="vocalization" pascalStyleName="Vocalization" name="vocalization" blockNameSource="true" />
+                              <StringId CStyleName="parent_vocalization" pascalStyleName="ParentVocalization" name="parent vocalization" tag="sted" />
+                              <ShortInteger CStyleName="parent_index" pascalStyleName="ParentIndex" name="parent index" readOnly="true" />
+                              <ShortEnum CStyleName="priority" pascalStyleName="Priority" name="priority">
+                                <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                              </ShortEnum>
+                              <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                                <OptionsXRef>enum:vocalization_flags</OptionsXRef>
+                              </LongFlags>
+                              <Pad sizeOfSource="2*sizeof(long)" length="8" />
+                              <ShortEnum CStyleName="glance_behavior" pascalStyleName="GlanceBehavior" name="glance behavior" description="how does the speaker of this vocalization direct his gaze?">
+                                <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                              </ShortEnum>
+                              <ShortEnum CStyleName="glance_recipient_behavior" pascalStyleName="GlanceRecipientBehavior" name="glance recipient behavior" description="how does someone who hears me behave?">
+                                <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                              </ShortEnum>
+                              <ShortEnum CStyleName="perception_type" pascalStyleName="PerceptionType" name="perception type">
+                                <OptionsXRef>enum:vocalization_perception_type</OptionsXRef>
+                              </ShortEnum>
+                              <Pad sizeOfSource="sizeof(short)" length="2" />
+                              <ShortEnum CStyleName="animation_impulse" pascalStyleName="AnimationImpulse" name="animation impulse">
+                                <OptionsXRef>enum:vocalization_animation_impulse</OptionsXRef>
+                              </ShortEnum>
+                              <ShortEnum CStyleName="overlap_priority" pascalStyleName="OverlapPriority" name="overlap priority">
+                                <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                              </ShortEnum>
+                              <Real CStyleName="sound_repetition_delay" pascalStyleName="SoundRepetitionDelay" name="sound repetition delay" units="minutes" description="Minimum delay time between playing the same permutation" />
+                              <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                              <Real CStyleName="allowable_queue_delay" pascalStyleName="AllowableQueueDelay" name="allowable queue delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                              <Real CStyleName="pre_voc_delay" pascalStyleName="PreVocDelay" name="pre voc. delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                              <Real CStyleName="notification_delay" pascalStyleName="NotificationDelay" name="notification delay" units="seconds" description="How long into the vocalization the AI should be notified" />
+                              <Real CStyleName="post_voc_delay" pascalStyleName="PostVocDelay" name="post voc. delay" units="seconds" description="How long speech is suppressed in the speaking unit after vocalizing" />
+                              <Real CStyleName="repeat_delay" pascalStyleName="RepeatDelay" name="repeat delay" units="seconds" description="How long before the same vocalization can be repeated" />
+                              <Real CStyleName="weight" pascalStyleName="Weight" name="weight" units="[0-1]" description="Inherent weight of this vocalization" />
+                              <ShortEnum CStyleName="max_combat_status" pascalStyleName="MaxCombatStatus" name="max combat status">
+                                <OptionsXRef>enum:vocalization_combat_status_level</OptionsXRef>
+                              </ShortEnum>
+                              <Pad sizeOfSource="sizeof(short)" length="2" />
+                              <Real CStyleName="speaker_freeze_time" pascalStyleName="SpeakerFreezeTime" name="speaker freeze time" description="speaker won't move for the given amount of time" />
+                              <Real CStyleName="listener_freeze_time" pascalStyleName="ListenerFreezeTime" name="listener freeze time" description="listener won't move for the given amount of time (from start of vocalization)" />
+                              <ShortEnum CStyleName="speaker_emotion" pascalStyleName="SpeakerEmotion" name="speaker emotion">
+                                <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                              </ShortEnum>
+                              <ShortEnum CStyleName="listener_emotion" pascalStyleName="ListenerEmotion" name="listener emotion">
+                                <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                              </ShortEnum>
+                              <Real CStyleName="player_skip_fraction" pascalStyleName="PlayerSkipFraction" name="player skip fraction" />
+                              <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+                              <LongString CStyleName="sample_line" pascalStyleName="SampleLine" name="Sample line" />
+                              <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                              <Block CStyleName="reponses" pascalStyleName="Reponses" name="reponses" maxElementCount="20">
+                                <LayoutXRef>block:response</LayoutXRef>
+                              </Block>
+                              <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                              <Block CStyleName="children" pascalStyleName="Children" name="children" maxElementCount="500">
+                                <Layout regolithID="block:vocalization_definitions_block_4" internalName="vocalization_definitions_block_4" name="vocalization_definitions_block_4">
+                                  <FieldSet version="0" sizeofValue="404" sizeofSource="sizeof(struct vocalization_v1)">
+                                    <StringId CStyleName="vocalization" pascalStyleName="Vocalization" name="vocalization" blockNameSource="true" />
+                                    <StringId CStyleName="parent_vocalization" pascalStyleName="ParentVocalization" name="parent vocalization" tag="sted" />
+                                    <ShortInteger CStyleName="parent_index" pascalStyleName="ParentIndex" name="parent index" readOnly="true" />
+                                    <ShortEnum CStyleName="priority" pascalStyleName="Priority" name="priority">
+                                      <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                                    </ShortEnum>
+                                    <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                                      <OptionsXRef>enum:vocalization_flags</OptionsXRef>
+                                    </LongFlags>
+                                    <Pad sizeOfSource="2*sizeof(long)" length="8" />
+                                    <ShortEnum CStyleName="glance_behavior" pascalStyleName="GlanceBehavior" name="glance behavior" description="how does the speaker of this vocalization direct his gaze?">
+                                      <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                                    </ShortEnum>
+                                    <ShortEnum CStyleName="glance_recipient_behavior" pascalStyleName="GlanceRecipientBehavior" name="glance recipient behavior" description="how does someone who hears me behave?">
+                                      <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                                    </ShortEnum>
+                                    <ShortEnum CStyleName="perception_type" pascalStyleName="PerceptionType" name="perception type">
+                                      <OptionsXRef>enum:vocalization_perception_type</OptionsXRef>
+                                    </ShortEnum>
+                                    <Pad sizeOfSource="sizeof(short)" length="2" />
+                                    <ShortEnum CStyleName="animation_impulse" pascalStyleName="AnimationImpulse" name="animation impulse">
+                                      <OptionsXRef>enum:vocalization_animation_impulse</OptionsXRef>
+                                    </ShortEnum>
+                                    <ShortEnum CStyleName="overlap_priority" pascalStyleName="OverlapPriority" name="overlap priority">
+                                      <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                                    </ShortEnum>
+                                    <Real CStyleName="sound_repetition_delay" pascalStyleName="SoundRepetitionDelay" name="sound repetition delay" units="minutes" description="Minimum delay time between playing the same permutation" />
+                                    <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                                    <Real CStyleName="allowable_queue_delay" pascalStyleName="AllowableQueueDelay" name="allowable queue delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                                    <Real CStyleName="pre_voc_delay" pascalStyleName="PreVocDelay" name="pre voc. delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                                    <Real CStyleName="notification_delay" pascalStyleName="NotificationDelay" name="notification delay" units="seconds" description="How long into the vocalization the AI should be notified" />
+                                    <Real CStyleName="post_voc_delay" pascalStyleName="PostVocDelay" name="post voc. delay" units="seconds" description="How long speech is suppressed in the speaking unit after vocalizing" />
+                                    <Real CStyleName="repeat_delay" pascalStyleName="RepeatDelay" name="repeat delay" units="seconds" description="How long before the same vocalization can be repeated" />
+                                    <Real CStyleName="weight" pascalStyleName="Weight" name="weight" units="[0-1]" description="Inherent weight of this vocalization" />
+                                    <ShortEnum CStyleName="max_combat_status" pascalStyleName="MaxCombatStatus" name="max combat status">
+                                      <OptionsXRef>enum:vocalization_combat_status_level</OptionsXRef>
+                                    </ShortEnum>
+                                    <Pad sizeOfSource="sizeof(short)" length="2" />
+                                    <Real CStyleName="speaker_freeze_time" pascalStyleName="SpeakerFreezeTime" name="speaker freeze time" description="speaker won't move for the given amount of time" />
+                                    <Real CStyleName="listener_freeze_time" pascalStyleName="ListenerFreezeTime" name="listener freeze time" description="listener won't move for the given amount of time (from start of vocalization)" />
+                                    <ShortEnum CStyleName="speaker_emotion" pascalStyleName="SpeakerEmotion" name="speaker emotion">
+                                      <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                                    </ShortEnum>
+                                    <ShortEnum CStyleName="listener_emotion" pascalStyleName="ListenerEmotion" name="listener emotion">
+                                      <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                                    </ShortEnum>
+                                    <Real CStyleName="player_skip_fraction" pascalStyleName="PlayerSkipFraction" name="player skip fraction" />
+                                    <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+                                    <LongString CStyleName="sample_line" pascalStyleName="SampleLine" name="Sample line" />
+                                    <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                                    <Block CStyleName="reponses" pascalStyleName="Reponses" name="reponses" maxElementCount="20">
+                                      <LayoutXRef>block:response</LayoutXRef>
+                                    </Block>
+                                    <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                                    <Block CStyleName="children" pascalStyleName="Children" name="children" maxElementCount="500">
+                                      <Layout regolithID="block:vocalization_definitions_block_5" internalName="vocalization_definitions_block_5" name="vocalization_definitions_block_5">
+                                        <FieldSet version="0" sizeofValue="404" sizeofSource="sizeof(struct vocalization_v1)">
+                                          <StringId CStyleName="vocalization" pascalStyleName="Vocalization" name="vocalization" blockNameSource="true" />
+                                          <StringId CStyleName="parent_vocalization" pascalStyleName="ParentVocalization" name="parent vocalization" tag="sted" />
+                                          <ShortInteger CStyleName="parent_index" pascalStyleName="ParentIndex" name="parent index" readOnly="true" />
+                                          <ShortEnum CStyleName="priority" pascalStyleName="Priority" name="priority">
+                                            <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                                          </ShortEnum>
+                                          <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                                            <OptionsXRef>enum:vocalization_flags</OptionsXRef>
+                                          </LongFlags>
+                                          <Pad sizeOfSource="2*sizeof(long)" length="8" />
+                                          <ShortEnum CStyleName="glance_behavior" pascalStyleName="GlanceBehavior" name="glance behavior" description="how does the speaker of this vocalization direct his gaze?">
+                                            <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                                          </ShortEnum>
+                                          <ShortEnum CStyleName="glance_recipient_behavior" pascalStyleName="GlanceRecipientBehavior" name="glance recipient behavior" description="how does someone who hears me behave?">
+                                            <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                                          </ShortEnum>
+                                          <ShortEnum CStyleName="perception_type" pascalStyleName="PerceptionType" name="perception type">
+                                            <OptionsXRef>enum:vocalization_perception_type</OptionsXRef>
+                                          </ShortEnum>
+                                          <Pad sizeOfSource="sizeof(short)" length="2" />
+                                          <ShortEnum CStyleName="animation_impulse" pascalStyleName="AnimationImpulse" name="animation impulse">
+                                            <OptionsXRef>enum:vocalization_animation_impulse</OptionsXRef>
+                                          </ShortEnum>
+                                          <ShortEnum CStyleName="overlap_priority" pascalStyleName="OverlapPriority" name="overlap priority">
+                                            <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                                          </ShortEnum>
+                                          <Real CStyleName="sound_repetition_delay" pascalStyleName="SoundRepetitionDelay" name="sound repetition delay" units="minutes" description="Minimum delay time between playing the same permutation" />
+                                          <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                                          <Real CStyleName="allowable_queue_delay" pascalStyleName="AllowableQueueDelay" name="allowable queue delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                                          <Real CStyleName="pre_voc_delay" pascalStyleName="PreVocDelay" name="pre voc. delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                                          <Real CStyleName="notification_delay" pascalStyleName="NotificationDelay" name="notification delay" units="seconds" description="How long into the vocalization the AI should be notified" />
+                                          <Real CStyleName="post_voc_delay" pascalStyleName="PostVocDelay" name="post voc. delay" units="seconds" description="How long speech is suppressed in the speaking unit after vocalizing" />
+                                          <Real CStyleName="repeat_delay" pascalStyleName="RepeatDelay" name="repeat delay" units="seconds" description="How long before the same vocalization can be repeated" />
+                                          <Real CStyleName="weight" pascalStyleName="Weight" name="weight" units="[0-1]" description="Inherent weight of this vocalization" />
+                                          <ShortEnum CStyleName="max_combat_status" pascalStyleName="MaxCombatStatus" name="max combat status">
+                                            <OptionsXRef>enum:vocalization_combat_status_level</OptionsXRef>
+                                          </ShortEnum>
+                                          <Pad sizeOfSource="sizeof(short)" length="2" />
+                                          <Real CStyleName="speaker_freeze_time" pascalStyleName="SpeakerFreezeTime" name="speaker freeze time" description="speaker won't move for the given amount of time" />
+                                          <Real CStyleName="listener_freeze_time" pascalStyleName="ListenerFreezeTime" name="listener freeze time" description="listener won't move for the given amount of time (from start of vocalization)" />
+                                          <ShortEnum CStyleName="speaker_emotion" pascalStyleName="SpeakerEmotion" name="speaker emotion">
+                                            <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                                          </ShortEnum>
+                                          <ShortEnum CStyleName="listener_emotion" pascalStyleName="ListenerEmotion" name="listener emotion">
+                                            <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                                          </ShortEnum>
+                                          <Real CStyleName="player_skip_fraction" pascalStyleName="PlayerSkipFraction" name="player skip fraction" />
+                                          <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+                                          <LongString CStyleName="sample_line" pascalStyleName="SampleLine" name="Sample line" />
+                                          <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                                          <Block CStyleName="reponses" pascalStyleName="Reponses" name="reponses" maxElementCount="20">
+                                            <LayoutXRef>block:response</LayoutXRef>
+                                          </Block>
+                                          <Pad sizeOfSource="3*sizeof(long)" length="12" />
+                                          <Pad sizeOfSource="sizeof(struct tag_block)" length="12" />
+                                        </FieldSet>
+                                        <FieldSet version="1" sizeofValue="104" sizeofSource="sizeof(struct vocalization)" isLatest="true">
+                                          <StringId CStyleName="vocalization" pascalStyleName="Vocalization" name="vocalization" blockNameSource="true" />
+                                          <StringId CStyleName="parent_vocalization" pascalStyleName="ParentVocalization" name="parent vocalization" tag="sted" />
+                                          <ShortInteger CStyleName="parent_index" pascalStyleName="ParentIndex" name="parent index" readOnly="true" />
+                                          <ShortEnum CStyleName="priority" pascalStyleName="Priority" name="priority">
+                                            <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                                          </ShortEnum>
+                                          <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                                            <OptionsXRef>enum:vocalization_flags</OptionsXRef>
+                                          </LongFlags>
+                                          <ShortEnum CStyleName="glance_behavior" pascalStyleName="GlanceBehavior" name="glance behavior" description="how does the speaker of this vocalization direct his gaze?">
+                                            <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                                          </ShortEnum>
+                                          <ShortEnum CStyleName="glance_recipient_behavior" pascalStyleName="GlanceRecipientBehavior" name="glance recipient behavior" description="how does someone who hears me behave?">
+                                            <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                                          </ShortEnum>
+                                          <ShortEnum CStyleName="perception_type" pascalStyleName="PerceptionType" name="perception type">
+                                            <OptionsXRef>enum:vocalization_perception_type</OptionsXRef>
+                                          </ShortEnum>
+                                          <ShortEnum CStyleName="max_combat_status" pascalStyleName="MaxCombatStatus" name="max combat status">
+                                            <OptionsXRef>enum:vocalization_combat_status_level</OptionsXRef>
+                                          </ShortEnum>
+                                          <ShortEnum CStyleName="animation_impulse" pascalStyleName="AnimationImpulse" name="animation impulse">
+                                            <OptionsXRef>enum:vocalization_animation_impulse</OptionsXRef>
+                                          </ShortEnum>
+                                          <ShortEnum CStyleName="overlap_priority" pascalStyleName="OverlapPriority" name="overlap priority">
+                                            <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                                          </ShortEnum>
+                                          <Real CStyleName="sound_repetition_delay" pascalStyleName="SoundRepetitionDelay" name="sound repetition delay" units="minutes" description="Minimum delay time between playing the same permutation" />
+                                          <Real CStyleName="allowable_queue_delay" pascalStyleName="AllowableQueueDelay" name="allowable queue delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                                          <Real CStyleName="pre_voc_delay" pascalStyleName="PreVocDelay" name="pre voc. delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                                          <Real CStyleName="notification_delay" pascalStyleName="NotificationDelay" name="notification delay" units="seconds" description="How long into the vocalization the AI should be notified" />
+                                          <Real CStyleName="post_voc_delay" pascalStyleName="PostVocDelay" name="post voc. delay" units="seconds" description="How long speech is suppressed in the speaking unit after vocalizing" />
+                                          <Real CStyleName="repeat_delay" pascalStyleName="RepeatDelay" name="repeat delay" units="seconds" description="How long before the same vocalization can be repeated" />
+                                          <Real CStyleName="weight" pascalStyleName="Weight" name="weight" units="[0-1]" description="Inherent weight of this vocalization" />
+                                          <Real CStyleName="speaker_freeze_time" pascalStyleName="SpeakerFreezeTime" name="speaker freeze time" description="speaker won't move for the given amount of time" />
+                                          <Real CStyleName="listener_freeze_time" pascalStyleName="ListenerFreezeTime" name="listener freeze time" description="listener won't move for the given amount of time (from start of vocalization)" />
+                                          <ShortEnum CStyleName="speaker_emotion" pascalStyleName="SpeakerEmotion" name="speaker emotion">
+                                            <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                                          </ShortEnum>
+                                          <ShortEnum CStyleName="listener_emotion" pascalStyleName="ListenerEmotion" name="listener emotion">
+                                            <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                                          </ShortEnum>
+                                          <Real CStyleName="player_skip_fraction" pascalStyleName="PlayerSkipFraction" name="player skip fraction" />
+                                          <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+                                          <StringId CStyleName="sample_line" pascalStyleName="SampleLine" name="Sample line" />
+                                          <Block CStyleName="reponses" pascalStyleName="Reponses" name="reponses" maxElementCount="20">
+                                            <LayoutXRef>block:response</LayoutXRef>
+                                          </Block>
+                                          <Block maxElementCount="0">
+                                            <LayoutXRef>block:g_null</LayoutXRef>
+                                          </Block>
+                                        </FieldSet>
+                                      </Layout>
+                                    </Block>
+                                  </FieldSet>
+                                  <FieldSet version="1" sizeofValue="104" sizeofSource="sizeof(struct vocalization)" isLatest="true">
+                                    <StringId CStyleName="vocalization" pascalStyleName="Vocalization" name="vocalization" blockNameSource="true" />
+                                    <StringId CStyleName="parent_vocalization" pascalStyleName="ParentVocalization" name="parent vocalization" tag="sted" />
+                                    <ShortInteger CStyleName="parent_index" pascalStyleName="ParentIndex" name="parent index" readOnly="true" />
+                                    <ShortEnum CStyleName="priority" pascalStyleName="Priority" name="priority">
+                                      <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                                    </ShortEnum>
+                                    <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                                      <OptionsXRef>enum:vocalization_flags</OptionsXRef>
+                                    </LongFlags>
+                                    <ShortEnum CStyleName="glance_behavior" pascalStyleName="GlanceBehavior" name="glance behavior" description="how does the speaker of this vocalization direct his gaze?">
+                                      <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                                    </ShortEnum>
+                                    <ShortEnum CStyleName="glance_recipient_behavior" pascalStyleName="GlanceRecipientBehavior" name="glance recipient behavior" description="how does someone who hears me behave?">
+                                      <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                                    </ShortEnum>
+                                    <ShortEnum CStyleName="perception_type" pascalStyleName="PerceptionType" name="perception type">
+                                      <OptionsXRef>enum:vocalization_perception_type</OptionsXRef>
+                                    </ShortEnum>
+                                    <ShortEnum CStyleName="max_combat_status" pascalStyleName="MaxCombatStatus" name="max combat status">
+                                      <OptionsXRef>enum:vocalization_combat_status_level</OptionsXRef>
+                                    </ShortEnum>
+                                    <ShortEnum CStyleName="animation_impulse" pascalStyleName="AnimationImpulse" name="animation impulse">
+                                      <OptionsXRef>enum:vocalization_animation_impulse</OptionsXRef>
+                                    </ShortEnum>
+                                    <ShortEnum CStyleName="overlap_priority" pascalStyleName="OverlapPriority" name="overlap priority">
+                                      <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                                    </ShortEnum>
+                                    <Real CStyleName="sound_repetition_delay" pascalStyleName="SoundRepetitionDelay" name="sound repetition delay" units="minutes" description="Minimum delay time between playing the same permutation" />
+                                    <Real CStyleName="allowable_queue_delay" pascalStyleName="AllowableQueueDelay" name="allowable queue delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                                    <Real CStyleName="pre_voc_delay" pascalStyleName="PreVocDelay" name="pre voc. delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                                    <Real CStyleName="notification_delay" pascalStyleName="NotificationDelay" name="notification delay" units="seconds" description="How long into the vocalization the AI should be notified" />
+                                    <Real CStyleName="post_voc_delay" pascalStyleName="PostVocDelay" name="post voc. delay" units="seconds" description="How long speech is suppressed in the speaking unit after vocalizing" />
+                                    <Real CStyleName="repeat_delay" pascalStyleName="RepeatDelay" name="repeat delay" units="seconds" description="How long before the same vocalization can be repeated" />
+                                    <Real CStyleName="weight" pascalStyleName="Weight" name="weight" units="[0-1]" description="Inherent weight of this vocalization" />
+                                    <Real CStyleName="speaker_freeze_time" pascalStyleName="SpeakerFreezeTime" name="speaker freeze time" description="speaker won't move for the given amount of time" />
+                                    <Real CStyleName="listener_freeze_time" pascalStyleName="ListenerFreezeTime" name="listener freeze time" description="listener won't move for the given amount of time (from start of vocalization)" />
+                                    <ShortEnum CStyleName="speaker_emotion" pascalStyleName="SpeakerEmotion" name="speaker emotion">
+                                      <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                                    </ShortEnum>
+                                    <ShortEnum CStyleName="listener_emotion" pascalStyleName="ListenerEmotion" name="listener emotion">
+                                      <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                                    </ShortEnum>
+                                    <Real CStyleName="player_skip_fraction" pascalStyleName="PlayerSkipFraction" name="player skip fraction" />
+                                    <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+                                    <StringId CStyleName="sample_line" pascalStyleName="SampleLine" name="Sample line" />
+                                    <Block CStyleName="reponses" pascalStyleName="Reponses" name="reponses" maxElementCount="20">
+                                      <LayoutXRef>block:response</LayoutXRef>
+                                    </Block>
+                                    <Block CStyleName="children" pascalStyleName="Children" name="children" maxElementCount="500">
+                                      <LayoutXRef>block:vocalization_definitions_block_5</LayoutXRef>
+                                    </Block>
+                                  </FieldSet>
+                                </Layout>
+                              </Block>
+                            </FieldSet>
+                            <FieldSet version="1" sizeofValue="104" sizeofSource="sizeof(struct vocalization)" isLatest="true">
+                              <StringId CStyleName="vocalization" pascalStyleName="Vocalization" name="vocalization" blockNameSource="true" />
+                              <StringId CStyleName="parent_vocalization" pascalStyleName="ParentVocalization" name="parent vocalization" tag="sted" />
+                              <ShortInteger CStyleName="parent_index" pascalStyleName="ParentIndex" name="parent index" readOnly="true" />
+                              <ShortEnum CStyleName="priority" pascalStyleName="Priority" name="priority">
+                                <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                              </ShortEnum>
+                              <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                                <OptionsXRef>enum:vocalization_flags</OptionsXRef>
+                              </LongFlags>
+                              <ShortEnum CStyleName="glance_behavior" pascalStyleName="GlanceBehavior" name="glance behavior" description="how does the speaker of this vocalization direct his gaze?">
+                                <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                              </ShortEnum>
+                              <ShortEnum CStyleName="glance_recipient_behavior" pascalStyleName="GlanceRecipientBehavior" name="glance recipient behavior" description="how does someone who hears me behave?">
+                                <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                              </ShortEnum>
+                              <ShortEnum CStyleName="perception_type" pascalStyleName="PerceptionType" name="perception type">
+                                <OptionsXRef>enum:vocalization_perception_type</OptionsXRef>
+                              </ShortEnum>
+                              <ShortEnum CStyleName="max_combat_status" pascalStyleName="MaxCombatStatus" name="max combat status">
+                                <OptionsXRef>enum:vocalization_combat_status_level</OptionsXRef>
+                              </ShortEnum>
+                              <ShortEnum CStyleName="animation_impulse" pascalStyleName="AnimationImpulse" name="animation impulse">
+                                <OptionsXRef>enum:vocalization_animation_impulse</OptionsXRef>
+                              </ShortEnum>
+                              <ShortEnum CStyleName="overlap_priority" pascalStyleName="OverlapPriority" name="overlap priority">
+                                <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                              </ShortEnum>
+                              <Real CStyleName="sound_repetition_delay" pascalStyleName="SoundRepetitionDelay" name="sound repetition delay" units="minutes" description="Minimum delay time between playing the same permutation" />
+                              <Real CStyleName="allowable_queue_delay" pascalStyleName="AllowableQueueDelay" name="allowable queue delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                              <Real CStyleName="pre_voc_delay" pascalStyleName="PreVocDelay" name="pre voc. delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                              <Real CStyleName="notification_delay" pascalStyleName="NotificationDelay" name="notification delay" units="seconds" description="How long into the vocalization the AI should be notified" />
+                              <Real CStyleName="post_voc_delay" pascalStyleName="PostVocDelay" name="post voc. delay" units="seconds" description="How long speech is suppressed in the speaking unit after vocalizing" />
+                              <Real CStyleName="repeat_delay" pascalStyleName="RepeatDelay" name="repeat delay" units="seconds" description="How long before the same vocalization can be repeated" />
+                              <Real CStyleName="weight" pascalStyleName="Weight" name="weight" units="[0-1]" description="Inherent weight of this vocalization" />
+                              <Real CStyleName="speaker_freeze_time" pascalStyleName="SpeakerFreezeTime" name="speaker freeze time" description="speaker won't move for the given amount of time" />
+                              <Real CStyleName="listener_freeze_time" pascalStyleName="ListenerFreezeTime" name="listener freeze time" description="listener won't move for the given amount of time (from start of vocalization)" />
+                              <ShortEnum CStyleName="speaker_emotion" pascalStyleName="SpeakerEmotion" name="speaker emotion">
+                                <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                              </ShortEnum>
+                              <ShortEnum CStyleName="listener_emotion" pascalStyleName="ListenerEmotion" name="listener emotion">
+                                <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                              </ShortEnum>
+                              <Real CStyleName="player_skip_fraction" pascalStyleName="PlayerSkipFraction" name="player skip fraction" />
+                              <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+                              <StringId CStyleName="sample_line" pascalStyleName="SampleLine" name="Sample line" />
+                              <Block CStyleName="reponses" pascalStyleName="Reponses" name="reponses" maxElementCount="20">
+                                <LayoutXRef>block:response</LayoutXRef>
+                              </Block>
+                              <Block CStyleName="children" pascalStyleName="Children" name="children" maxElementCount="500">
+                                <LayoutXRef>block:vocalization_definitions_block_4</LayoutXRef>
+                              </Block>
+                            </FieldSet>
+                          </Layout>
+                        </Block>
+                      </FieldSet>
+                      <FieldSet version="1" sizeofValue="104" sizeofSource="sizeof(struct vocalization)" isLatest="true">
+                        <StringId CStyleName="vocalization" pascalStyleName="Vocalization" name="vocalization" blockNameSource="true" />
+                        <StringId CStyleName="parent_vocalization" pascalStyleName="ParentVocalization" name="parent vocalization" tag="sted" />
+                        <ShortInteger CStyleName="parent_index" pascalStyleName="ParentIndex" name="parent index" readOnly="true" />
+                        <ShortEnum CStyleName="priority" pascalStyleName="Priority" name="priority">
+                          <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                        </ShortEnum>
+                        <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                          <OptionsXRef>enum:vocalization_flags</OptionsXRef>
+                        </LongFlags>
+                        <ShortEnum CStyleName="glance_behavior" pascalStyleName="GlanceBehavior" name="glance behavior" description="how does the speaker of this vocalization direct his gaze?">
+                          <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                        </ShortEnum>
+                        <ShortEnum CStyleName="glance_recipient_behavior" pascalStyleName="GlanceRecipientBehavior" name="glance recipient behavior" description="how does someone who hears me behave?">
+                          <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                        </ShortEnum>
+                        <ShortEnum CStyleName="perception_type" pascalStyleName="PerceptionType" name="perception type">
+                          <OptionsXRef>enum:vocalization_perception_type</OptionsXRef>
+                        </ShortEnum>
+                        <ShortEnum CStyleName="max_combat_status" pascalStyleName="MaxCombatStatus" name="max combat status">
+                          <OptionsXRef>enum:vocalization_combat_status_level</OptionsXRef>
+                        </ShortEnum>
+                        <ShortEnum CStyleName="animation_impulse" pascalStyleName="AnimationImpulse" name="animation impulse">
+                          <OptionsXRef>enum:vocalization_animation_impulse</OptionsXRef>
+                        </ShortEnum>
+                        <ShortEnum CStyleName="overlap_priority" pascalStyleName="OverlapPriority" name="overlap priority">
+                          <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                        </ShortEnum>
+                        <Real CStyleName="sound_repetition_delay" pascalStyleName="SoundRepetitionDelay" name="sound repetition delay" units="minutes" description="Minimum delay time between playing the same permutation" />
+                        <Real CStyleName="allowable_queue_delay" pascalStyleName="AllowableQueueDelay" name="allowable queue delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                        <Real CStyleName="pre_voc_delay" pascalStyleName="PreVocDelay" name="pre voc. delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                        <Real CStyleName="notification_delay" pascalStyleName="NotificationDelay" name="notification delay" units="seconds" description="How long into the vocalization the AI should be notified" />
+                        <Real CStyleName="post_voc_delay" pascalStyleName="PostVocDelay" name="post voc. delay" units="seconds" description="How long speech is suppressed in the speaking unit after vocalizing" />
+                        <Real CStyleName="repeat_delay" pascalStyleName="RepeatDelay" name="repeat delay" units="seconds" description="How long before the same vocalization can be repeated" />
+                        <Real CStyleName="weight" pascalStyleName="Weight" name="weight" units="[0-1]" description="Inherent weight of this vocalization" />
+                        <Real CStyleName="speaker_freeze_time" pascalStyleName="SpeakerFreezeTime" name="speaker freeze time" description="speaker won't move for the given amount of time" />
+                        <Real CStyleName="listener_freeze_time" pascalStyleName="ListenerFreezeTime" name="listener freeze time" description="listener won't move for the given amount of time (from start of vocalization)" />
+                        <ShortEnum CStyleName="speaker_emotion" pascalStyleName="SpeakerEmotion" name="speaker emotion">
+                          <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                        </ShortEnum>
+                        <ShortEnum CStyleName="listener_emotion" pascalStyleName="ListenerEmotion" name="listener emotion">
+                          <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                        </ShortEnum>
+                        <Real CStyleName="player_skip_fraction" pascalStyleName="PlayerSkipFraction" name="player skip fraction" />
+                        <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+                        <StringId CStyleName="sample_line" pascalStyleName="SampleLine" name="Sample line" />
+                        <Block CStyleName="reponses" pascalStyleName="Reponses" name="reponses" maxElementCount="20">
+                          <LayoutXRef>block:response</LayoutXRef>
+                        </Block>
+                        <Block CStyleName="children" pascalStyleName="Children" name="children" maxElementCount="500">
+                          <LayoutXRef>block:vocalization_definitions_block_3</LayoutXRef>
+                        </Block>
+                      </FieldSet>
+                    </Layout>
+                  </Block>
+                </FieldSet>
+                <FieldSet version="1" sizeofValue="104" sizeofSource="sizeof(struct vocalization)" isLatest="true">
+                  <StringId CStyleName="vocalization" pascalStyleName="Vocalization" name="vocalization" blockNameSource="true" />
+                  <StringId CStyleName="parent_vocalization" pascalStyleName="ParentVocalization" name="parent vocalization" tag="sted" />
+                  <ShortInteger CStyleName="parent_index" pascalStyleName="ParentIndex" name="parent index" readOnly="true" />
+                  <ShortEnum CStyleName="priority" pascalStyleName="Priority" name="priority">
+                    <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                  </ShortEnum>
+                  <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+                    <OptionsXRef>enum:vocalization_flags</OptionsXRef>
+                  </LongFlags>
+                  <ShortEnum CStyleName="glance_behavior" pascalStyleName="GlanceBehavior" name="glance behavior" description="how does the speaker of this vocalization direct his gaze?">
+                    <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="glance_recipient_behavior" pascalStyleName="GlanceRecipientBehavior" name="glance recipient behavior" description="how does someone who hears me behave?">
+                    <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="perception_type" pascalStyleName="PerceptionType" name="perception type">
+                    <OptionsXRef>enum:vocalization_perception_type</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="max_combat_status" pascalStyleName="MaxCombatStatus" name="max combat status">
+                    <OptionsXRef>enum:vocalization_combat_status_level</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="animation_impulse" pascalStyleName="AnimationImpulse" name="animation impulse">
+                    <OptionsXRef>enum:vocalization_animation_impulse</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="overlap_priority" pascalStyleName="OverlapPriority" name="overlap priority">
+                    <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+                  </ShortEnum>
+                  <Real CStyleName="sound_repetition_delay" pascalStyleName="SoundRepetitionDelay" name="sound repetition delay" units="minutes" description="Minimum delay time between playing the same permutation" />
+                  <Real CStyleName="allowable_queue_delay" pascalStyleName="AllowableQueueDelay" name="allowable queue delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                  <Real CStyleName="pre_voc_delay" pascalStyleName="PreVocDelay" name="pre voc. delay" units="seconds" description="How long to wait to actually start the vocalization" />
+                  <Real CStyleName="notification_delay" pascalStyleName="NotificationDelay" name="notification delay" units="seconds" description="How long into the vocalization the AI should be notified" />
+                  <Real CStyleName="post_voc_delay" pascalStyleName="PostVocDelay" name="post voc. delay" units="seconds" description="How long speech is suppressed in the speaking unit after vocalizing" />
+                  <Real CStyleName="repeat_delay" pascalStyleName="RepeatDelay" name="repeat delay" units="seconds" description="How long before the same vocalization can be repeated" />
+                  <Real CStyleName="weight" pascalStyleName="Weight" name="weight" units="[0-1]" description="Inherent weight of this vocalization" />
+                  <Real CStyleName="speaker_freeze_time" pascalStyleName="SpeakerFreezeTime" name="speaker freeze time" description="speaker won't move for the given amount of time" />
+                  <Real CStyleName="listener_freeze_time" pascalStyleName="ListenerFreezeTime" name="listener freeze time" description="listener won't move for the given amount of time (from start of vocalization)" />
+                  <ShortEnum CStyleName="speaker_emotion" pascalStyleName="SpeakerEmotion" name="speaker emotion">
+                    <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                  </ShortEnum>
+                  <ShortEnum CStyleName="listener_emotion" pascalStyleName="ListenerEmotion" name="listener emotion">
+                    <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+                  </ShortEnum>
+                  <Real CStyleName="player_skip_fraction" pascalStyleName="PlayerSkipFraction" name="player skip fraction" />
+                  <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+                  <StringId CStyleName="sample_line" pascalStyleName="SampleLine" name="Sample line" />
+                  <Block CStyleName="reponses" pascalStyleName="Reponses" name="reponses" maxElementCount="20">
+                    <LayoutXRef>block:response</LayoutXRef>
+                  </Block>
+                  <Block CStyleName="children" pascalStyleName="Children" name="children" maxElementCount="500">
+                    <LayoutXRef>block:vocalization_definitions_block_2</LayoutXRef>
+                  </Block>
+                </FieldSet>
+              </Layout>
+            </Block>
+          </FieldSet>
+          <FieldSet version="1" sizeofValue="104" sizeofSource="sizeof(struct vocalization)" isLatest="true">
+            <StringId CStyleName="vocalization" pascalStyleName="Vocalization" name="vocalization" blockNameSource="true" />
+            <StringId CStyleName="parent_vocalization" pascalStyleName="ParentVocalization" name="parent vocalization" tag="sted" />
+            <ShortInteger CStyleName="parent_index" pascalStyleName="ParentIndex" name="parent index" readOnly="true" />
+            <ShortEnum CStyleName="priority" pascalStyleName="Priority" name="priority">
+              <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+            </ShortEnum>
+            <LongFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <OptionsXRef>enum:vocalization_flags</OptionsXRef>
+            </LongFlags>
+            <ShortEnum CStyleName="glance_behavior" pascalStyleName="GlanceBehavior" name="glance behavior" description="how does the speaker of this vocalization direct his gaze?">
+              <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="glance_recipient_behavior" pascalStyleName="GlanceRecipientBehavior" name="glance recipient behavior" description="how does someone who hears me behave?">
+              <OptionsXRef>enum:vocalization_glance_behavior</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="perception_type" pascalStyleName="PerceptionType" name="perception type">
+              <OptionsXRef>enum:vocalization_perception_type</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="max_combat_status" pascalStyleName="MaxCombatStatus" name="max combat status">
+              <OptionsXRef>enum:vocalization_combat_status_level</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="animation_impulse" pascalStyleName="AnimationImpulse" name="animation impulse">
+              <OptionsXRef>enum:vocalization_animation_impulse</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="overlap_priority" pascalStyleName="OverlapPriority" name="overlap priority">
+              <OptionsXRef>enum:vocalization_priority</OptionsXRef>
+            </ShortEnum>
+            <Real CStyleName="sound_repetition_delay" pascalStyleName="SoundRepetitionDelay" name="sound repetition delay" units="minutes" description="Minimum delay time between playing the same permutation" />
+            <Real CStyleName="allowable_queue_delay" pascalStyleName="AllowableQueueDelay" name="allowable queue delay" units="seconds" description="How long to wait to actually start the vocalization" />
+            <Real CStyleName="pre_voc_delay" pascalStyleName="PreVocDelay" name="pre voc. delay" units="seconds" description="How long to wait to actually start the vocalization" />
+            <Real CStyleName="notification_delay" pascalStyleName="NotificationDelay" name="notification delay" units="seconds" description="How long into the vocalization the AI should be notified" />
+            <Real CStyleName="post_voc_delay" pascalStyleName="PostVocDelay" name="post voc. delay" units="seconds" description="How long speech is suppressed in the speaking unit after vocalizing" />
+            <Real CStyleName="repeat_delay" pascalStyleName="RepeatDelay" name="repeat delay" units="seconds" description="How long before the same vocalization can be repeated" />
+            <Real CStyleName="weight" pascalStyleName="Weight" name="weight" units="[0-1]" description="Inherent weight of this vocalization" />
+            <Real CStyleName="speaker_freeze_time" pascalStyleName="SpeakerFreezeTime" name="speaker freeze time" description="speaker won't move for the given amount of time" />
+            <Real CStyleName="listener_freeze_time" pascalStyleName="ListenerFreezeTime" name="listener freeze time" description="listener won't move for the given amount of time (from start of vocalization)" />
+            <ShortEnum CStyleName="speaker_emotion" pascalStyleName="SpeakerEmotion" name="speaker emotion">
+              <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="listener_emotion" pascalStyleName="ListenerEmotion" name="listener emotion">
+              <OptionsXRef>enum:vocalization_emotion</OptionsXRef>
+            </ShortEnum>
+            <Real CStyleName="player_skip_fraction" pascalStyleName="PlayerSkipFraction" name="player skip fraction" />
+            <Real CStyleName="skip_fraction" pascalStyleName="SkipFraction" name="skip fraction" />
+            <StringId CStyleName="sample_line" pascalStyleName="SampleLine" name="Sample line" />
+            <Block CStyleName="reponses" pascalStyleName="Reponses" name="reponses" maxElementCount="20">
+              <LayoutXRef>block:response</LayoutXRef>
+            </Block>
+            <Block CStyleName="children" pascalStyleName="Children" name="children" maxElementCount="500">
+              <LayoutXRef>block:vocalization_definitions_block_1</LayoutXRef>
+            </Block>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="patterns" pascalStyleName="Patterns" name="patterns" maxElementCount="1000">
+        <Layout regolithID="block:vocalization_patterns" internalName="vocalization_patterns_block" name="vocalization_patterns_block">
+          <FieldSet version="0" sizeofValue="64" sizeofSource="sizeof(struct vocalization_pattern)" isLatest="true">
+            <ShortEnum CStyleName="dialogue_type" pascalStyleName="DialogueType" name="dialogue type">
+              <Options regolithID="enum:vocalization_dialogue_type" CStyleName="vocalization_dialogue_type" pascalStyleName="VocalizationDialogueType">
+                <Enum name="death" CStyleName="death" pascalStyleName="Death" />
+                <Enum name="unused" CStyleName="unused1" pascalStyleName="Unused1" />
+                <Enum name="unused" CStyleName="unused2" pascalStyleName="Unused2" />
+                <Enum name="damage" CStyleName="damage" pascalStyleName="Damage" />
+                <Enum name="damage unused 1" CStyleName="damage_unused_1" pascalStyleName="DamageUnused1" />
+                <Enum name="damage unused 2" CStyleName="damage_unused_2" pascalStyleName="DamageUnused2" />
+                <Enum name="sighted_new" CStyleName="sighted_new" pascalStyleName="SightedNew" />
+                <Enum name="sighted_new major" CStyleName="sighted_new_major" pascalStyleName="SightedNewMajor" />
+                <Enum name="unused" CStyleName="unused8" pascalStyleName="Unused8" />
+                <Enum name="sighted_old" CStyleName="sighted_old" pascalStyleName="SightedOld" />
+                <Enum name="sighted_first" CStyleName="sighted_first" pascalStyleName="SightedFirst" />
+                <Enum name="sighted_special" CStyleName="sighted_special" pascalStyleName="SightedSpecial" />
+                <Enum name="unused" CStyleName="unused12" pascalStyleName="Unused12" />
+                <Enum name="heard_new" CStyleName="heard_new" pascalStyleName="HeardNew" />
+                <Enum name="unused" CStyleName="unused14" pascalStyleName="Unused14" />
+                <Enum name="heard_old" CStyleName="heard_old" pascalStyleName="HeardOld" />
+                <Enum name="unused" CStyleName="unused16" pascalStyleName="Unused16" />
+                <Enum name="unused" CStyleName="unused17" pascalStyleName="Unused17" />
+                <Enum name="unused" CStyleName="unused18" pascalStyleName="Unused18" />
+                <Enum name="acknowledge_multiple" CStyleName="acknowledge_multiple" pascalStyleName="AcknowledgeMultiple" />
+                <Enum name="unused" CStyleName="unused20" pascalStyleName="Unused20" />
+                <Enum name="unused" CStyleName="unused21" pascalStyleName="Unused21" />
+                <Enum name="unused" CStyleName="unused22" pascalStyleName="Unused22" />
+                <Enum name="found_unit" CStyleName="found_unit" pascalStyleName="FoundUnit" />
+                <Enum name="found_unit_presearch" CStyleName="found_unit_presearch" pascalStyleName="FoundUnitPresearch" />
+                <Enum name="found_unit_pursuit" CStyleName="found_unit_pursuit" pascalStyleName="FoundUnitPursuit" />
+                <Enum name="found_unit_self_preserving" CStyleName="found_unit_self_preserving" pascalStyleName="FoundUnitSelfPreserving" />
+                <Enum name="found_unit_retreating" CStyleName="found_unit_retreating" pascalStyleName="FoundUnitRetreating" />
+                <Enum name="throwing_grenade" CStyleName="throwing_grenade" pascalStyleName="ThrowingGrenade" />
+                <Enum name="noticed_grenade" CStyleName="noticed_grenade" pascalStyleName="NoticedGrenade" />
+                <Enum name="fighting" CStyleName="fighting" pascalStyleName="Fighting" />
+                <Enum name="charging" CStyleName="charging" pascalStyleName="Charging" />
+                <Enum name="suppressing_fire" CStyleName="suppressing_fire" pascalStyleName="SuppressingFire" />
+                <Enum name="grenade_uncover" CStyleName="grenade_uncover" pascalStyleName="GrenadeUncover" />
+                <Enum name="unused" CStyleName="unused34" pascalStyleName="Unused34" />
+                <Enum name="unused" CStyleName="unused35" pascalStyleName="Unused35" />
+                <Enum name="dive" CStyleName="dive" pascalStyleName="Dive" />
+                <Enum name="evade" CStyleName="evade" pascalStyleName="Evade" />
+                <Enum name="avoid" CStyleName="avoid" pascalStyleName="Avoid" />
+                <Enum name="surprised" CStyleName="surprised" pascalStyleName="Surprised" />
+                <Enum name="unused" CStyleName="unused40" pascalStyleName="Unused40" />
+                <Enum name="unused" CStyleName="unused41" pascalStyleName="Unused41" />
+                <Enum name="presearch" CStyleName="presearch" pascalStyleName="Presearch" />
+                <Enum name="presearch_start" CStyleName="presearch_start" pascalStyleName="PresearchStart" />
+                <Enum name="search" CStyleName="search" pascalStyleName="Search" />
+                <Enum name="search_start" CStyleName="search_start" pascalStyleName="SearchStart" />
+                <Enum name="investigate_failed" CStyleName="investigate_failed" pascalStyleName="InvestigateFailed" />
+                <Enum name="uncover_failed" CStyleName="uncover_failed" pascalStyleName="UncoverFailed" />
+                <Enum name="pursuit_failed" CStyleName="pursuit_failed" pascalStyleName="PursuitFailed" />
+                <Enum name="investigate_start" CStyleName="investigate_start" pascalStyleName="InvestigateStart" />
+                <Enum name="abandoned_search_space" CStyleName="abandoned_search_space" pascalStyleName="AbandonedSearchSpace" />
+                <Enum name="abandoned_search_time" CStyleName="abandoned_search_time" pascalStyleName="AbandonedSearchTime" />
+                <Enum name="presearch_failed" CStyleName="presearch_failed" pascalStyleName="PresearchFailed" />
+                <Enum name="abandoned_search_restricted" CStyleName="abandoned_search_restricted" pascalStyleName="AbandonedSearchRestricted" />
+                <Enum name="investigate_pursuit_start" CStyleName="investigate_pursuit_start" pascalStyleName="InvestigatePursuitStart" />
+                <Enum name="postcombat_inspect_body" CStyleName="postcombat_inspect_body" pascalStyleName="PostcombatInspectBody" />
+                <Enum name="vehicle_slow_down" CStyleName="vehicle_slow_down" pascalStyleName="VehicleSlowDown" />
+                <Enum name="vehicle_get_in" CStyleName="vehicle_get_in" pascalStyleName="VehicleGetIn" />
+                <Enum name="idle" CStyleName="idle" pascalStyleName="Idle" />
+                <Enum name="taunt" CStyleName="taunt" pascalStyleName="Taunt" />
+                <Enum name="taunt_reply" CStyleName="taunt_reply" pascalStyleName="TauntReply" />
+                <Enum name="retreat" CStyleName="retreat" pascalStyleName="Retreat" />
+                <Enum name="retreat_from_scary_target" CStyleName="retreat_from_scary_target" pascalStyleName="RetreatFromScaryTarget" />
+                <Enum name="retreat_from_dead_leader" CStyleName="retreat_from_dead_leader" pascalStyleName="RetreatFromDeadLeader" />
+                <Enum name="retreat_from_proximity" CStyleName="retreat_from_proximity" pascalStyleName="RetreatFromProximity" />
+                <Enum name="retreat_from_low_shield" CStyleName="retreat_from_low_shield" pascalStyleName="RetreatFromLowShield" />
+                <Enum name="flee" CStyleName="flee" pascalStyleName="Flee" />
+                <Enum name="cowering" CStyleName="cowering" pascalStyleName="Cowering" />
+                <Enum name="unused" CStyleName="unused68" pascalStyleName="Unused68" />
+                <Enum name="unused" CStyleName="unused69" pascalStyleName="Unused69" />
+                <Enum name="unused" CStyleName="unused70" pascalStyleName="Unused70" />
+                <Enum name="cover" CStyleName="cover" pascalStyleName="Cover" />
+                <Enum name="covered" CStyleName="covered" pascalStyleName="Covered" />
+                <Enum name="unused" CStyleName="unused73" pascalStyleName="Unused73" />
+                <Enum name="unused" CStyleName="unused74" pascalStyleName="Unused74" />
+                <Enum name="unused" CStyleName="unused75" pascalStyleName="Unused75" />
+                <Enum name="pursuit_start" CStyleName="pursuit_start" pascalStyleName="PursuitStart" />
+                <Enum name="pursuit_sync_start" CStyleName="pursuit_sync_start" pascalStyleName="PursuitSyncStart" />
+                <Enum name="pursuit_sync_join" CStyleName="pursuit_sync_join" pascalStyleName="PursuitSyncJoin" />
+                <Enum name="pursuit_sync_quorum" CStyleName="pursuit_sync_quorum" pascalStyleName="PursuitSyncQuorum" />
+                <Enum name="melee" CStyleName="melee" pascalStyleName="Melee" />
+                <Enum name="unused" CStyleName="unused81" pascalStyleName="Unused81" />
+                <Enum name="unused" CStyleName="unused82" pascalStyleName="Unused82" />
+                <Enum name="unused" CStyleName="unused83" pascalStyleName="Unused83" />
+                <Enum name="vehicle_falling" CStyleName="vehicle_falling" pascalStyleName="VehicleFalling" />
+                <Enum name="vehicle_woohoo" CStyleName="vehicle_woohoo" pascalStyleName="VehicleWoohoo" />
+                <Enum name="vehicle_scared" CStyleName="vehicle_scared" pascalStyleName="VehicleScared" />
+                <Enum name="vehicle_crazy" CStyleName="vehicle_crazy" pascalStyleName="VehicleCrazy" />
+                <Enum name="unused" CStyleName="unused88" pascalStyleName="Unused88" />
+                <Enum name="unused" CStyleName="unused89" pascalStyleName="Unused89" />
+                <Enum name="leap" CStyleName="leap" pascalStyleName="Leap" />
+                <Enum name="unused" CStyleName="unused91" pascalStyleName="Unused91" />
+                <Enum name="unused" CStyleName="unused92" pascalStyleName="Unused92" />
+                <Enum name="postcombat_win" CStyleName="postcombat_win" pascalStyleName="PostcombatWin" />
+                <Enum name="postcombat_lose" CStyleName="postcombat_lose" pascalStyleName="PostcombatLose" />
+                <Enum name="postcombat_neutral" CStyleName="postcombat_neutral" pascalStyleName="PostcombatNeutral" />
+                <Enum name="shoot_corpse" CStyleName="shoot_corpse" pascalStyleName="ShootCorpse" />
+                <Enum name="postcombat start" CStyleName="postcombat_start" pascalStyleName="PostcombatStart" />
+                <Enum name="inspect_body_start" CStyleName="inspect_body_start" pascalStyleName="InspectBodyStart" />
+                <Enum name="postcombat_status" CStyleName="postcombat_status" pascalStyleName="PostcombatStatus" />
+                <Enum name="unused" CStyleName="unused100" pascalStyleName="Unused100" />
+                <Enum name="vehicle_entry_start_driver" CStyleName="vehicle_entry_start_driver" pascalStyleName="VehicleEntryStartDriver" />
+                <Enum name="vehicle_enter" CStyleName="vehicle_enter" pascalStyleName="VehicleEnter" />
+                <Enum name="vehicle_entry_start_gun" CStyleName="vehicle_entry_start_gun" pascalStyleName="VehicleEntryStartGun" />
+                <Enum name="vehicle_entry_start_passenger" CStyleName="vehicle_entry_start_passenger" pascalStyleName="VehicleEntryStartPassenger" />
+                <Enum name="vehicle_exit" CStyleName="vehicle_exit" pascalStyleName="VehicleExit" />
+                <Enum name="evict_driver" CStyleName="evict_driver" pascalStyleName="EvictDriver" />
+                <Enum name="evict_gunner" CStyleName="evict_gunner" pascalStyleName="EvictGunner" />
+                <Enum name="evict_passenger" CStyleName="evict_passenger" pascalStyleName="EvictPassenger" />
+                <Enum name="unused" CStyleName="unused109" pascalStyleName="Unused109" />
+                <Enum name="unused" CStyleName="unused110" pascalStyleName="Unused110" />
+                <Enum name="new_order_advance" CStyleName="new_order_advance" pascalStyleName="NewOrderAdvance" />
+                <Enum name="new_order_charge" CStyleName="new_order_charge" pascalStyleName="NewOrderCharge" />
+                <Enum name="new_order_fallback" CStyleName="new_order_fallback" pascalStyleName="NewOrderFallback" />
+                <Enum name="new_order_retreat" CStyleName="new_order_retreat" pascalStyleName="NewOrderRetreat" />
+                <Enum name="new_order_moveon" CStyleName="new_order_moveon" pascalStyleName="NewOrderMoveon" />
+                <Enum name="new_order_arrival" CStyleName="new_order_arrival" pascalStyleName="NewOrderArrival" />
+                <Enum name="new_order_entervcl" CStyleName="new_order_entervcl" pascalStyleName="NewOrderEntervcl" />
+                <Enum name="new_order_exitvcl" CStyleName="new_order_exitvcl" pascalStyleName="NewOrderExitvcl" />
+                <Enum name="new_order_fllplr" CStyleName="new_order_fllplr" pascalStyleName="NewOrderFllplr" />
+                <Enum name="new_order_leaveplr" CStyleName="new_order_leaveplr" pascalStyleName="NewOrderLeaveplr" />
+                <Enum name="new_order_support" CStyleName="new_order_support" pascalStyleName="NewOrderSupport" />
+                <Enum name="unused" CStyleName="unused122" pascalStyleName="Unused122" />
+                <Enum name="unused" CStyleName="unused123" pascalStyleName="Unused123" />
+                <Enum name="unused" CStyleName="unused124" pascalStyleName="Unused124" />
+                <Enum name="unused" CStyleName="unused125" pascalStyleName="Unused125" />
+                <Enum name="unused" CStyleName="unused126" pascalStyleName="Unused126" />
+                <Enum name="unused" CStyleName="unused127" pascalStyleName="Unused127" />
+                <Enum name="unused" CStyleName="unused128" pascalStyleName="Unused128" />
+                <Enum name="unused" CStyleName="unused129" pascalStyleName="Unused129" />
+                <Enum name="unused" CStyleName="unused130" pascalStyleName="Unused130" />
+                <Enum name="unused" CStyleName="unused131" pascalStyleName="Unused131" />
+                <Enum name="unused" CStyleName="unused132" pascalStyleName="Unused132" />
+                <Enum name="unused" CStyleName="unused133" pascalStyleName="Unused133" />
+                <Enum name="emerge" CStyleName="emerge" pascalStyleName="Emerge" />
+                <Enum name="unused" CStyleName="unused135" pascalStyleName="Unused135" />
+                <Enum name="unused" CStyleName="unused136" pascalStyleName="Unused136" />
+                <Enum name="unused" CStyleName="unused137" pascalStyleName="Unused137" />
+                <Enum name="curse" CStyleName="curse" pascalStyleName="Curse" />
+                <Enum name="unused" CStyleName="unused139" pascalStyleName="Unused139" />
+                <Enum name="unused" CStyleName="unused140" pascalStyleName="Unused140" />
+                <Enum name="unused" CStyleName="unused141" pascalStyleName="Unused141" />
+                <Enum name="threaten" CStyleName="threaten" pascalStyleName="Threaten" />
+                <Enum name="unused" CStyleName="unused143" pascalStyleName="Unused143" />
+                <Enum name="unused" CStyleName="unused144" pascalStyleName="Unused144" />
+                <Enum name="unused" CStyleName="unused145" pascalStyleName="Unused145" />
+                <Enum name="cover_friend" CStyleName="cover_friend" pascalStyleName="CoverFriend" />
+                <Enum name="unused" CStyleName="unused147" pascalStyleName="Unused147" />
+                <Enum name="unused" CStyleName="unused148" pascalStyleName="Unused148" />
+                <Enum name="unused" CStyleName="unused149" pascalStyleName="Unused149" />
+                <Enum name="strike" CStyleName="strike" pascalStyleName="Strike" />
+                <Enum name="unused" CStyleName="unused151" pascalStyleName="Unused151" />
+                <Enum name="unused" CStyleName="unused152" pascalStyleName="Unused152" />
+                <Enum name="unused" CStyleName="unused153" pascalStyleName="Unused153" />
+                <Enum name="unused" CStyleName="unused154" pascalStyleName="Unused154" />
+                <Enum name="unused" CStyleName="unused155" pascalStyleName="Unused155" />
+                <Enum name="unused" CStyleName="unused156" pascalStyleName="Unused156" />
+                <Enum name="unused" CStyleName="unused157" pascalStyleName="Unused157" />
+                <Enum name="unused" CStyleName="unused158" pascalStyleName="Unused158" />
+                <Enum name="gloat" CStyleName="gloat" pascalStyleName="Gloat" />
+                <Enum name="unused" CStyleName="unused160" pascalStyleName="Unused160" />
+                <Enum name="unused" CStyleName="unused161" pascalStyleName="Unused161" />
+                <Enum name="unused" CStyleName="unused162" pascalStyleName="Unused162" />
+                <Enum name="greet" CStyleName="greet" pascalStyleName="Greet" />
+                <Enum name="unused" CStyleName="unused164" pascalStyleName="Unused164" />
+                <Enum name="unused" CStyleName="unused165" pascalStyleName="Unused165" />
+                <Enum name="unused" CStyleName="unused166" pascalStyleName="Unused166" />
+                <Enum name="unused" CStyleName="unused167" pascalStyleName="Unused167" />
+                <Enum name="player_look" CStyleName="player_look" pascalStyleName="PlayerLook" />
+                <Enum name="player_look_longtime" CStyleName="player_look_longtime" pascalStyleName="PlayerLookLongtime" />
+                <Enum name="unused" CStyleName="unused170" pascalStyleName="Unused170" />
+                <Enum name="unused" CStyleName="unused171" pascalStyleName="Unused171" />
+                <Enum name="unused" CStyleName="unused172" pascalStyleName="Unused172" />
+                <Enum name="unused" CStyleName="unused173" pascalStyleName="Unused173" />
+                <Enum name="panic_grenade_attached" CStyleName="panic_grenade_attached" pascalStyleName="PanicGrenadeAttached" />
+                <Enum name="unused" CStyleName="unused175" pascalStyleName="Unused175" />
+                <Enum name="unused" CStyleName="unused176" pascalStyleName="Unused176" />
+                <Enum name="unused" CStyleName="unused177" pascalStyleName="Unused177" />
+                <Enum name="unused" CStyleName="unused178" pascalStyleName="Unused178" />
+                <Enum name="help response" CStyleName="help_response" pascalStyleName="HelpResponse" />
+                <Enum name="unused" CStyleName="unused180" pascalStyleName="Unused180" />
+                <Enum name="unused" CStyleName="unused181" pascalStyleName="Unused181" />
+                <Enum name="unused" CStyleName="unused182" pascalStyleName="Unused182" />
+                <Enum name="remind" CStyleName="remind" pascalStyleName="Remind" />
+                <Enum name="unused" CStyleName="unused184" pascalStyleName="Unused184" />
+                <Enum name="unused" CStyleName="unused185" pascalStyleName="Unused185" />
+                <Enum name="unused" CStyleName="unused186" pascalStyleName="Unused186" />
+                <Enum name="unused" CStyleName="unused187" pascalStyleName="Unused187" />
+                <Enum name="weapon_trade_better" CStyleName="weapon_trade_better" pascalStyleName="WeaponTradeBetter" />
+                <Enum name="weapon_trade_worse" CStyleName="weapon_trade_worse" pascalStyleName="WeaponTradeWorse" />
+                <Enum name="weapon_reade_equal" CStyleName="weapon_reade_equal" pascalStyleName="WeaponReadeEqual" />
+                <Enum name="unused" CStyleName="unused191" pascalStyleName="Unused191" />
+                <Enum name="unused" CStyleName="unused192" pascalStyleName="Unused192" />
+                <Enum name="unused" CStyleName="unused193" pascalStyleName="Unused193" />
+                <Enum name="betray" CStyleName="betray" pascalStyleName="Betray" />
+                <Enum name="unused" CStyleName="unused195" pascalStyleName="Unused195" />
+                <Enum name="forgive" CStyleName="forgive" pascalStyleName="Forgive" />
+                <Enum name="unused" CStyleName="unused197" pascalStyleName="Unused197" />
+                <Enum name="reanimate" CStyleName="reanimate" pascalStyleName="Reanimate" />
+                <Enum name="unused" CStyleName="unused199" pascalStyleName="Unused199" />
+              </Options>
+            </ShortEnum>
+            <ShortInteger CStyleName="vocalization_index" pascalStyleName="VocalizationIndex" name="vocalization index" />
+            <StringId CStyleName="vocalization_name" pascalStyleName="VocalizationName" name="vocalization name" tag="sted" />
+            <ShortEnum CStyleName="speaker_type" pascalStyleName="SpeakerType" name="speaker type">
+              <Options regolithID="enum:vocalization_relationship" CStyleName="vocalization_relationship" pascalStyleName="VocalizationRelationship">
+                <Enum name="subject" CStyleName="subject" pascalStyleName="Subject" />
+                <Enum name="cause" CStyleName="cause" pascalStyleName="Cause" />
+                <Enum name="friend" CStyleName="_friend" pascalStyleName="Friend" />
+                <Enum name="target" CStyleName="target" pascalStyleName="Target" />
+                <Enum name="enemy" CStyleName="enemy" pascalStyleName="Enemy" />
+                <Enum name="vehicle" CStyleName="vehicle" pascalStyleName="Vehicle" />
+                <Enum name="joint" CStyleName="joint" pascalStyleName="Joint" />
+                <Enum name="squad" CStyleName="squad" pascalStyleName="Squad" />
+                <Enum name="leader" CStyleName="leader" pascalStyleName="Leader" />
+                <Enum name="joint_leader" CStyleName="joint_leader" pascalStyleName="JointLeader" />
+                <Enum name="clump" CStyleName="clump" pascalStyleName="Clump" />
+                <Enum name="peer" CStyleName="peer" pascalStyleName="Peer" />
+              </Options>
+            </ShortEnum>
+            <WordFlags CStyleName="flags" pascalStyleName="Flags" name="flags">
+              <Options regolithID="enum:vocalization_pattern_flags" CStyleName="vocalization_pattern_flags" pascalStyleName="VocalizationPatternFlags">
+                <Bit name="subject visible" CStyleName="subject_visible_bit" pascalStyleName="SubjectVisibleBit" />
+                <Bit name="cause visible" CStyleName="cause_visible_bit" pascalStyleName="CauseVisibleBit" />
+                <Bit name="friends present" CStyleName="friends_present_bit" pascalStyleName="FriendsPresentBit" />
+                <Bit name="subject is speaker's target" CStyleName="subject_is_speakers_target_bit" pascalStyleName="SubjectIsSpeakersTargetBit" />
+                <Bit name="cause is speaker's target" CStyleName="cause_is_speakers_target_bit" pascalStyleName="CauseIsSpeakersTargetBit" />
+                <Bit name="cause is player or speaker is player ally" CStyleName="cause_is_player_or_speaker_is_player_ally_bit" pascalStyleName="CauseIsPlayerOrSpeakerIsPlayerAllyBit" />
+                <Bit name="speaker is searching" CStyleName="speaker_is_searching_bit" pascalStyleName="SpeakerIsSearchingBit" />
+                <Bit name="speaker is following player" CStyleName="speaker_is_following_player_bit" pascalStyleName="SpeakerIsFollowingPlayerBit" />
+                <Bit name="cause is primary player ally" CStyleName="cause_is_primary_player_ally_bit" pascalStyleName="CauseIsPrimaryPlayerAllyBit" />
+              </Options>
+            </WordFlags>
+            <ShortEnum CStyleName="listenertarget" pascalStyleName="Listenertarget" name="listener/target" description="who/what am I speaking to/of?">
+              <OptionsXRef>enum:vocalization_relationship</OptionsXRef>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <Pad sizeOfSource="sizeof(long)" length="4" />
+            <ShortEnum CStyleName="hostility" pascalStyleName="Hostility" name="hostility" description="The relationship between the subject and the cause">
+              <Options regolithID="enum:vocalization_hostility" CStyleName="vocalization_hostility" pascalStyleName="VocalizationHostility">
+                <Enum name="NONE" CStyleName="none" pascalStyleName="None" />
+                <Enum name="self" CStyleName="self" pascalStyleName="Self" />
+                <Enum name="neutral" CStyleName="neutral" pascalStyleName="Neutral" />
+                <Enum name="friend" CStyleName="_friend" pascalStyleName="Friend" />
+                <Enum name="enemy" CStyleName="enemy" pascalStyleName="Enemy" />
+                <Enum name="traitor" CStyleName="traitor" pascalStyleName="Traitor" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="damage_type" pascalStyleName="DamageType" name="damage type">
+              <Options regolithID="enum:vocalization_patterns_damage_type" CStyleName="vocalization_patterns_damage_type" pascalStyleName="VocalizationPatternsDamageType">
+                <Enum name="NONE" CStyleName="none" pascalStyleName="None" />
+                <Enum name="falling" CStyleName="falling" pascalStyleName="Falling" />
+                <Enum name="bullet" CStyleName="bullet" pascalStyleName="Bullet" />
+                <Enum name="grenade" CStyleName="grenade" pascalStyleName="Grenade" />
+                <Enum name="explosive" CStyleName="explosive" pascalStyleName="Explosive" />
+                <Enum name="sniper" CStyleName="sniper" pascalStyleName="Sniper" />
+                <Enum name="melee" CStyleName="melee" pascalStyleName="Melee" />
+                <Enum name="flame" CStyleName="flame" pascalStyleName="Flame" />
+                <Enum name="mounted weapon" CStyleName="mounted_weapon" pascalStyleName="MountedWeapon" />
+                <Enum name="vehicle" CStyleName="vehicle" pascalStyleName="Vehicle" />
+                <Enum name="plasma" CStyleName="plasma" pascalStyleName="Plasma" />
+                <Enum name="needle" CStyleName="needle" pascalStyleName="Needle" />
+                <Enum name="shotgun" CStyleName="shotgun" pascalStyleName="Shotgun" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="danger_level" pascalStyleName="DangerLevel" name="danger level" description="Speaker must have danger level of at least this much">
+              <Options regolithID="enum:vocalization_danger_level" CStyleName="vocalization_danger_level" pascalStyleName="VocalizationDangerLevel">
+                <Enum name="NONE" CStyleName="none" pascalStyleName="None" />
+                <Enum name="broadly facing" CStyleName="broadly_facing" pascalStyleName="BroadlyFacing" />
+                <Enum name="shooting near" CStyleName="shooting_near" pascalStyleName="ShootingNear" />
+                <Enum name="shooting at" CStyleName="shooting_at" pascalStyleName="ShootingAt" />
+                <Enum name="extremely close" CStyleName="extremely_close" pascalStyleName="ExtremelyClose" />
+                <Enum name="shield damage" CStyleName="shield_damage" pascalStyleName="ShieldDamage" />
+                <Enum name="shield extended damage" CStyleName="shield_extended_damage" pascalStyleName="ShieldExtendedDamage" />
+                <Enum name="body damage" CStyleName="body_damage" pascalStyleName="BodyDamage" />
+                <Enum name="body extended damage" CStyleName="body_extended_damage" pascalStyleName="BodyExtendedDamage" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="attitude" pascalStyleName="Attitude" name="attitude">
+              <Options regolithID="enum:vocalization_attitude" CStyleName="vocalization_attitude" pascalStyleName="VocalizationAttitude">
+                <Enum name="Normal" CStyleName="normal" pascalStyleName="Normal" />
+                <Enum name="Timid" CStyleName="timid" pascalStyleName="Timid" />
+                <Enum name="Aggressive" CStyleName="aggressive" pascalStyleName="Aggressive" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="1*sizeof(long)" length="4" />
+            <ShortEnum CStyleName="subject_actor_type" pascalStyleName="SubjectActorType" name="subject actor type">
+              <Options regolithID="enum:vocalization_actor_type" CStyleName="vocalization_actor_type" pascalStyleName="VocalizationActorType">
+                <Enum name="NONE" CStyleName="none" pascalStyleName="None" />
+                <Enum name="elite" CStyleName="elite" pascalStyleName="Elite" />
+                <Enum name="jackal" CStyleName="jackal" pascalStyleName="Jackal" />
+                <Enum name="grunt" CStyleName="grunt" pascalStyleName="Grunt" />
+                <Enum name="hunter" CStyleName="hunter" pascalStyleName="Hunter" />
+                <Enum name="engineer" CStyleName="engineer" pascalStyleName="Engineer" />
+                <Enum name="assassin" CStyleName="assassin" pascalStyleName="Assassin" />
+                <Enum name="player" CStyleName="player" pascalStyleName="Player" />
+                <Enum name="marine" CStyleName="marine" pascalStyleName="Marine" />
+                <Enum name="crew" CStyleName="crew" pascalStyleName="Crew" />
+                <Enum name="combat form" CStyleName="combat_form" pascalStyleName="CombatForm" />
+                <Enum name="infection form" CStyleName="infection_form" pascalStyleName="InfectionForm" />
+                <Enum name="carrier form" CStyleName="carrier_form" pascalStyleName="CarrierForm" />
+                <Enum name="monitor" CStyleName="monitor" pascalStyleName="Monitor" />
+                <Enum name="sentinel" CStyleName="sentinel" pascalStyleName="Sentinel" />
+                <Enum name="none" CStyleName="unnamed_15" pascalStyleName="Unnamed15" />
+                <Enum name="mounted weapon" CStyleName="mounted_weapon" pascalStyleName="MountedWeapon" />
+                <Enum name="brute" CStyleName="brute" pascalStyleName="Brute" />
+                <Enum name="prophet" CStyleName="prophet" pascalStyleName="Prophet" />
+                <Enum name="bugger" CStyleName="bugger" pascalStyleName="Bugger" />
+                <Enum name="juggernaut" CStyleName="juggernaut" pascalStyleName="Juggernaut" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="cause_actor_type" pascalStyleName="CauseActorType" name="cause actor type">
+              <OptionsXRef>enum:vocalization_actor_type</OptionsXRef>
+            </ShortEnum>
+            <ShortEnum CStyleName="cause_type" pascalStyleName="CauseType" name="cause type">
+              <Options regolithID="enum:vocalization_patterns_subject_type" CStyleName="vocalization_patterns_subject_type" pascalStyleName="VocalizationPatternsSubjectType">
+                <Enum name="NONE" CStyleName="none" pascalStyleName="None" />
+                <Enum name="player" CStyleName="player" pascalStyleName="Player" />
+                <Enum name="actor" CStyleName="actor" pascalStyleName="Actor" />
+                <Enum name="biped" CStyleName="biped" pascalStyleName="Biped" />
+                <Enum name="body" CStyleName="body" pascalStyleName="Body" />
+                <Enum name="vehicle" CStyleName="vehicle" pascalStyleName="Vehicle" />
+                <Enum name="projectile" CStyleName="projectile" pascalStyleName="Projectile" />
+                <Enum name="actor or player" CStyleName="actor_or_player" pascalStyleName="ActorOrPlayer" />
+                <Enum name="turret" CStyleName="turret" pascalStyleName="Turret" />
+                <Enum name="unit in vehicle" CStyleName="unit_in_vehicle" pascalStyleName="UnitInVehicle" />
+                <Enum name="unit in turret" CStyleName="unit_in_turret" pascalStyleName="UnitInTurret" />
+                <Enum name="driver" CStyleName="driver" pascalStyleName="Driver" />
+                <Enum name="gunner" CStyleName="gunner" pascalStyleName="Gunner" />
+                <Enum name="passenger" CStyleName="passenger" pascalStyleName="Passenger" />
+                <Enum name="postcombat" CStyleName="postcombat" pascalStyleName="Postcombat" />
+                <Enum name="postcombat_won" CStyleName="postcombat_won" pascalStyleName="PostcombatWon" />
+                <Enum name="postcombat_lost" CStyleName="postcombat_lost" pascalStyleName="PostcombatLost" />
+                <Enum name="player masterchief" CStyleName="player_masterchief" pascalStyleName="PlayerMasterchief" />
+                <Enum name="player dervish" CStyleName="player_dervish" pascalStyleName="PlayerDervish" />
+                <Enum name="heretic" CStyleName="heretic" pascalStyleName="Heretic" />
+                <Enum name="majorly scary" CStyleName="majorly_scary" pascalStyleName="MajorlyScary" />
+                <Enum name="last man in vehicle" CStyleName="last_man_in_vehicle" pascalStyleName="LastManInVehicle" />
+                <Enum name="male" CStyleName="male" pascalStyleName="Male" />
+                <Enum name="female" CStyleName="female" pascalStyleName="Female" />
+                <Enum name="grenade" CStyleName="grenade" pascalStyleName="Grenade" />
+              </Options>
+            </ShortEnum>
+            <ShortEnum CStyleName="subject_type" pascalStyleName="SubjectType" name="subject type">
+              <OptionsXRef>enum:vocalization_patterns_subject_type</OptionsXRef>
+            </ShortEnum>
+            <StringId CStyleName="cause_ai_type_name" pascalStyleName="CauseAiTypeName" name="cause ai type name" />
+            <ShortEnum CStyleName="spatial_relation" pascalStyleName="SpatialRelation" name="spatial relation" description="with respect to the subject, the cause is ...">
+              <Options regolithID="enum:vocalization_patterns_spatial_relation" CStyleName="vocalization_patterns_spatial_relation" pascalStyleName="VocalizationPatternsSpatialRelation">
+                <Enum name="none" CStyleName="none" pascalStyleName="None" />
+                <Enum name="very near (&lt;1wu)" CStyleName="very_near_1wu" pascalStyleName="VeryNear1wu" />
+                <Enum name="near (&lt;2.5wus)" CStyleName="near_25wus" pascalStyleName="Near25wus" />
+                <Enum name="medium range (&lt;5wus)" CStyleName="medium_range_5wus" pascalStyleName="MediumRange5wus" />
+                <Enum name="far (&lt;10wus)" CStyleName="far_10wus" pascalStyleName="Far10wus" />
+                <Enum name="very far (&gt;10wus)" CStyleName="very_far_10wus" pascalStyleName="VeryFar10wus" />
+                <Enum name="in front of" CStyleName="in_front_of" pascalStyleName="InFrontOf" />
+                <Enum name="behind" CStyleName="behind" pascalStyleName="Behind" />
+                <Enum name="above (delta&gt;1 wu)" CStyleName="above_delta1_wu" pascalStyleName="AboveDelta1Wu" />
+                <Enum name="below (delta&gt;1 wu)" CStyleName="below_delta1_wu" pascalStyleName="BelowDelta1Wu" />
+              </Options>
+            </ShortEnum>
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+            <StringId CStyleName="subject_ai_type_name" pascalStyleName="SubjectAiTypeName" name="subject ai type name" />
+            <Pad sizeOfSource="2*sizeof(long)" length="8" />
+            <LongFlags CStyleName="conditions" pascalStyleName="Conditions" name="Conditions">
+              <Options regolithID="enum:vocalization_conditions" CStyleName="vocalization_conditions" pascalStyleName="VocalizationConditions">
+                <Bit name="asleep" CStyleName="asleep_bit" pascalStyleName="AsleepBit" />
+                <Bit name="idle" CStyleName="idle_bit" pascalStyleName="IdleBit" />
+                <Bit name="alert" CStyleName="alert_bit" pascalStyleName="AlertBit" />
+                <Bit name="active" CStyleName="active_bit" pascalStyleName="ActiveBit" />
+                <Bit name="uninspected orphan" CStyleName="uninspected_orphan_bit" pascalStyleName="UninspectedOrphanBit" />
+                <Bit name="definite orphan" CStyleName="definite_orphan_bit" pascalStyleName="DefiniteOrphanBit" />
+                <Bit name="certain orphan" CStyleName="certain_orphan_bit" pascalStyleName="CertainOrphanBit" />
+                <Bit name="visible enemy" CStyleName="visible_enemy_bit" pascalStyleName="VisibleEnemyBit" />
+                <Bit name="clear los enemy" CStyleName="clear_los_enemy_bit" pascalStyleName="ClearLosEnemyBit" />
+                <Bit name="dangerous enemy" CStyleName="dangerous_enemy_bit" pascalStyleName="DangerousEnemyBit" />
+                <Bit name="no vehicle" CStyleName="no_vehicle_bit" pascalStyleName="NoVehicleBit" />
+                <Bit name="vehicle driver" CStyleName="vehicle_driver_bit" pascalStyleName="VehicleDriverBit" />
+                <Bit name="vehicle passenger" CStyleName="vehicle_passenger_bit" pascalStyleName="VehiclePassengerBit" />
+              </Options>
+            </LongFlags>
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Pad sizeOfSource="3*sizeof(long)" length="12" />
+      <Block CStyleName="dialogue_data" pascalStyleName="DialogueData" name="dialogue data" maxElementCount="200" maxElementCountSource="k_dialogue_type_count">
+        <Layout regolithID="block:dialogue_data" internalName="dialogue_data_block" name="dialogue_data_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(struct dialogue_data)" isLatest="true">
+            <ShortInteger CStyleName="start_index_postprocess" pascalStyleName="StartIndexPostprocess" name="start index (postprocess)" readOnly="true" />
+            <ShortInteger CStyleName="length_postprocess" pascalStyleName="LengthPostprocess" name="length (postprocess)" readOnly="true" />
+          </FieldSet>
+        </Layout>
+      </Block>
+      <Block CStyleName="involuntary_data" pascalStyleName="InvoluntaryData" name="involuntary data" maxElementCount="100">
+        <Layout regolithID="block:involuntary_data" internalName="involuntary_data_block" name="involuntary_data_block">
+          <FieldSet version="0" sizeofValue="4" sizeofSource="sizeof(struct involuntary_data)" isLatest="true">
+            <ShortInteger CStyleName="involuntary_vocalization_index" pascalStyleName="InvoluntaryVocalizationIndex" name="involuntary vocalization index" readOnly="true" />
+            <Pad sizeOfSource="sizeof(short)" length="2" />
+          </FieldSet>
+        </Layout>
+      </Block>
+    </FieldSet>
+  </Layout>
+</TagGroup>
