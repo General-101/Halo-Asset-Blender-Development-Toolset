@@ -812,7 +812,7 @@ def uppercase_struct_letters(struct_string):
             result.append(char)
     return ''.join(result)
 
-def dump_foundation(foundation_file, game_version=None):
+def dump_foundation(foundation_file, game_version=None, output_directory=None):
     with open(foundation_file, "rb") as input_stream:
         foundation_type = read_int16(input_stream)
         version = read_int16(input_stream)
@@ -892,7 +892,10 @@ def dump_foundation(foundation_file, game_version=None):
                 if result is not None:
                     tag_extension = result
 
-            output_folder = os.path.join(os.path.join(os.path.dirname(foundation_file), "output"), tag_extension)
+            if output_directory is None:
+                output_folder = os.path.join(os.path.join(os.path.dirname(foundation_file), "output"), tag_extension)
+            else:
+                output_folder = os.path.join(output_directory, tag_extension)
             os.makedirs(output_folder, exist_ok=True)
             output_file = os.path.join(output_folder, tag_header["name"])
 

@@ -40,7 +40,7 @@
       <Block CStyleName="sequences" pascalStyleName="Sequences" name="sequences">
         <Layout regolithID="block:sequences" internalName="sequences_block" name="sequences_block">
           <FieldSet version="0" sizeofValue="64" isLatest="true">
-            <Tag CStyleName="name" pascalStyleName="Name" name="name" />
+            <String CStyleName="name" pascalStyleName="Name" name="name" />
             <ShortInteger CStyleName="first_bitmap_index" pascalStyleName="FirstBitmapIndex" name="first bitmap index" />
             <ShortInteger CStyleName="bitmap_count" pascalStyleName="BitmapCount" name="bitmap count" />
             <Pad name="pad" length="16" />
@@ -74,7 +74,7 @@
             <Block CStyleName="bitmaps" pascalStyleName="Bitmaps" name="bitmaps">
               <Layout regolithID="block:bitmaps" internalName="bitmaps_block" name="bitmaps_block">
                 <FieldSet version="0" sizeofValue="48" isLatest="true">
-                  <StringId CStyleName="signature" pascalStyleName="Signature" name="signature" />
+                  <Tag CStyleName="signature" pascalStyleName="Signature" name="signature" />
                   <ShortInteger CStyleName="width" pascalStyleName="Width" name="width" />
                   <ShortInteger CStyleName="height" pascalStyleName="Height" name="height" />
                   <ShortInteger CStyleName="bytes_per_row" pascalStyleName="BytesPerRow" name="bytes per row" />

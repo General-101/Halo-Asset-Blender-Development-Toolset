@@ -324,9 +324,12 @@ def validate_function_struct(current_struct_field_set, tag_block_fields):
     if not valid_function:
         create_function(current_struct_field_set, tag_block_fields, FIELD_ENDIAN, 1, 0, 0, 0, [], [], False)
 
-def check_header(input_stream):
+def check_header(input_stream, tag_groups_override=None):
     valid_header = False
     valid_engine = ('blam', 'BLM!', 'LAMB', 'BALM', 'malb', '!MLB', 'BMAL', 'MLAB')
+
+    if os.fstat(input_stream.fileno()).st_size < 64:
+        return valid_header, None, None, None
 
     input_stream.seek(36) # Position of tag group in all tags
     tag_group = input_stream.read(4).decode('utf-8', 'replace')
@@ -336,6 +339,8 @@ def check_header(input_stream):
     input_stream.seek(0)
 
     tag_groups = tag_common.h1_tag_groups
+    if tag_groups_override is not None:
+        tag_groups = tag_groups_override
     if engine_tag != "blam":
         tag_groups = tag_common.h2_tag_groups
         tag_group = tag_group[::-1]
@@ -2371,11 +2376,14 @@ def h2_directory():
                                 f"  File: {read_path}\n")
                     traceback.print_exc(file=log_file)
 
-def read_tag(tag_path, tag_group, tag_directory, tag_groups, engine_tag, merged_defs):
+def read_tag(tag_path, tag_group, tag_directory, tag_groups, engine_tag, merged_defs, absolute_file_path):
     asset = None
 
     tag_extension = tag_groups.get(tag_group)
-    read_path = os.path.join(tag_directory, "%s.%s" % (tag_path, tag_extension))
+    if not absolute_file_path == "":
+        read_path = absolute_file_path
+    else:
+        read_path = os.path.join(tag_directory, "%s.%s" % (tag_path, tag_extension))
     if os.path.isfile(read_path):
         asset = read_file(merged_defs, tag_directory, read_path, engine_tag)
 
@@ -2451,7 +2459,7 @@ def get_disk_asset(tag_path, tag_extension):
 
     return asset_dump
 
-def generate_tag_dictionary(game_title, root_tag_ref, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache={}, prepare_for_blender=True):
+def generate_tag_dictionary(game_title, root_tag_ref, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache={}, prepare_for_blender=True, absolute_file_path=""):
     tag_group = root_tag_ref.get("group name", "")
     tag_extension = tag_groups.get(tag_group)
     tag_path = root_tag_ref.get("path", "")
@@ -2471,7 +2479,12 @@ def generate_tag_dictionary(game_title, root_tag_ref, tag_directory, tag_groups,
 
     if asset_cache[tag_group][tag_path]["has_disk_asset"]:
         if not asset_cache[tag_group][tag_path]["matching_checksum"]:
-            with open(os.path.join(tag_directory, "%s.%s" % (tag_path, tag_extension)), 'rb') as input_stream:
+            if not absolute_file_path == "":
+                file_path = absolute_file_path
+            else:
+                file_path = os.path.join(tag_directory, "%s.%s" % (tag_path, tag_extension))
+
+            with open(file_path, 'rb') as input_stream:
                 valid_header, disk_tag_group, disk_checksum, disk_engine_tag = check_header(input_stream)
 
             parsed_asset = get_disk_asset(tag_path, tag_extension)
@@ -2536,7 +2549,7 @@ def generate_tag_dictionary(game_title, root_tag_ref, tag_directory, tag_groups,
                     generate_tag_dictionary(game_title, tag_ref, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender)
 
     else:
-        parsed_asset = read_tag(tag_path, tag_group, tag_directory, tag_groups, engine_tag, merged_defs)
+        parsed_asset = read_tag(tag_path, tag_group, tag_directory, tag_groups, engine_tag, merged_defs, absolute_file_path)
         if parsed_asset is None:
             return asset_cache
         else:

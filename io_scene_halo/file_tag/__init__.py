@@ -74,6 +74,7 @@ class ImportTag(Operator, ImportHelper):
         name="Game:",
         description="What game does the tag group belong to",
         items=[ ('auto', "Auto", "Attempt to get the game title automatically. Defaults to Halo 1 if it fails."),
+                ('halo1_20000525', "Halo 1 20000525", "Use tag data from Halo 1 20000525"),
                 ('halo1', "Halo 1", "Use tag data from Halo 1"),
                 ('halo2', "Halo 2", "Use tag data from Halo 2"),
                 ('halo3', "Halo 3", "Use tag data from Halo 3"),

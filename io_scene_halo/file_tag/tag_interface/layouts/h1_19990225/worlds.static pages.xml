@@ -8,8 +8,8 @@
         <Layout regolithID="block:structure layers" internalName="structure layers_block" name="structure layers_block">
           <FieldSet version="0" sizeofValue="100" isLatest="true">
             <ShortInteger CStyleName="next_layer_index" pascalStyleName="NextLayerIndex" name="next layer index" />
-            <Pad name="pad" length="2" />
-            <LongInteger CStyleName="z_minimum" pascalStyleName="ZMinimum" name="z minimum" />
+			<Pad name="pad" length="2" />
+            <Real CStyleName="z_minimum" pascalStyleName="ZMinimum" name="z minimum" />
             <LongInteger CStyleName="unique_identifier" pascalStyleName="UniqueIdentifier" name="unique identifier" />
             <Pad name="pad" length="64" />
             <Block CStyleName="surfaces" pascalStyleName="Surfaces" name="surfaces">
@@ -19,7 +19,7 @@
                   <Real CStyleName="b" pascalStyleName="B" name="b" />
                   <Real CStyleName="c" pascalStyleName="C" name="c" />
                   <RealVector3D CStyleName="normal" pascalStyleName="Normal" name="normal" />
-                  <Pad name="pad" length="4" />
+				  <Pad name="pad" length="4" />
                 </FieldSet>
               </Layout>
             </Block>
@@ -40,9 +40,9 @@
         </Layout>
       </Block>
       <Block CStyleName="detail_objects" pascalStyleName="DetailObjects" name="detail objects">
-        <Layout regolithID="block:detail objects" internalName="detail objects_block" name="detail objects_block">
-          <FieldSet version="0" sizeofValue="4" isLatest="true">
-            <LongInteger CStyleName="unique_identifier" pascalStyleName="UniqueIdentifier" name="unique identifier" />
+        <Layout regolithID="block:detail objects" internalName="detail objects_block" name="detail objects _block">
+          <FieldSet version="0" sizeofValue="100" isLatest="true">
+            <Real CStyleName="vector" pascalStyleName="Vector" name="vector" />
           </FieldSet>
         </Layout>
       </Block>
