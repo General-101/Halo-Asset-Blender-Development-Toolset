@@ -105,6 +105,203 @@ PRESERVE_VERSION = False
 PRESERVE_NEG_ZERO = False
 PRESERVE_SIZE = False
 
+def get_version_args(game_title, game_version_str):
+    game_version = int(game_version_str)
+    engine_tag = None
+    tag_defs = None
+    tag_groups = None
+    tag_extensions = None
+    postprocess_functions = None
+    is_prerelease = False
+    if game_title == "halo1":
+        if game_version == 19980319:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_19980319_defs_directory
+            tag_groups = tag_common.h1_19980319_tag_groups
+            tag_extensions = tag_common.h1_19980319_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 19980403:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_19980403_defs_directory
+            tag_groups = tag_common.h1_19980403_tag_groups
+            tag_extensions = tag_common.h1_19980403_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 19980512:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_19980512_defs_directory
+            tag_groups = tag_common.h1_19980512_tag_groups
+            tag_extensions = tag_common.h1_19980512_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 19980514:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_19980514_defs_directory
+            tag_groups = tag_common.h1_19980514_tag_groups
+            tag_extensions = tag_common.h1_19980514_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 19980624:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_19980624_defs_directory
+            tag_groups = tag_common.h1_19980624_tag_groups
+            tag_extensions = tag_common.h1_19980624_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 19980708:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_19980708_defs_directory
+            tag_groups = tag_common.h1_19980708_tag_groups
+            tag_extensions = tag_common.h1_19980708_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 19981008:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_19981008_defs_directory
+            tag_groups = tag_common.h1_19981008_tag_groups
+            tag_extensions = tag_common.h1_19981008_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 19981022:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_19981022_defs_directory
+            tag_groups = tag_common.h1_19981022_tag_groups
+            tag_extensions = tag_common.h1_19981022_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 19990225:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_19990225_defs_directory
+            tag_groups = tag_common.h1_19990225_tag_groups
+            tag_extensions = tag_common.h1_19990225_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 19990302:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_19990302_defs_directory
+            tag_groups = tag_common.h1_19990302_tag_groups
+            tag_extensions = tag_common.h1_19990302_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 19990426:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_19990426_defs_directory
+            tag_groups = tag_common.h1_19990426_tag_groups
+            tag_extensions = tag_common.h1_19990426_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 19990608:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_19990608_defs_directory
+            tag_groups = tag_common.h1_19990608_tag_groups
+            tag_extensions = tag_common.h1_19990608_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 19990623:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_19990623_defs_directory
+            tag_groups = tag_common.h1_19990623_tag_groups
+            tag_extensions = tag_common.h1_19990623_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 19990730:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_19990730_defs_directory
+            tag_groups = tag_common.h1_19990730_tag_groups
+            tag_extensions = tag_common.h1_19990730_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 19990924:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_19990924_defs_directory
+            tag_groups = tag_common.h1_19990924_tag_groups
+            tag_extensions = tag_common.h1_19990924_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 19990930:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_19990930_defs_directory
+            tag_groups = tag_common.h1_19990930_tag_groups
+            tag_extensions = tag_common.h1_19990930_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 19991021:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_19991021_defs_directory
+            tag_groups = tag_common.h1_19991021_tag_groups
+            tag_extensions = tag_common.h1_19991021_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 20000525:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_20000525_defs_directory
+            tag_groups = tag_common.h1_20000525_tag_groups
+            tag_extensions = tag_common.h1_20000525_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 20001005:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_20001005_defs_directory
+            tag_groups = tag_common.h1_20001005_tag_groups
+            tag_extensions = tag_common.h1_20001005_tag_extensions
+            postprocess_functions = None
+            is_prerelease = True
+        elif game_version == 20001116:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_20001116_defs_directory
+            tag_groups = tag_common.h1_20001116_tag_groups
+            tag_extensions = tag_common.h1_20001116_tag_extensions
+            postprocess_functions = None
+            is_prerelease = False
+        elif game_version == 0:
+            game_defs = h1
+            engine_tag = tag_common.EngineTag.H1Latest.value
+            tag_defs = tag_common.h1_defs_directory
+            tag_groups = tag_common.h1_tag_groups
+            tag_extensions = tag_common.h1_tag_extensions
+            postprocess_functions = h1_postprocess_functions
+            is_prerelease = False
+    elif game_title == "halo2":
+        if game_version == 20030504:
+            game_defs = h2
+            engine_tag = tag_common.EngineTag.H2Latest.value
+            tag_defs = tag_common.h2_defs_directory
+            tag_groups = tag_common.h2_tag_groups
+            tag_extensions = tag_common.h2_tag_extensions
+            postprocess_functions = h2_postprocess_functions
+            is_prerelease = False
+        elif game_version == 0:
+            game_defs = h2
+            engine_tag = tag_common.EngineTag.H2Latest.value
+            tag_defs = tag_common.h2_defs_directory
+            tag_groups = tag_common.h2_tag_groups
+            tag_extensions = tag_common.h2_tag_extensions
+            postprocess_functions = h2_postprocess_functions
+            is_prerelease = False
+
+    return game_defs, engine_tag, tag_defs, tag_groups, tag_extensions, postprocess_functions, is_prerelease
+
 def read_field_header(tag_stream, field_endian="<", is_legacy=False):
     pack_string = "4s3i"
     tag_block_size = 16
@@ -161,7 +358,11 @@ def write_variable_string(output_stream, string_value, field_endian="<", fixed_l
     if not string_value == None:
         if PRESERVE_STRINGS:
             struct_string = '%s%ss%sx' % (field_endian, fixed_length, terminator_length)
-            output_stream.write(base64.b64decode(string_value))
+            string_value = base64.b64decode(string_value)
+            if not os.name == "nt":
+                string_value = string_value.replace("/", "\\")
+
+            output_stream.write(string_value)
         else:
             if len(string_value) > 0:
                 if not append_terminator:
@@ -170,6 +371,9 @@ def write_variable_string(output_stream, string_value, field_endian="<", fixed_l
                 terminator_length = 0
 
             struct_string = '%s%ss%sx' % (field_endian, fixed_length, terminator_length)
+            if not os.name == "nt":
+                string_value = string_value.replace("/", "\\")
+
             byte_data = string_to_bytes(string_value, field_endian)
             output_stream.write(struct.pack(struct_string, byte_data))
 
@@ -1812,8 +2016,7 @@ def get_fields(tag_stream, block_stream, tag_header, tag_block_header, field_nod
                 else:    
                     block_stream.write(struct.pack(struct_string, *field_default))
 
-def read_file(merged_defs, tag_directory, file_path="", engine_tag=tag_common.EngineTag.H2Latest.value, file_endian_override=None, tag_groups=None, tag_extensions=None, 
-              postprocess_functions=None, is_prerelease=False):
+def read_file(merged_defs, tag_directory, file_path, game_version, engine_tag=tag_common.EngineTag.H2Latest.value, file_endian_override=None):
     global PRESERVE_VERSION
     global HAS_LEGACY_FIELDS
     if engine_tag == tag_common.EngineTag.H1Latest.value:
@@ -1866,22 +2069,13 @@ def read_file(merged_defs, tag_directory, file_path="", engine_tag=tag_common.En
     
         tag_header = tag_dict["Header"]
         if tag_header["engine tag"] == tag_common.EngineTag.H1Latest.value:
-            if tag_groups is None:
-                tag_groups = tag_common.h1_tag_groups
-            if tag_extensions is None: 
-                tag_extensions = tag_common.h1_tag_extensions
-            if postprocess_functions is None and not is_prerelease:
-                postprocess_functions =  h1_postprocess_functions
-            if is_prerelease:
-                HAS_LEGACY_FIELDS = True
-
+            game_title = "halo1"
         else:
-            if tag_groups is None:
-                tag_groups = tag_common.h2_tag_groups
-            if tag_extensions is None: 
-                tag_extensions = tag_common.h2_tag_extensions
-            if postprocess_functions is None and not is_prerelease:
-                postprocess_functions =  h2_postprocess_functions
+            game_title = "halo2"
+
+        _game_defs, _engine_tag, _tag_defs, tag_groups, tag_extensions, postprocess_functions, is_prerelease = get_version_args(game_title, game_version)
+        if is_prerelease:
+            HAS_LEGACY_FIELDS = True
 
         if not is_header_valid(tag_header, tag_groups):
             return {}
@@ -2169,11 +2363,11 @@ def h1_single_tag_legacy():
     output_path = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\HPEK\Halo CE 2000-05-25\local\islands.scenarios\spasm2"
     tag_directory = r"E:\Program Files (x86)\Steam\steamapps\common\Halo MCCEK\Halo Assets\1\Vanilla\tags"
 
-    tag_dict = read_file(merged_defs, tag_directory, read_path, engine_tag=tag_common.EngineTag.H1Latest.value, engine_version=tag_common.H1Versions._20000525)
+    tag_dict = read_file(merged_defs, tag_directory, read_path, 20000525, engine_tag=tag_common.EngineTag.H1Latest.value)
     with open(os.path.join(os.path.dirname(output_path), "%s.json" % os.path.basename(output_path).rsplit(".", 1)[0]), 'w', encoding ='utf8') as json_file:
         json.dump(tag_dict, json_file, ensure_ascii = True, indent=4)
 
-    write_file(merged_defs, tag_dict, obfuscation_buffer_prepare(), output_path, engine_tag=tag_common.EngineTag.H1Latest.value, engine_version=tag_common.H1Versions._20000525)
+    write_file(merged_defs, tag_dict, obfuscation_buffer_prepare(), output_path, engine_tag=tag_common.EngineTag.H1Latest.value, engine_version=20000525)
 
 def h1_single_tag():
     output_dir = os.path.join(os.path.dirname(tag_common.h1_defs_directory), "h1_merged_output")
@@ -2376,16 +2570,21 @@ def h2_directory():
                                 f"  File: {read_path}\n")
                     traceback.print_exc(file=log_file)
 
-def read_tag(tag_path, tag_group, tag_directory, tag_groups, engine_tag, merged_defs, absolute_file_path):
+def read_tag(tag_path, tag_group, tag_directory, tag_groups, engine_tag, merged_defs, absolute_file_path, game_version=0):
     asset = None
 
     tag_extension = tag_groups.get(tag_group)
     if not absolute_file_path == "":
         read_path = absolute_file_path
     else:
-        read_path = os.path.join(tag_directory, "%s.%s" % (tag_path, tag_extension))
+        if game_version == 0:
+            read_path = os.path.join(tag_directory, "%s.%s" % (tag_path, tag_extension))
+        else:
+            read_path = os.path.join(tag_directory, tag_path)
+
+    print("READ PATH: ", read_path)
     if os.path.isfile(read_path):
-        asset = read_file(merged_defs, tag_directory, read_path, engine_tag)
+        asset = read_file(merged_defs, tag_directory, read_path, game_version, engine_tag)
 
     return asset
 
@@ -2396,7 +2595,7 @@ TAG_WHITELIST = ("bipd", "bitm", "trak", "coll", "bloc", "crea", "ctrl", "lifi",
                  "*eap", "scen", "shad", "senv", "soso", "stem", "schi", "scex", "sotr", "sgla", "smet", "spla", "swat", "sky ", "ssce", "vehi", "vehc", "weap", 
                  "antr")
 
-def get_tag_references(field_node, tag_block_fields, tag_references, game_title, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender):
+def get_tag_references(field_node, tag_block_fields, tag_references, game_title, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender, game_version):
     field_tag = field_node.tag
     field_key = field_node.get("name")
     field_element = tag_block_fields.get(field_key)
@@ -2419,7 +2618,7 @@ def get_tag_references(field_node, tag_block_fields, tag_references, game_title,
 
             for tag_block_element in tag_block_dict:
                 for block_field_node in latest_field_set:
-                    get_tag_references(block_field_node, tag_block_element, tag_references, game_title, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender)
+                    get_tag_references(block_field_node, tag_block_element, tag_references, game_title, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender, game_version)
 
     elif field_tag == "Struct":
         latest_struct_field_set = None
@@ -2432,15 +2631,19 @@ def get_tag_references(field_node, tag_block_fields, tag_references, game_title,
             raise ValueError(f"Latest field set not found.")
 
         for struct_field_node in latest_struct_field_set:
-            get_tag_references(struct_field_node, tag_block_fields, tag_references, game_title, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender)
+            get_tag_references(struct_field_node, tag_block_fields, tag_references, game_title, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender, game_version)
     
     elif field_tag == "TagReference":
         tag_reference_dict = tag_block_fields.get(field_key)
         if tag_reference_dict is not None:
-            if game_title == "halo1" and tag_reference_dict["group name"] == "mode":
+            if game_title == "halo1" and game_version == 0 and tag_reference_dict["group name"] == "mode":
                 tag_reference_dict["group name"] = "mod2"
 
             if tag_reference_dict["group name"] in TAG_WHITELIST:
+                if not game_version == 0:
+                    path = os.path.join(tag_groups.get(tag_reference_dict["group name"]), tag_reference_dict["path"])
+                    tag_reference_dict["path"] = path
+                print(tag_reference_dict)
                 tag_references.append(tag_reference_dict)
 
 def string_empty_check(string):
@@ -2459,12 +2662,13 @@ def get_disk_asset(tag_path, tag_extension):
 
     return asset_dump
 
-def generate_tag_dictionary(game_title, root_tag_ref, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache={}, prepare_for_blender=True, absolute_file_path=""):
+def generate_tag_dictionary(game_title, root_tag_ref, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache={}, prepare_for_blender=True, absolute_file_path="", game_version=0):
     tag_group = root_tag_ref.get("group name", "")
     tag_extension = tag_groups.get(tag_group)
     tag_path = root_tag_ref.get("path", "")
-    
+
     disk_asset_path = os.path.join(os.path.expanduser("~"), "Blender Halo Toolset", "Asset Cache", "%s_%s.json" % (tag_path, tag_extension))
+    print(disk_asset_path)
     if string_empty_check(tag_path):
         return asset_cache
 
@@ -2482,8 +2686,10 @@ def generate_tag_dictionary(game_title, root_tag_ref, tag_directory, tag_groups,
             if not absolute_file_path == "":
                 file_path = absolute_file_path
             else:
-                file_path = os.path.join(tag_directory, "%s.%s" % (tag_path, tag_extension))
-
+                if game_version == 0:
+                    file_path = os.path.join(tag_directory, "%s.%s" % (tag_path, tag_extension))
+                else:
+                    file_path = os.path.join(tag_directory, tag_path)
             with open(file_path, 'rb') as input_stream:
                 valid_header, disk_tag_group, disk_checksum, disk_engine_tag = check_header(input_stream)
 
@@ -2507,10 +2713,10 @@ def generate_tag_dictionary(game_title, root_tag_ref, tag_directory, tag_groups,
                 tag_references = []
                 for block_idx in range(block_count):
                     for field_node in latest_field_set:
-                        get_tag_references(field_node, parsed_asset["Data"], tag_references, game_title, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender)
+                        get_tag_references(field_node, parsed_asset["Data"], tag_references, game_title, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender, game_version)
 
                 for tag_ref in tag_references:
-                    generate_tag_dictionary(game_title, tag_ref, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender)
+                    generate_tag_dictionary(game_title, tag_ref, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender, game_version=game_version)
 
             else:
                 parsed_asset = read_tag(tag_path, tag_group, tag_directory, tag_groups, engine_tag, merged_defs)
@@ -2536,7 +2742,7 @@ def generate_tag_dictionary(game_title, root_tag_ref, tag_directory, tag_groups,
                 tag_references = []
                 for block_idx in range(block_count):
                     for field_node in latest_field_set:
-                        get_tag_references(field_node, parsed_asset["Data"], tag_references, game_title, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender)
+                        get_tag_references(field_node, parsed_asset["Data"], tag_references, game_title, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender, game_version)
 
                 directory_dump = os.path.dirname(disk_asset_path)
                 if not os.path.exists(directory_dump):
@@ -2546,10 +2752,10 @@ def generate_tag_dictionary(game_title, root_tag_ref, tag_directory, tag_groups,
                     json.dump(parsed_asset, json_file, ensure_ascii=True, indent=4)
 
                 for tag_ref in tag_references:
-                    generate_tag_dictionary(game_title, tag_ref, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender)
+                    generate_tag_dictionary(game_title, tag_ref, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender, game_version=game_version)
 
     else:
-        parsed_asset = read_tag(tag_path, tag_group, tag_directory, tag_groups, engine_tag, merged_defs, absolute_file_path)
+        parsed_asset = read_tag(tag_path, tag_group, tag_directory, tag_groups, engine_tag, merged_defs, absolute_file_path, game_version)
         if parsed_asset is None:
             return asset_cache
         else:
@@ -2572,7 +2778,7 @@ def generate_tag_dictionary(game_title, root_tag_ref, tag_directory, tag_groups,
         tag_references = []
         for block_idx in range(block_count):
             for field_node in latest_field_set:
-                get_tag_references(field_node, parsed_asset["Data"], tag_references, game_title, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender)
+                get_tag_references(field_node, parsed_asset["Data"], tag_references, game_title, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender, game_version)
 
         directory_dump = os.path.dirname(disk_asset_path)
         if not os.path.exists(directory_dump):
@@ -2582,7 +2788,7 @@ def generate_tag_dictionary(game_title, root_tag_ref, tag_directory, tag_groups,
             json.dump(parsed_asset, json_file, ensure_ascii=True, indent=4)
 
         for tag_ref in tag_references:
-            generate_tag_dictionary(game_title, tag_ref, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender)
+            generate_tag_dictionary(game_title, tag_ref, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender, game_version=game_version)
 
     return asset_cache
 

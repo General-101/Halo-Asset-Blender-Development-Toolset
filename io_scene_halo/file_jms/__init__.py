@@ -82,7 +82,7 @@ class JMS_PhysicsProps(Panel):
         scene = context.scene
         scene_halo = scene.halo
 
-        return (scene_halo.game_title is not "halo1" and ob and rbc and (rbc.type in ('SLIDER', 'GENERIC_SPRING')))
+        return (scene_halo.game_title != "halo1" and ob and rbc and (rbc.type in ('SLIDER', 'GENERIC_SPRING')))
 
     def draw(self, context):
         layout = self.layout

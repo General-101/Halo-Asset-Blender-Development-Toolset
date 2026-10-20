@@ -275,8 +275,7 @@ def import_tag(file_path, game_version=20011115):
     game_defs, engine_tag, tag_defs, tag_groups, tag_extensions, postprocess_functions, is_prerelease = get_version_args(game_version)
     output_dir = os.path.join(os.path.dirname(tag_defs), "%s_merged_output" % os.path.basename(tag_defs))
     merged_defs = game_defs.generate_defs(tag_defs, output_dir, tag_groups, tag_extensions)
-    tag_dict = read_file(merged_defs, "", file_path, engine_tag=engine_tag, tag_groups=tag_groups, tag_extensions=tag_extensions, postprocess_functions=postprocess_functions, 
-                         is_prerelease=is_prerelease)
+    tag_dict = read_file(merged_defs, "", file_path, game_version, engine_tag=engine_tag)
     with open(os.path.join(os.path.dirname(file_path), "%s.json" % os.path.basename(file_path).rsplit(".", 1)[0]), 'w', encoding ='utf8') as json_file:
         json.dump(tag_dict, json_file, ensure_ascii = True, indent=4)
 
@@ -412,7 +411,7 @@ def dump_sound_data(file_path, output_directory, game_version):
         print("INVALID TAG HEADER")
         return
 
-    tag_dict = read_file(merged_defs, "", file_path, engine_tag=engine_tag, tag_groups=tag_groups, tag_extensions=tag_extensions, postprocess_functions=postprocess_functions, is_prerelease=is_prerelease)
+    tag_dict = read_file(merged_defs, "", file_path, game_version, engine_tag=engine_tag)
     if tag_dict is None:
         print("FAILED TO READ TAG")
         return
@@ -598,7 +597,7 @@ def dump_bitmap_data(file_path, output_directory, game_version):
     if not valid_header:
         return
     
-    tag_dict = read_file(merged_defs, "", file_path, engine_tag=engine_tag, tag_groups=tag_groups, tag_extensions=tag_extensions, postprocess_functions=postprocess_functions, is_prerelease=is_prerelease)
+    tag_dict = read_file(merged_defs, "", file_path, game_version, engine_tag=engine_tag)
     if tag_dict is None:
         return
 
@@ -863,7 +862,7 @@ def stitch_cells(cell_textures, file_name, output_directory, texture_type=None):
         new_path = os.path.join(output_directory, final_name) 
         island_image.save(new_path, "TIFF", compression='raw')
 
-def dump_texture_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, tag_extensions, postprocess_functions, is_prerelease):
+def dump_texture_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, game_version):
     directory_path = os.path.dirname(file_path)
     submesh_textures = []
     for file_name in os.listdir(directory_path):
@@ -877,7 +876,7 @@ def dump_texture_pages(file_path, output_directory, merged_defs, engine_tag, tag
         if not valid_header:
             continue
 
-        tag_dict = read_file(merged_defs, "", file_path, engine_tag=engine_tag, tag_groups=tag_groups, tag_extensions=tag_extensions, postprocess_functions=postprocess_functions, is_prerelease=is_prerelease)
+        tag_dict = read_file(merged_defs, "", file_path, game_version, engine_tag=engine_tag)
         if tag_dict == None:
             continue
 
@@ -927,15 +926,15 @@ def dump_texture_pages_data(file_path, output_directory, game_version):
     output_dir = os.path.join(os.path.dirname(tag_defs), "%s_merged_output" % os.path.basename(tag_defs))
     merged_defs = game_defs.generate_defs(tag_defs, output_dir, tag_groups, tag_extensions)
     if game_version == 19981008:
-        dump_texture_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, tag_extensions, postprocess_functions, is_prerelease)
+        dump_texture_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, game_version)
     if game_version == 19981022:
-        dump_texture_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, tag_extensions, postprocess_functions, is_prerelease)
+        dump_texture_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, game_version)
     if game_version == 19990225:
-        dump_texture_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, tag_extensions, postprocess_functions, is_prerelease)
+        dump_texture_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, game_version)
     elif game_version == 19990302:
-        dump_texture_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, tag_extensions, postprocess_functions, is_prerelease)
+        dump_texture_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, game_version)
 
-def dump_static_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, tag_extensions, postprocess_functions, is_prerelease):
+def dump_static_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, game_version):
     directory_path = os.path.dirname(file_path)
     low_detail_textures = []
     overhead_map_textures = []
@@ -951,7 +950,7 @@ def dump_static_pages(file_path, output_directory, merged_defs, engine_tag, tag_
         if not valid_header:
             continue
 
-        tag_dict = read_file(merged_defs, "", file_path, engine_tag=engine_tag, tag_groups=tag_groups, tag_extensions=tag_extensions, postprocess_functions=postprocess_functions, is_prerelease=is_prerelease)
+        tag_dict = read_file(merged_defs, "", file_path, game_version, engine_tag=engine_tag)
         if tag_dict == None:
             continue
 
@@ -984,13 +983,13 @@ def dump_static_pages_data(file_path, output_directory, game_version):
     output_dir = os.path.join(os.path.dirname(tag_defs), "%s_merged_output" % os.path.basename(tag_defs))
     merged_defs = game_defs.generate_defs(tag_defs, output_dir, tag_groups, tag_extensions)
     if game_version == 19981008:
-        dump_static_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, tag_extensions, postprocess_functions, is_prerelease)
+        dump_static_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, game_version)
     if game_version == 19981022:
-        dump_static_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, tag_extensions, postprocess_functions, is_prerelease)
+        dump_static_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, game_version)
     if game_version == 19990225:
-        dump_static_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, tag_extensions, postprocess_functions, is_prerelease)
+        dump_static_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, game_version)
     elif game_version == 19990302:
-        dump_static_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, tag_extensions, postprocess_functions, is_prerelease)
+        dump_static_pages(file_path, output_directory, merged_defs, engine_tag, tag_groups, game_version)
 
 def dump_island_texture(tag_dict, file_path, output_directory):
     tag_data = tag_dict["Data"]
@@ -1048,7 +1047,7 @@ def dump_island_texture_data(file_path, output_directory, game_version):
     if not valid_header:
         return
     
-    tag_dict = read_file(merged_defs, "", file_path, engine_tag=engine_tag, tag_groups=tag_groups, tag_extensions=tag_extensions, postprocess_functions=postprocess_functions, is_prerelease=is_prerelease)
+    tag_dict = read_file(merged_defs, "", file_path, game_version, engine_tag=engine_tag)
     if tag_dict is None:
         return
 

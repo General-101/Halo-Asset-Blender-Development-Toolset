@@ -44,193 +44,7 @@ from ..file_tag.tag_interface import tag_interface, tag_common
 from ..file_tag.tag_interface.tag_postprocessing.h1 import postprocess_functions as h1_postprocess_functions
 from ..file_tag.tag_interface.tag_postprocessing.h2 import postprocess_functions as h2_postprocess_functions
 
-def get_version_args(game_version):
-    engine_tag = None
-    tag_defs = None
-    tag_groups = None
-    tag_extensions = None
-    postprocess_functions = None
-    is_prerelease = False
-    if game_version == 19980319:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_19980319_defs_directory
-        tag_groups = tag_common.h1_19980319_tag_groups
-        tag_extensions = tag_common.h1_19980319_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 19980403:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_19980403_defs_directory
-        tag_groups = tag_common.h1_19980403_tag_groups
-        tag_extensions = tag_common.h1_19980403_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 19980512:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_19980512_defs_directory
-        tag_groups = tag_common.h1_19980512_tag_groups
-        tag_extensions = tag_common.h1_19980512_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 19980514:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_19980514_defs_directory
-        tag_groups = tag_common.h1_19980514_tag_groups
-        tag_extensions = tag_common.h1_19980514_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 19980624:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_19980624_defs_directory
-        tag_groups = tag_common.h1_19980624_tag_groups
-        tag_extensions = tag_common.h1_19980624_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 19980708:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_19980708_defs_directory
-        tag_groups = tag_common.h1_19980708_tag_groups
-        tag_extensions = tag_common.h1_19980708_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 19981008:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_19981008_defs_directory
-        tag_groups = tag_common.h1_19981008_tag_groups
-        tag_extensions = tag_common.h1_19981008_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 19981022:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_19981022_defs_directory
-        tag_groups = tag_common.h1_19981022_tag_groups
-        tag_extensions = tag_common.h1_19981022_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 19990225:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_19990225_defs_directory
-        tag_groups = tag_common.h1_19990225_tag_groups
-        tag_extensions = tag_common.h1_19990225_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 19990302:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_19990302_defs_directory
-        tag_groups = tag_common.h1_19990302_tag_groups
-        tag_extensions = tag_common.h1_19990302_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 19990426:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_19990426_defs_directory
-        tag_groups = tag_common.h1_19990426_tag_groups
-        tag_extensions = tag_common.h1_19990426_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 19990608:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_19990608_defs_directory
-        tag_groups = tag_common.h1_19990608_tag_groups
-        tag_extensions = tag_common.h1_19990608_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 19990623:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_19990623_defs_directory
-        tag_groups = tag_common.h1_19990623_tag_groups
-        tag_extensions = tag_common.h1_19990623_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 19990730:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_19990730_defs_directory
-        tag_groups = tag_common.h1_19990730_tag_groups
-        tag_extensions = tag_common.h1_19990730_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 19990924:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_19990924_defs_directory
-        tag_groups = tag_common.h1_19990924_tag_groups
-        tag_extensions = tag_common.h1_19990924_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 19990930:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_19990930_defs_directory
-        tag_groups = tag_common.h1_19990930_tag_groups
-        tag_extensions = tag_common.h1_19990930_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 19991021:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_19991021_defs_directory
-        tag_groups = tag_common.h1_19991021_tag_groups
-        tag_extensions = tag_common.h1_19991021_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 'halo1_20000525':
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_20000525_defs_directory
-        tag_groups = tag_common.h1_20000525_tag_groups
-        tag_extensions = tag_common.h1_20000525_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 20001005:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_20001005_defs_directory
-        tag_groups = tag_common.h1_20001005_tag_groups
-        tag_extensions = tag_common.h1_20001005_tag_extensions
-        postprocess_functions = None
-        is_prerelease = True
-    elif game_version == 20001116:
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_20001116_defs_directory
-        tag_groups = tag_common.h1_20001116_tag_groups
-        tag_extensions = tag_common.h1_20001116_tag_extensions
-        postprocess_functions = None
-        is_prerelease = False
-    elif game_version == 'halo1':
-        game_defs = h1
-        engine_tag = tag_common.EngineTag.H1Latest.value
-        tag_defs = tag_common.h1_defs_directory
-        tag_groups = tag_common.h1_tag_groups
-        tag_extensions = tag_common.h1_tag_extensions
-        postprocess_functions = h1_postprocess_functions
-        is_prerelease = False
-    elif game_version == 'halo2':
-        game_defs = h2
-        engine_tag = tag_common.EngineTag.H2Latest.value
-        tag_defs = tag_common.h2_defs_directory
-        tag_groups = tag_common.h2_tag_groups
-        tag_extensions = tag_common.h2_tag_extensions
-        postprocess_functions = h2_postprocess_functions
-        is_prerelease = False
-
-    return game_defs, engine_tag, tag_defs, tag_groups, tag_extensions, postprocess_functions, is_prerelease
-
-def load_file(context, file_path, game_title, fix_rotations, empty_markers, shader_gen_override, report):
+def load_file(context, file_path, game_title, game_version, fix_rotations, empty_markers, shader_gen_override, report):
     with open(file_path, 'rb') as input_stream:
         valid_header, tag_group, checksum, engine_tag = tag_interface.check_header(input_stream)
         if valid_header:
@@ -248,30 +62,48 @@ def load_file(context, file_path, game_title, fix_rotations, empty_markers, shad
             merged_defs = None
             tags_directory = ""
 
-            game_defs, engine_tag, tag_defs, tag_groups, tag_extensions, postprocess_functions, is_prerelease = get_version_args(game_title)
+            game_defs, engine_tag, tag_defs, tag_groups, tag_extensions, postprocess_functions, is_prerelease = tag_interface.get_version_args(game_title, game_version)
             output_dir = os.path.join(os.path.dirname(tag_defs), "%s_merged_output" % os.path.basename(tag_defs))
             merged_defs = game_defs.generate_defs(tag_defs, output_dir, tag_groups, tag_extensions)
-            #tag_dict = read_file(merged_defs, "", file_path, engine_tag=engine_tag, tag_groups=tag_groups, tag_extensions=tag_extensions, postprocess_functions=postprocess_functions, is_prerelease=is_prerelease)
 
             if game_title == "halo1":
-                tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path
+                if game_version == 0:
+                    tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_tag_path
+                else:
+                    tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_1_prerelease_local_path
             elif game_title == "halo2":
                 tags_directory = bpy.context.preferences.addons["io_scene_halo"].preferences.halo_2_tag_path
             else:
                 print("%s is not supported." % game_title)
 
             if not global_functions.string_empty_check(tags_directory):
+                print(file_path)
+                print(tags_directory)
                 if file_path.startswith(tags_directory):
-                    local_path, tag_extension = os.path.relpath(file_path, tags_directory).rsplit(".", 1)
+                    result = os.path.relpath(file_path, tags_directory).rsplit(".", 1)
+                    if len(result) > 0:
+                        local_path = result[0]
+                    if len(result) > 1:
+                        tag_extension = result[1]
+                    else:
+                        tag_extension = tag_groups.get(tag_group)
+
                     absolute_file_path = ""
                 else:
-                    local_path, tag_extension = os.path.basename(file_path).rsplit(".", 1)
+                    result = os.path.basename(file_path).rsplit(".", 1)
+                    if len(result) > 0:
+                        local_path = result[0]
+                    if len(result) > 1:
+                        tag_extension = result[1]
+                    else:
+                        tag_extension = tag_groups.get(tag_group)
+
                     absolute_file_path = file_path
 
                 tag_group = tag_extensions.get(tag_extension)
                 tag_ref = {"group name": tag_group, "path": local_path}
 
-                tag_interface.generate_tag_dictionary(game_title, tag_ref, tags_directory, tag_groups, engine_tag, merged_defs, asset_cache, absolute_file_path=absolute_file_path)
+                tag_interface.generate_tag_dictionary(game_title, tag_ref, tags_directory, tag_groups, engine_tag, merged_defs, asset_cache, absolute_file_path=absolute_file_path, game_version=game_version)
 
                 context.scene.halo.game_title = game_title
                 

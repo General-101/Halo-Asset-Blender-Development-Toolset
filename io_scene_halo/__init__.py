@@ -125,6 +125,12 @@ class HaloAddonPrefs(bpy.types.AddonPreferences):
                ]
         )
 
+    halo_1_prerelease_local_path: StringProperty(
+        name="Halo 1 Prerelease Local Path",
+        description="Path to the local directory",
+        subtype="DIR_PATH"
+    )
+
     halo_1_data_path: StringProperty(
         name="Halo 1 Data Path",
         description="Path to the data directory",
@@ -223,6 +229,9 @@ class HaloAddonPrefs(bpy.types.AddonPreferences):
         row = col.row()
         row.label(text='Shader Gen:')
         row.prop(self, "shader_gen", text='')
+        row = col.row()
+        row.label(text='Halo 1 Prerelease Local Path:')
+        row.prop(self, "halo_1_prerelease_local_path", text='')
         row = col.row()
         row.label(text='Halo 1 Data Path:')
         row.prop(self, "halo_1_data_path", text='')

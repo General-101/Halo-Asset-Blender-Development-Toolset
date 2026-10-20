@@ -65,6 +65,39 @@ if (4, 1, 0) <= bpy.app.version:
         OperatorFileListElement
         )
 
+def version_settings_callback(self, context):
+    items=[('0', "Retail", "Retail")]
+    if self.game_title == "halo1":
+        items=[('0', "Retail", "Retail"),
+               ('19980319', "1998-03-19", "Prerelease version 1"),
+               ('19980403', "1998-04-03", "Prerelease version 2"),
+               ('19980512', "1998-05-12", "Prerelease version 3"),
+               ('19980514', "1998-05-14", "Prerelease version 4"),
+               ('19980624', "1998-06-24", "Prerelease version 5"),
+               ('19980708', "1998-07-08", "Prerelease version 6"),
+               ('19981008', "1998-10-08", "Prerelease version 7"),
+               ('19981022', "1998-10-22", "Prerelease version 8"),
+               ('19990225', "1999-02-25", "Prerelease version 9"),
+               ('19990302', "1999-03-02", "Prerelease version 10"),
+               ('19990426', "1999-04-26", "Prerelease version 11"),
+               ('19990608', "1999-06-08", "Prerelease version 12"),
+               ('19990623', "1999-06-23", "Prerelease version 13"),
+               ('19990730', "1999-07-30", "Prerelease version 14"),
+               ('19990924', "1999-09-24", "Prerelease version 15"),
+               ('19990930', "1999-09-30", "Prerelease version 16"),
+               ('19991021', "1999-10-21", "Prerelease version 17"),
+               ('20000525', "2000-05-25", "Prerelease version 18"),
+               ('20001005', "2000-10-05", "Prerelease version 19"),
+               ('20001116', "2000-11-16", "Prerelease version 20"),
+               ('20001221', "2000-12-21", "Prerelease version 21"),
+               ('20010109', "2001-01-09", "Prerelease version 22")]
+
+    elif self.game_title == "halo2":
+        items=[('0', "Retail", "Retail"),
+               ('20030504', "2003-05-04", "Prerelease version 1")]
+
+    return items
+
 class ImportTag(Operator, ImportHelper):
     """Import a tag for various Halo titles"""
     bl_idname = "import_scene.tag"
@@ -74,11 +107,17 @@ class ImportTag(Operator, ImportHelper):
         name="Game:",
         description="What game does the tag group belong to",
         items=[ ('auto', "Auto", "Attempt to get the game title automatically. Defaults to Halo 1 if it fails."),
-                ('halo1_20000525', "Halo 1 20000525", "Use tag data from Halo 1 20000525"),
                 ('halo1', "Halo 1", "Use tag data from Halo 1"),
                 ('halo2', "Halo 2", "Use tag data from Halo 2"),
                 ('halo3', "Halo 3", "Use tag data from Halo 3"),
             ]
+        )
+
+    game_version: EnumProperty(
+        name="Version:",
+        description="What version was the tag file made for",
+        options={'HIDDEN'},
+        items=version_settings_callback,
         )
 
     fix_rotations: BoolProperty(
@@ -138,7 +177,8 @@ class ImportTag(Operator, ImportHelper):
         else:
             shader_gen_setting += -1
 
-        global_functions.run_code("import_tag.load_file(context, filepath, self.game_title, self.fix_rotations, self.empty_markers, shader_gen_setting, self.report)")
+        game_version = int(self.game_version)
+        global_functions.run_code("import_tag.load_file(context, filepath, self.game_title, game_version, self.fix_rotations, self.empty_markers, shader_gen_setting, self.report)")
 
     if (4, 1, 0) <= bpy.app.version:
         def invoke(self, context, event):
@@ -158,6 +198,9 @@ class ImportTag(Operator, ImportHelper):
         col = box.column(align=True)
         row = col.row()
         row.prop(self, "game_title", text='')
+        col = box.column(align=True)
+        row = col.row()
+        row.prop(self, "game_version", text='')
         col = box.column(align=True)
 
         box = layout.box()
