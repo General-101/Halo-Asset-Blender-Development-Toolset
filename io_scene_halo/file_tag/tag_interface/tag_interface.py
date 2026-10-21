@@ -2570,7 +2570,7 @@ def h2_directory():
                                 f"  File: {read_path}\n")
                     traceback.print_exc(file=log_file)
 
-def read_tag(tag_path, tag_group, tag_directory, tag_groups, engine_tag, merged_defs, absolute_file_path, game_version=0):
+def read_tag(tag_path, tag_group, tag_directory, tag_groups, engine_tag, merged_defs, absolute_file_path="", game_version=0):
     asset = None
 
     tag_extension = tag_groups.get(tag_group)
