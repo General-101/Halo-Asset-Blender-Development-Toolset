@@ -1568,8 +1568,6 @@ def import_fcurve_data(action, armature, nodes, frames, JMA, fix_rotations, is_i
 
                 fcurve_map[bone_name][path][index] = fcurve
 
-
-
     if (5, 0, 0) <= bpy.app.version:
         if action.slots:
             action_slot = action.slots[0]

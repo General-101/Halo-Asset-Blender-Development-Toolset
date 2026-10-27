@@ -32,6 +32,8 @@ from collections import defaultdict
 from mathutils import Vector, Matrix
 from ...global_functions import mesh_processing, global_functions
 from ...file_tag.tag_interface import tag_interface, tag_common
+if (5, 0, 0) <= bpy.app.version:
+    from bpy_extras import anim_utils
 
 def generate_camera_track_skeleton(armature, bone_name):
     bpy.ops.object.mode_set(mode = 'EDIT')
@@ -86,9 +88,18 @@ def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_
         for path, count in data_paths.items():
             for index in range(count):
                 fcurve_data_path = f'pose.bones["{bone_name}"].{path}'
-                fcurve = global_functions.get_fcurve(action.fcurves, fcurve_data_path, index)
-                if not fcurve:
-                    fcurve = action.fcurves.new(data_path=fcurve_data_path, index=index, action_group=bone_name)
+                if (5, 0, 0) <= bpy.app.version:
+                    if action.slots:
+                        action_slot = action.slots[0]
+                    else:
+                        action_slot = action.slots.new(id_type='OBJECT', name=armature.name)
+
+                    channelbag = anim_utils.action_ensure_channelbag_for_slot(action, action_slot)
+                    fcurve = channelbag.fcurves.ensure(fcurve_data_path, index=index, group_name=bone_name)
+                else:
+                    fcurve = global_functions.get_fcurve(action.fcurves, fcurve_data_path, index)
+                    if not fcurve:
+                        fcurve = action.fcurves.new(data_path=fcurve_data_path, index=index, action_group=bone_name)
 
                 fcurve_map[bone_name][path][index] = fcurve
 
