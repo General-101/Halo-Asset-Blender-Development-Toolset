@@ -270,7 +270,7 @@ def planes_to_convex_hull_vert_coords(planes, round_adjust=0.000001):
 
     return verts
 
-def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, shader_gen_override, report, collection_override=None, cluster_collection_override=None):
+def build_scene(context, tag_ref, asset_cache, game_title, game_version, fix_rotations, empty_markers, shader_gen_override, report, collection_override=None, cluster_collection_override=None):
     if game_title == "halo1":
         tag_groups = tag_common.h1_tag_groups
     elif game_title == "halo2":

@@ -31,7 +31,7 @@ from ...file_tag.tag_interface import tag_interface
 from ...global_functions.shader_generation import halo_1_shader, halo_2_shader
 from ...file_tag.tag_interface.tag_common import h1_tag_groups, h2_tag_groups
 
-def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, shader_gen_override, report):
+def build_scene(context, tag_ref, asset_cache, game_title, game_version, fix_rotations, empty_markers, shader_gen_override, report):
     tag_name = tag_ref["path"]
     tag_group = tag_ref["group name"]
     material_name = os.path.basename(tag_name)

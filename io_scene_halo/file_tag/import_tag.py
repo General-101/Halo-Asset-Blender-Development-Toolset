@@ -28,7 +28,6 @@ import os
 import bpy
 
 from .build_scene import build_mesh
-from .build_scene import build_mesh_20000525
 from .build_scene import build_physics
 from .build_scene import build_animations
 from .build_scene import build_collision
@@ -151,7 +150,7 @@ def load_file(context, file_path, game_title, game_version, fix_rotations, empty
 
                     input_stream.close()
                     if build_scene:
-                        build_scene.build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, shader_gen_override, report)
+                        build_scene.build_scene(context, tag_ref, asset_cache, game_title, game_version, fix_rotations, empty_markers, shader_gen_override, report)
                     else:
                         report({'ERROR'}, "Tag file has no support. Contact the plugin author if it should.")
 

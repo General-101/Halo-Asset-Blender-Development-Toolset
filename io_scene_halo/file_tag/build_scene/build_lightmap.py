@@ -200,7 +200,7 @@ def build_poops(lightmap_group, sbsp_data, asset_cache, level_root, random_color
                         if (4, 1, 0) > bpy.app.version:
                             object_mesh.data.use_auto_smooth = True
 
-def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, shader_gen_override, report, collection_override=None, cluster_collection_override=None, sbsp_tag_ref=None):
+def build_scene(context, tag_ref, asset_cache, game_title, game_version, fix_rotations, empty_markers, shader_gen_override, report, collection_override=None, cluster_collection_override=None, sbsp_tag_ref=None):
     if game_title == "halo1":
         tag_groups = tag_common.h1_tag_groups
     elif game_title == "halo2":

@@ -1435,13 +1435,13 @@ def generate_scenario_scene(context, tag_ref, asset_cache, game_title, fix_rotat
             level_collection = global_functions.get_referenced_collection(c_bsp_name, levels_collection, False)
             clusters_collection = global_functions.get_referenced_collection(c_cluster_name, level_collection, True, True)
 
-            build_scene_level.build_scene(context, bsp_tag_ref, asset_cache, game_title, fix_rotations, empty_markers, shader_gen_override, report, level_collection, clusters_collection)
+            build_scene_level.build_scene(context, bsp_tag_ref, asset_cache, game_title, game_version, fix_rotations, empty_markers, shader_gen_override, report, level_collection, clusters_collection)
 
             if not ltmp_asset == None:
                 lightmap_name = "%s_lightmaps" % bsp_name
                 lightmap_collection = global_functions.get_referenced_collection(lightmap_name, level_collection, False)
 
-                build_scene_lightmap.build_scene(context, lightmap_tag_ref, asset_cache, game_title, fix_rotations, empty_markers, shader_gen_override, report, level_collection, lightmap_collection, bsp_tag_ref)
+                build_scene_lightmap.build_scene(context, lightmap_tag_ref, asset_cache, game_title, game_version, fix_rotations, empty_markers, shader_gen_override, report, level_collection, lightmap_collection, bsp_tag_ref)
 
     level_root = bpy.data.objects.get("frame_root")
     if level_root == None:

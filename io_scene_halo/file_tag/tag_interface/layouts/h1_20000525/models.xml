@@ -199,9 +199,9 @@
         <Layout regolithID="block:nodes" internalName="nodes_block" name="nodes_block">
           <FieldSet version="0" sizeofValue="156" isLatest="true">
             <String CStyleName="name" pascalStyleName="Name" name="name" />
-            <ShortInteger CStyleName="next_sibling_node_index" pascalStyleName="NextSiblingNodeIndex" name="next sibling node index" />
-            <ShortInteger CStyleName="first_child_node_index" pascalStyleName="FirstChildNodeIndex" name="first child node index" />
-            <ShortInteger CStyleName="parent_node_index" pascalStyleName="ParentNodeIndex" name="parent node index" />
+            <ShortInteger CStyleName="next_sibling_node_index" pascalStyleName="NextSiblingNodeIndex" name="next sibling node" />
+            <ShortInteger CStyleName="first_child_node_index" pascalStyleName="FirstChildNodeIndex" name="first child node" />
+            <ShortInteger CStyleName="parent_node_index" pascalStyleName="ParentNodeIndex" name="parent node" />
             <Pad name="pad" length="2" />
             <RealPoint3D CStyleName="default_translation" pascalStyleName="DefaultTranslation" name="default translation" />
             <RealQuaternion CStyleName="default_rotation" pascalStyleName="DefaultRotation" name="default rotation" />

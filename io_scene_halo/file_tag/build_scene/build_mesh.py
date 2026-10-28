@@ -31,6 +31,7 @@ from math import radians
 from mathutils import Matrix, Vector
 from ..h1.file_model.build_mesh import get_geometry_layout as get_retail_h1_geometry_layout
 from ..h2.file_render_model.build_mesh import get_geometry_layout as get_retail_h2_geometry_layout
+from ..h1.file_model.build_mesh_20000525 import get_geometry_layout as get_20000525_h1_geometry_layout
 from ...global_functions import mesh_processing, global_functions
 from ...file_tag.tag_interface import tag_interface, tag_common
 
@@ -74,15 +75,23 @@ def generate_tag_skeleton(model_data, game_title, armature, fix_rotations):
 
     bpy.ops.object.mode_set(mode = 'OBJECT')
 
-def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_markers, shader_gen_override, report):
+def build_scene(context, tag_ref, asset_cache, game_title, game_version, fix_rotations, empty_markers, shader_gen_override, report):
     if game_title == "halo1":
-        tag_groups = tag_common.h1_tag_groups
+        if game_version == 20000525:
+            tag_groups = tag_common.h1_20000525_tag_groups
+        else:
+            tag_groups = tag_common.h1_tag_groups
     elif game_title == "halo2":
         tag_groups = tag_common.h2_tag_groups
     else:
         print("%s is not supported." % game_title)
 
-    model_data = tag_interface.get_disk_asset(tag_ref["path"], tag_groups.get(tag_ref["group name"]))["Data"]
+    result = tag_interface.get_disk_asset(tag_ref["path"], tag_groups.get(tag_ref["group name"]))
+    if result is None:
+        print("Failed to get file")
+        return
+
+    model_data = result["Data"]
 
     collection = context.collection
     armdata = bpy.data.armatures.new('Armature')
@@ -96,11 +105,15 @@ def build_scene(context, tag_ref, asset_cache, game_title, fix_rotations, empty_
 
     if game_title == "halo1":
         is_triangle_list = False
-        get_retail_h1_geometry_layout(tag_ref, asset_cache, armature, is_triangle_list, shader_gen_override, report)
-        for region in model_data["regions"]:
-            for permutation in region["permutations"]:
-                for local_marker in permutation["markers"]:
-                    mesh_processing.generate_marker(context, collection, game_title, None, model_data, region["name"], "", armature, local_marker, fix_rotations, empty_markers, False)
+        if game_version == 20000525:
+            get_20000525_h1_geometry_layout(tag_ref, asset_cache, armature, is_triangle_list, shader_gen_override, report)
+
+        else:
+            get_retail_h1_geometry_layout(tag_ref, asset_cache, armature, is_triangle_list, shader_gen_override, report)
+            for region in model_data["regions"]:
+                for permutation in region["permutations"]:
+                    for local_marker in permutation["markers"]:
+                        mesh_processing.generate_marker(context, collection, game_title, None, model_data, region["name"], "", armature, local_marker, fix_rotations, empty_markers, False)
 
     else:
         get_retail_h2_geometry_layout(tag_ref, asset_cache, armature, shader_gen_override, report)

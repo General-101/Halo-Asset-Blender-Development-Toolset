@@ -2582,7 +2582,6 @@ def read_tag(tag_path, tag_group, tag_directory, tag_groups, engine_tag, merged_
         else:
             read_path = os.path.join(tag_directory, tag_path)
 
-    print("READ PATH: ", read_path)
     if os.path.isfile(read_path):
         asset = read_file(merged_defs, tag_directory, read_path, game_version, engine_tag)
 
@@ -2643,7 +2642,7 @@ def get_tag_references(field_node, tag_block_fields, tag_references, game_title,
                 if not game_version == 0:
                     path = os.path.join(tag_groups.get(tag_reference_dict["group name"]), tag_reference_dict["path"])
                     tag_reference_dict["path"] = path
-                print(tag_reference_dict)
+
                 tag_references.append(tag_reference_dict)
 
 def string_empty_check(string):
@@ -2668,7 +2667,6 @@ def generate_tag_dictionary(game_title, root_tag_ref, tag_directory, tag_groups,
     tag_path = root_tag_ref.get("path", "")
 
     disk_asset_path = os.path.join(os.path.expanduser("~"), "Blender Halo Toolset", "Asset Cache", "%s_%s.json" % (tag_path, tag_extension))
-    print(disk_asset_path)
     if string_empty_check(tag_path):
         return asset_cache
 
