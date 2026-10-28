@@ -30,7 +30,7 @@ import bpy
 from enum import Flag, Enum, auto
 from . import global_functions, mesh_processing
 from ..file_tag.tag_interface import tag_interface, tag_common
-from ..global_functions.shader_generation import halo_1_shader, halo_2_shader, halo_3_shader
+from ..global_functions.shader_generation import halo_1_shader, halo_1_20000525_shader, halo_2_shader, halo_3_shader
 
 try:
     from PIL import Image
@@ -258,76 +258,84 @@ class TransparentTemplateEnum(Enum):
     waves = r'shaders\shader_templates\transparent\waves'
     z_only_active_camo = r'shaders\shader_templates\transparent\z_only_active_camo'
 
-def generate_h1_shader(shader_gen_setting, mat, tag_ref, permutation_index, asset_cache, report):
+def generate_h1_shader(shader_gen_setting, mat, tag_ref, permutation_index, asset_cache, report, game_version=0):
     # 0 = Shader generation is disabled
     # 1 = Simple shader generation. Only the base map is generated
     # 2 = Full Shader generation
     if not shader_gen_setting == 0:
-        tag_groups = tag_common.h1_tag_groups
-        shader_asset = tag_interface.get_disk_asset(tag_ref["path"], tag_groups.get(tag_ref["group name"]))
-        if not shader_asset == None:
-            if shader_asset["Header"]["tag group"] == "senv":
-                if shader_gen_setting == 1:
-                    halo_1_shader.generate_shader_environment_simple(mat, shader_asset, permutation_index, asset_cache, report)
-                else:
-                    halo_1_shader.generate_shader_environment(mat, shader_asset, permutation_index, asset_cache, report)
-
-            elif shader_asset["Header"]["tag group"] == "soso":
-                if shader_gen_setting == 1:
-                    halo_1_shader.generate_shader_model_simple(mat, shader_asset, permutation_index, asset_cache, report)
-                else:
-                    halo_1_shader.generate_shader_model(mat, shader_asset, permutation_index, asset_cache, report)
-
-            elif shader_asset["Header"]["tag group"] == "schi":
-                # TODO: Needs a proper shader node group
-                if shader_gen_setting == 1:
-                    halo_1_shader.generate_shader_transparent_chicago_simple(mat, shader_asset, permutation_index, asset_cache, report)
-                else:
-                    halo_1_shader.generate_shader_transparent_chicago(mat, shader_asset, permutation_index, asset_cache, report)
-
-            elif shader_asset["Header"]["tag group"] == "scex":
-                # TODO: Needs a proper shader node group
-                if shader_gen_setting == 1:
-                    halo_1_shader.generate_shader_transparent_chicago_extended_simple(mat, shader_asset, permutation_index, asset_cache, report)
-                else:
-                    halo_1_shader.generate_shader_transparent_chicago_extended(mat, shader_asset, permutation_index, asset_cache, report)
-
-            elif shader_asset["Header"]["tag group"] == "sotr":
-                if shader_gen_setting == 1:
-                    halo_1_shader.generate_shader_transparent_generic_simple(mat, shader_asset, permutation_index, asset_cache, report)
-                else:
-                    halo_1_shader.generate_shader_transparent_generic(mat, shader_asset, permutation_index, asset_cache, report)
-
-            elif shader_asset["Header"]["tag group"] == "sgla":
-                # TODO: Needs a proper shader node group
-                if shader_gen_setting == 1:
-                    halo_1_shader.generate_shader_transparent_glass_simple(mat, shader_asset, permutation_index, asset_cache, report)
-                else:
-                    halo_1_shader.generate_shader_transparent_glass(mat, shader_asset, permutation_index, asset_cache, report)
-
-            elif shader_asset["Header"]["tag group"] == "smet":
-                # TODO: Needs a proper shader node group
-                if shader_gen_setting == 1:
-                    halo_1_shader.generate_shader_transparent_meter_simple(mat, shader_asset, permutation_index, asset_cache, report)
-                else:
-                    halo_1_shader.generate_shader_transparent_meter(mat, shader_asset, permutation_index, asset_cache, report)
-
-            elif shader_asset["Header"]["tag group"] == "spla":
-                # TODO: Needs a proper shader node group
-                if shader_gen_setting == 1:
-                    halo_1_shader.generate_shader_transparent_plasma_simple(mat, shader_asset, permutation_index, asset_cache, report)
-                else:
-                    halo_1_shader.generate_shader_transparent_plasma(mat, shader_asset, permutation_index, asset_cache, report)
-
-            elif shader_asset["Header"]["tag group"] == "swat":
-                # TODO: Needs a proper shader node group
-                if shader_gen_setting == 1:
-                    halo_1_shader.generate_shader_transparent_water_simple(mat, shader_asset, permutation_index, asset_cache, report)
-                else:
-                    halo_1_shader.generate_shader_transparent_water(mat, shader_asset, permutation_index, asset_cache, report)
+        if game_version == 20000525:
+            tag_groups = tag_common.h1_20000525_tag_groups
+            if shader_gen_setting == 1:
+                halo_1_20000525_shader.generate_shader_simple(mat, shader_asset, permutation_index, asset_cache, report)
+            else:
+                halo_1_20000525_shader.generate_shader_simple(mat, shader_asset, permutation_index, asset_cache, report)
 
         else:
-            print("Halo 1 parsed shader tag returned as none. Something went horribly wrong")
+            tag_groups = tag_common.h1_tag_groups
+            shader_asset = tag_interface.get_disk_asset(tag_ref["path"], tag_groups.get(tag_ref["group name"]))
+            if not shader_asset == None:
+                if shader_asset["Header"]["tag group"] == "senv":
+                    if shader_gen_setting == 1:
+                        halo_1_shader.generate_shader_environment_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                    else:
+                        halo_1_shader.generate_shader_environment(mat, shader_asset, permutation_index, asset_cache, report)
+
+                elif shader_asset["Header"]["tag group"] == "soso":
+                    if shader_gen_setting == 1:
+                        halo_1_shader.generate_shader_model_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                    else:
+                        halo_1_shader.generate_shader_model(mat, shader_asset, permutation_index, asset_cache, report)
+
+                elif shader_asset["Header"]["tag group"] == "schi":
+                    # TODO: Needs a proper shader node group
+                    if shader_gen_setting == 1:
+                        halo_1_shader.generate_shader_transparent_chicago_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                    else:
+                        halo_1_shader.generate_shader_transparent_chicago(mat, shader_asset, permutation_index, asset_cache, report)
+
+                elif shader_asset["Header"]["tag group"] == "scex":
+                    # TODO: Needs a proper shader node group
+                    if shader_gen_setting == 1:
+                        halo_1_shader.generate_shader_transparent_chicago_extended_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                    else:
+                        halo_1_shader.generate_shader_transparent_chicago_extended(mat, shader_asset, permutation_index, asset_cache, report)
+
+                elif shader_asset["Header"]["tag group"] == "sotr":
+                    if shader_gen_setting == 1:
+                        halo_1_shader.generate_shader_transparent_generic_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                    else:
+                        halo_1_shader.generate_shader_transparent_generic(mat, shader_asset, permutation_index, asset_cache, report)
+
+                elif shader_asset["Header"]["tag group"] == "sgla":
+                    # TODO: Needs a proper shader node group
+                    if shader_gen_setting == 1:
+                        halo_1_shader.generate_shader_transparent_glass_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                    else:
+                        halo_1_shader.generate_shader_transparent_glass(mat, shader_asset, permutation_index, asset_cache, report)
+
+                elif shader_asset["Header"]["tag group"] == "smet":
+                    # TODO: Needs a proper shader node group
+                    if shader_gen_setting == 1:
+                        halo_1_shader.generate_shader_transparent_meter_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                    else:
+                        halo_1_shader.generate_shader_transparent_meter(mat, shader_asset, permutation_index, asset_cache, report)
+
+                elif shader_asset["Header"]["tag group"] == "spla":
+                    # TODO: Needs a proper shader node group
+                    if shader_gen_setting == 1:
+                        halo_1_shader.generate_shader_transparent_plasma_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                    else:
+                        halo_1_shader.generate_shader_transparent_plasma(mat, shader_asset, permutation_index, asset_cache, report)
+
+                elif shader_asset["Header"]["tag group"] == "swat":
+                    # TODO: Needs a proper shader node group
+                    if shader_gen_setting == 1:
+                        halo_1_shader.generate_shader_transparent_water_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                    else:
+                        halo_1_shader.generate_shader_transparent_water(mat, shader_asset, permutation_index, asset_cache, report)
+
+            else:
+                print("Halo 1 parsed shader tag returned as none. Something went horribly wrong")
 
     else:
         print("Shader generation is disabled. Skipping")

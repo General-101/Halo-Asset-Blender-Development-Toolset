@@ -1226,10 +1226,9 @@ def read_convex_shapes_8206(JMS, armature, context, node_names, fix_rotations, p
         for vertex_idx in range(vertex_count):
             bm.verts.new(JMS.next_vector())
     
-        bm.free()
-
         build_convex_shape(armature, context, node_names, fix_rotations, primitive_shapes, materials, triangle_material_map, sections, section_map, name, parent_index, 
                            rotation, translation, bm)
+        bm.free()
 
 def read_convex_shapes_8207(JMS, armature, context, node_names, fix_rotations, primitive_shapes, materials, triangle_material_map, sections, section_map):
     convex_shape_count = int(JMS.next())
@@ -1246,10 +1245,9 @@ def read_convex_shapes_8207(JMS, armature, context, node_names, fix_rotations, p
         for vertex_idx in range(vertex_count):
             bm.verts.new(JMS.next_vector())
     
-        bm.free()
-
         build_convex_shape(armature, context, node_names, fix_rotations, primitive_shapes, materials, triangle_material_map, sections, section_map, name, parent_index, 
                            rotation, translation, bm, material_index)
+        bm.free()
 
 def build_convex_shape(armature, context, node_names, fix_rotations, primitive_shapes, materials, triangle_material_map, sections, section_map, name, parent_index, rotation, 
                        translation, bm, material_index=-1):

@@ -79,38 +79,6 @@ class RasterizerFlags(Flag):
     not_mipmapped = auto()
     alpha_test = auto()
 
-def generate_legacy_material_simple_b(mat, map, RasterizerFlags, EncodingEnum, report):
-    mat.use_nodes = True
-
-    base_bitmap = parse_tag(map.texture, report, "halo1", "20000525")
-
-    output_material_node = get_output_material_node(mat)
-    output_material_node.location = Vector((0.0, 0.0))
-    bdsf_principled = get_linked_node(output_material_node, "Surface", "BSDF_PRINCIPLED")
-    if bdsf_principled is None:
-        bdsf_principled = mat.node_tree.nodes.new("ShaderNodeBsdfPrincipled")
-        connect_inputs(mat.node_tree, bdsf_principled, "BSDF", output_material_node, "Surface")
-
-    bdsf_principled.location = Vector((-260.0, 0.0))
-
-    base_node = bitmap_processing.generate_legacy_image_node(mat, "", base_bitmap, map.texture.name, False, EncodingEnum)
-    base_node.location = Vector((-1600, 500))
-
-    connect_inputs(mat.node_tree, base_node, "Color", bdsf_principled, "Base Color")
-
-    if not base_node.image == None:
-        base_node.image.alpha_mode = 'CHANNEL_PACKED'
-
-    if base_bitmap:
-        rasterizer_flags_result = RasterizerFlags(map.rasterizer_flags)
-        if RasterizerFlags.alpha_test == rasterizer_flags_result:
-            connect_inputs(mat.node_tree, base_node, "Alpha", bdsf_principled, "Alpha")
-            mat.blend_method = 'HASHED'
-        else:
-            mat.blend_method = 'OPAQUE'
-
-    connect_inputs(mat.node_tree, base_node, "Color", bdsf_principled, "Base Color")
-
 class TriangleStrips:
     def __init__(self, strips):
         self.strips = strips
@@ -278,6 +246,7 @@ def get_geometry_layout(tag_ref, asset_cache, armature, is_triangle_list, shader
     model_materials = []
     for shader in mode_data["shaders"]:
         mat = bpy.data.materials.new(name=shader["name"])
+        mat.diffuse_color = random_color_gen.next()
         diffuse_map = None
         for map in shader["maps"]:
             if TypeEnum.diffuse == TypeEnum(map["type"]["value"]):
@@ -288,8 +257,8 @@ def get_geometry_layout(tag_ref, asset_cache, armature, is_triangle_list, shader
                 diffuse_map = map
                 break
 
-        #if not diffuse_map == None:
-            #generate_legacy_material_simple_b(mat, diffuse_map, RasterizerFlags, EncodingEnum, print)
+        if not diffuse_map == None:
+            generate_legacy_material_simple_b(mat, diffuse_map, tag_groups, RasterizerFlags, EncodingEnum, report)
 
         model_materials.append(mat)
 

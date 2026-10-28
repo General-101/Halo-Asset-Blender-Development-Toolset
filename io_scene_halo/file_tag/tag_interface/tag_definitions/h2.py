@@ -31,7 +31,7 @@ except ImportError:
     
 from .common import initialize_definitions, parse_all_xmls, dump_merged_xml, merge_parent_tag, DUMP_XML
 
-def generate_defs(base_dir, output_dir, tag_groups, tag_extensions):
+def generate_defs(base_dir, output_dir, tag_groups=tag_common.h2_tag_groups, tag_extensions=tag_common.h2_tag_extensions):
     tag_defs, regolith_map = parse_all_xmls(base_dir)
     merged_cache = {}
     for tag_def in tag_defs:
