@@ -76,8 +76,6 @@ def load_file(context, file_path, game_title, game_version, fix_rotations, empty
                 print("%s is not supported." % game_title)
 
             if not global_functions.string_empty_check(tags_directory):
-                print(file_path)
-                print(tags_directory)
                 if file_path.startswith(tags_directory):
                     result = os.path.relpath(file_path, tags_directory).rsplit(".", 1)
                     if len(result) > 0:
@@ -86,6 +84,9 @@ def load_file(context, file_path, game_title, game_version, fix_rotations, empty
                         tag_extension = result[1]
                     else:
                         tag_extension = tag_groups.get(tag_group)
+
+                    if not game_version == 0:
+                        local_path = os.path.basename(local_path)
 
                     absolute_file_path = ""
                 else:
@@ -97,11 +98,13 @@ def load_file(context, file_path, game_title, game_version, fix_rotations, empty
                     else:
                         tag_extension = tag_groups.get(tag_group)
 
+                    if not game_version == 0:
+                        local_path = os.path.basename(local_path)
+
                     absolute_file_path = file_path
 
                 tag_group = tag_extensions.get(tag_extension)
-                tag_ref = {"group name": tag_group, "path": local_path}
-
+                tag_ref = {"group name": tag_group, "unk1": -1, "length": 0, "unk2": -1, "path": local_path}
                 tag_interface.generate_tag_dictionary(game_title, tag_ref, tags_directory, tag_groups, engine_tag, merged_defs, asset_cache, absolute_file_path=absolute_file_path, game_version=game_version)
 
                 context.scene.halo.game_title = game_title

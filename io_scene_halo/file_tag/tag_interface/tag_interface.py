@@ -104,6 +104,7 @@ PRESERVE_PADDING = False
 PRESERVE_VERSION = False
 PRESERVE_NEG_ZERO = False
 PRESERVE_SIZE = False
+IS_GBX = True
 
 def get_version_args(game_title, game_version_str):
     game_version = int(game_version_str)
@@ -1861,8 +1862,8 @@ def get_fields(tag_stream, block_stream, tag_header, tag_block_header, field_nod
                         tag_group = tag_group.decode('utf-8', 'replace')
                         if endian_override == "<":
                             tag_group = tag_group[::-1]
-
                     result = (tag_group, unk1, 0, unk2, path.decode('utf-8', 'replace').split('\x00', 1)[0].strip('\x20'))
+
                 else:
                     tag_group, unk1, length, unk2 = struct.unpack(struct_string, block_stream.read(field_size))
                     if int.from_bytes(tag_group, 'little' if endian_override == '<' else 'big', signed=True) == -1:
@@ -1874,6 +1875,7 @@ def get_fields(tag_stream, block_stream, tag_header, tag_block_header, field_nod
 
                     path = read_variable_string(tag_stream, length, endian_override, terminator_length=1, append_terminator=True) 
                     result = (tag_group, unk1, length, unk2, path)
+
             set_tag_reference_result(field_key, tag_block_fields, result)
         else:
             if not unread_data_size < field_size:
@@ -2019,6 +2021,7 @@ def get_fields(tag_stream, block_stream, tag_header, tag_block_header, field_nod
 def read_file(merged_defs, tag_directory, file_path, game_version, engine_tag=tag_common.EngineTag.H2Latest.value, file_endian_override=None):
     global PRESERVE_VERSION
     global HAS_LEGACY_FIELDS
+    global IS_GBX
     if engine_tag == tag_common.EngineTag.H1Latest.value:
         file_endian = ">"
         if file_endian_override:
@@ -2075,6 +2078,7 @@ def read_file(merged_defs, tag_directory, file_path, game_version, engine_tag=ta
 
         _game_defs, _engine_tag, _tag_defs, tag_groups, tag_extensions, postprocess_functions, is_prerelease = get_version_args(game_title, game_version)
         if is_prerelease:
+            IS_GBX = False
             HAS_LEGACY_FIELDS = True
 
         if not is_header_valid(tag_header, tag_groups):
@@ -2635,14 +2639,10 @@ def get_tag_references(field_node, tag_block_fields, tag_references, game_title,
     elif field_tag == "TagReference":
         tag_reference_dict = tag_block_fields.get(field_key)
         if tag_reference_dict is not None:
-            if game_title == "halo1" and game_version == 0 and tag_reference_dict["group name"] == "mode":
+            if game_title == "halo1" and IS_GBX and tag_reference_dict["group name"] == "mode":
                 tag_reference_dict["group name"] = "mod2"
 
             if tag_reference_dict["group name"] in TAG_WHITELIST:
-                if not game_version == 0:
-                    path = os.path.join(tag_groups.get(tag_reference_dict["group name"]), tag_reference_dict["path"])
-                    tag_reference_dict["path"] = path
-
                 tag_references.append(tag_reference_dict)
 
 def string_empty_check(string):
@@ -2678,7 +2678,6 @@ def generate_tag_dictionary(game_title, root_tag_ref, tag_directory, tag_groups,
 
     if os.path.isfile(disk_asset_path):
         asset_cache[tag_group][tag_path]["has_disk_asset"] = True
-
     if asset_cache[tag_group][tag_path]["has_disk_asset"]:
         if not asset_cache[tag_group][tag_path]["matching_checksum"]:
             if not absolute_file_path == "":
@@ -2687,7 +2686,7 @@ def generate_tag_dictionary(game_title, root_tag_ref, tag_directory, tag_groups,
                 if game_version == 0:
                     file_path = os.path.join(tag_directory, "%s.%s" % (tag_path, tag_extension))
                 else:
-                    file_path = os.path.join(tag_directory, tag_path)
+                    file_path = os.path.join(tag_directory, os.path.join(tag_extension, tag_path))
             with open(file_path, 'rb') as input_stream:
                 valid_header, disk_tag_group, disk_checksum, disk_engine_tag = check_header(input_stream)
 
@@ -2717,7 +2716,7 @@ def generate_tag_dictionary(game_title, root_tag_ref, tag_directory, tag_groups,
                     generate_tag_dictionary(game_title, tag_ref, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender, game_version=game_version)
 
             else:
-                parsed_asset = read_tag(tag_path, tag_group, tag_directory, tag_groups, engine_tag, merged_defs)
+                parsed_asset = read_tag(tag_path, tag_group, tag_directory, tag_groups, engine_tag, merged_defs, game_version=game_version)
                 if parsed_asset is None:
                     return asset_cache
                 else:
@@ -2753,7 +2752,10 @@ def generate_tag_dictionary(game_title, root_tag_ref, tag_directory, tag_groups,
                     generate_tag_dictionary(game_title, tag_ref, tag_directory, tag_groups, engine_tag, merged_defs, asset_cache, prepare_for_blender, game_version=game_version)
 
     else:
-        parsed_asset = read_tag(tag_path, tag_group, tag_directory, tag_groups, engine_tag, merged_defs, absolute_file_path, game_version)
+        if not game_version == 0:
+            parsed_asset = read_tag(os.path.join(tag_extension, tag_path), tag_group, tag_directory, tag_groups, engine_tag, merged_defs, absolute_file_path, game_version)
+        else:
+            parsed_asset = read_tag(tag_path, tag_group, tag_directory, tag_groups, engine_tag, merged_defs, absolute_file_path, game_version)
         if parsed_asset is None:
             return asset_cache
         else:

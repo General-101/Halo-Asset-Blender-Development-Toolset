@@ -24,6 +24,7 @@
 #
 # ##### END MIT LICENSE BLOCK #####
 
+import os
 import bpy
 import json
 
@@ -85,11 +86,13 @@ def build_scene(context, tag_ref, asset_cache, game_title, game_version, fix_rot
         tag_groups = tag_common.h2_tag_groups
     else:
         print("%s is not supported." % game_title)
+    tag_extension = tag_groups.get(tag_ref["group name"])
+    tag_path = tag_ref["path"]
 
-    result = tag_interface.get_disk_asset(tag_ref["path"], tag_groups.get(tag_ref["group name"]))
+    result = tag_interface.get_disk_asset(tag_path, tag_extension)
     if result is None:
-        print("Failed to get file")
-        return
+        print("Failed to get disk asset")
+        return None
 
     model_data = result["Data"]
 

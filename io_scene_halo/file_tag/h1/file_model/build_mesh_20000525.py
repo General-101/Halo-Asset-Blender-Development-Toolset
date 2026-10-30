@@ -32,20 +32,7 @@ from math import radians
 from enum import Flag, Enum, auto
 from mathutils import Matrix, Vector
 from ....file_tag.tag_interface import tag_interface, tag_common
-from ....global_functions import mesh_processing, global_functions
-
-class EncodingEnum(Enum):
-    _8bit = 0
-    _8bit_intensity = auto()
-    _16bit_555 = auto()
-    _16bit_565 = auto()
-    _16bit_4444 = auto()
-    _16bit_8palette_plus_8alpha = auto()
-    _16bit_intensity = auto()
-    _32bit_888 = auto()
-    _32bit_8888 = auto()
-    _32bit_compressed = auto()
-    _32bit_alpha_compressed = auto()
+from ....global_functions import shader_processing, mesh_processing, global_functions
 
 class TypeEnum(Enum):
     diffuse = 0
@@ -69,15 +56,6 @@ class TypeEnum(Enum):
     specular_opaque = auto()
     mirror = auto()
     multitexture_alpha_replace = auto()
-
-class RasterizerFlags(Flag):
-    unfiltered = auto()
-    undithered = auto()
-    clamped = auto()
-    trilinear_filtered = auto()
-    alpha_replicate = auto()
-    not_mipmapped = auto()
-    alpha_test = auto()
 
 class TriangleStrips:
     def __init__(self, strips):
@@ -239,70 +217,73 @@ def build_mesh(mode_asset, geometry, armature, LOD, region_name, permutation_nam
 
 def get_geometry_layout(tag_ref, asset_cache, armature, is_triangle_list, shader_gen_override, report, simple_mesh=False, permutation_indicies=None):
     tag_groups = tag_common.h1_20000525_tag_groups
-    mode_asset = tag_interface.get_disk_asset(tag_ref["path"], tag_groups.get(tag_ref["group name"]))
-    mode_data = mode_asset["Data"]
+    tag_extension = tag_groups.get(tag_ref["group name"])
 
-    random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
-    model_materials = []
-    for shader in mode_data["shaders"]:
-        mat = bpy.data.materials.new(name=shader["name"])
-        mat.diffuse_color = random_color_gen.next()
-        diffuse_map = None
-        for map in shader["maps"]:
-            if TypeEnum.diffuse == TypeEnum(map["type"]["value"]):
-                diffuse_map = map
-                break
-        if diffuse_map == None:
+    mode_asset = tag_interface.get_disk_asset(tag_ref["path"], tag_extension)
+    if not mode_asset == None:
+        mode_data = mode_asset["Data"]
+
+        random_color_gen = global_functions.RandomColorGenerator() # generates a random sequence of colors
+        model_materials = []
+        for shader in mode_data["shaders"]:
+            mat = bpy.data.materials.new(name=shader["name"])
+            mat.diffuse_color = random_color_gen.next()
+            diffuse_map = None
             for map in shader["maps"]:
-                diffuse_map = map
-                break
+                if TypeEnum.diffuse == TypeEnum(map["type"]["value"]):
+                    diffuse_map = map
+                    break
+            if diffuse_map == None:
+                for map in shader["maps"]:
+                    diffuse_map = map
+                    break
 
-        if not diffuse_map == None:
-            generate_legacy_material_simple_b(mat, diffuse_map, tag_groups, RasterizerFlags, EncodingEnum, report)
+            if not diffuse_map == None:
+                shader_processing.generate_h1_shader(shader_gen_override, mat, diffuse_map, 0, asset_cache, report, 20000525)
 
-        model_materials.append(mat)
+            model_materials.append(mat)
 
-    full_mesh = None
-    if simple_mesh:
-        object_name = os.path.basename(tag_ref["path"])
-        full_mesh = bpy.data.meshes.new(object_name)
-        asset_cache[tag_ref["group name"]][tag_ref["path"]]["blender_assets"]["blender_asset"] = full_mesh
+        full_mesh = None
+        if simple_mesh:
+            object_name = os.path.basename(tag_ref["path"])
+            full_mesh = bpy.data.meshes.new(object_name)
+            asset_cache[tag_ref["group name"]][tag_ref["path"]]["blender_assets"]["blender_asset"] = full_mesh
 
-    visited_geo = set()
-    for region in mode_data["regions"]:
-        for permutation in region["permutations"]:
-            superlow_geometry_index = permutation["super low"]
-            low_geometry_index = permutation["low"]
-            medium_geometry_index = permutation["medium"]
-            high_geometry_index = permutation["high"]
-            superhigh_geometry_index = permutation["super high"]
+        visited_geo = set()
+        for region in mode_data["regions"]:
+            for permutation in region["permutations"]:
+                superlow_geometry_index = permutation["super low"]
+                low_geometry_index = permutation["low"]
+                medium_geometry_index = permutation["medium"]
+                high_geometry_index = permutation["high"]
+                superhigh_geometry_index = permutation["super high"]
 
-            geometry_count = len(mode_data["geometries"])
-            if not superhigh_geometry_index == -1 and superhigh_geometry_index < geometry_count and not superhigh_geometry_index in visited_geo:
-                visited_geo.add(superhigh_geometry_index)
-                superhigh_geometry = mode_data["geometries"][superhigh_geometry_index]
-                build_mesh(mode_asset, superhigh_geometry, armature, 'superhigh', region["name"], permutation["name"], full_mesh, simple_mesh, model_materials)
+                geometry_count = len(mode_data["geometries"])
+                if not superhigh_geometry_index == -1 and superhigh_geometry_index < geometry_count and not superhigh_geometry_index in visited_geo:
+                    visited_geo.add(superhigh_geometry_index)
+                    superhigh_geometry = mode_data["geometries"][superhigh_geometry_index]
+                    build_mesh(mode_asset, superhigh_geometry, armature, 'superhigh', region["name"], permutation["name"], full_mesh, simple_mesh, model_materials)
 
-            if not simple_mesh:
-                if not high_geometry_index == -1 and high_geometry_index < geometry_count and not high_geometry_index in visited_geo:
-                    visited_geo.add(high_geometry_index)
-                    high_geometry = mode_data["geometries"][high_geometry_index]
-                    build_mesh(mode_asset, high_geometry, armature, 'high', region["name"], permutation["name"], full_mesh, simple_mesh, model_materials)
+                if not simple_mesh:
+                    if not high_geometry_index == -1 and high_geometry_index < geometry_count and not high_geometry_index in visited_geo:
+                        visited_geo.add(high_geometry_index)
+                        high_geometry = mode_data["geometries"][high_geometry_index]
+                        build_mesh(mode_asset, high_geometry, armature, 'high', region["name"], permutation["name"], full_mesh, simple_mesh, model_materials)
 
-                if not medium_geometry_index == -1 and medium_geometry_index < geometry_count and not medium_geometry_index in visited_geo:
-                    visited_geo.add(medium_geometry_index)
-                    medium_geometry = mode_data["geometries"][medium_geometry_index]
-                    build_mesh(mode_asset, medium_geometry, armature, 'medium', region["name"], permutation["name"], full_mesh, simple_mesh, model_materials)
+                    if not medium_geometry_index == -1 and medium_geometry_index < geometry_count and not medium_geometry_index in visited_geo:
+                        visited_geo.add(medium_geometry_index)
+                        medium_geometry = mode_data["geometries"][medium_geometry_index]
+                        build_mesh(mode_asset, medium_geometry, armature, 'medium', region["name"], permutation["name"], full_mesh, simple_mesh, model_materials)
 
-                if not low_geometry_index == -1 and low_geometry_index < geometry_count and not low_geometry_index in visited_geo:
-                    visited_geo.add(low_geometry_index)
-                    low_geometry = mode_data["geometries"][low_geometry_index]
-                    build_mesh(mode_asset, low_geometry, armature, 'low', region["name"], permutation["name"], full_mesh, simple_mesh, model_materials)
+                    if not low_geometry_index == -1 and low_geometry_index < geometry_count and not low_geometry_index in visited_geo:
+                        visited_geo.add(low_geometry_index)
+                        low_geometry = mode_data["geometries"][low_geometry_index]
+                        build_mesh(mode_asset, low_geometry, armature, 'low', region["name"], permutation["name"], full_mesh, simple_mesh, model_materials)
 
-                if not superlow_geometry_index == -1 and superlow_geometry_index < geometry_count and not superlow_geometry_index in visited_geo:
-                    visited_geo.add(superlow_geometry_index)
-                    superlow_geometry = mode_data["geometries"][superlow_geometry_index]
-                    build_mesh(mode_asset, superlow_geometry, armature, 'superlow', region["name"], permutation["name"], full_mesh, simple_mesh, model_materials)
+                    if not superlow_geometry_index == -1 and superlow_geometry_index < geometry_count and not superlow_geometry_index in visited_geo:
+                        visited_geo.add(superlow_geometry_index)
+                        superlow_geometry = mode_data["geometries"][superlow_geometry_index]
+                        build_mesh(mode_asset, superlow_geometry, armature, 'superlow', region["name"], permutation["name"], full_mesh, simple_mesh, model_materials)
 
-            else:
-                break
+                else:
+                    break

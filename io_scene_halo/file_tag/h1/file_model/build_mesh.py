@@ -60,7 +60,7 @@ def uncompress_vertices(compressed_vertices):
         vertex.node_0_weight = vertex.node_0_weight / 32767
         vertex.node_1_weight = 1 - vertex.node_0_weight
 
-def build_mesh(mode_asset, geometry, armature, LOD, region_name, permutation_name, is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh):
+def build_mesh(mode_asset, geometry, armature, LOD, region_name, permutation_name, is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh, shader_gen_override):
     mode_data = mode_asset["Data"]
 
     if region_name == "__unnamed":
@@ -210,7 +210,7 @@ def build_mesh(mode_asset, geometry, armature, LOD, region_name, permutation_nam
                     mat = SHAD_ASSET["blender_assets"].get(material_name)
                     if not mat:
                         mat = bpy.data.materials.new(name=material_name)
-                        shader_processing.generate_h1_shader(mat, shader_tag, permutation, asset_cache, report)
+                        shader_processing.generate_h1_shader(shader_gen_override, mat, shader_tag, permutation, asset_cache, report)
                         SHAD_ASSET["blender_assets"][material_name] = mat
 
                 else:
@@ -338,7 +338,7 @@ def get_geometry_layout(tag_ref, asset_cache, armature, is_triangle_list, shader
             if not superhigh_geometry_index == -1 and superhigh_geometry_index < geometry_count and not superhigh_geometry_index in visited_geo:
                 visited_geo.add(superhigh_geometry_index)
                 superhigh_geometry = mode_data["geometries"][superhigh_geometry_index]
-                build_mesh(mode_asset, superhigh_geometry, armature, 'superhigh', region["name"], permutation_element["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh)
+                build_mesh(mode_asset, superhigh_geometry, armature, 'superhigh', region["name"], permutation_element["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh, shader_gen_override)
 
     else:
         for region in mode_data["regions"]:
@@ -353,28 +353,28 @@ def get_geometry_layout(tag_ref, asset_cache, armature, is_triangle_list, shader
                 if not superhigh_geometry_index == -1 and superhigh_geometry_index < geometry_count and not superhigh_geometry_index in visited_geo:
                     visited_geo.add(superhigh_geometry_index)
                     superhigh_geometry = mode_data["geometries"][superhigh_geometry_index]
-                    build_mesh(mode_asset, superhigh_geometry, armature, 'superhigh', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh)
+                    build_mesh(mode_asset, superhigh_geometry, armature, 'superhigh', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh, shader_gen_override)
 
                 if not simple_mesh:
                     if not high_geometry_index == -1 and high_geometry_index < geometry_count and not high_geometry_index in visited_geo:
                         visited_geo.add(high_geometry_index)
                         high_geometry = mode_data["geometries"][high_geometry_index]
-                        build_mesh(mode_asset, high_geometry, armature, 'high', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh)
+                        build_mesh(mode_asset, high_geometry, armature, 'high', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh, shader_gen_override)
 
                     if not medium_geometry_index == -1 and medium_geometry_index < geometry_count and not medium_geometry_index in visited_geo:
                         visited_geo.add(medium_geometry_index)
                         medium_geometry = mode_data["geometries"][medium_geometry_index]
-                        build_mesh(mode_asset, medium_geometry, armature, 'medium', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh)
+                        build_mesh(mode_asset, medium_geometry, armature, 'medium', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh, shader_gen_override)
 
                     if not low_geometry_index == -1 and low_geometry_index < geometry_count and not low_geometry_index in visited_geo:
                         visited_geo.add(low_geometry_index)
                         low_geometry = mode_data["geometries"][low_geometry_index]
-                        build_mesh(mode_asset, low_geometry, armature, 'low', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh)
+                        build_mesh(mode_asset, low_geometry, armature, 'low', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh, shader_gen_override)
 
                     if not superlow_geometry_index == -1 and superlow_geometry_index < geometry_count and not superlow_geometry_index in visited_geo:
                         visited_geo.add(superlow_geometry_index)
                         superlow_geometry = mode_data["geometries"][superlow_geometry_index]
-                        build_mesh(mode_asset, superlow_geometry, armature, 'superlow', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh)
+                        build_mesh(mode_asset, superlow_geometry, armature, 'superlow', region["name"], permutation["name"], is_triangle_list, random_color_gen, tag_ref, asset_cache, full_mesh, report, simple_mesh, shader_gen_override)
 
                 else:
                     break

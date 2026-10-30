@@ -266,9 +266,9 @@ def generate_h1_shader(shader_gen_setting, mat, tag_ref, permutation_index, asse
         if game_version == 20000525:
             tag_groups = tag_common.h1_20000525_tag_groups
             if shader_gen_setting == 1:
-                halo_1_20000525_shader.generate_shader_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_20000525_shader.generate_shader_simple(mat, tag_ref, asset_cache, report)
             else:
-                halo_1_20000525_shader.generate_shader_simple(mat, shader_asset, permutation_index, asset_cache, report)
+                halo_1_20000525_shader.generate_shader_simple(mat, tag_ref, asset_cache, report)
 
         else:
             tag_groups = tag_common.h1_tag_groups
