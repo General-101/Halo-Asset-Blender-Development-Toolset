@@ -55,6 +55,7 @@ from . import file_ass
 from . import file_jma
 from . import file_jmi
 from . import file_jms
+from . import file_lmf
 from . import file_qua
 from . import file_tag
 from . import file_wrl
@@ -66,6 +67,7 @@ modules = [
     file_jma,
     file_jmi,
     file_jms,
+    file_lmf,
     file_qua,
     file_tag,
     file_wrl,
